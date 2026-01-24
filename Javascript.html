@@ -1,0 +1,238 @@
+<script>
+  let currentUser = null;
+  let APP_DATA = {}; 
+  let navHistory = []; 
+
+  // --- CẤU HÌNH ---
+  const TABLE_CONFIG = {
+    'NhomCCR': { columns: ['ID nhóm', 'Tên nhóm', 'Người đại diện', 'Số điện thoại', 'Địa chỉ', 'Diện tích FSC', 'Diện tích ngoài FSC'] },
+    'Churung': { columns: ['ID chủ rừng', 'Họ tên chủ rừng', 'Giới tính', 'Ngày sinh', 'Dân tộc', 'CCCD', 'Số điện thoại', 'Số lô rừng', 'Tổng diện tích'] },
+    'Lo_rung': { columns: ['ID lô rừng', 'Mã số lô 2024', 'Tổng diện tích', 'Diện tích GCN QSDĐ', 'Diện tích trồng rừng', 'Diện tích FSC', 'Diện tích ngoài FSC', 'Diện tích vùng đệm', 'Diện tích rừng tự nhiên', 'Diện tích HLVS'] },
+    'Taphuan': { columns: ['Mã lớp', 'Tên lớp tập huấn', 'Ngày tổ chức', 'Địa điểm', 'Giảng viên', 'Số lượng tham gia'] },
+    'NhanSu': { columns: ['ID_staff', 'Họ và tên', 'Email', 'Mật khẩu', 'Số điện thoại', 'Chức vụ', 'Trạng thái'] }, // Cấu hình đầy đủ
+    'PhanQuyen': { columns: ['ID_staff', 'Họ và tên', 'Email', 'Chức vụ'] }
+  };
+  const VIEW_MAP = { 'DS_NhomCCR': 'NhomCCR', 'Churung': 'Churung', 'QL_Hoso': 'Lo_rung', 'Lo_rung': 'Lo_rung', 'Loai_Tap_Huan': 'Taphuan', 'Nhan_Su': 'NhanSu', 'PhanQuyen': 'NhanSu' };
+
+  $(document).ready(function() {
+    $("#sidebarToggle").click(function(e) { e.preventDefault(); $("#sidebar-wrapper").toggleClass("toggled"); });
+  });
+
+  // --- AUTH ---
+  function toggleAuth(mode) {
+    $('#login-error').text('');
+    if (mode === 'REGISTER') { $('#form-login').addClass('d-none'); $('#form-register').removeClass('d-none'); } 
+    else { $('#form-register').addClass('d-none'); $('#form-login').removeClass('d-none'); }
+  }
+
+  $('#form-login').on('submit', function(e) {
+    e.preventDefault(); $('#btn-login').prop('disabled', true).html('ĐANG TẢI...');
+    google.script.run.withSuccessHandler(res => {
+      $('#btn-login').prop('disabled', false).text('ĐĂNG NHẬP');
+      if (res.success) {
+        currentUser = res.user; APP_DATA = res.data; 
+        localStorage.setItem('fsc_user', JSON.stringify(currentUser));
+        $('#login-screen').addClass('d-none'); $('#main-app').removeClass('d-none');
+        $('#user-display-name').text(currentUser['Họ và tên']);
+        renderSystemMenu(APP_DATA['Menu']); 
+      } else { $('#login-error').text(res.message).addClass('text-danger'); }
+    }).apiLoginAndLoadData($('#login-email').val(), $('#login-pass').val());
+  });
+
+  $('#form-register').on('submit', function(e) {
+    e.preventDefault();
+    if($('#reg-pass').val() !== $('#reg-confirm-pass').val()) { $('#login-error').text("Mật khẩu không khớp!").addClass('text-danger'); return; }
+    $('#btn-register').prop('disabled', true).text('ĐANG XỬ LÝ...');
+    google.script.run.withSuccessHandler(res => {
+      $('#btn-register').prop('disabled', false).text('ĐĂNG KÝ');
+      if(res.success) { alert(res.message); toggleAuth('LOGIN'); $('#login-email').val($('#reg-email').val()); } 
+      else { $('#login-error').text(res.message).addClass('text-danger'); }
+    }).apiRegister($('#reg-name').val(), $('#reg-email').val(), $('#reg-pass').val(), $('#reg-phone').val());
+  });
+
+  function handleForgotPassword() {
+    const email = prompt("Nhập Email để nhận mật khẩu mới:"); if (!email) return;
+    google.script.run.withSuccessHandler(res => alert(res.message)).apiResetPassword(email);
+  }
+
+  function logout() { localStorage.removeItem('fsc_user'); location.reload(); }
+  function showDashboard() { $('#data-view').addClass('d-none'); $('#dashboard-view').removeClass('d-none'); navHistory = []; }
+
+  // --- RENDER MENU & PHÂN QUYỀN ---
+  function renderSystemMenu(menuData) {
+    if(!menuData) return;
+    const grouped = {};
+    const userRole = currentUser && currentUser['Chức vụ'] ? String(currentUser['Chức vụ']).toLowerCase().trim() : '';
+    const clean = (n) => n ? n.replace(/^\d+\.\s*/, '').trim() : 'KHÁC';
+    
+    // Lọc quyền
+    menuData.forEach(item => { 
+      const rawRole = item['PhanQuyen'] ? String(item['PhanQuyen']).toLowerCase() : '';
+      if (rawRole === '' || rawRole.split(',').map(r=>r.trim()).includes(userRole)) {
+        let g = clean(item['Nhom']); if (!grouped[g]) grouped[g] = []; grouped[g].push(item);
+      }
+    });
+
+    let accordionHtml = ''; let idx = 0;
+    for (const [group, items] of Object.entries(grouped)) {
+      idx++; const cId = `collapseSidebar${idx}`;
+      let sub = items.map(i => `<a href="#" class="menu-sub-link" onclick="loadView('${i['View']}', '${i['Module']}')"><i class="fa-solid fa-angle-right me-2"></i>${i['Module']}</a>`).join('');
+      accordionHtml += `<div class="accordion-item"><h2 class="accordion-header"><button class="accordion-button ${idx===1?'':'collapsed'}" type="button" data-bs-toggle="collapse" data-bs-target="#${cId}"><span class="text-uppercase fw-bold">${group}</span></button></h2><div id="${cId}" class="accordion-collapse collapse ${idx===1?'show':''}" data-bs-parent="#sidebarAccordion"><div class="accordion-body p-0">${sub}</div></div></div>`;
+    }
+    $('#sidebarAccordion').html(accordionHtml);
+
+    // Render Dashboard Tab
+    let tabs = ''; let content = ''; let i = 0;
+    for (const [group, items] of Object.entries(grouped)) {
+      const act = i === 0 ? 'active' : ''; const show = i === 0 ? 'show active' : ''; const tId = `dash-tab-${i}`;
+      tabs += `<li class="nav-item"><button class="nav-link ${act}" data-bs-toggle="pill" data-bs-target="#${tId}">${group}</button></li>`;
+      let cards = items.map(item => `<div class="col"><div class="dashboard-card-3d" onclick="loadView('${item['View']}', '${item['Module']}')"><div class="icon-3d-wrapper icon-theme-forest"><i class="fa-solid fa-folder-open"></i></div><div class="card-title-3d">${item['Module']}</div></div></div>`).join('');
+      content += `<div class="tab-pane fade ${show}" id="${tId}"><div class="row row-cols-2 row-cols-lg-4 g-4 py-4">${cards}</div></div>`; i++;
+    }
+    $('#dashboardTabs').html(tabs); $('#dashboardTabContent').html(content);
+  }
+
+  // --- NAVIGATION ---
+  function loadView(viewName, title) {
+    if ($(window).width() < 768) $("#sidebar-wrapper").addClass("toggled");
+    $('#dashboard-view').addClass('d-none'); $('#data-view').removeClass('d-none');
+    navHistory = [{ mode: 'LIST', viewName, title, filter: null }];
+    renderBreadcrumb(); renderContent();
+  }
+  function renderContent() {
+    const current = navHistory[navHistory.length - 1];
+    const sheetName = VIEW_MAP[current.viewName] || current.viewName;
+    const data = APP_DATA[sheetName] || [];
+    $('#page-content-dynamic').empty();
+    if (current.mode === 'DETAIL') renderDetailMaster(sheetName, current.rowData);
+    else renderTable(data, current, sheetName);
+  }
+  function renderBreadcrumb() {
+    let bc = '<div class="fsc-breadcrumb"><span class="breadcrumb-item" onclick="showDashboard()"><i class="fa-solid fa-house"></i> Home</span>';
+    navHistory.forEach((item, index) => {
+      bc += `<span class="breadcrumb-separator">/</span>`;
+      let t = item.title; if (index === navHistory.length - 1) bc += `<span class="breadcrumb-item active">${t}</span>`; else bc += `<span class="breadcrumb-item" onclick="navigateBack(${index})">${t}</span>`;
+    });
+    bc += '</div>';
+    if($('#breadcrumb-container').length === 0) $('<div id="breadcrumb-container"></div>').insertBefore('#page-content-dynamic');
+    $('#breadcrumb-container').html(bc);
+  }
+  function navigateBack(index) { navHistory = navHistory.slice(0, index + 1); renderBreadcrumb(); renderContent(); }
+  function handleRowClick(sheetName, rowJson) {
+    const rowData = JSON.parse(decodeURIComponent(rowJson));
+    let title = rowData['Tên nhóm'] || rowData['Họ tên chủ rừng'] || rowData['Mã số lô 2024'] || rowData['Họ và tên'] || 'Chi tiết';
+    navHistory.push({ mode: 'DETAIL', viewName: sheetName, title: title, rowData: rowData });
+    renderBreadcrumb(); renderContent();
+  }
+
+  // --- DETAIL VIEW ---
+  function renderDetailMaster(sheetName, d) {
+    const rowJson = encodeURIComponent(JSON.stringify(d));
+    let html = `
+      <div class="d-flex justify-content-between align-items-center mb-3 p-2 bg-white rounded-3 shadow-sm border-start border-4 border-success">
+        <div><h5 class="fw-bold text-forest m-0 text-uppercase">${d['Tên nhóm']||d['Họ tên chủ rừng']||d['Mã số lô 2024']||d['Họ và tên']||'CHI TIẾT'}</h5><div class="text-muted small">ID: ${d[Object.keys(d)[0]]}</div></div>
+        <div><button class="btn btn-outline-primary btn-sm me-1" onclick="openModal('UPDATE', '${sheetName}', '${rowJson}')"><i class="fa-solid fa-pen"></i></button><button class="btn btn-outline-danger btn-sm" onclick="deleteRow('${sheetName}', '${rowJson}')"><i class="fa-solid fa-trash"></i></button></div>
+      </div>`;
+
+    if (sheetName === 'NhanSu') {
+       const isAdmin = currentUser && currentUser['Chức vụ'] === 'Admin';
+       const isPending = d['Trạng thái'] === 'Pending';
+       let approveBtn = (isAdmin && isPending) ? `<button class="btn btn-success w-100 fw-bold mt-3 shadow" onclick="approveMember('${d['ID_staff']}')"><i class="fa-solid fa-check-circle me-2"></i> PHÊ DUYỆT</button>` : '';
+       html += `<div class="row justify-content-center"><div class="col-md-8"><div class="card shadow border-0 rounded-4"><div class="card-body p-4"><div class="text-center mb-4"><div class="avatar-circle bg-success text-white mx-auto mb-3 d-flex align-items-center justify-content-center display-4 rounded-circle shadow-sm" style="width:80px; height:80px"><i class="fa-solid fa-user-tie"></i></div><h4 class="fw-bold text-success">${d['Họ và tên']}</h4><span class="badge ${d['Trạng thái']==='Act'?'bg-success':'bg-warning text-dark'} px-3 py-2 rounded-pill mt-2">${d['Trạng thái']}</span></div><div class="card bg-light border-0 rounded-3 p-3">${fGroup(d, ['ID_staff', 'Email', 'Số điện thoại', 'Chức vụ'])}</div>${approveBtn}</div></div></div></div>`;
+    } else {
+       html += `<div class="card p-3 shadow border-0"><div class="row">`;
+       for(const [k,v] of Object.entries(d)) html += `<div class="col-md-4 mb-2"><label class="text-muted small fw-bold">${k}</label><div class="fw-medium border-bottom pb-1 small">${v}</div></div>`;
+       html += `</div></div>`;
+    }
+    $('#page-content-dynamic').html(html);
+  }
+
+  // --- CRUD FORM ---
+  let currentAction='', currentSheetTarget='';
+  function openModal(action, sheetName, rowJson=null) { 
+    currentAction = action; currentSheetTarget = (sheetName==='PhanQuyen') ? 'NhanSu' : sheetName;
+    $('#modalTitle').text(action==='CREATE'?'Thêm mới':'Cập nhật');
+    const form = $('#dynamic-form'); form.empty();
+    
+    // Lấy đúng cột cấu hình
+    let columns = TABLE_CONFIG[sheetName] ? TABLE_CONFIG[sheetName].columns : (APP_DATA[sheetName]&&APP_DATA[sheetName][0]?Object.keys(APP_DATA[sheetName][0]):[]);
+    let rowData = rowJson ? JSON.parse(decodeURIComponent(rowJson)) : {};
+
+    columns.forEach(col => {
+      let val = rowData[col]||''; let inputHtml = '';
+      if (col === 'Trạng thái') {
+         inputHtml = `<select class="form-select" name="${col}"><option value="Act" ${val==='Act'?'selected':''}>Act</option><option value="inAct" ${val==='inAct'?'selected':''}>inAct</option><option value="Pending" disabled ${val==='Pending'?'selected':''}>Pending</option></select>`;
+      } else if (col === 'Chức vụ') {
+         const roles = ['Admin', 'Thành viên'];
+         inputHtml = `<select class="form-select" name="${col}">${roles.map(r=>`<option value="${r}" ${val===r?'selected':''}>${r}</option>`).join('')}</select>`;
+      } else if (col === 'Mật khẩu') {
+         if (action === 'CREATE') inputHtml = `<input type="text" class="form-control" name="${col}" placeholder="Mật khẩu khởi tạo">`;
+         else if (String(rowData['Email']) === String(currentUser['Email'])) inputHtml = `<input type="text" class="form-control" name="${col}" placeholder="Đổi mật khẩu">`;
+      } else {
+         const isID = col.toLowerCase().includes('id');
+         inputHtml = `<input type="text" class="form-control" name="${col}" value="${val}" ${isID?'readonly class="form-control bg-light"':''}>`;
+      }
+      if(inputHtml) form.append(`<div class="col-md-6"><label class="form-label small fw-bold text-muted">${col}</label>${inputHtml}</div>`);
+    });
+    new bootstrap.Modal(document.getElementById('dataModal')).show();
+  }
+
+  function saveData() { 
+    const formDataArray = $('#dynamic-form').serializeArray(); const dataObj = {}; formDataArray.forEach(item => dataObj[item.name] = item.value);
+    const btn = $('#dataModal .btn-success'); btn.prop('disabled', true).text('Đang lưu...');
+    google.script.run.withSuccessHandler(res => {
+      btn.prop('disabled', false).text('Lưu');
+      if (res.success) {
+        bootstrap.Modal.getInstance(document.getElementById('dataModal')).hide();
+        if (currentAction === 'CREATE') { if(!APP_DATA[currentSheetTarget]) APP_DATA[currentSheetTarget]=[]; APP_DATA[currentSheetTarget].push(dataObj); } 
+        else { const idCol = Object.keys(dataObj)[0]; const idx = APP_DATA[currentSheetTarget].findIndex(r => String(r[idCol]) === String(dataObj[idCol])); if(idx!==-1) APP_DATA[currentSheetTarget][idx] = dataObj; }
+        renderContent(); alert('Thành công!');
+      } else { alert(res.message); }
+    }).apiCRUD(currentAction, currentSheetTarget, JSON.stringify(dataObj));
+  }
+
+  function deleteRow(sheetName, rowJson) { 
+    if(!confirm('Chắc chắn xóa?')) return;
+    const rowData = JSON.parse(decodeURIComponent(rowJson)); const idCol = Object.keys(rowData)[0];
+    google.script.run.withSuccessHandler(res => {
+       if(res.success) {
+          APP_DATA[sheetName] = APP_DATA[sheetName].filter(r => String(r[idCol]) !== String(rowData[idCol]));
+          navigateBack(navHistory.length-2); alert('Đã xóa.');
+       } else alert(res.message);
+    }).apiCRUD('DELETE', sheetName, JSON.stringify(rowData));
+  }
+
+  function approveMember(targetID) {
+    if (!confirm("Duyệt thành viên này?")) return;
+    google.script.run.withSuccessHandler(res => {
+      if (res.success) {
+        alert(res.message);
+        const idx = APP_DATA['NhanSu'].findIndex(u => String(u['ID_staff']) === String(targetID));
+        if (idx !== -1) APP_DATA['NhanSu'][idx]['Trạng thái'] = 'Act';
+        renderDetailMaster('NhanSu', APP_DATA['NhanSu'][idx]);
+      } else alert(res.message);
+    }).apiApproveUser(currentUser['Email'], targetID);
+  }
+
+  // --- HELPERS ---
+  function renderTable(data, context, sheetName) {
+    let displayData = data; if (context.filter) displayData = data.filter(row => String(row[context.filter.key]) === String(context.filter.value));
+    const addBtn = `<button class="btn btn-light btn-sm text-success fw-bold rounded-pill px-3 shadow-sm" onclick="openModal('CREATE', '${sheetName}')"><i class="fa-solid fa-plus"></i> Thêm mới</button>`;
+    if (!displayData || !displayData.length) { $('#page-content-dynamic').html(`<div class="card shadow border-0 rounded-4 mt-3"><div class="card-header bg-success text-white py-3 d-flex justify-content-between align-items-center" style="background: var(--forest-gradient)!important"><h5 class="mb-0 fw-bold">${context.title}</h5>${addBtn}</div><div class="card-body p-5 text-center text-muted">Chưa có dữ liệu.</div></div>`); return; }
+    
+    // Config hiển thị cột (Bỏ mật khẩu ở danh sách)
+    let cols = TABLE_CONFIG[sheetName] ? TABLE_CONFIG[sheetName].columns : Object.keys(displayData[0]);
+    if(sheetName === 'NhanSu') cols = cols.filter(c => c !== 'Mật khẩu');
+
+    let th = '<tr>' + cols.map(c => `<th class="text-nowrap">${c}</th>`).join('') + '</tr>';
+    let tb = '';
+    displayData.forEach((row) => {
+      let rowJson = encodeURIComponent(JSON.stringify(row)); tb += `<tr class='clickable-row' onclick='handleRowClick("${sheetName}", "${rowJson}")'>`;
+      cols.forEach(c => { let val = row[c] || ''; let displayVal = val.toString().length > 50 ? val.toString().substring(0, 50) + '...' : val; tb += `<td>${displayVal}</td>`; }); tb += '</tr>';
+    });
+    const html = `<div class="card shadow border-0 rounded-4 overflow-hidden mt-3"><div class="card-header bg-success text-white py-3 d-flex justify-content-between align-items-center" style="background: var(--forest-gradient)!important"><h5 class="mb-0 fw-bold"><i class="fa-solid fa-list me-2"></i>${context.title}</h5>${addBtn}</div><div class="card-body p-0"><div class="table-responsive"><table id="dt-table" class="table table-striped table-hover modern-table w-100 mb-0"><thead>${th}</thead><tbody>${tb}</tbody></table></div></div></div>`;
+    $('#page-content-dynamic').html(html);
+    if($.fn.DataTable) { $('#dt-table').DataTable({ language: {url:"//cdn.datatables.net/plug-ins/1.13.4/i18n/vi.json"}, pageLength: 10, dom: 'frtip' }); }
+  }
+  function fGroup(d, fields) { return fields.map(f => `<div class="d-flex justify-content-between py-1 border-bottom border-light mb-0"><span class="text-muted small">${f}</span><span class="fw-bold text-dark text-end small">${d[f]||'-'}</span></div>`).join(''); }
+</script>
