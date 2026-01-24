@@ -45,54 +45,73 @@ function include(filename) {
 }
 
 // --- HÀM HỖ TRỢ: ĐỌC DỮ LIỆU NHANH ---
-function getDataFromSheet(ws) {
+function getDataFromSheet(ws, useDisplayValues = false) {
   const lastRow = ws.getLastRow();
   const lastCol = ws.getLastColumn();
   if (lastRow < 2 || lastCol < 1) return [];
   
-  const values = ws.getRange(1, 1, lastRow, lastCol).getDisplayValues();
+  // getValues() nhanh hơn nhiều so với getDisplayValues()
+  const values = useDisplayValues 
+    ? ws.getRange(1, 1, lastRow, lastCol).getDisplayValues()
+    : ws.getRange(1, 1, lastRow, lastCol).getValues();
+    
   const headers = values[0];
   const rows = values.slice(1);
   
   return rows.map(row => {
     let obj = {};
-    headers.forEach((h, i) => { if(h) obj[h.trim()] = row[i]; });
+    headers.forEach((h, i) => { 
+      if(h) {
+        let val = row[i];
+        // Chuyển đổi Date object sang chuỗi định dạng VN nếu dùng getValues
+        if (val instanceof Date && !useDisplayValues) {
+          val = Utilities.formatDate(val, Session.getScriptTimeZone(), "dd/MM/yyyy HH:mm:ss");
+        }
+        obj[h.trim()] = val;
+      }
+    });
     return obj;
   });
 }
 
 // --- 1. API: ĐĂNG NHẬP & TẢI FULL DATA ---
-function apiLoginAndLoadData(email, password) {
+function apiLoginAndLoadData(loginKey, password) {
   try {
     const ss = SpreadsheetApp.openById(SPREADSHEET_ID);
     const wsUser = ss.getSheetByName('NhanSu');
     if (!wsUser) return { success: false, message: "Thiếu sheet NhanSu" };
     
-    const userData = getDataFromSheet(wsUser);
-    const user = userData.find(u => String(u['Email']).toLowerCase().trim() === String(email).toLowerCase().trim());
+    const userData = getDataFromSheet(wsUser, true); // Dùng display values cho User để khớp mật khẩu/email chuẩn format
+    const searchKey = String(loginKey).toLowerCase().trim();
     
-    if (!user) return { success: false, message: 'Email không tồn tại!' };
+    const user = userData.find(u => {
+      const email = String(u['Email']).toLowerCase().trim();
+      const username = email.split('@')[0];
+      return email === searchKey || username === searchKey;
+    });
+    
+    if (!user) return { success: false, message: 'Tài khoản (Email/Username) không tồn tại!' };
     
     if (String(user['Mật khẩu']).trim() !== String(password).trim()) {
       return { success: false, message: 'Sai mật khẩu!' };
     }
 
-    // Kiểm tra trạng thái kích hoạt
     const status = String(user['Trạng thái']).trim();
     if (status !== 'Act') {
-      return { success: false, message: 'Tài khoản chưa kích hoạt hoặc đã bị khóa (inAct)!' };
+      return { success: false, message: 'Tài khoản chưa kích hoạt hoặc đã bị khóa!' };
     }
     
     let safeUser = {...user}; delete safeUser['Mật khẩu'];
 
-    // Tải dữ liệu hệ thống (Bao gồm cả NhanSu để quản lý)
+    // Tối ưu tải dữ liệu hệ thống
     const sheetsToLoad = ['Menu', 'NhanSu', 'NhomCCR', 'Churung', 'Lo_rung', 'Taphuan']; 
     const appData = {};
 
     sheetsToLoad.forEach(sheetName => {
       const ws = ss.getSheetByName(sheetName);
       if (ws) {
-        appData[sheetName] = getDataFromSheet(ws);
+        // Với các bảng dữ liệu lớn, dùng getValues() để tăng tốc độ
+        appData[sheetName] = getDataFromSheet(ws, false);
       } else {
         appData[sheetName] = [];
       }
