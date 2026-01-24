@@ -627,7 +627,7 @@
         }
         $('#sidebarAccordion').html(accordionHtml);
 
-        let tabs = ''; let content = ''; i = 0;
+        let tabs = ''; let content = ''; let i = 0;
         for (const [group, items] of Object.entries(grouped)) {
           const act = i === 0 ? 'active' : ''; const show = i === 0 ? 'show active' : ''; const tId = `dash-tab-${i}`;
           tabs += `<li class="nav-item"><button class="nav-link ${act}" data-bs-toggle="pill" data-bs-target="#${tId}">${group}</button></li>`;

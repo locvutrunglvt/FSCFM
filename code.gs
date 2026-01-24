@@ -81,16 +81,17 @@ function apiLoginAndLoadData(loginKey, password) {
     const wsUser = ss.getSheetByName('NhanSu');
     if (!wsUser) return { success: false, message: "Thiếu sheet NhanSu" };
     
-    const userData = getDataFromSheet(wsUser, true); // Dùng display values cho User để khớp mật khẩu/email chuẩn format
+    const userData = getDataFromSheet(wsUser, true); 
     const searchKey = String(loginKey).toLowerCase().trim();
     
     const user = userData.find(u => {
-      const email = String(u['Email']).toLowerCase().trim();
+      const email = String(u['Email'] || '').toLowerCase().trim();
       const username = email.split('@')[0];
-      return email === searchKey || username === searchKey;
+      const idStaff = String(u['ID_staff'] || '').toLowerCase().trim();
+      return email === searchKey || username === searchKey || idStaff === searchKey;
     });
     
-    if (!user) return { success: false, message: 'Tài khoản (Email/Username) không tồn tại!' };
+    if (!user) return { success: false, message: 'Tài khoản (Email/Username/ID) không tồn tại!' };
     
     if (String(user['Mật khẩu']).trim() !== String(password).trim()) {
       return { success: false, message: 'Sai mật khẩu!' };
@@ -103,14 +104,19 @@ function apiLoginAndLoadData(loginKey, password) {
     
     let safeUser = {...user}; delete safeUser['Mật khẩu'];
 
-    // Tối ưu tải dữ liệu hệ thống
+    // Danh sách các bảng cần tải
     const sheetsToLoad = ['Menu', 'NhanSu', 'NhomCCR', 'Churung', 'Lo_rung', 'Taphuan']; 
     const appData = {};
 
+    // Tối ưu hóa: Giảm thiểu truy xuất API bằng cách xử lý song song hoặc tái sử dụng sheet name
+    const allSheets = ss.getSheets();
+    const sheetMap = {};
+    allSheets.forEach(s => sheetMap[s.getName()] = s);
+
     sheetsToLoad.forEach(sheetName => {
-      const ws = ss.getSheetByName(sheetName);
+      const ws = sheetMap[sheetName];
       if (ws) {
-        // Với các bảng dữ liệu lớn, dùng getValues() để tăng tốc độ
+        // NhanSu đã đọc ở trên bằng getDisplayValues, nhưng để đồng bộ data ta vẫn đọc lại bằng getValues (tốc độ cao)
         appData[sheetName] = getDataFromSheet(ws, false);
       } else {
         appData[sheetName] = [];
