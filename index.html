@@ -1,87 +1,860 @@
 <!DOCTYPE html>
 <html lang="vi">
-  <head>
-    <base target="_top">
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Hệ thống Quản lý Rừng FSC</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdn.datatables.net/1.13.4/css/dataTables.bootstrap5.min.css">
-    <?!= include('style'); ?>
-  </head>
-  <body style="font-family: 'Be Vietnam Pro', sans-serif; background-color: #F8F9FA;">
-    
-    <div id="login-screen" class="vh-100 d-flex align-items-center justify-content-center">
-      <div class="login-card p-5 text-center bg-white shadow rounded-4" style="max-width: 400px; width: 100%;">
-        <img src="https://github.com/impactslowforest/Logo/blob/main/FSC%20logo%20-%20R.png?raw=true" height="80" class="mb-4 logo-bounce">
-        <h5 class="fw-bold text-success mb-4">QUẢN LÝ RỪNG BỀN VỮNG</h5>
-        
-        <form id="form-login">
-          <input type="email" class="form-control mb-3" id="login-email" placeholder="Email" required>
-          <input type="password" class="form-control mb-2" id="login-pass" placeholder="Mật khẩu" required>
-          <div class="d-flex justify-content-between mb-4">
-             <a href="javascript:void(0)" class="text-decoration-none small text-success fw-bold" onclick="toggleAuth('REGISTER')">Đăng ký mới</a>
-             <a href="javascript:void(0)" class="text-decoration-none small text-muted" onclick="handleForgotPassword()">Quên mật khẩu?</a>
-          </div>
-          <button type="submit" class="btn btn-success w-100 fw-bold" id="btn-login">ĐĂNG NHẬP</button>
-        </form>
 
-        <form id="form-register" class="d-none">
-          <input type="text" class="form-control mb-3" id="reg-name" placeholder="Họ tên đầy đủ" required>
-          <input type="email" class="form-control mb-3" id="reg-email" placeholder="Email đăng nhập" required>
-          <input type="text" class="form-control mb-3" id="reg-phone" placeholder="Số điện thoại" required>
-          <input type="password" class="form-control mb-3" id="reg-pass" placeholder="Mật khẩu" required>
-          <input type="password" class="form-control mb-4" id="reg-confirm-pass" placeholder="Nhập lại mật khẩu" required>
-          <button type="submit" class="btn btn-primary w-100 fw-bold mb-3" id="btn-register">ĐĂNG KÝ</button>
-          <div class="text-center">
-            <a href="javascript:void(0)" class="text-decoration-none small text-success fw-bold" onclick="toggleAuth('LOGIN')">← Quay lại Đăng nhập</a>
-          </div>
-        </form>
-        
-        <div id="login-error" class="text-danger mt-3 small fw-bold"></div>
-        <div class="mt-4 text-muted small">© 2026 Lộc Vũ Trung</div>
+<head>
+  <base target="_top">
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Hệ thống Quản lý Rừng FSC</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@300;400;500;600;700&display=swap"
+    rel="stylesheet">
+  <link rel="stylesheet" href="https://cdn.datatables.net/1.13.4/css/dataTables.bootstrap5.min.css">
+  <style>
+    :root {
+      --forest-primary: #1B5E20;
+      --forest-gradient: linear-gradient(135deg, #2E7D32 0%, #1B5E20 100%);
+      --gold-gradient: linear-gradient(135deg, #FBC02D 0%, #F57F17 100%);
+      --blue-gradient: linear-gradient(135deg, #42A5F5 0%, #1565C0 100%);
+      --bg-light: #F8F9FA;
+      --text-main: #2c3e50;
+    }
+
+    body {
+      font-family: 'Be Vietnam Pro', sans-serif;
+      background-color: var(--bg-light);
+      color: var(--text-main);
+      overflow: hidden;
+      font-size: 15px;
+      line-height: 1.5;
+    }
+
+    #login-screen {
+      background: linear-gradient(rgba(20, 50, 20, 0.9), rgba(10, 30, 10, 0.95)), url('https://images.unsplash.com/photo-1448375240586-dfd8d395ea6c?ixlib=rb-4.0.3&auto=format&fit=crop&w=1920&q=80');
+      background-size: cover;
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      z-index: 9999;
+    }
+
+    .login-card {
+      background: rgba(255, 255, 255, 0.98);
+      border-radius: 16px;
+      box-shadow: 0 25px 60px rgba(0, 0, 0, 0.6);
+      border-top: 5px solid #2E7D32;
+      width: 100%;
+      max-width: 400px;
+    }
+
+    #sidebar-wrapper {
+      width: 270px;
+      min-width: 270px;
+      flex-shrink: 0;
+      background: #fff;
+      border-right: 1px solid #eaeaea;
+      margin-left: 0;
+      transition: margin 0.3s ease;
+      z-index: 1000;
+      display: flex;
+      flex-direction: column;
+      height: 100%;
+    }
+
+    #sidebar-wrapper.toggled {
+      margin-left: -270px;
+    }
+
+    .sidebar-header {
+      padding: 20px;
+      background: var(--forest-gradient);
+      color: white;
+      font-weight: 700;
+      text-align: center;
+      flex-shrink: 0;
+      font-size: 1.2rem;
+      letter-spacing: 1px;
+    }
+
+    .accordion-button {
+      font-size: 1rem;
+      font-weight: 700;
+      padding: 14px 15px;
+      color: #444;
+    }
+
+    .accordion-button:not(.collapsed) {
+      color: var(--forest-primary);
+      background-color: #E8F5E9;
+      box-shadow: inset 3px 0 0 var(--forest-primary);
+    }
+
+    .accordion-button:focus {
+      box-shadow: none;
+    }
+
+    .menu-sub-link {
+      display: block;
+      padding: 12px 20px 12px 45px;
+      color: #555;
+      text-decoration: none;
+      font-size: 0.95rem;
+      font-weight: 500;
+      transition: all 0.2s;
+      border-left: 4px solid transparent;
+    }
+
+    .menu-sub-link:hover {
+      background-color: #f0f7f1;
+      color: var(--forest-primary);
+      border-left: 4px solid var(--forest-primary);
+    }
+
+    .dashboard-card-3d {
+      background: white;
+      border-radius: 14px;
+      padding: 25px 20px;
+      text-align: center;
+      cursor: pointer;
+      transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+      border: 1px solid rgba(0, 0, 0, 0.03);
+      height: 100%;
+    }
+
+    .dashboard-card-3d:hover {
+      transform: translateY(-8px);
+      border-color: #4CAF50;
+      box-shadow: 0 15px 30px rgba(0, 0, 0, 0.12);
+    }
+
+    .icon-3d-wrapper {
+      width: 70px;
+      height: 70px;
+      margin: 0 auto 18px auto;
+      border-radius: 20px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      font-size: 2.2rem;
+      background: var(--forest-gradient);
+      box-shadow: 0 8px 15px rgba(0, 0, 0, 0.15);
+    }
+
+    .card-title-3d {
+      font-weight: 700;
+      color: #333;
+      font-size: 1.1rem;
+    }
+
+    .nav-pills {
+      gap: 12px;
+      padding-bottom: 15px;
+      border-bottom: 1px solid #e0e0e0;
+      margin-bottom: 25px;
+    }
+
+    .nav-pills .nav-link {
+      border-radius: 30px;
+      padding: 10px 25px;
+      font-weight: 600;
+      color: var(--forest-primary);
+      background: #fff;
+      border: 2px solid #E8F5E9;
+      transition: all 0.3s ease;
+      text-transform: uppercase;
+      font-size: 0.85rem;
+      letter-spacing: 0.5px;
+    }
+
+    .nav-pills .nav-link:hover {
+      background-color: #E8F5E9;
+      transform: translateY(-2px);
+    }
+
+    .nav-pills .nav-link.active {
+      background: var(--forest-gradient) !important;
+      color: white !important;
+      border-color: transparent;
+      box-shadow: 0 4px 12px rgba(27, 94, 32, 0.4);
+      transform: scale(1.05);
+    }
+
+    .fsc-breadcrumb {
+      background: white;
+      padding: 10px 20px;
+      border-radius: 8px;
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.04);
+      margin-bottom: 20px;
+      display: flex;
+      align-items: center;
+      font-size: 0.95rem;
+      border: 1px solid #eee;
+    }
+
+    .breadcrumb-item {
+      cursor: pointer;
+      color: var(--forest-primary);
+      font-weight: 600;
+    }
+
+    .breadcrumb-item:hover {
+      text-decoration: underline;
+    }
+
+    .breadcrumb-item.active {
+      color: #777;
+      cursor: default;
+      text-decoration: none;
+    }
+
+    .breadcrumb-separator {
+      margin: 0 10px;
+      color: #ccc;
+      font-size: 0.8rem;
+    }
+
+    table.dataTable {
+      border-collapse: separate !important;
+      border-spacing: 0;
+      width: 100% !important;
+    }
+
+    table.dataTable thead th {
+      background-color: #f1f3f5 !important;
+      color: #333;
+      padding: 14px 10px !important;
+      font-size: 0.9rem;
+      text-transform: uppercase;
+      border-bottom: 2px solid #ccc !important;
+      font-weight: 700;
+    }
+
+    table.dataTable tbody td {
+      padding: 10px 10px !important;
+      font-size: 0.95rem;
+      vertical-align: middle;
+      border-bottom: 1px solid #eee;
+    }
+
+    .clickable-row {
+      cursor: pointer;
+      transition: background-color 0.1s;
+    }
+
+    .clickable-row:hover {
+      background-color: #f1f8e9 !important;
+      color: #1B5E20;
+    }
+
+    .form-control,
+    .form-select {
+      font-size: 0.95rem;
+      padding: 10px 12px;
+      border-radius: 8px;
+      border: 1px solid #ddd;
+    }
+
+    .form-control:focus,
+    .form-select:focus {
+      border-color: #2E7D32;
+      box-shadow: 0 0 0 0.2rem rgba(46, 125, 50, 0.25);
+    }
+
+    .btn {
+      font-size: 0.95rem;
+      font-weight: 600;
+      padding: 8px 20px;
+      border-radius: 30px;
+    }
+
+    .logo-bounce {
+      animation: bounce 2s infinite;
+    }
+
+    @keyframes bounce {
+
+      0%,
+      20%,
+      50%,
+      80%,
+      100% {
+        transform: translateY(0);
+      }
+
+      40% {
+        transform: translateY(-10px);
+      }
+
+      60% {
+        transform: translateY(-5px);
+      }
+    }
+
+    ::-webkit-scrollbar {
+      width: 8px;
+      height: 8px;
+    }
+
+    ::-webkit-scrollbar-track {
+      background: #f8f9fa;
+    }
+
+    ::-webkit-scrollbar-thumb {
+      background: #ccc;
+      border-radius: 4px;
+    }
+
+    ::-webkit-scrollbar-thumb:hover {
+      background: #999;
+    }
+  </style>
+</head>
+
+<body style="font-family: 'Be Vietnam Pro', sans-serif; background-color: #F8F9FA;">
+
+  <div id="login-screen" class="vh-100 d-flex align-items-center justify-content-center">
+    <div class="login-card p-5 text-center bg-white shadow rounded-4">
+      <img src="https://github.com/impactslowforest/Logo/blob/main/FSC%20logo%20-%20R.png?raw=true" height="80"
+        class="mb-4 logo-bounce">
+      <h5 class="fw-bold text-success mb-4">QUẢN LÝ RỪNG BỀN VỮNG</h5>
+
+      <form id="form-login">
+        <input type="email" class="form-control mb-3" id="login-email" placeholder="Email" required>
+        <input type="password" class="form-control mb-2" id="login-pass" placeholder="Mật khẩu" required>
+        <div class="d-flex justify-content-between mb-4">
+          <a href="javascript:void(0)" class="text-decoration-none small text-success fw-bold"
+            onclick="toggleAuth('REGISTER')">Đăng ký mới</a>
+          <a href="javascript:void(0)" class="text-decoration-none small text-muted"
+            onclick="handleForgotPassword()">Quên mật khẩu?</a>
+        </div>
+        <button type="submit" class="btn btn-success w-100 fw-bold" id="btn-login">ĐĂNG NHẬP</button>
+      </form>
+
+      <form id="form-register" class="d-none">
+        <input type="text" class="form-control mb-3" id="reg-name" placeholder="Họ tên đầy đủ" required>
+        <input type="email" class="form-control mb-3" id="reg-email" placeholder="Email đăng nhập" required>
+        <input type="text" class="form-control mb-3" id="reg-phone" placeholder="Số điện thoại" required>
+        <input type="password" class="form-control mb-3" id="reg-pass" placeholder="Mật khẩu" required>
+        <input type="password" class="form-control mb-4" id="reg-confirm-pass" placeholder="Nhập lại mật khẩu" required>
+        <button type="submit" class="btn btn-primary w-100 fw-bold mb-3" id="btn-register">ĐĂNG KÝ</button>
+        <div class="text-center">
+          <a href="javascript:void(0)" class="text-decoration-none small text-success fw-bold"
+            onclick="toggleAuth('LOGIN')">← Quay lại Đăng nhập</a>
+        </div>
+      </form>
+
+      <div id="login-error" class="text-danger mt-3 small fw-bold"></div>
+      <div class="mt-4 text-muted small">© 2026 Lộc Vũ Trung</div>
+    </div>
+  </div>
+
+  <div id="main-app" class="d-none d-flex flex-column vh-100">
+    <nav class="navbar navbar-dark bg-success shadow px-3"
+      style="background: linear-gradient(135deg, #2E7D32 0%, #1B5E20 100%) !important;">
+      <button class="btn text-white" id="sidebarToggle"><i class="fa-solid fa-bars"></i></button>
+      <span class="navbar-brand fw-bold ms-2 fs-6">FSC SYSTEM</span>
+      <div class="ms-auto text-white d-flex align-items-center">
+        <span class="me-2 small d-none d-md-block" id="user-display-name">User</span>
+        <button class="btn btn-sm btn-light text-success fw-bold rounded-pill px-3" onclick="logout()">Thoát</button>
+      </div>
+    </nav>
+
+    <div class="d-flex flex-grow-1 overflow-hidden">
+      <div id="sidebar-wrapper" class="bg-white border-end shadow-sm">
+        <div class="sidebar-header">MENU</div>
+        <div class="accordion accordion-flush overflow-auto h-100" id="sidebarAccordion"></div>
+      </div>
+
+      <div id="page-content-wrapper" class="flex-grow-1 bg-light overflow-auto p-3 p-md-4">
+        <div id="dashboard-view">
+          <h5 class="fw-bold text-secondary mb-3"><i class="fa-solid fa-gauge-high me-2"></i>TỔNG QUAN</h5>
+          <ul class="nav nav-pills mb-3" id="dashboardTabs"></ul>
+          <div class="tab-content" id="dashboardTabContent"></div>
+        </div>
+        <div id="data-view" class="d-none">
+          <div id="breadcrumb-container"></div>
+          <div id="page-content-dynamic"></div>
+        </div>
       </div>
     </div>
+  </div>
 
-    <div id="main-app" class="d-none d-flex flex-column vh-100">
-      <nav class="navbar navbar-dark bg-success shadow px-3" style="background: linear-gradient(135deg, #2E7D32 0%, #1B5E20 100%) !important;">
-        <button class="btn text-white" id="sidebarToggle"><i class="fa-solid fa-bars"></i></button>
-        <span class="navbar-brand fw-bold ms-2 fs-6">FSC SYSTEM</span>
-        <div class="ms-auto text-white d-flex align-items-center">
-          <span class="me-2 small d-none d-md-block" id="user-display-name">User</span>
-          <button class="btn btn-sm btn-light text-success fw-bold rounded-pill px-3" onclick="logout()">Thoát</button>
+  <div class="modal fade" id="dataModal" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+      <div class="modal-content">
+        <div class="modal-header bg-success text-white">
+          <h5 class="modal-title" id="modalTitle">Form</h5><button type="button" class="btn-close btn-close-white"
+            data-bs-dismiss="modal"></button>
         </div>
-      </nav>
-
-      <div class="d-flex flex-grow-1 overflow-hidden">
-         <div id="sidebar-wrapper" class="bg-white border-end shadow-sm">
-           <div class="sidebar-header p-3 text-center text-white fw-bold" style="background: #2E7D32;">MENU</div>
-           <div class="accordion accordion-flush overflow-auto h-100" id="sidebarAccordion"></div>
+        <div class="modal-body">
+          <form id="dynamic-form" class="row g-3"></form>
         </div>
-
-        <div id="page-content-wrapper" class="flex-grow-1 bg-light overflow-auto p-3 p-md-4">
-          <div id="dashboard-view">
-            <h5 class="fw-bold text-secondary mb-3"><i class="fa-solid fa-gauge-high me-2"></i>TỔNG QUAN</h5>
-            <ul class="nav nav-pills mb-3" id="dashboardTabs"></ul>
-            <div class="tab-content" id="dashboardTabContent"></div>
-          </div>
-          <div id="data-view" class="d-none">
-            <div id="breadcrumb-container"></div>
-            <div id="page-content-dynamic"></div>
-          </div>
-        </div>
+        <div class="modal-footer"><button type="button" class="btn btn-light"
+            data-bs-dismiss="modal">Đóng</button><button type="button" class="btn btn-success" id="btn-save"
+            onclick="saveData()">Lưu</button></div>
       </div>
     </div>
+  </div>
 
-    <div class="modal fade" id="dataModal" tabindex="-1"><div class="modal-dialog modal-lg"><div class="modal-content"><div class="modal-header bg-success text-white"><h5 class="modal-title" id="modalTitle">Form</h5><button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button></div><div class="modal-body"><form id="dynamic-form" class="row g-3"></form></div><div class="modal-footer"><button type="button" class="btn btn-light" data-bs-dismiss="modal">Đóng</button><button type="button" class="btn btn-success" onclick="saveData()">Lưu</button></div></div></div></div>
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="https://cdn.datatables.net/1.13.4/js/jquery.dataTables.min.js"></script>
+  <script src="https://cdn.datatables.net/1.13.4/js/dataTables.bootstrap5.min.js"></script>
 
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="https://cdn.datatables.net/1.13.4/js/jquery.dataTables.min.js"></script>
-    <script src="https://cdn.datatables.net/1.13.4/js/dataTables.bootstrap5.min.js"></script>
+  <script>
+    const WEB_APP_URL = 'https://script.google.com/macros/s/AKfycbzv-UUSMqDi-bMl3rNkr1y_nUSvqXmU4CvNM7KLwialDqSa0zjtPaXeyY37JkTD9xk/exec';
+    let currentUser = null;
+    let APP_DATA = {};
+    let navHistory = [];
 
-    <?!= include('javascript'); ?>
-  </body>
+    const TABLE_CONFIG = {
+      'NhomCCR': { columns: ['ID nhóm', 'Tên nhóm', 'Người đại diện', 'Số điện thoại', 'Địa chỉ', 'Diện tích FSC', 'Diện tích ngoài FSC'] },
+      'Churung': { columns: ['ID chủ rừng', 'Họ tên chủ rừng', 'Giới tính', 'Ngày sinh', 'Dân tộc', 'CCCD', 'Số điện thoại', 'Số lô rừng', 'Tổng diện tích'] },
+      'Lo_rung': { columns: ['ID lô rừng', 'Mã số lô 2024', 'Tổng diện tích', 'Diện tích GCN QSDĐ', 'Diện tích trồng rừng', 'Diện tích FSC', 'Diện tích ngoài FSC', 'Diện tích vùng đệm', 'Diện tích rừng tự nhiên', 'Diện tích HLVS'] },
+      'Taphuan': { columns: ['Mã lớp', 'Tên lớp tập huấn', 'Ngày tổ chức', 'Địa điểm', 'Giảng viên', 'Số lượng tham gia'] },
+      'NhanSu': { columns: ['ID_staff', 'Họ và tên', 'Email', 'Mật khẩu', 'Số điện thoại', 'Chức vụ', 'Trạng thái'] },
+      'PhanQuyen': { columns: ['ID_staff', 'Họ và tên', 'Email', 'Chức vụ'] }
+    };
+    const VIEW_MAP = { 'DS_NhomCCR': 'NhomCCR', 'Churung': 'Churung', 'QL_Hoso': 'Lo_rung', 'Lo_rung': 'Lo_rung', 'Loai_Tap_Huan': 'Taphuan', 'Nhan_Su': 'NhanSu', 'PhanQuyen': 'NhanSu' };
+
+    /**
+     * Gửi yêu cầu tới Google Apps Script. 
+     * Sử dụng 'application/x-www-form-urlencoded' để tránh lỗi CORS Preflight (OPTIONS).
+     */
+    function callGAS(action, data) {
+      return new Promise((resolve, reject) => {
+        // Xây dựng body dưới dạng chuỗi JSON nhưng không set Header Content-Type là application/json
+        // Điều này giúp trình duyệt coi đây là "Simple Request" và không gửi OPTIONS request.
+        const payload = JSON.stringify({ action, data });
+
+        fetch(WEB_APP_URL, {
+          method: "POST",
+          mode: "cors", // Vẫn dùng cors để nhận được kết quả (với điều kiện GAS cho phép)
+          body: payload
+        })
+          .then(res => {
+            if (!res.ok) throw new Error("Network response was not ok");
+            return res.json();
+          })
+          .then(res => resolve(res))
+          .catch(err => {
+            console.error("Fetch Error:", err);
+            reject(err);
+          });
+      });
+    }
+
+    $(document).ready(function () {
+      $("#sidebarToggle").click(function (e) { e.preventDefault(); $("#sidebar-wrapper").toggleClass("toggled"); });
+
+      // Kiểm tra phiên đăng nhập cũ
+      const savedUser = localStorage.getItem('fsc_user');
+      const savedData = localStorage.getItem('fsc_app_data');
+      if (savedUser && savedData) {
+        currentUser = JSON.parse(savedUser);
+        APP_DATA = JSON.parse(savedData);
+        showAppMain();
+      }
+    });
+
+    function showAppMain() {
+      $('#login-screen').fadeOut(300, function () {
+        $('#main-app').removeClass('d-none').hide().fadeIn(300);
+        $('#user-display-name').text(currentUser['Họ và tên']);
+        renderSystemMenu(APP_DATA['Menu']);
+      });
+    }
+
+    function toggleAuth(mode) {
+      $('#login-error').text('').fadeOut();
+      if (mode === 'REGISTER') {
+        $('#form-login').addClass('d-none');
+        $('#form-register').removeClass('d-none').hide().fadeIn();
+      } else {
+        $('#form-register').addClass('d-none');
+        $('#form-login').removeClass('d-none').hide().fadeIn();
+      }
+    }
+
+    $('#form-login').on('submit', async function (e) {
+      e.preventDefault();
+      const btn = $('#btn-login');
+      const err = $('#login-error');
+      btn.prop('disabled', true).html('<i class="fas fa-spinner fa-spin me-2"></i>ĐANG XỬ LÝ...');
+      err.fadeOut();
+
+      try {
+        const res = await callGAS('apiLoginAndLoadData', {
+          email: $('#login-email').val().trim(),
+          password: $('#login-pass').val().trim()
+        });
+
+        if (res && res.success) {
+          currentUser = res.user;
+          APP_DATA = res.data;
+          localStorage.setItem('fsc_user', JSON.stringify(currentUser));
+          localStorage.setItem('fsc_app_data', JSON.stringify(APP_DATA));
+          showAppMain();
+        } else {
+          err.text(res ? res.message : "Đăng nhập thất bại!").fadeIn();
+        }
+      } catch (error) {
+        err.text("Lỗi kết nối tới máy chủ!").fadeIn();
+      } finally {
+        btn.prop('disabled', false).text('ĐĂNG NHẬP');
+      }
+    });
+
+    $('#form-register').on('submit', async function (e) {
+      e.preventDefault();
+      const btn = $('#btn-register');
+      const err = $('#login-error');
+
+      if ($('#reg-pass').val() !== $('#reg-confirm-pass').val()) {
+        err.text("Mật khẩu nhập lại không khớp!").fadeIn();
+        return;
+      }
+
+      btn.prop('disabled', true).html('<i class="fas fa-spinner fa-spin me-2"></i>ĐANG ĐĂNG KÝ...');
+      err.fadeOut();
+
+      try {
+        const res = await callGAS('apiRegister', {
+          fullName: $('#reg-name').val().trim(),
+          email: $('#reg-email').val().trim(),
+          password: $('#reg-pass').val().trim(),
+          phone: $('#reg-phone').val().trim()
+        });
+
+        if (res && res.success) {
+          alert(res.message);
+          toggleAuth('LOGIN');
+          $('#login-email').val($('#reg-email').val());
+        } else {
+          err.text(res ? res.message : "Đăng ký không thành công!").fadeIn();
+        }
+      } catch (error) {
+        err.text("Lỗi đăng ký!").fadeIn();
+      } finally {
+        btn.prop('disabled', false).text('ĐĂNG KÝ');
+      }
+    });
+
+    async function handleForgotPassword() {
+      const email = prompt("Vui lòng nhập Email đã đăng ký để lấy lại mật khẩu:");
+      if (!email) return;
+
+      try {
+        const res = await callGAS('apiResetPassword', { email: email.trim() });
+        alert(res.message);
+      } catch (error) {
+        alert("Lỗi khi gửi yêu cầu!");
+      }
+    }
+
+    function logout() {
+      localStorage.removeItem('fsc_user');
+      localStorage.removeItem('fsc_app_data');
+      location.reload();
+    }
+
+    function showDashboard() {
+      $('#data-view').addClass('d-none');
+      $('#dashboard-view').removeClass('d-none');
+      navHistory = [];
+    }
+
+    function renderSystemMenu(menuData) {
+      if (!menuData) return;
+      const grouped = {};
+      const userRole = currentUser && currentUser['Chức vụ'] ? String(currentUser['Chức vụ']).toLowerCase().trim() : '';
+      const clean = (n) => n ? n.replace(/^\d+\.\s*/, '').trim() : 'KHÁC';
+
+      menuData.forEach(item => {
+        const rawRole = item['PhanQuyen'] ? String(item['PhanQuyen']).toLowerCase() : '';
+        const roles = rawRole.split(',').map(r => r.trim()).filter(r => r !== '');
+        if (roles.length === 0 || roles.includes(userRole)) {
+          let g = clean(item['Nhom']);
+          if (!grouped[g]) grouped[g] = [];
+          grouped[g].push(item);
+        }
+      });
+
+      let accordionHtml = ''; let idx = 0;
+      for (const [group, items] of Object.entries(grouped)) {
+        idx++; const cId = `collapseSidebar${idx}`;
+        let sub = items.map(i => `<a href="#" class="menu-sub-link" onclick="loadView('${i['View']}', '${i['Module']}')"><i class="fa-solid fa-angle-right me-2"></i>${i['Module']}</a>`).join('');
+        accordionHtml += `<div class="accordion-item"><h2 class="accordion-header"><button class="accordion-button ${idx === 1 ? '' : 'collapsed'}" type="button" data-bs-toggle="collapse" data-bs-target="#${cId}"><span class="text-uppercase fw-bold">${group}</span></button></h2><div id="${cId}" class="accordion-collapse collapse ${idx === 1 ? 'show' : ''}" data-bs-parent="#sidebarAccordion"><div class="accordion-body p-0">${sub}</div></div></div>`;
+      }
+      $('#sidebarAccordion').html(accordionHtml);
+
+      let tabs = ''; let content = ''; let i = 0;
+      for (const [group, items] of Object.entries(grouped)) {
+        const act = i === 0 ? 'active' : ''; const show = i === 0 ? 'show active' : ''; const tId = `dash-tab-${i}`;
+        tabs += `<li class="nav-item"><button class="nav-link ${act}" data-bs-toggle="pill" data-bs-target="#${tId}">${group}</button></li>`;
+        let cards = items.map(item => `
+            <div class="col">
+              <div class="dashboard-card-3d" onclick="loadView('${item['View']}', '${item['Module']}')">
+                <div class="icon-3d-wrapper icon-theme-forest"><i class="fa-solid fa-folder-open"></i></div>
+                <div class="card-title-3d">${item['Module']}</div>
+              </div>
+            </div>`).join('');
+        content += `<div class="tab-pane fade ${show}" id="${tId}"><div class="row row-cols-2 row-cols-lg-4 g-4 py-4">${cards}</div></div>`;
+        i++;
+      }
+      $('#dashboardTabs').html(tabs); $('#dashboardTabContent').html(content);
+    }
+
+    function loadView(viewName, title) {
+      if ($(window).width() < 768) $("#sidebar-wrapper").addClass("toggled");
+      $('#dashboard-view').addClass('d-none');
+      $('#data-view').removeClass('d-none');
+      navHistory = [{ mode: 'LIST', viewName, title, filter: null }];
+      renderBreadcrumb();
+      renderContent();
+    }
+
+    function renderContent() {
+      const current = navHistory[navHistory.length - 1];
+      const sheetName = VIEW_MAP[current.viewName] || current.viewName;
+      const data = APP_DATA[sheetName] || [];
+      $('#page-content-dynamic').empty();
+      if (current.mode === 'DETAIL') renderDetailMaster(sheetName, current.rowData);
+      else renderTable(data, current, sheetName);
+    }
+
+    function renderBreadcrumb() {
+      let bc = '<div class="fsc-breadcrumb"><span class="breadcrumb-item" onclick="showDashboard()"><i class="fa-solid fa-house"></i> Home</span>';
+      navHistory.forEach((item, index) => {
+        bc += `<span class="breadcrumb-separator">/</span>`;
+        let t = item.title;
+        if (index === navHistory.length - 1) bc += `<span class="breadcrumb-item active">${t}</span>`;
+        else bc += `<span class="breadcrumb-item" onclick="navigateBack(${index})">${t}</span>`;
+      });
+      bc += '</div>';
+      if ($('#breadcrumb-container').length === 0) $('<div id="breadcrumb-container"></div>').insertBefore('#page-content-dynamic');
+      $('#breadcrumb-container').html(bc);
+    }
+
+    function navigateBack(index) {
+      navHistory = navHistory.slice(0, index + 1);
+      renderBreadcrumb();
+      renderContent();
+    }
+
+    function handleRowClick(sheetName, rowJson) {
+      const rowData = JSON.parse(decodeURIComponent(rowJson));
+      let title = rowData['Tên nhóm'] || rowData['Họ tên chủ rừng'] || rowData['Mã số lô 2024'] || rowData['Họ và tên'] || 'Chi tiết';
+      navHistory.push({ mode: 'DETAIL', viewName: sheetName, title: title, rowData: rowData });
+      renderBreadcrumb();
+      renderContent();
+    }
+
+    function renderDetailMaster(sheetName, d) {
+      const rowJson = encodeURIComponent(JSON.stringify(d));
+      let html = `
+          <div class="d-flex justify-content-between align-items-center mb-3 p-3 bg-white rounded-3 shadow-sm border-start border-4 border-success">
+            <div><h5 class="fw-bold text-success m-0 text-uppercase">${d['Tên nhóm'] || d['Họ tên chủ rừng'] || d['Mã số lô 2024'] || d['Họ và tên'] || 'CHI TIẾT'}</h5><div class="text-muted small">ID: ${d[Object.keys(d)[0]]}</div></div>
+            <div>
+              <button class="btn btn-outline-primary btn-sm me-1" onclick="openModal('UPDATE', '${sheetName}', '${rowJson}')"><i class="fa-solid fa-pen"></i></button>
+              <button class="btn btn-outline-danger btn-sm" onclick="deleteRow('${sheetName}', '${rowJson}')"><i class="fa-solid fa-trash"></i></button>
+            </div>
+          </div>`;
+
+      if (sheetName === 'NhanSu') {
+        const isAdmin = currentUser && (String(currentUser['Chức vụ']).toLowerCase().includes('admin'));
+        const isPending = d['Trạng thái'] === 'Pending';
+        let approveBtn = (isAdmin && isPending) ? `<button class="btn btn-success w-100 fw-bold mt-3 shadow" onclick="approveMember('${d['ID_staff']}')"><i class="fa-solid fa-check-circle me-2"></i> PHÊ DUYỆT</button>` : '';
+        html += `
+            <div class="row justify-content-center">
+              <div class="col-md-8">
+                <div class="card shadow border-0 rounded-4">
+                  <div class="card-body p-4 text-center">
+                    <div class="bg-success text-white mx-auto mb-3 d-flex align-items-center justify-content-center display-4 rounded-circle" style="width:80px; height:80px"><i class="fa-solid fa-user-tie"></i></div>
+                    <h4 class="fw-bold text-success">${d['Họ và tên']}</h4>
+                    <span class="badge ${d['Trạng thái'] === 'Act' ? 'bg-success' : 'bg-warning text-dark'} px-3 py-2 rounded-pill mt-2">${d['Trạng thái']}</span>
+                    <div class="mt-4 text-start bg-light p-3 rounded-3">${fGroup(d, ['ID_staff', 'Email', 'Số điện thoại', 'Chức vụ'])}</div>
+                    ${approveBtn}
+                  </div>
+                </div>
+              </div>
+            </div>`;
+      } else {
+        html += `<div class="card p-3 shadow border-0"><div class="row">`;
+        for (const [k, v] of Object.entries(d)) html += `<div class="col-md-4 mb-2"><label class="text-muted small fw-bold">${k}</label><div class="fw-medium border-bottom pb-1 small">${v}</div></div>`;
+        html += `</div></div>`;
+      }
+      $('#page-content-dynamic').html(html);
+    }
+
+    let currentAction = '', currentSheetTarget = '';
+    function openModal(action, sheetName, rowJson = null) {
+      currentAction = action;
+      currentSheetTarget = (sheetName === 'PhanQuyen') ? 'NhanSu' : sheetName;
+      $('#modalTitle').text(action === 'CREATE' ? 'Thêm mới' : 'Cập nhật');
+      const form = $('#dynamic-form'); form.empty();
+
+      let columns = TABLE_CONFIG[sheetName] ? TABLE_CONFIG[sheetName].columns : (APP_DATA[sheetName] && APP_DATA[sheetName][0] ? Object.keys(APP_DATA[sheetName][0]) : []);
+      let rowData = rowJson ? JSON.parse(decodeURIComponent(rowJson)) : {};
+
+      columns.forEach(col => {
+        let val = rowData[col] || ''; let inputHtml = '';
+        if (col === 'Trạng thái') {
+          inputHtml = `<select class="form-select" name="${col}"><option value="Act" ${val === 'Act' ? 'selected' : ''}>Act</option><option value="inAct" ${val === 'inAct' ? 'selected' : ''}>inAct</option><option value="Pending" disabled ${val === 'Pending' ? 'selected' : ''}>Pending</option></select>`;
+        } else if (col === 'Chức vụ') {
+          const roles = ['Admin', 'Thành viên'];
+          inputHtml = `<select class="form-select" name="${col}">${roles.map(r => `<option value="${r}" ${val === r ? 'selected' : ''}>${r}</option>`).join('')}</select>`;
+        } else if (col === 'Mật khẩu') {
+          if (action === 'CREATE') inputHtml = `<input type="text" class="form-control" name="${col}" placeholder="Mật khẩu khởi tạo">`;
+          else if (String(rowData['Email']) === String(currentUser['Email'])) inputHtml = `<input type="text" class="form-control" name="${col}" placeholder="Đổi mật khẩu">`;
+        } else {
+          const isID = col.toLowerCase().includes('id');
+          inputHtml = `<input type="text" class="form-control" name="${col}" value="${val}" ${isID ? 'readonly class="form-control bg-light"' : ''}>`;
+        }
+        if (inputHtml) form.append(`<div class="col-md-6"><label class="form-label small fw-bold text-muted">${col}</label>${inputHtml}</div>`);
+      });
+      new bootstrap.Modal(document.getElementById('dataModal')).show();
+    }
+
+    async function saveData() {
+      const formDataArray = $('#dynamic-form').serializeArray();
+      const dataObj = {};
+      formDataArray.forEach(item => dataObj[item.name] = item.value);
+
+      const btn = $('#btn-save');
+      btn.prop('disabled', true).html('<i class="fas fa-spinner fa-spin me-2"></i>ĐANG LƯU...');
+
+      try {
+        const res = await callGAS('apiCRUD', { action: currentAction, sheetName: currentSheetTarget, jsonData: dataObj });
+        if (res && res.success) {
+          bootstrap.Modal.getInstance(document.getElementById('dataModal')).hide();
+          // Cập nhật local data để phản hồi ngay lập tức
+          if (currentAction === 'CREATE') {
+            if (!APP_DATA[currentSheetTarget]) APP_DATA[currentSheetTarget] = [];
+            const newRecord = res.newID ? { ...dataObj, [Object.keys(dataObj)[0]]: res.newID } : dataObj;
+            APP_DATA[currentSheetTarget].push(newRecord);
+          } else {
+            const idCol = Object.keys(dataObj)[0];
+            const idx = APP_DATA[currentSheetTarget].findIndex(r => String(r[idCol]) === String(dataObj[idCol]));
+            if (idx !== -1) APP_DATA[currentSheetTarget][idx] = dataObj;
+          }
+          localStorage.setItem('fsc_app_data', JSON.stringify(APP_DATA));
+          renderContent();
+          alert('Thành công!');
+        } else {
+          alert(res ? res.message : "Thất bại!");
+        }
+      } catch (err) {
+        alert("Lỗi kết nối máy chủ!");
+      } finally {
+        btn.prop('disabled', false).text('Lưu');
+      }
+    }
+
+    async function deleteRow(sheetName, rowJson) {
+      if (!confirm('Chắc chắn muốn xóa dòng này?')) return;
+      const rowData = JSON.parse(decodeURIComponent(rowJson));
+      const idCol = Object.keys(rowData)[0];
+
+      try {
+        const res = await callGAS('apiCRUD', { action: 'DELETE', sheetName, jsonData: rowData });
+        if (res && res.success) {
+          APP_DATA[sheetName] = APP_DATA[sheetName].filter(r => String(r[idCol]) !== String(rowData[idCol]));
+          localStorage.setItem('fsc_app_data', JSON.stringify(APP_DATA));
+          navigateBack(navHistory.length - 2);
+          alert('Đã xóa thành công.');
+        } else {
+          alert(res ? res.message : "Lỗi khi xóa!");
+        }
+      } catch (err) { alert("Lỗi kết nối máy chủ!"); }
+    }
+
+    async function approveMember(targetID) {
+      if (!confirm("Xác nhận duyệt thành viên này?")) return;
+      try {
+        const res = await callGAS('apiApproveUser', { adminEmail: currentUser['Email'], targetID: targetID });
+        if (res && res.success) {
+          alert(res.message);
+          const idx = APP_DATA['NhanSu'].findIndex(u => String(u['ID_staff']) === String(targetID));
+          if (idx !== -1) {
+            APP_DATA['NhanSu'][idx]['Trạng thái'] = 'Act';
+            localStorage.setItem('fsc_app_data', JSON.stringify(APP_DATA));
+            renderDetailMaster('NhanSu', APP_DATA['NhanSu'][idx]);
+          }
+        } else alert(res ? res.message : "Lỗi phê duyệt!");
+      } catch (err) { alert("Lỗi kết nối máy chủ!"); }
+    }
+
+    function renderTable(data, context, sheetName) {
+      let displayData = data;
+      if (context.filter) displayData = data.filter(row => String(row[context.filter.key]) === String(context.filter.value));
+
+      const addBtn = `<button class="btn btn-light btn-sm text-success fw-bold rounded-pill px-3 shadow-sm" onclick="openModal('CREATE', '${sheetName}')"><i class="fa-solid fa-plus"></i> Thêm mới</button>`;
+
+      if (!displayData || !displayData.length) {
+        $('#page-content-dynamic').html(`
+            <div class="card shadow border-0 rounded-4 mt-3">
+              <div class="card-header bg-success text-white py-3 d-flex justify-content-between align-items-center">
+                <h5 class="mb-0 fw-bold">${context.title}</h5>${addBtn}
+              </div>
+              <div class="card-body p-5 text-center text-muted">Chưa có dữ liệu cho bảng này.</div>
+            </div>`);
+        return;
+      }
+
+      let cols = TABLE_CONFIG[sheetName] ? TABLE_CONFIG[sheetName].columns : Object.keys(displayData[0]);
+      if (sheetName === 'NhanSu') cols = cols.filter(c => c !== 'Mật khẩu');
+
+      let th = '<tr>' + cols.map(c => `<th class="text-nowrap">${c}</th>`).join('') + '</tr>';
+      let tb = '';
+      displayData.forEach((row) => {
+        let rowJson = encodeURIComponent(JSON.stringify(row));
+        tb += `<tr class='clickable-row' onclick='handleRowClick("${sheetName}", "${rowJson}")'>`;
+        cols.forEach(c => {
+          let val = row[c] || '';
+          let displayVal = val.toString().length > 50 ? val.toString().substring(0, 50) + '...' : val;
+          tb += `<td>${displayVal}</td>`;
+        });
+        tb += '</tr>';
+      });
+
+      const html = `
+          <div class="card shadow border-0 rounded-4 overflow-hidden mt-3">
+            <div class="card-header bg-success text-white py-3 d-flex justify-content-between align-items-center">
+              <h5 class="mb-0 fw-bold"><i class="fa-solid fa-list me-2"></i>${context.title}</h5>${addBtn}
+            </div>
+            <div class="card-body p-0">
+              <div class="table-responsive">
+                <table id="dt-table" class="table table-striped table-hover w-100 mb-0">
+                  <thead>${th}</thead>
+                  <tbody>${tb}</tbody>
+                </table>
+              </div>
+            </div>
+          </div>`;
+      $('#page-content-dynamic').html(html);
+      if ($.fn.DataTable) {
+        $('#dt-table').DataTable({
+          language: { url: "//cdn.datatables.net/plug-ins/1.13.4/i18n/vi.json" },
+          pageLength: 10,
+          dom: 'frtip'
+        });
+      }
+    }
+
+    function fGroup(d, fields) {
+      return fields.map(f => `
+          <div class="d-flex justify-content-between py-1 border-bottom border-light mb-0">
+            <span class="text-muted small">${f}</span>
+            <span class="fw-bold text-dark text-end small">${d[f] || '-'}</span>
+          </div>`).join('');
+    }
+  </script>
+</body>
+
 </html>
