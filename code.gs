@@ -8,6 +8,38 @@ function doGet() {
     .addMetaTag('viewport', 'width=device-width, initial-scale=1');
 }
 
+function doPost(e) {
+  let result = {};
+  try {
+    const postData = JSON.parse(e.postData.contents);
+    const action = postData.action;
+    const data = postData.data;
+
+    if (action === 'apiLoginAndLoadData') {
+      result = apiLoginAndLoadData(data.email, data.password);
+    } else if (action === 'apiRegister') {
+      result = apiRegister(data.fullName, data.email, data.password, data.phone);
+    } else if (action === 'apiCRUD') {
+      result = apiCRUD(data.action, data.sheetName, data.jsonData);
+    } else if (action === 'apiApproveUser') {
+      result = apiApproveUser(data.adminEmail, data.targetID);
+    } else if (action === 'apiResetPassword') {
+      result = apiResetPassword(data.email);
+    } else {
+      result = { success: false, message: 'Invalid Action POST: ' + action };
+    }
+  } catch (err) {
+    result = { success: false, message: 'Error in doPost: ' + err.toString() };
+  }
+
+  return responseJSON(result);
+}
+
+function responseJSON(data) {
+  return ContentService.createTextOutput(JSON.stringify(data))
+    .setMimeType(ContentService.MimeType.JSON);
+}
+
 function include(filename) { 
   return HtmlService.createHtmlOutputFromFile(filename).getContent(); 
 }
