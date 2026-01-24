@@ -463,11 +463,11 @@
     });
 
     function showAppMain() {
-      $('#login-screen').fadeOut(300, function () {
-        $('#main-app').removeClass('d-none').hide().fadeIn(300);
-        $('#user-display-name').text(currentUser['Họ và tên']);
-        renderSystemMenu(APP_DATA['Menu']);
-      });
+      $('#login-screen').addClass('d-none');
+      $('#main-app').removeClass('d-none');
+      $('#user-display-name').text(currentUser['Họ và tên'] || 'User');
+      renderSystemMenu(APP_DATA['Menu']);
+      showDashboard();
     }
 
     function toggleAuth(mode) {
