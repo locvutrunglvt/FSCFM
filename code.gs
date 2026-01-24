@@ -117,7 +117,7 @@ function apiLoginAndLoadData(loginKey, password) {
       'Menu', 'Admin', 'NhanSu', 'Ban_Quanlynhom', 'NhomCCR', 'Churung', 
       'Taphuan', 'Noidung_taphuan', 'Lo_rung', 'KH_QL_Lorung', 
       'Loai_hoatdong_rung', 'Biendong_lorung', 'KH_HD_nhom', 
-      'KH_HD_Churung', 'HD_Lorung', 'DS_HDong'
+      'KH_HD_Churung', 'HD_Lorung', 'DS_HDong', 'CauHoi_DanhGia', 'KetQua_DanhGia'
     ]; 
     const appData = {};
 
