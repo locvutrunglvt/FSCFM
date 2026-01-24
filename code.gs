@@ -1,218 +1,315 @@
-// <<< ĐIỀN ID SHEET CỦA BẠN VÀO ĐÂY >>>
-const SPREADSHEET_ID = '14dBMBA3iT7IwziKcCTs9J77PCg4fyWE4zTB2bhlZyRU'; 
-const SS = SPREADSHEET_ID ? SpreadsheetApp.openById(SPREADSHEET_ID) : SpreadsheetApp.getActiveSpreadsheet();
+// --- CẤU HÌNH HỆ THỐNG ---
+const SPREADSHEET_ID = '14dBMBA3iT7IwziKcCTs9J77PCg4fyWE4zTB2bhlZyRU'; // Thay ID file của bạn vào đây nếu khác
 
-/**
- * 1. XỬ LÝ GET REQUEST (Lấy dữ liệu)
- * Ví dụ: gọi ?action=getConfigs
- */
-function doGet(e) {
-  const action = e.parameter.action;
-  let result = {};
-
-  try {
-    if (action === 'getConfigs') {
-      result = getConfigs();
-    } else if (action === 'getReportData') {
-      result = getReportData();
-    } else if (action === 'getUserList') {
-      result = getUserList();
-    } else if (action === 'printData') {
-      // Với GET printData cần productId
-      const id = e.parameter.productId;
-      result = getPrintData(id);
-    } else {
-      result = { success: false, message: 'Invalid Action GET' };
-    }
-  } catch (err) {
-    result = { success: false, message: err.toString() };
-  }
-
-  return responseJSON(result);
+function doGet() {
+  return HtmlService.createTemplateFromFile('index').evaluate()
+    .setTitle('Hệ thống Quản lý Rừng FSC')
+    .setXFrameOptionsMode(HtmlService.XFrameOptionsMode.ALLOWALL)
+    .addMetaTag('viewport', 'width=device-width, initial-scale=1');
 }
 
-/**
- * 2. XỬ LÝ POST REQUEST (Gửi dữ liệu: Đăng nhập, Thêm, Sửa, Xóa)
- */
-function doPost(e) {
-  let result = {};
-  try {
-    // Lấy dữ liệu gửi lên
-    const postData = JSON.parse(e.postData.contents);
-    const action = e.parameter.action;
-
-    if (action === 'login') {
-      result = userLogin(postData.username, postData.password);
-    } else if (action === 'addProduct') {
-      result = addProduct(postData);
-    } else if (action === 'deleteProduct') {
-      result = deleteProduct(postData.id);
-    } else if (action === 'sellProduct') {
-      result = sellProduct(postData.id);
-    } else if (action === 'updateSoldProduct') {
-      result = updateSoldProduct(postData);
-    } else if (action === 'manageUser') {
-      result = manageUser(postData.actionType, postData.userData);
-    } else {
-      result = { success: false, message: 'Invalid Action POST' };
-    }
-  } catch (err) {
-    result = { success: false, message: err.toString() };
-  }
-
-  return responseJSON(result);
+function include(filename) { 
+  return HtmlService.createHtmlOutputFromFile(filename).getContent(); 
 }
 
-// --- HELPER TRẢ VỀ JSON CHO WEB BÊN NGOÀI ---
-function responseJSON(data) {
-  return ContentService.createTextOutput(JSON.stringify(data))
-    .setMimeType(ContentService.MimeType.JSON);
-}
-
-// --- CÁC HÀM XỬ LÝ LOGIC (GIỮ NGUYÊN NHƯ CŨ) ---
-
-function getData(sheetName) {
-  if (!SS) throw new Error("Chưa kết nối Google Sheet");
-  const sheet = SS.getSheetByName(sheetName);
-  if (!sheet) return [];
-  const data = sheet.getDataRange().getDisplayValues();
-  if (data.length <= 1) return [];
-  const headers = data[0];
-  return data.slice(1).map(row => {
+// --- HÀM HỖ TRỢ: ĐỌC DỮ LIỆU NHANH ---
+function getDataFromSheet(ws) {
+  const lastRow = ws.getLastRow();
+  const lastCol = ws.getLastColumn();
+  if (lastRow < 2 || lastCol < 1) return [];
+  
+  const values = ws.getRange(1, 1, lastRow, lastCol).getDisplayValues();
+  const headers = values[0];
+  const rows = values.slice(1);
+  
+  return rows.map(row => {
     let obj = {};
-    headers.forEach((h, i) => obj[h.toString().trim()] = row[i]);
+    headers.forEach((h, i) => { if(h) obj[h.trim()] = row[i]; });
     return obj;
   });
 }
 
-function userLogin(username, password) {
+// --- 1. API: ĐĂNG NHẬP & TẢI FULL DATA ---
+function apiLoginAndLoadData(email, password) {
   try {
-    const users = getData('User');
-    const user = users.find(u => 
-      String(u.ID).trim().toLowerCase() == String(username).trim().toLowerCase() && 
-      String(u.Password) == String(password) && 
-      String(u.Status).trim() == 'Act'
-    );
-    return user ? { success: true, user: user } : { success: false, message: 'Sai ID hoặc mật khẩu!' };
-  } catch (e) { return { success: false, message: e.message }; }
-}
-
-function getConfigs() {
-  return {
-    nxs: getData('DANH_MUC'),
-    hlv: getData('HLV'),
-    store: getData('THIET_LAP_CHUNG')[0] || {}
-  };
-}
-
-function getReportData() {
-  const products = getData('KHO_HANG');
-  const stock = products.filter(p => p.Trang_Thai === 'Tồn kho').length;
-  const soldItems = products.filter(p => p.Trang_Thai === 'Đã bán');
-  let revenue = 0;
-  soldItems.forEach(p => {
-    let price = parseFloat(String(p.Gia_Ban).replace(/,/g, '').replace(/\./g, '')) || 0;
-    revenue += price;
-  });
-  return { stock: stock, sold: soldItems.length, revenue: revenue, products: products };
-}
-
-function getUserList() { return getData('User'); }
-
-function addProduct(form) {
-  const sheet = SS.getSheetByName('KHO_HANG');
-  const now = new Date();
-  const timeZone = Session.getScriptTimeZone();
-  const timeStr = Utilities.formatDate(now, timeZone, "HHmmssddMM");
-  const id = (form.kyHieu || 'SP') + timeStr;
-  const klv = (parseFloat(form.klt || 0) - parseFloat(form.klh || 0)).toFixed(1);
-  const ngayNhap = Utilities.formatDate(now, timeZone, "dd/MM/yyyy");
-  const giaNhap = form.giaNhap ? form.giaNhap.toString() : '0';
-  const giaBan = form.giaBan ? form.giaBan.toString() : '0';
-
-  sheet.appendRow([
-    id, form.tenSp, form.kyHieu, form.xuatXu, form.hlv,
-    parseFloat(form.klt || 0).toFixed(1), parseFloat(form.klh || 0).toFixed(1), klv,
-    form.maNxs, form.tccs, giaNhap, giaBan,
-    'Tồn kho', ngayNhap, ''
-  ]);
-  return { success: true, message: 'Đã nhập: ' + id };
-}
-
-function deleteProduct(id) {
-  const sheet = SS.getSheetByName('KHO_HANG');
-  const data = sheet.getDataRange().getValues();
-  for (let i = 1; i < data.length; i++) {
-    if (data[i][0] == id) {
-      sheet.deleteRow(i + 1);
-      return { success: true };
+    const ss = SpreadsheetApp.openById(SPREADSHEET_ID);
+    const wsUser = ss.getSheetByName('NhanSu');
+    if (!wsUser) return { success: false, message: "Thiếu sheet NhanSu" };
+    
+    const userData = getDataFromSheet(wsUser);
+    const user = userData.find(u => String(u['Email']).toLowerCase().trim() === String(email).toLowerCase().trim());
+    
+    if (!user) return { success: false, message: 'Email không tồn tại!' };
+    
+    if (String(user['Mật khẩu']).trim() !== String(password).trim()) {
+      return { success: false, message: 'Sai mật khẩu!' };
     }
-  }
-  return { success: false, message: 'Không tìm thấy sản phẩm' };
-}
 
-function sellProduct(productId) {
-  const sheet = SS.getSheetByName('KHO_HANG');
-  const data = sheet.getDataRange().getValues();
-  const today = Utilities.formatDate(new Date(), Session.getScriptTimeZone(), "dd/MM/yyyy HH:mm");
-  for (let i = 1; i < data.length; i++) {
-    if (data[i][0] == productId) {
-      sheet.getRange(i + 1, 13).setValue('Đã bán'); 
-      if(sheet.getLastColumn() < 15) sheet.getRange(1, 15).setValue("Ngay_Ban");
-      sheet.getRange(i + 1, 15).setValue(today);
-      const pData = getData('KHO_HANG').find(p => p.ID == productId);
-      const store = getData('THIET_LAP_CHUNG')[0] || {};
-      return { success: true, product: pData, store: store };
+    // Kiểm tra trạng thái kích hoạt
+    const status = String(user['Trạng thái']).trim();
+    if (status !== 'Act') {
+      return { success: false, message: 'Tài khoản chưa kích hoạt hoặc đã bị khóa (inAct)!' };
     }
+    
+    let safeUser = {...user}; delete safeUser['Mật khẩu'];
+
+    // Tải dữ liệu hệ thống (Bao gồm cả NhanSu để quản lý)
+    const sheetsToLoad = ['Menu', 'NhanSu', 'NhomCCR', 'Churung', 'Lo_rung', 'Taphuan']; 
+    const appData = {};
+
+    sheetsToLoad.forEach(sheetName => {
+      const ws = ss.getSheetByName(sheetName);
+      if (ws) {
+        appData[sheetName] = getDataFromSheet(ws);
+      } else {
+        appData[sheetName] = [];
+      }
+    });
+
+    return { success: true, user: safeUser, data: appData };
+
+  } catch (e) {
+    return { success: false, message: "Lỗi Server: " + e.toString() };
   }
-  return { success: false, message: 'Không tìm thấy SP' };
 }
 
-function updateSoldProduct(form) {
-  const sheet = SS.getSheetByName('KHO_HANG');
-  const data = sheet.getDataRange().getValues();
-  for (let i = 1; i < data.length; i++) {
-    if (data[i][0] == form.editId) {
-       sheet.getRange(i + 1, 12).setValue(form.editGiaBan);
-       return { success: true };
+// --- 2. API: ĐĂNG KÝ THÀNH VIÊN (ID TĂNG TỰ ĐỘNG + GỬI MAIL ADMIN) ---
+function apiRegister(fullName, email, password, phone) {
+  try {
+    const ss = SpreadsheetApp.openById(SPREADSHEET_ID);
+    const ws = ss.getSheetByName('NhanSu');
+    const data = ws.getDataRange().getDisplayValues();
+    const headers = data[0];
+    
+    // Kiểm tra Email trùng
+    const emailIdx = headers.indexOf('Email');
+    for (let i = 1; i < data.length; i++) {
+      if (String(data[i][emailIdx]).toLowerCase().trim() === String(email).toLowerCase().trim()) {
+        return { success: false, message: "Email này đã được sử dụng!" };
+      }
     }
+    
+    // Sinh ID mới (FSC_ST_xxx)
+    const newID = generateNextStaffID(ws, headers);
+    
+    const newUserObj = {
+      'ID_staff': newID, // Dùng đúng tên cột ID_staff
+      'Họ và tên': fullName,
+      'Email': email,
+      'Mật khẩu': password,
+      'Số điện thoại': phone,
+      'Chức vụ': 'Thành viên',      
+      'Trạng thái': 'Pending' 
+    };
+    
+    let newRow = [];
+    headers.forEach(h => newRow.push(newUserObj[h] || ''));
+    ws.appendRow(newRow);
+    
+    // Gửi mail cho Admin báo có người mới
+    try {
+      sendEmailToAdmins(ws, headers, fullName, email, newID);
+    } catch (err) {
+      Logger.log("Lỗi gửi mail Admin: " + err.toString());
+    }
+
+    return { success: true, message: `Đăng ký thành công! Mã: ${newID}. Vui lòng chờ Admin duyệt.` };
+  } catch (e) {
+    return { success: false, message: "Lỗi Server: " + e.toString() };
   }
-  return { success: false, message: 'Lỗi cập nhật' };
 }
 
-function manageUser(actionType, userData) {
-  const sheet = SS.getSheetByName('User');
-  const rows = sheet.getDataRange().getValues();
-  if (actionType === 'add') {
-     for(let i=1; i<rows.length; i++) if(rows[i][0] == userData.id) return {success: false, message: 'ID đã tồn tại'};
-     sheet.appendRow([userData.id, userData.username, userData.password, userData.phone, userData.status]);
-     return {success: true, message: 'Đã thêm'};
-  }
-  if (actionType === 'edit') {
-     for(let i=1; i<rows.length; i++) {
-       if(rows[i][0] == userData.id) {
-         sheet.getRange(i+1, 2).setValue(userData.username);
-         if(userData.password) sheet.getRange(i+1, 3).setValue(userData.password);
-         sheet.getRange(i+1, 4).setValue(userData.phone);
-         sheet.getRange(i+1, 5).setValue(userData.status);
-         return {success: true, message: 'Đã cập nhật'};
+// --- 3. API: CRUD (CÓ TỰ ĐỘNG GỬI MAIL KHI KÍCH HOẠT) ---
+function apiCRUD(action, sheetName, jsonData) {
+  try {
+    const ss = SpreadsheetApp.openById(SPREADSHEET_ID);
+    const ws = ss.getSheetByName(sheetName);
+    if (!ws) return { success: false, message: 'Không tìm thấy Sheet: ' + sheetName };
+
+    const dataObj = JSON.parse(jsonData);
+    const headers = ws.getRange(1, 1, 1, ws.getLastColumn()).getValues()[0];
+    const idColumnName = headers[0]; 
+    const idValue = dataObj[idColumnName];
+
+    if (action === 'DELETE') {
+       const data = ws.getDataRange().getValues();
+       for (let i = 1; i < data.length; i++) {
+         if (String(data[i][0]) === String(idValue)) {
+           ws.deleteRow(i + 1);
+           return { success: true, message: 'Đã xóa thành công!' };
+         }
        }
-     }
+       return { success: false, message: 'Không tìm thấy ID.' };
+    }
+
+    if (action === 'CREATE') {
+       const newID = generateID(sheetName); 
+       let newRow = [];
+       headers.forEach(h => {
+         if (h === idColumnName) newRow.push(newID);
+         else newRow.push(dataObj[h] || '');
+       });
+       ws.appendRow(newRow);
+       return { success: true, message: 'Thêm mới thành công!', newID: newID };
+    }
+
+    if (action === 'UPDATE') {
+      const data = ws.getDataRange().getValues();
+      for (let i = 1; i < data.length; i++) {
+        if (String(data[i][0]) === String(idValue)) {
+          
+          // Logic gửi mail khi Admin kích hoạt tài khoản (NhanSu)
+          if (sheetName === 'NhanSu') {
+             const statusIdx = headers.indexOf('Trạng thái');
+             const emailIdx = headers.indexOf('Email');
+             const nameIdx = headers.indexOf('Họ và tên');
+             
+             const oldStatus = data[i][statusIdx];
+             const newStatus = dataObj['Trạng thái'];
+             const userEmail = dataObj['Email'] || data[i][emailIdx];
+             const userName = dataObj['Họ và tên'] || data[i][nameIdx];
+
+             if (String(oldStatus) !== 'Act' && String(newStatus) === 'Act') {
+                try {
+                  MailApp.sendEmail({
+                    to: userEmail,
+                    subject: "[FSC SYSTEM] Tài khoản của bạn đã được kích hoạt!",
+                    htmlBody: `<p>Chúc mừng <b>${userName}</b>,<br>Tài khoản của bạn đã được Admin phê duyệt. Bạn có thể đăng nhập ngay bây giờ.</p>`
+                  });
+                } catch (mailErr) {
+                  Logger.log("Lỗi gửi mail User: " + mailErr.toString());
+                }
+             }
+          }
+
+          let updatedRow = [];
+          headers.forEach((h, colIndex) => {
+            if (dataObj.hasOwnProperty(h)) updatedRow.push(dataObj[h]);
+            else updatedRow.push(data[i][colIndex]);
+          });
+          ws.getRange(i + 1, 1, 1, headers.length).setValues([updatedRow]);
+          return { success: true, message: 'Cập nhật thành công!' };
+        }
+      }
+      return { success: false, message: 'Không tìm thấy ID.' };
+    }
+  } catch (e) {
+    return { success: false, message: 'Lỗi CRUD: ' + e.toString() };
   }
-  if (actionType === 'delete') {
-     for(let i=1; i<rows.length; i++) {
-       if(rows[i][0] == userData.id) { sheet.deleteRow(i+1); return {success: true, message: 'Đã xóa'}; }
-     }
-  }
-  return {success: false};
 }
 
-function getPrintData(productId) {
-  const products = getData('KHO_HANG');
-  const product = products.find(p => p.ID == productId);
-  if (!product) return null;
-  const nxsList = getData('DANH_MUC');
-  const nxs = nxsList.find(n => n.Ma_NXS == product.Ma_NXS) || {};
-  const store = getData('THIET_LAP_CHUNG')[0] || {};
-  return { product, nxs, store };
+// --- 4. API: ADMIN DUYỆT NHANH ---
+function apiApproveUser(adminEmail, targetID) {
+  try {
+    const ss = SpreadsheetApp.openById(SPREADSHEET_ID);
+    const ws = ss.getSheetByName('NhanSu');
+    const data = ws.getDataRange().getDisplayValues();
+    const headers = data[0];
+    
+    // Tìm đúng cột (Ưu tiên ID_staff, nếu không có thì tìm ID nhân sự)
+    let idIdx = headers.indexOf('ID_staff');
+    if (idIdx === -1) idIdx = headers.indexOf('ID nhân sự');
+
+    const statusIdx = headers.indexOf('Trạng thái');
+    const emailIdx = headers.indexOf('Email');
+    
+    let targetRowIndex = -1, targetEmail = '', targetName = '';
+    
+    for (let i = 1; i < data.length; i++) {
+      if (String(data[i][idIdx]) === String(targetID)) {
+        targetRowIndex = i + 1;
+        targetEmail = data[i][emailIdx];
+        targetName = data[i][headers.indexOf('Họ và tên')];
+        break;
+      }
+    }
+    
+    if (targetRowIndex === -1) return { success: false, message: "Không tìm thấy nhân sự." };
+    
+    ws.getRange(targetRowIndex, statusIdx + 1).setValue('Act');
+    
+    try {
+      MailApp.sendEmail({
+        to: targetEmail,
+        subject: "[FSC SYSTEM] Đã được phê duyệt",
+        htmlBody: `<p>Xin chào ${targetName}, tài khoản ${targetID} đã được duyệt thành công.</p>`
+      });
+    } catch(e) {}
+
+    return { success: true, message: "Đã duyệt thành công!" };
+  } catch (e) { return { success: false, message: "Lỗi: " + e.toString() }; }
 }
+
+// --- 5. API: QUÊN MẬT KHẨU ---
+function apiResetPassword(email) {
+  try {
+    const ss = SpreadsheetApp.openById(SPREADSHEET_ID);
+    const ws = ss.getSheetByName('NhanSu');
+    const data = ws.getDataRange().getDisplayValues();
+    const headers = data[0];
+    const emailIdx = headers.indexOf('Email');
+    const passIdx = headers.indexOf('Mật khẩu');
+    
+    let rowIndex = -1;
+    for (let i = 1; i < data.length; i++) {
+      if (String(data[i][emailIdx]).toLowerCase().trim() === String(email).toLowerCase().trim()) {
+        rowIndex = i + 1; break;
+      }
+    }
+    if (rowIndex === -1) return { success: false, message: "Email không tồn tại!" };
+    
+    const newPass = Math.random().toString(36).slice(-6).toUpperCase();
+    ws.getRange(rowIndex, passIdx + 1).setValue(newPass);
+    
+    MailApp.sendEmail({
+      to: email,
+      subject: "[FSC SYSTEM] Mật khẩu mới",
+      htmlBody: `<p>Mật khẩu mới của bạn là: <b>${newPass}</b></p>`
+    });
+    return { success: true, message: "Mật khẩu mới đã gửi về Email!" };
+  } catch (e) { return { success: false, message: "Lỗi gửi mail: " + e.toString() }; }
+}
+
+// --- HELPERS ---
+function generateNextStaffID(ws, headers) {
+  let idIdx = headers.indexOf('ID_staff');
+  if (idIdx === -1) idIdx = headers.indexOf('ID nhân sự');
+  if (idIdx === -1) return 'FSC_ST_001';
+
+  const data = ws.getDataRange().getDisplayValues();
+  let maxNum = 0;
+  for (let i = 1; i < data.length; i++) {
+    const val = String(data[i][idIdx]);
+    if (val.startsWith('FSC_ST_')) {
+      const num = parseInt(val.replace('FSC_ST_', ''), 10);
+      if (!isNaN(num) && num > maxNum) maxNum = num;
+    }
+  }
+  return 'FSC_ST_' + String(maxNum + 1).padStart(3, '0');
+}
+
+function sendEmailToAdmins(ws, headers, newName, newEmail, newID) {
+  const data = ws.getDataRange().getDisplayValues();
+  const emailIdx = headers.indexOf('Email');
+  const roleIdx = headers.indexOf('Chức vụ');
+  const admins = data.filter((r, i) => i > 0 && String(r[roleIdx]).toLowerCase().includes('admin'));
+  
+  admins.forEach(admin => {
+    const adminEmail = admin[emailIdx];
+    if (adminEmail && adminEmail.includes('@')) {
+       MailApp.sendEmail({
+        to: adminEmail,
+        subject: "[FSC ADMIN] Thành viên mới: " + newName,
+        htmlBody: `<p>Thành viên mới đăng ký:<br>- Tên: ${newName}<br>- ID: ${newID}<br>Vui lòng duyệt.</p>`
+      });
+    }
+  });
+}
+
+function generateID(prefix) {
+  return `${prefix.substring(0,3).toUpperCase()}-${new Date().getFullYear().toString().substr(-2)}-${Math.floor(1000+Math.random()*9000)}`;
+}
+
+// Hàm chạy thủ công để cấp quyền Mail
+function CAP_QUYEN() { MailApp.getRemainingDailyQuota(); }
+function clearCache() { CacheService.getScriptCache().remove("APP_MENU_DATA"); }
