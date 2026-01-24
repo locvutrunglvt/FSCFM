@@ -84,14 +84,22 @@ function apiLoginAndLoadData(loginKey, password) {
     const userData = getDataFromSheet(wsUser, true); 
     const searchKey = String(loginKey).toLowerCase().trim();
     
+    console.log("Attempting login with key:", searchKey);
+
     const user = userData.find(u => {
       const email = String(u['Email'] || '').toLowerCase().trim();
-      const username = email.split('@')[0];
+      const username = email.split('@')[0].toLowerCase().trim();
       const idStaff = String(u['ID_staff'] || '').toLowerCase().trim();
-      return email === searchKey || username === searchKey || idStaff === searchKey;
+      
+      const match = (email === searchKey || username === searchKey || idStaff === searchKey);
+      if (match) console.log("Match found for user:", email);
+      return match;
     });
     
-    if (!user) return { success: false, message: 'Tài khoản (Email/Username/ID) không tồn tại!' };
+    if (!user) {
+      console.warn("User not found for key:", searchKey);
+      return { success: false, message: 'Tài khoản (Email/Username/ID) không tồn tại!' };
+    }
     
     if (String(user['Mật khẩu']).trim() !== String(password).trim()) {
       return { success: false, message: 'Sai mật khẩu!' };

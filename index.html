@@ -360,7 +360,8 @@
       <span class="navbar-brand fw-bold ms-2 fs-6">FSC SYSTEM</span>
       <div class="ms-auto text-white d-flex align-items-center">
         <span class="me-2 small d-none d-md-block" id="user-display-name">User</span>
-        <button class="btn btn-sm btn-light text-success fw-bold rounded-pill px-3" onclick="logout()">Thoát</button>
+        <button type="button" class="btn btn-sm btn-light text-success fw-bold rounded-pill px-3"
+          onclick="logout()">Thoát</button>
       </div>
     </nav>
 
@@ -377,7 +378,12 @@
           <div class="tab-content" id="dashboardTabContent"></div>
         </div>
         <div id="data-view" class="d-none">
-          <div id="breadcrumb-container"></div>
+          <div class="d-flex align-items-center mb-3">
+            <button class="btn btn-outline-success btn-sm me-3 px-3 rounded-pill fw-bold" onclick="navigateBack()">
+              <i class="fa-solid fa-arrow-left me-1"></i> Quay lại
+            </button>
+            <div id="breadcrumb-container" class="flex-grow-1"></div>
+          </div>
           <div id="page-content-dynamic"></div>
         </div>
       </div>
@@ -929,8 +935,28 @@
       let columns = TABLE_CONFIG[sheetName] ? TABLE_CONFIG[sheetName].columns : (APP_DATA[sheetName] && APP_DATA[sheetName][0] ? Object.keys(APP_DATA[sheetName][0]) : []);
       let rowData = rowJson ? JSON.parse(decodeURIComponent(rowJson)) : {};
 
+      // TỰ ĐỘNG ĐIỀN KHÓA NGOẠI NẾU ĐANG TRONG VIEW LỌC (DRILL-DOWN)
+      const lastHist = navHistory[navHistory.length - 1];
+      if (action === 'CREATE' && lastHist && lastHist.filter) {
+        rowData[lastHist.filter.key] = lastHist.filter.value;
+      }
+
       columns.forEach(col => {
-        let val = rowData[col] || ''; let inputHtml = '';
+        let val = rowData[col] || '';
+
+        // TỰ ĐỘNG CẬP NHẬT NGÀY THÁNG
+        if (col.toLowerCase().includes('ngày') || col.toLowerCase().includes('cập nhật')) {
+          if (action === 'CREATE' || col.toLowerCase().includes('cập nhật')) {
+            val = new Date().toLocaleDateString('vi-VN');
+          }
+        }
+        if (col === 'Người cập nhật' || col === 'Người nhập liệu' || col === 'Người nhập') {
+          val = currentUser['Họ và tên'] || currentUser['Email'];
+        }
+
+        let inputHtml = '';
+        const isKey = col.toLowerCase().includes('id') || col.toLowerCase().includes('mã');
+
         if (col === 'Trạng thái') {
           inputHtml = `<select class="form-select" name="${col}"><option value="Act" ${val === 'Act' ? 'selected' : ''}>Act</option><option value="inAct" ${val === 'inAct' ? 'selected' : ''}>inAct</option><option value="Pending" disabled ${val === 'Pending' ? 'selected' : ''}>Pending</option></select>`;
         } else if (col === 'Chức vụ') {
@@ -940,8 +966,9 @@
           if (action === 'CREATE') inputHtml = `<input type="text" class="form-control" name="${col}" placeholder="Mật khẩu khởi tạo">`;
           else if (String(rowData['Email']) === String(currentUser['Email'])) inputHtml = `<input type="text" class="form-control" name="${col}" placeholder="Đổi mật khẩu">`;
         } else {
-          const isID = col.toLowerCase().includes('id');
-          inputHtml = `<input type="text" class="form-control" name="${col}" value="${val}" ${isID ? 'readonly class="form-control bg-light"' : ''}>`;
+          // KHÔNG CHO SỬA KEY
+          const readonly = (action === 'UPDATE' && isKey) || (action === 'CREATE' && lastHist && lastHist.filter && col === lastHist.filter.key) ? 'readonly class="form-control bg-light"' : '';
+          inputHtml = `<input type="text" class="form-control" name="${col}" value="${val}" ${readonly}>`;
         }
         if (inputHtml) form.append(`<div class="col-md-6"><label class="form-label small fw-bold text-muted">${col}</label>${inputHtml}</div>`);
       });
@@ -1018,8 +1045,33 @@
     }
 
     function renderTable(data, context, sheetName) {
+      const isAdmin = currentUser && (String(currentUser['Chức vụ']).toLowerCase().includes('admin'));
       let displayData = data;
-      if (context.filter) displayData = data.filter(row => String(row[context.filter.key]) === String(context.filter.value));
+
+      // LỌC DỮ LIỆU THEO PHÂN QUYỀN (Nếu không phải Admin)
+      if (!isAdmin) {
+        const myBoard = String(currentUser['Thuộc Ban quản lý'] || '').trim();
+        const myGroup = String(currentUser['Thuộc nhóm'] || '').trim();
+
+        if (myBoard) {
+          displayData = displayData.filter(r => {
+            const bId = String(r['ID ban quản lý'] || r['Tên ban quản lý'] || '').trim();
+            if (sheetName === 'Ban_Quanlynhom') return bId === myBoard;
+            if (bId) return bId === myBoard;
+            return true;
+          });
+        }
+        if (myGroup) {
+          displayData = displayData.filter(r => {
+            const gId = String(r['ID nhóm'] || r['Mã nhóm'] || r['Tên nhóm'] || '').trim();
+            if (sheetName === 'NhomCCR') return gId === myGroup;
+            if (gId) return gId === myGroup;
+            return true;
+          });
+        }
+      }
+
+      if (context.filter) displayData = displayData.filter(row => String(row[context.filter.key]) === String(context.filter.value));
 
       const canAdd = hasPermission(sheetName, 'Thêm');
       const addBtn = canAdd ? `<button class="btn btn-light btn-sm text-success fw-bold rounded-pill px-3 shadow-sm" onclick="openModal('CREATE', '${sheetName}')"><i class="fa-solid fa-plus"></i> Thêm mới</button>` : '';
