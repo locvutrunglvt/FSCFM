@@ -105,7 +105,12 @@ function apiLoginAndLoadData(loginKey, password) {
     let safeUser = {...user}; delete safeUser['Mật khẩu'];
 
     // Danh sách các bảng cần tải
-    const sheetsToLoad = ['Menu', 'NhanSu', 'NhomCCR', 'Churung', 'Lo_rung', 'Taphuan']; 
+    const sheetsToLoad = [
+      'Menu', 'Admin', 'NhanSu', 'Ban_Quanlynhom', 'NhomCCR', 'Churung', 
+      'Taphuan', 'Noidung_taphuan', 'Lo_rung', 'KH_QL_Lorung', 
+      'Loai_hoatdong_rung', 'Biendong_lorung', 'KH_HD_nhom', 
+      'KH_HD_Churung', 'HD_Lorung', 'DS_HDong'
+    ]; 
     const appData = {};
 
     // Tối ưu hóa: Giảm thiểu truy xuất API bằng cách xử lý song song hoặc tái sử dụng sheet name

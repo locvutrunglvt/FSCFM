@@ -413,22 +413,60 @@
     let navHistory = [];
 
     const TABLE_CONFIG = {
-      'NhomCCR': {
+      'Menu': { columns: ['ID', 'Nhom', 'Module', 'View', 'Xem', 'Thêm', 'Sửa', 'Xóa'] },
+      'Admin': { columns: ['ID', 'Province code', 'Province', 'District', 'Commune', 'TYPE'] },
+      'NhanSu': { columns: ['ID_staff', 'Họ và tên', 'Email', 'Giới tính', 'Ngày sinh', 'Chức vụ', 'Số điện thoại', 'Trạng thái'] },
+      'Ban_Quanlynhom': {
         columns: [
           'ID ban quản lý', 'Tên ban quản lý', 'Loại tổ chức', 'Địa chỉ', 'Tỉnh', 'Huyện',
           'Người đại diện', 'Chức vụ', 'Điện thoại', 'Email', 'Website',
           'Số nhóm quản lý', 'Số hộ thành viên', 'Tổng diện tích', 'Diện tích FSC',
           'Diện tích rừng tự nhiên', 'Diện tích vùng đệm', 'Sản lượng dự kiến năm',
           'Diện tích trồng rừng năm', 'Loài cây trồng chính'
-        ]
+        ],
+        main: ['ID ban quản lý', 'Tên ban quản lý', 'Người đại diện', 'Tổng diện tích', 'Diện tích FSC']
       },
-      'Churung': { columns: ['ID chủ rừng', 'Họ tên chủ rừng', 'Giới tính', 'Ngày sinh', 'Dân tộc', 'CCCD', 'Số điện thoại', 'Số lô rừng', 'Tổng diện tích'] },
-      'Lo_rung': { columns: ['ID lô rừng', 'Mã số lô 2024', 'Tổng diện tích', 'Diện tích GCN QSDĐ', 'Diện tích trồng rừng', 'Diện tích FSC', 'Diện tích ngoài FSC', 'Diện tích vùng đệm', 'Diện tích rừng tự nhiên', 'Diện tích HLVS'] },
-      'Taphuan': { columns: ['Mã lớp', 'Tên lớp tập huấn', 'Ngày tổ chức', 'Địa điểm', 'Giảng viên', 'Số lượng tham gia'] },
-      'NhanSu': { columns: ['ID_staff', 'Họ và tên', 'Email', 'Mật khẩu', 'Số điện thoại', 'Chức vụ', 'Trạng thái'] },
-      'PhanQuyen': { columns: ['ID_staff', 'Họ và tên', 'Email', 'Chức vụ'] }
+      'NhomCCR': {
+        columns: [
+          'ID nhóm', 'Mã nhóm', 'Tên nhóm', 'Người đại diện', 'Số điện thoại', 'Địa chỉ',
+          'Diện tích FSC', 'Diện tích ngoài FSC', 'Diện tích rừng tự nhiên', 'Tổng diện tích',
+          'Diện tích khai thác', 'Diện tích trồng', 'Số thành viên', 'Ngày cập nhật'
+        ],
+        main: ['ID nhóm', 'Tên nhóm', 'Người đại diện', 'Số thành viên', 'Tổng diện tích']
+      },
+      'Churung': {
+        columns: [
+          'ID chủ rừng', 'ID nhóm', 'Họ tên chủ rừng', 'Giới tính', 'Số điện thoại', 'Số lô rừng', 'Tổng diện tích'
+        ],
+        main: ['ID chủ rừng', 'Họ tên chủ rừng', 'Số điện thoại', 'Tổng diện tích']
+      },
+      'Lo_rung': {
+        columns: [
+          'ID lô rừng', 'Mã số lô 2024', 'Tổng diện tích', 'Diện tích FSC', 'Diện tích rừng tự nhiên'
+        ],
+        main: ['ID lô rừng', 'Mã số lô 2024', 'Tổng diện tích', 'Diện tích FSC']
+      },
+      'Taphuan': { columns: ['ID tập huấn', 'ID chủ rừng', 'Loại tập huấn', 'Ngày tập huấn', 'Địa điểm', 'Giảng viên', 'Số lượng tham dự'] },
+      'Noidung_taphuan': { columns: ['ID tập huấn', 'Tên lớp tập huấn', 'Loại tập huấn', 'Ghi chú'] },
+      'Loai_hoatdong_rung': { columns: ['ID hoạt động', 'Tên hoạt động', 'Mô tả chi tiết'] },
+      'Biendong_lorung': { columns: ['ID biến động', 'ID lô rừng', 'Ngày thay đổi', 'Diện tích FSC', 'Người cập nhật'] },
+      'KH_QL_Lorung': { columns: ['ID kế hoạch', 'ID lô rừng', 'Hoạt động', 'Ngày thực hiện', 'Trạng thái'] },
+      'KH_HD_nhom': { columns: ['ID hoạt động nhóm', 'ID nhóm', 'Tên hoạt động', 'Thời gian bắt đầu', 'Người chịu trách nhiệm'] },
+      'KH_HD_Churung': { columns: ['ID hoạt động chủ rừng', 'ID chủ rừng', 'Tên hoạt động', 'Thời gian bắt đầu', 'Người chịu trách nhiệm'] },
+      'HD_Lorung': { columns: ['ID hoạt động lô', 'ID lô rừng', 'Tên hoạt động', 'Ngày triển khai', 'Kết quả hoạt động'] },
+      'DS_HDong': { columns: ['ID DS hoat dong', 'Hoạt động chi tiết', 'Nhóm hoạt động'] }
     };
-    const VIEW_MAP = { 'DS_NhomCCR': 'NhomCCR', 'Churung': 'Churung', 'QL_Hoso': 'Lo_rung', 'Lo_rung': 'Lo_rung', 'Loai_Tap_Huan': 'Taphuan', 'Nhan_Su': 'NhanSu', 'PhanQuyen': 'NhanSu' };
+
+    const VIEW_MAP = {
+      'Ban_Quanly': 'Ban_Quanlynhom',
+      'DS_NhomCCR': 'NhomCCR',
+      'Churung': 'Churung',
+      'Lo_rung': 'Lo_rung',
+      'Taphuan': 'Taphuan',
+      'Nhan_Su': 'NhanSu',
+      'Admin_Province': 'Admin',
+      'Biendong': 'Biendong_lorung'
+    };
 
     /**
      * Gửi yêu cầu tới Google Apps Script. 
@@ -445,16 +483,38 @@
           mode: "cors", // Vẫn dùng cors để nhận được kết quả (với điều kiện GAS cho phép)
           body: payload
         })
-          .then(res => {
-            if (!res.ok) throw new Error("Network response was not ok");
-            return res.json();
-          })
           .then(res => resolve(res))
           .catch(err => {
             console.error("Fetch Error:", err);
             reject(err);
           });
       });
+    }
+
+    /**
+     * Tổng hợp dữ liệu từ NhomCCR lên Ban_Quanlynhom
+     */
+    function aggregateManagementBoardData() {
+      console.log("Aggregating Management Board Data...");
+      if (!APP_DATA['Ban_Quanlynhom'] || !APP_DATA['NhomCCR']) return;
+
+      const groups = APP_DATA['NhomCCR'];
+      const boards = APP_DATA['Ban_Quanlynhom'];
+
+      boards.forEach(board => {
+        const boardID = board['ID ban quản lý'];
+        const relatedGroups = groups.filter(g => g['ID ban quản lý'] === boardID || g['Tên ban quản lý'] === board['Tên ban quản lý']);
+
+        board['Số nhóm quản lý'] = relatedGroups.length;
+        board['Số hộ thành viên'] = relatedGroups.reduce((sum, g) => sum + (parseFloat(g['Số thành viên']) || 0), 0);
+        board['Tổng diện tích'] = relatedGroups.reduce((sum, g) => sum + (parseFloat(g['Tổng diện tích']) || 0), 0).toFixed(2);
+        board['Diện tích FSC'] = relatedGroups.reduce((sum, g) => sum + (parseFloat(g['Diện tích FSC']) || 0), 0).toFixed(2);
+        board['Diện tích rừng tự nhiên'] = relatedGroups.reduce((sum, g) => sum + (parseFloat(g['Diện tích rừng tự nhiên']) || 0), 0).toFixed(2);
+        board['Diện tích vùng đệm'] = relatedGroups.reduce((sum, g) => sum + (parseFloat(g['Diện tích vùng đệm'] || 0) || 0), 0).toFixed(2);
+        board['Sản lượng dự kiến năm'] = relatedGroups.reduce((sum, g) => sum + (parseFloat(g['Diện tích khai thác'] || 0) || 0), 0).toFixed(2);
+        board['Diện tích trồng rừng năm'] = relatedGroups.reduce((sum, g) => sum + (parseFloat(g['Diện tích trồng'] || 0) || 0), 0).toFixed(2);
+      });
+      console.log("Aggregation complete.");
     }
 
     $(document).ready(function () {
@@ -490,6 +550,7 @@
         $('#user-display-name').text(currentUser['Họ và tên'] || currentUser['Email'] || 'User');
 
         if (APP_DATA && APP_DATA['Menu']) {
+          aggregateManagementBoardData(); // TỔNG HỢP DỮ LIỆU
           renderSystemMenu(APP_DATA['Menu']);
         } else {
           console.warn("APP_DATA['Menu'] is missing or empty");
@@ -602,6 +663,38 @@
       $('#data-view').addClass('d-none');
       $('#dashboard-view').removeClass('d-none');
       navHistory = [];
+
+      // Cập nhật các con số tổng quan (ví dụ)
+      if (APP_DATA['Ban_Quanlynhom']) {
+        // Ta có thể thêm các card tổng quan ở đây nếu cần, 
+        // hiện tại dashboard đang render Menu Tabs.
+      }
+    }
+
+    function getVisibleColumns(sheetName) {
+      const saved = localStorage.getItem(`vcols_${sheetName}`);
+      if (saved) return JSON.parse(saved);
+      // Mặc định trả về 'main' nếu có, không thì tất cả
+      return TABLE_CONFIG[sheetName] && TABLE_CONFIG[sheetName].main ? TABLE_CONFIG[sheetName].main : TABLE_CONFIG[sheetName].columns;
+    }
+
+    function toggleColumnVisibility(sheetName, colName) {
+      let vcols = getVisibleColumns(sheetName);
+      if (vcols.includes(colName)) {
+        vcols = vcols.filter(c => c !== colName);
+      } else {
+        vcols.push(colName);
+      }
+      localStorage.setItem(`vcols_${sheetName}`, JSON.stringify(vcols));
+      renderContent(); // Vẽ lại để cập nhật bảng
+    }
+
+    function hasPermission(moduleName, action) {
+      if (!APP_DATA['Menu']) return true;
+      const menu = APP_DATA['Menu'].find(m => m['Module'] === moduleName || m['View'] === moduleName);
+      if (!menu) return true;
+      // action = 'Xem' | 'Thêm' | 'Sửa' | 'Xóa'
+      return String(menu[action]) === '1' || String(menu[action]).toLowerCase() === 'x';
     }
 
     function renderSystemMenu(menuData) {
@@ -699,46 +792,90 @@
 
     function handleRowClick(sheetName, rowJson) {
       const rowData = JSON.parse(decodeURIComponent(rowJson));
-      let title = rowData['Tên nhóm'] || rowData['Họ tên chủ rừng'] || rowData['Mã số lô 2024'] || rowData['Họ và tên'] || 'Chi tiết';
+      let title = rowData['Tên ban quản lý'] || rowData['Tên nhóm'] || rowData['Họ tên chủ rừng'] || rowData['Mã số lô 2024'] || rowData['Họ và tên'] || 'Chi tiết';
+
+      // Chế độ xem chi tiết mặc định
       navHistory.push({ mode: 'DETAIL', viewName: sheetName, title: title, rowData: rowData });
+
+      // HỖ TRỢ DRILL-DOWN (Nâng cao)
+      if (sheetName === 'Ban_Quanlynhom') {
+        // Nếu click vào Ban quản lý, có thể tùy chọn xem danh sách Nhóm thuộc ban đó
+        const drillBtn = `<button class="btn btn-success btn-sm mt-2" onclick="loadViewWithFilter('NhomCCR', 'ID ban quản lý', '${rowData['ID ban quản lý']}', 'Nhóm thuộc ${rowData['Tên ban quản lý']}')">Xem các Nhóm</button>`;
+        // Ta sẽ chèn button này vào content sau khi render
+      } else if (sheetName === 'NhomCCR') {
+        // Tương tự cho Nhóm -> Chủ rừng
+      }
+
+      renderBreadcrumb();
+      renderContent();
+    }
+
+    function loadViewWithFilter(viewName, filterKey, filterValue, title) {
+      if ($(window).width() < 768) $("#sidebar-wrapper").addClass("toggled");
+      $('#dashboard-view').addClass('d-none');
+      $('#data-view').removeClass('d-none');
+      const realSheetName = VIEW_MAP[viewName] || viewName;
+      navHistory = [{ mode: 'LIST', viewName: realSheetName, title: title, filter: { key: filterKey, value: filterValue } }];
       renderBreadcrumb();
       renderContent();
     }
 
     function renderDetailMaster(sheetName, d) {
       const rowJson = encodeURIComponent(JSON.stringify(d));
+      const canEdit = hasPermission(sheetName, 'Sửa');
+      const canDelete = hasPermission(sheetName, 'Xóa');
+      const vcols = getVisibleColumns(sheetName);
+
       let html = `
           <div class="d-flex justify-content-between align-items-center mb-3 p-3 bg-white rounded-3 shadow-sm border-start border-4 border-success">
             <div><h5 class="fw-bold text-success m-0 text-uppercase">${d['Tên nhóm'] || d['Họ tên chủ rừng'] || d['Mã số lô 2024'] || d['Họ và tên'] || 'CHI TIẾT'}</h5><div class="text-muted small">ID: ${d[Object.keys(d)[0]]}</div></div>
             <div>
-              <button class="btn btn-outline-primary btn-sm me-1" onclick="openModal('UPDATE', '${sheetName}', '${rowJson}')"><i class="fa-solid fa-pen"></i></button>
-              <button class="btn btn-outline-danger btn-sm" onclick="deleteRow('${sheetName}', '${rowJson}')"><i class="fa-solid fa-trash"></i></button>
+              ${canEdit ? `<button class="btn btn-outline-primary btn-sm me-1" onclick="openModal('UPDATE', '${sheetName}', '${rowJson}')"><i class="fa-solid fa-pen"></i></button>` : ''}
+              ${canDelete ? `<button class="btn btn-outline-danger btn-sm" onclick="deleteRow('${sheetName}', '${rowJson}')"><i class="fa-solid fa-trash"></i></button>` : ''}
             </div>
           </div>`;
 
-      if (sheetName === 'NhanSu') {
+      html += `<div class="card p-3 shadow border-0 overflow-hidden"><div class="row g-3">`;
+
+      // Lấy tất cả các cột khả dụng cho bảng này
+      const allCols = TABLE_CONFIG[sheetName] ? TABLE_CONFIG[sheetName].columns : Object.keys(d);
+
+      allCols.forEach(k => {
+        const v = d[k] || '';
+        const isVisible = vcols.includes(k);
+        html += `
+          <div class="col-md-4 mb-2">
+            <div class="d-flex justify-content-between align-items-center mb-1">
+               <label class="text-muted small fw-bold m-0">${k}</label>
+               <div class="form-check form-switch" title="Hiện ở bảng danh sách">
+                 <input class="form-check-input" type="checkbox" style="width: 1.5em; height: 0.8em;" ${isVisible ? 'checked' : ''} onclick="toggleColumnVisibility('${sheetName}', '${k}')">
+               </div>
+            </div>
+            <div class="fw-medium border-bottom pb-1 small">${v}</div>
+          </div>`;
+      });
+      html += `</div></div>`;
+
+      // DRILL-DOWN BUTTONS & SPECIAL LOGIC
+      if (sheetName === 'Ban_Quanlynhom') {
+        html += `<div class="mt-3"><button class="btn btn-success w-100 fw-bold shadow-sm" onclick="loadViewWithFilter('NhomCCR', 'ID ban quản lý', '${d['ID ban quản lý']}', 'Nhóm thuộc ${d['Tên ban quản lý']}')"><i class="fa-solid fa-layer-group me-2"></i> XEM CÁC NHÓM THUỘC BAN</button></div>`;
+      } else if (sheetName === 'NhomCCR') {
+        html += `<div class="mt-3 card p-3 border-0 shadow-sm">
+                   <div class="row g-2">
+                     <div class="col-6"><button class="btn btn-outline-success w-100 btn-sm fw-bold" onclick="loadViewWithFilter('Churung', 'ID nhóm', '${d['ID nhóm']}', 'Chủ rừng thuộc ${d['Tên nhóm']}')"><i class="fa-solid fa-users me-2"></i> CHỦ RỪNG</button></div>
+                     <div class="col-6"><button class="btn btn-outline-success w-100 btn-sm fw-bold" onclick="loadViewWithFilter('Lo_rung', 'ID nhóm', '${d['ID nhóm']}', 'Lô rừng thuộc ${d['Tên nhóm']}')"><i class="fa-solid fa-tree me-2"></i> LÔ RỪNG</button></div>
+                   </div>
+                 </div>`;
+      } else if (sheetName === 'Churung') {
+        html += `<div class="mt-3"><button class="btn btn-outline-success w-100 fw-bold" onclick="loadViewWithFilter('Lo_rung', 'ID chủ rừng', '${d['ID chủ rừng']}', 'Lô rừng của ${d['Họ tên chủ rừng']}')"><i class="fa-solid fa-map-location-dot me-2"></i> XEM CHI TIẾT LÔ RỪNG</button></div>`;
+      } else if (sheetName === 'NhanSu') {
         const isAdmin = currentUser && (String(currentUser['Chức vụ']).toLowerCase().includes('admin'));
         const isPending = d['Trạng thái'] === 'Pending';
-        let approveBtn = (isAdmin && isPending) ? `<button class="btn btn-success w-100 fw-bold mt-3 shadow" onclick="approveMember('${d['ID_staff']}')"><i class="fa-solid fa-check-circle me-2"></i> PHÊ DUYỆT</button>` : '';
-        html += `
-            <div class="row justify-content-center">
-              <div class="col-md-8">
-                <div class="card shadow border-0 rounded-4">
-                  <div class="card-body p-4 text-center">
-                    <div class="bg-success text-white mx-auto mb-3 d-flex align-items-center justify-content-center display-4 rounded-circle" style="width:80px; height:80px"><i class="fa-solid fa-user-tie"></i></div>
-                    <h4 class="fw-bold text-success">${d['Họ và tên']}</h4>
-                    <span class="badge ${d['Trạng thái'] === 'Act' ? 'bg-success' : 'bg-warning text-dark'} px-3 py-2 rounded-pill mt-2">${d['Trạng thái']}</span>
-                    <div class="mt-4 text-start bg-light p-3 rounded-3">${fGroup(d, ['ID_staff', 'Email', 'Số điện thoại', 'Chức vụ'])}</div>
-                    ${approveBtn}
-                  </div>
-                </div>
-              </div>
-            </div>`;
-      } else {
-        html += `<div class="card p-3 shadow border-0"><div class="row">`;
-        for (const [k, v] of Object.entries(d)) html += `<div class="col-md-4 mb-2"><label class="text-muted small fw-bold">${k}</label><div class="fw-medium border-bottom pb-1 small">${v}</div></div>`;
-        html += `</div></div>`;
+        if (isAdmin && isPending) {
+          html += `<button class="btn btn-success w-100 fw-bold mt-3 shadow" onclick="approveMember('${d['ID_staff']}')"><i class="fa-solid fa-check-circle me-2"></i> PHÊ DUYỆT THÀNH VIÊN</button>`;
+        }
       }
+
       $('#page-content-dynamic').html(html);
     }
 
@@ -844,7 +981,8 @@
       let displayData = data;
       if (context.filter) displayData = data.filter(row => String(row[context.filter.key]) === String(context.filter.value));
 
-      const addBtn = `<button class="btn btn-light btn-sm text-success fw-bold rounded-pill px-3 shadow-sm" onclick="openModal('CREATE', '${sheetName}')"><i class="fa-solid fa-plus"></i> Thêm mới</button>`;
+      const canAdd = hasPermission(sheetName, 'Thêm');
+      const addBtn = canAdd ? `<button class="btn btn-light btn-sm text-success fw-bold rounded-pill px-3 shadow-sm" onclick="openModal('CREATE', '${sheetName}')"><i class="fa-solid fa-plus"></i> Thêm mới</button>` : '';
 
       if (!displayData || !displayData.length) {
         $('#page-content-dynamic').html(`
@@ -857,8 +995,8 @@
         return;
       }
 
-      let cols = TABLE_CONFIG[sheetName] ? TABLE_CONFIG[sheetName].columns : Object.keys(displayData[0]);
-      if (sheetName === 'NhanSu') cols = cols.filter(c => c !== 'Mật khẩu');
+      // XÁC ĐỊNH CỘT HIỂN THỊ
+      const cols = getVisibleColumns(sheetName);
 
       let th = '<tr>' + cols.map(c => `<th class="text-nowrap">${c}</th>`).join('') + '</tr>';
       let tb = '';
@@ -891,7 +1029,7 @@
       if ($.fn.DataTable) {
         $('#dt-table').DataTable({
           language: { url: "//cdn.datatables.net/plug-ins/1.13.4/i18n/vi.json" },
-          pageLength: 10,
+          pageLength: 20,
           dom: 'frtip'
         });
       }
