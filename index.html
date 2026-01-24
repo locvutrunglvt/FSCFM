@@ -349,7 +349,7 @@
       </form>
 
       <div id="login-error" class="text-danger mt-3 small fw-bold"></div>
-      <div class="mt-4 text-muted small">© 2026 Lộc Vũ Trung</div>
+      <div class="mt-4 text-muted small">Hệ thống quản lý rừng bền vững xin chào bạn !</div>
     </div>
   </div>
 
@@ -413,7 +413,15 @@
     let navHistory = [];
 
     const TABLE_CONFIG = {
-      'NhomCCR': { columns: ['ID nhóm', 'Tên nhóm', 'Người đại diện', 'Số điện thoại', 'Địa chỉ', 'Diện tích FSC', 'Diện tích ngoài FSC'] },
+      'NhomCCR': {
+        columns: [
+          'ID ban quản lý', 'Tên ban quản lý', 'Loại tổ chức', 'Địa chỉ', 'Tỉnh', 'Huyện',
+          'Người đại diện', 'Chức vụ', 'Điện thoại', 'Email', 'Website',
+          'Số nhóm quản lý', 'Số hộ thành viên', 'Tổng diện tích', 'Diện tích FSC',
+          'Diện tích rừng tự nhiên', 'Diện tích vùng đệm', 'Sản lượng dự kiến năm',
+          'Diện tích trồng rừng năm', 'Loài cây trồng chính'
+        ]
+      },
       'Churung': { columns: ['ID chủ rừng', 'Họ tên chủ rừng', 'Giới tính', 'Ngày sinh', 'Dân tộc', 'CCCD', 'Số điện thoại', 'Số lô rừng', 'Tổng diện tích'] },
       'Lo_rung': { columns: ['ID lô rừng', 'Mã số lô 2024', 'Tổng diện tích', 'Diện tích GCN QSDĐ', 'Diện tích trồng rừng', 'Diện tích FSC', 'Diện tích ngoài FSC', 'Diện tích vùng đệm', 'Diện tích rừng tự nhiên', 'Diện tích HLVS'] },
       'Taphuan': { columns: ['Mã lớp', 'Tên lớp tập huấn', 'Ngày tổ chức', 'Địa điểm', 'Giảng viên', 'Số lượng tham gia'] },
