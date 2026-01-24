@@ -456,18 +456,45 @@
       const savedUser = localStorage.getItem('fsc_user');
       const savedData = localStorage.getItem('fsc_app_data');
       if (savedUser && savedData) {
-        currentUser = JSON.parse(savedUser);
-        APP_DATA = JSON.parse(savedData);
-        showAppMain();
+        try {
+          currentUser = JSON.parse(savedUser);
+          APP_DATA = JSON.parse(savedData);
+          if (currentUser && APP_DATA) {
+            showAppMain();
+          }
+        } catch (e) {
+          console.error("Error loading session:", e);
+          localStorage.removeItem('fsc_user');
+          localStorage.removeItem('fsc_app_data');
+        }
       }
     });
 
     function showAppMain() {
-      $('#login-screen').addClass('d-none');
-      $('#main-app').removeClass('d-none');
-      $('#user-display-name').text(currentUser['Họ và tên'] || 'User');
-      renderSystemMenu(APP_DATA['Menu']);
-      showDashboard();
+      console.log("Entering showAppMain...", { currentUser, APP_DATA });
+      try {
+        // Luôn ẩn màn hình đăng nhập trước
+        $('#login-screen').addClass('d-none');
+        $('#main-app').removeClass('d-none');
+
+        if (!currentUser) throw new Error("currentUser is missing");
+
+        $('#user-display-name').text(currentUser['Họ và tên'] || currentUser['Email'] || 'User');
+
+        if (APP_DATA && APP_DATA['Menu']) {
+          renderSystemMenu(APP_DATA['Menu']);
+        } else {
+          console.warn("APP_DATA['Menu'] is missing or empty");
+        }
+
+        showDashboard();
+        console.log("Transition to main-app complete.");
+      } catch (err) {
+        console.error("Error in showAppMain:", err);
+        alert("Lỗi khi vào hệ thống: " + err.message);
+        // Fallback: Nếu lỗi vẫn cố hiển thị main-app để người dùng thấy gì đó
+        $('#main-app').removeClass('d-none');
+      }
     }
 
     function toggleAuth(mode) {
@@ -570,44 +597,59 @@
     }
 
     function renderSystemMenu(menuData) {
-      if (!menuData) return;
-      const grouped = {};
-      const userRole = currentUser && currentUser['Chức vụ'] ? String(currentUser['Chức vụ']).toLowerCase().trim() : '';
-      const clean = (n) => n ? n.replace(/^\d+\.\s*/, '').trim() : 'KHÁC';
+      console.log("Rendering System Menu...", menuData);
+      try {
+        if (!menuData) return;
+        const grouped = {};
+        const userRole = currentUser && currentUser['Chức vụ'] ? String(currentUser['Chức vụ']).toLowerCase().trim() : '';
+        const clean = (n) => n ? n.replace(/^\d+\.\s*/, '').trim() : 'KHÁC';
 
-      menuData.forEach(item => {
-        const rawRole = item['PhanQuyen'] ? String(item['PhanQuyen']).toLowerCase() : '';
-        const roles = rawRole.split(',').map(r => r.trim()).filter(r => r !== '');
-        if (roles.length === 0 || roles.includes(userRole)) {
-          let g = clean(item['Nhom']);
-          if (!grouped[g]) grouped[g] = [];
-          grouped[g].push(item);
+        menuData.forEach(item => {
+          const rawRole = item['PhanQuyen'] ? String(item['PhanQuyen']).toLowerCase() : '';
+          const roles = rawRole.split(',').map(r => r.trim()).filter(r => r !== '');
+          if (roles.length === 0 || roles.includes(userRole)) {
+            let g = clean(item['Nhom']);
+            if (!grouped[g]) grouped[g] = [];
+            grouped[g].push(item);
+          }
+        });
+
+        let accordionHtml = ''; let idx = 0;
+        for (const [group, items] of Object.entries(grouped)) {
+          idx++; const cId = `collapseSidebar${idx}`;
+          // Sử dụng escape simple để tránh lỗi khi dữ liệu có dấu nháy
+          let sub = items.map(i => {
+            const v = (i['View'] || '').replace(/'/g, "\\'");
+            const m = (i['Module'] || '').replace(/'/g, "\\'");
+            return `<a href="#" class="menu-sub-link" onclick="loadView('${v}', '${m}')"><i class="fa-solid fa-angle-right me-2"></i>${i['Module']}</a>`;
+          }).join('');
+          accordionHtml += `<div class="accordion-item"><h2 class="accordion-header"><button class="accordion-button ${idx === 1 ? '' : 'collapsed'}" type="button" data-bs-toggle="collapse" data-bs-target="#${cId}"><span class="text-uppercase fw-bold">${group}</span></button></h2><div id="${cId}" class="accordion-collapse collapse ${idx === 1 ? 'show' : ''}" data-bs-parent="#sidebarAccordion"><div class="accordion-body p-0">${sub}</div></div></div>`;
         }
-      });
+        $('#sidebarAccordion').html(accordionHtml);
 
-      let accordionHtml = ''; let idx = 0;
-      for (const [group, items] of Object.entries(grouped)) {
-        idx++; const cId = `collapseSidebar${idx}`;
-        let sub = items.map(i => `<a href="#" class="menu-sub-link" onclick="loadView('${i['View']}', '${i['Module']}')"><i class="fa-solid fa-angle-right me-2"></i>${i['Module']}</a>`).join('');
-        accordionHtml += `<div class="accordion-item"><h2 class="accordion-header"><button class="accordion-button ${idx === 1 ? '' : 'collapsed'}" type="button" data-bs-toggle="collapse" data-bs-target="#${cId}"><span class="text-uppercase fw-bold">${group}</span></button></h2><div id="${cId}" class="accordion-collapse collapse ${idx === 1 ? 'show' : ''}" data-bs-parent="#sidebarAccordion"><div class="accordion-body p-0">${sub}</div></div></div>`;
+        let tabs = ''; let content = ''; i = 0;
+        for (const [group, items] of Object.entries(grouped)) {
+          const act = i === 0 ? 'active' : ''; const show = i === 0 ? 'show active' : ''; const tId = `dash-tab-${i}`;
+          tabs += `<li class="nav-item"><button class="nav-link ${act}" data-bs-toggle="pill" data-bs-target="#${tId}">${group}</button></li>`;
+          let cards = items.map(item => {
+            const v = (item['View'] || '').replace(/'/g, "\\'");
+            const m = (item['Module'] || '').replace(/'/g, "\\'");
+            return `
+              <div class="col">
+                <div class="dashboard-card-3d" onclick="loadView('${v}', '${m}')">
+                  <div class="icon-3d-wrapper icon-theme-forest"><i class="fa-solid fa-folder-open"></i></div>
+                  <div class="card-title-3d">${item['Module']}</div>
+                </div>
+              </div>`;
+          }).join('');
+          content += `<div class="tab-pane fade ${show}" id="${tId}"><div class="row row-cols-2 row-cols-lg-4 g-4 py-4">${cards}</div></div>`;
+          i++;
+        }
+        $('#dashboardTabs').html(tabs); $('#dashboardTabContent').html(content);
+        console.log("Menu rendering complete.");
+      } catch (err) {
+        console.error("Error in renderSystemMenu:", err);
       }
-      $('#sidebarAccordion').html(accordionHtml);
-
-      let tabs = ''; let content = ''; let i = 0;
-      for (const [group, items] of Object.entries(grouped)) {
-        const act = i === 0 ? 'active' : ''; const show = i === 0 ? 'show active' : ''; const tId = `dash-tab-${i}`;
-        tabs += `<li class="nav-item"><button class="nav-link ${act}" data-bs-toggle="pill" data-bs-target="#${tId}">${group}</button></li>`;
-        let cards = items.map(item => `
-            <div class="col">
-              <div class="dashboard-card-3d" onclick="loadView('${item['View']}', '${item['Module']}')">
-                <div class="icon-3d-wrapper icon-theme-forest"><i class="fa-solid fa-folder-open"></i></div>
-                <div class="card-title-3d">${item['Module']}</div>
-              </div>
-            </div>`).join('');
-        content += `<div class="tab-pane fade ${show}" id="${tId}"><div class="row row-cols-2 row-cols-lg-4 g-4 py-4">${cards}</div></div>`;
-        i++;
-      }
-      $('#dashboardTabs').html(tabs); $('#dashboardTabContent').html(content);
     }
 
     function loadView(viewName, title) {
