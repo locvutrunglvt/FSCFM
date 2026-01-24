@@ -436,10 +436,10 @@
         columns: [
           'ID nhóm', 'Mã nhóm', 'Tên nhóm', 'Người đại diện', 'Số điện thoại', 'Địa chỉ',
           'Tỉnh', 'Huyện', 'Xã', 'Xóm', 'Vị trí', 'Diện tích FSC', 'Diện tích ngoài FSC',
-          'Diện tích rừng tự nhiên', 'Tổng diện tích', 'Diện tích khai thác', 'Diện tích trồng',
+          'Diện tích rừng tự nhiên', 'Diện tích vùng đệm', 'Tổng diện tích', 'Sản lượng dự kiến năm', 'Diện tích trồng rừng năm',
           'Số thành viên', 'Ngày cập nhật', 'Người cập nhật', 'Đường dẫn file'
         ],
-        main: ['ID nhóm', 'Tên nhóm', 'Người đại diện', 'Số thành viên', 'Tổng diện tích']
+        main: ['ID nhóm', 'Tên nhóm', 'Người đại diện', 'Số thành viên', 'Tổng diện tích', 'Diện tích FSC']
       },
       'Churung': {
         columns: [
@@ -447,9 +447,10 @@
           'Dân tộc', 'CCCD', 'Họ tên vợ', 'Họ tên chồng', 'Thông tin liên hệ và địa chỉ',
           'Số điện thoại', 'Tỉnh', 'Huyện', 'Xã', 'Thôn', 'Địa chỉ', 'Thông tin tham gia nhóm',
           'Ngày tham gia', 'Ngày rời nhóm', 'Thông tin rừng quản lý', 'Số lô rừng',
-          'Tổng diện tích', 'Thông tin hệ thống', 'Người nhập dữ liệu', 'Cập nhật', 'Đường dẫn file'
+          'Tổng diện tích', 'Diện tích FSC', 'Diện tích rừng tự nhiên', 'Diện tích vùng đệm', 'Sản lượng dự kiến năm', 'Diện tích trồng rừng năm',
+          'Thông tin hệ thống', 'Người nhập dữ liệu', 'Cập nhật', 'Đường dẫn file'
         ],
-        main: ['ID chủ rừng', 'Họ tên chủ rừng', 'Số điện thoại', 'Tổng diện tích']
+        main: ['ID chủ rừng', 'Họ tên chủ rừng', 'Số điện thoại', 'Tổng diện tích', 'Diện tích FSC']
       },
       'Lo_rung': {
         columns: [
@@ -484,7 +485,14 @@
         columns: ['ID hoạt động lô', 'ID lô rừng', 'ID hoạt động', 'Tên hoạt động', 'Ngày triển khai', 'Ngày kết thúc', 'Ngày báo cáo', 'Địa điểm kiểm tra', 'Người kiểm tra', 'Kết quả hoạt động', 'Diện tích thực hiện', 'Số lao động', 'Tuổi lao động'],
         main: ['ID hoạt động lô', 'Tên hoạt động', 'Ngày triển khai', 'Kết quả hoạt động']
       },
-      'DS_HDong': { columns: ['ID DS hoat dong', 'Hoạt động chi tiết', 'Nhóm hoạt động'] }
+      'DS_HDong': { columns: ['ID DS hoat dong', 'Hoạt động chi tiết', 'Nhóm hoạt động'] },
+      'CauHoi_DanhGia': {
+        columns: ['ID câu hỏi', 'Nhóm tiêu chí', 'Nội dung câu hỏi', 'Phương pháp kiểm tra', 'Gợi ý bằng chứng']
+      },
+      'KetQua_DanhGia': {
+        columns: ['ID kết quả', 'ID đối tượng', 'Loại đối tượng', 'Ngày đánh giá', 'Người đánh giá', 'Điểm số', 'Dữ liệu chi tiết'],
+        main: ['ID kết quả', 'ID đối tượng', 'Ngày đánh giá', 'Người đánh giá']
+      }
     };
 
     const VIEW_MAP = {
@@ -504,18 +512,36 @@
      */
     function callGAS(action, data) {
       return new Promise((resolve, reject) => {
-        // Xây dựng body dưới dạng chuỗi JSON nhưng không set Header Content-Type là application/json
-        // Điều này giúp trình duyệt coi đây là "Simple Request" và không gửi OPTIONS request.
+        // Xây dựng body dưới dạng chuỗi JSON
         const payload = JSON.stringify({ action, data });
+
+        console.log(`Calling GAS: ${action}`, data); // Debug Log
 
         fetch(WEB_APP_URL, {
           method: "POST",
-          mode: "cors", // Vẫn dùng cors để nhận được kết quả (với điều kiện GAS cho phép)
+          mode: "cors",
           body: payload
         })
+          .then(async res => {
+            if (!res.ok) throw new Error(`Server Error: ${res.status} ${res.statusText}`);
+
+            const text = await res.text(); // Lấy raw text trước
+            console.log("Raw Response:", text); // Debug Log (Check if it's HTML)
+
+            try {
+              return JSON.parse(text); // Thử parse JSON
+            } catch (e) {
+              console.error("JSON Parse Error:", e, "Data:", text);
+              // Nếu là HTML (lỗi từ Google), throw lỗi rõ ràng
+              if (text.includes("<!DOCTYPE html>") || text.includes("<html")) {
+                throw new Error("Server returned HTML instead of JSON. Check Script URL or permissions.");
+              }
+              throw new Error("Invalid JSON response from server.");
+            }
+          })
           .then(res => resolve(res))
           .catch(err => {
-            console.error("Fetch Error:", err);
+            console.error("GAS Call Error:", err);
             reject(err);
           });
       });
@@ -620,6 +646,8 @@
           password: $('#login-pass').val().trim()
         });
 
+        console.log("Login Response:", res); // Debug log
+
         if (res && res.success) {
           currentUser = res.user;
           APP_DATA = res.data;
@@ -627,10 +655,12 @@
           localStorage.setItem('fsc_app_data', JSON.stringify(APP_DATA));
           showAppMain();
         } else {
-          err.text(res ? res.message : "Đăng nhập thất bại!").fadeIn();
+          const msg = res ? res.message : "Phản hồi không hợp lệ từ máy chủ!";
+          err.html(`<i class="fas fa-exclamation-circle me-1"></i> ${msg}`).fadeIn();
         }
       } catch (error) {
-        err.text("Lỗi kết nối tới máy chủ!").fadeIn();
+        console.error("Login Error:", error);
+        err.html(`<i class="fas fa-wifi me-1"></i> Lỗi kết nối: ${error.message}`).fadeIn();
       } finally {
         btn.prop('disabled', false).text('ĐĂNG NHẬP');
       }
@@ -722,9 +752,11 @@
     function hasPermission(moduleName, action) {
       if (!APP_DATA['Menu']) return true;
       const menu = APP_DATA['Menu'].find(m => m['Module'] === moduleName || m['View'] === moduleName);
+      console.log(`Checking permission for ${moduleName}/${action}:`, menu ? menu[action] : 'Menu not found');
       if (!menu) return true;
       // action = 'Xem' | 'Thêm' | 'Sửa' | 'Xóa'
-      return String(menu[action]) === '1' || String(menu[action]).toLowerCase() === 'x';
+      const p = String(menu[action]).toLowerCase();
+      return p === '1' || p === 'x' || p === 'yes' || p === 'được';
     }
 
     function renderSystemMenu(menuData) {
@@ -794,12 +826,195 @@
 
     function renderContent() {
       const current = navHistory[navHistory.length - 1];
+
+      // Xử lý View đặc biệt: Audit
+      if (current.viewName === 'InternalAudit') {
+        renderAuditView(current);
+        return;
+      }
+
       const sheetName = VIEW_MAP[current.viewName] || current.viewName;
       const data = APP_DATA[sheetName] || [];
       $('#page-content-dynamic').empty();
       if (current.mode === 'DETAIL') renderDetailMaster(sheetName, current.rowData);
       else renderTable(data, current, sheetName);
     }
+
+    function renderAuditView(current) {
+      const container = $('#page-content-dynamic');
+      container.empty();
+
+      const auditQuestions = APP_DATA['CauHoi_DanhGia'] || [];
+      if (auditQuestions.length === 0) {
+        container.html('<div class="alert alert-warning">Chưa có bộ câu hỏi đánh giá (Sheet LauHoi_DanhGia trống).</div>');
+        return;
+      }
+
+      // Nhóm câu hỏi theo tiêu chí
+      const categories = {};
+      auditQuestions.forEach(q => {
+        const cat = q['Nhóm tiêu chí'] || 'Khác';
+        if (!categories[cat]) categories[cat] = [];
+        categories[cat].push(q);
+      });
+
+      let html = `
+        <div class="card shadow-sm mb-4">
+          <div class="card-header bg-success text-white fw-bold">THÔNG TIN ĐÁNH GIÁ</div>
+          <div class="card-body">
+            <div class="row g-3">
+               <div class="col-md-4">
+                 <label class="form-label fw-bold">Đối tượng đánh giá</label>
+                 <select class="form-select" id="audit-target-type" onchange="loadAuditTargets()">
+                   <option value="">-- Chọn loại đối tượng --</option>
+                   <option value="Churung">Chủ rừng</option>
+                   <option value="NhomCCR">Nhóm chứng chỉ</option>
+                 </select>
+               </div>
+               <div class="col-md-4">
+                 <label class="form-label fw-bold">Chọn Đơn vị/Cá nhân</label>
+                 <select class="form-select" id="audit-target-id" disabled><option>-- Vui lòng chọn loại trước --</option></select>
+               </div>
+               <div class="col-md-4">
+                 <label class="form-label fw-bold">Ngày đánh giá</label>
+                 <input type="date" class="form-control" id="audit-date" value="${new Date().toISOString().split('T')[0]}">
+               </div>
+            </div>
+          </div>
+        </div>
+      `;
+
+      html += `<div class="accordion" id="auditAccordion">`;
+      let idx = 0;
+      for (const [cat, questions] of Object.entries(categories)) {
+        const safeCat = cat.replace(/[^\w\s]/gi, '').replace(/\s+/g, '_');
+        html += `
+          <div class="accordion-item">
+            <h2 class="accordion-header" id="heading${idx}">
+              <button class="accordion-button ${idx > 0 ? 'collapsed' : ''}" type="button" data-bs-toggle="collapse" data-bs-target="#collapse${idx}">
+                ${cat} (${questions.length} tiêu chí)
+              </button>
+            </h2>
+            <div id="collapse${idx}" class="accordion-collapse collapse ${idx === 0 ? 'show' : ''}" data-bs-parent="#auditAccordion">
+              <div class="accordion-body bg-light">
+                ${questions.map((q, i) => `
+                  <div class="card mb-3 border-0 shadow-sm">
+                    <div class="card-body">
+                      <h6 class="fw-bold text-success">${q['Nội dung câu hỏi']}</h6>
+                      <p class="small text-muted mb-2"><i class="fas fa-info-circle me-1"></i>${q['Phương pháp kiểm tra'] || ''} | <i>${q['Gợi ý bằng chứng'] || ''}</i></p>
+                      <div class="row g-2 align-items-center">
+                        <div class="col-md-3">
+                          <select class="form-select form-select-sm audit-result" data-qid="${q['ID câu hỏi']}">
+                            <option value="NA">Không áp dụng (N/A)</option>
+                            <option value="Pass">Đạt (Pass)</option>
+                            <option value="Fail">Không đạt (Fail)</option>
+                          </select>
+                        </div>
+                        <div class="col-md-9">
+                          <input type="text" class="form-control form-control-sm audit-note" placeholder="Ghi chú / Bằng chứng..." data-qid="${q['ID câu hỏi']}">
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                `).join('')}
+              </div>
+            </div>
+          </div>
+        `;
+        idx++;
+      }
+      html += `</div>`;
+
+      html += `<div class="mt-4 text-center">
+        <button class="btn btn-primary btn-lg px-5 fw-bold" onclick="submitAudit()"><i class="fas fa-save me-2"></i>LƯU KẾT QUẢ ĐÁNH GIÁ</button>
+      </div>`;
+
+      container.html(html);
+    }
+
+    // Hàm hỗ trợ cho Audit View
+    window.loadAuditTargets = function () {
+      const type = $('#audit-target-type').val();
+      const select = $('#audit-target-id');
+      select.prop('disabled', true).html('<option>Đang tải...</option>');
+
+      if (!type || !APP_DATA[type]) {
+        select.html('<option>-- Không có dữ liệu --</option>');
+        return;
+      }
+
+      let opts = '<option value="">-- Chọn đối tượng --</option>';
+      APP_DATA[type].forEach(item => {
+        // Tự động tìm cột ID và Tên
+        const keys = Object.keys(item);
+        const idCol = keys.find(k => k.includes('ID') || k.includes('Mã'));
+        const nameCol = keys.find(k => k.includes('Tên') || k.includes('Họ tên'));
+        if (idCol) {
+          opts += `<option value="${item[idCol]}">${item[idCol]} - ${nameCol ? item[nameCol] : ''}</option>`;
+        }
+      });
+      select.html(opts).prop('disabled', false);
+    };
+
+    window.submitAudit = async function () {
+      const targetType = $('#audit-target-type').val();
+      const targetId = $('#audit-target-id').val();
+      const date = $('#audit-date').val();
+
+      if (!targetType || !targetId) { return alert("Vui lòng chọn đối tượng đánh giá!"); }
+
+      // Gom dữ liệu
+      const results = [];
+      let passCount = 0;
+      let total = 0;
+
+      $('.audit-result').each(function () {
+        const qid = $(this).data('qid');
+        const val = $(this).val();
+        const note = $(`.audit-note[data-qid="${qid}"]`).val();
+        if (val !== 'NA') {
+          total++;
+          if (val === 'Pass') passCount++;
+        }
+        results.push({ id: qid, result: val, note: note });
+      });
+
+      const score = total === 0 ? 100 : Math.round((passCount / total) * 100);
+      const jsonDetails = JSON.stringify(results);
+
+      const dataObj = {
+        'ID đối tượng': targetId,
+        'Loại đối tượng': targetType,
+        'Ngày đánh giá': date,
+        'Người đánh giá': currentUser['Email'],
+        'Điểm số': score,
+        'Dữ liệu chi tiết': jsonDetails
+      };
+
+      if (confirm(`Xác nhận lưu kết quả đánh giá?\nĐiểm số: ${score}%`)) {
+        // Gọi API save
+        currentSheetTarget = 'KetQua_DanhGia';
+        currentAction = 'CREATE';
+
+        const btn = $('button[onclick="submitAudit()"]');
+        btn.prop('disabled', true).html('ĐANG LƯU...');
+
+        try {
+          const res = await callGAS('apiCRUD', { action: 'CREATE', sheetName: 'KetQua_DanhGia', jsonData: dataObj });
+          if (res && res.success) {
+            alert("Lưu thành công!");
+            // Reload data or redirect
+            // Update local
+            if (!APP_DATA['KetQua_DanhGia']) APP_DATA['KetQua_DanhGia'] = [];
+            APP_DATA['KetQua_DanhGia'].push({ ...dataObj, 'ID kết quả': res.newID });
+            navigateBack();
+          } else {
+            alert("Lỗi: " + res.message);
+          }
+        } catch (e) { alert("Lỗi kết nối Server"); }
+        finally { btn.prop('disabled', false).html('<i class="fas fa-save me-2"></i>LƯU KẾT QUẢ ĐÁNH GIÁ'); }
+      }
+    };
 
     function renderBreadcrumb() {
       let bc = '<div class="fsc-breadcrumb"><span class="breadcrumb-item" onclick="showDashboard()"><i class="fa-solid fa-house"></i> Home</span>';
@@ -975,6 +1190,78 @@
       new bootstrap.Modal(document.getElementById('dataModal')).show();
     }
 
+    function performAggregation() {
+      console.log("Starting Bottom-Up Aggregation...");
+
+      const safeFloat = (v) => {
+        if (!v) return 0;
+        if (typeof v === 'number') return v;
+        return parseFloat(String(v).replace(/,/g, '').replace(/[^0-9.-]/g, '')) || 0;
+      };
+
+      // 1. Aggregation Level 3: Lo_rung -> Churung
+      if (APP_DATA['Lo_rung'] && APP_DATA['Churung']) {
+        const plots = APP_DATA['Lo_rung'];
+        const owners = APP_DATA['Churung'];
+
+        owners.forEach(owner => {
+          const ownerID = String(owner['ID chủ rừng'] || owner['ID chủ rừng']).trim();
+          const myPlots = plots.filter(p => String(p['ID chủ rừng']).trim() === ownerID);
+
+          owner['Số lô rừng'] = myPlots.length;
+          owner['Tổng diện tích'] = myPlots.reduce((sum, p) => sum + safeFloat(p['Tổng diện tích']), 0).toFixed(2);
+          owner[' Diện tích FSC'] = myPlots.reduce((sum, p) => sum + safeFloat(p[' Diện tích FSC']), 0).toFixed(2);
+          owner['Diện tích rừng tự nhiên'] = myPlots.reduce((sum, p) => sum + safeFloat(p['Diện tích rừng tự nhiên']), 0).toFixed(2);
+          owner['Diện tích vùng đệm'] = myPlots.reduce((sum, p) => sum + safeFloat(p['Diện tích vùng đệm']), 0).toFixed(2);
+          owner['Sản lượng dự kiến năm'] = myPlots.reduce((sum, p) => sum + safeFloat(p['Sản lượng khai thác xe'] || p['Sản lượng dự kiến']), 0).toFixed(2);
+          owner['Diện tích trồng rừng năm'] = myPlots.reduce((sum, p) => sum + safeFloat(p['Diện tích trồng rừng'] || p['Diện tích trồng']), 0).toFixed(2);
+        });
+      }
+
+      // 2. Aggregation Level 2: Churung -> NhomCCR
+      if (APP_DATA['Churung'] && APP_DATA['NhomCCR']) {
+        const owners = APP_DATA['Churung'];
+        const groups = APP_DATA['NhomCCR'];
+
+        groups.forEach(group => {
+          const groupID = String(group['ID nhóm'] || group['Mã nhóm']).trim();
+          const myOwners = owners.filter(o => String(o['ID nhóm']).trim() === groupID);
+
+          group['Số thành viên'] = myOwners.length;
+          group['Tổng diện tích'] = myOwners.reduce((sum, o) => sum + safeFloat(o['Tổng diện tích']), 0).toFixed(2);
+          group[' Diện tích FSC'] = myOwners.reduce((sum, o) => sum + safeFloat(o[' Diện tích FSC']), 0).toFixed(2);
+          group['Diện tích rừng tự nhiên'] = myOwners.reduce((sum, o) => sum + safeFloat(o['Diện tích rừng tự nhiên']), 0).toFixed(2);
+          group['Diện tích vùng đệm'] = myOwners.reduce((sum, o) => sum + safeFloat(o['Diện tích vùng đệm']), 0).toFixed(2);
+          group['Sản lượng dự kiến năm'] = myOwners.reduce((sum, o) => sum + safeFloat(o['Sản lượng dự kiến năm']), 0).toFixed(2);
+          group['Diện tích trồng rừng năm'] = myOwners.reduce((sum, o) => sum + safeFloat(o['Diện tích trồng rừng năm']), 0).toFixed(2);
+        });
+      }
+
+      // 3. Aggregation Level 1: NhomCCR -> Ban_Quanlynhom
+      if (APP_DATA['NhomCCR'] && APP_DATA['Ban_Quanlynhom']) {
+        const groups = APP_DATA['NhomCCR'];
+        const boards = APP_DATA['Ban_Quanlynhom'];
+
+        boards.forEach(board => {
+          const boardID = String(board['ID ban quản lý']).trim();
+          const myGroups = groups.filter(g =>
+            String(g['ID ban quản lý'] || '').trim() === boardID ||
+            String(g['Tên ban quản lý'] || '').trim() === String(board['Tên ban quản lý']).trim()
+          );
+
+          board['Số nhóm quản lý'] = myGroups.length;
+          board['Số hộ thành viên'] = myGroups.reduce((sum, g) => sum + safeFloat(g['Số thành viên']), 0);
+          board['Tổng diện tích'] = myGroups.reduce((sum, g) => sum + safeFloat(g['Tổng diện tích']), 0).toFixed(2);
+          board[' Diện tích FSC'] = myGroups.reduce((sum, g) => sum + safeFloat(g[' Diện tích FSC']), 0).toFixed(2);
+          board['Diện tích rừng tự nhiên'] = myGroups.reduce((sum, g) => sum + safeFloat(g['Diện tích rừng tự nhiên']), 0).toFixed(2);
+          board['Diện tích vùng đệm'] = myGroups.reduce((sum, g) => sum + safeFloat(g['Diện tích vùng đệm']), 0).toFixed(2);
+          board['Sản lượng dự kiến năm'] = myGroups.reduce((sum, g) => sum + safeFloat(g['Sản lượng dự kiến năm']), 0).toFixed(2);
+          board['Diện tích trồng rừng năm'] = myGroups.reduce((sum, g) => sum + safeFloat(g['Diện tích trồng rừng năm']), 0).toFixed(2);
+        });
+      }
+      console.log("Bottom-Up Aggregation Complete.");
+    }
+
     async function saveData() {
       const formDataArray = $('#dynamic-form').serializeArray();
       const dataObj = {};
@@ -997,6 +1284,10 @@
             const idx = APP_DATA[currentSheetTarget].findIndex(r => String(r[idCol]) === String(dataObj[idCol]));
             if (idx !== -1) APP_DATA[currentSheetTarget][idx] = dataObj;
           }
+
+          // Trigger Aggregation after save
+          performAggregation();
+
           localStorage.setItem('fsc_app_data', JSON.stringify(APP_DATA));
           renderContent();
           alert('Thành công!');
@@ -1019,6 +1310,10 @@
         const res = await callGAS('apiCRUD', { action: 'DELETE', sheetName, jsonData: rowData });
         if (res && res.success) {
           APP_DATA[sheetName] = APP_DATA[sheetName].filter(r => String(r[idCol]) !== String(rowData[idCol]));
+
+          // Trigger Aggregation after delete
+          performAggregation();
+
           localStorage.setItem('fsc_app_data', JSON.stringify(APP_DATA));
           navigateBack(navHistory.length - 2);
           alert('Đã xóa thành công.');
@@ -1050,12 +1345,14 @@
 
       // LỌC DỮ LIỆU THEO PHÂN QUYỀN (Nếu không phải Admin)
       if (!isAdmin) {
-        const myBoard = String(currentUser['Thuộc Ban quản lý'] || '').trim();
-        const myGroup = String(currentUser['Thuộc nhóm'] || '').trim();
+        const myBoard = String(currentUser['Thuộc Ban quản lý'] || '').trim().toLowerCase();
+        const myGroup = String(currentUser['Thuộc nhóm'] || '').trim().toLowerCase();
+
+        console.log("Filtering data for staff:", { myBoard, myGroup, sheetName });
 
         if (myBoard) {
           displayData = displayData.filter(r => {
-            const bId = String(r['ID ban quản lý'] || r['Tên ban quản lý'] || '').trim();
+            const bId = String(r['ID ban quản lý'] || r['Tên ban quản lý'] || '').trim().toLowerCase();
             if (sheetName === 'Ban_Quanlynhom') return bId === myBoard;
             if (bId) return bId === myBoard;
             return true;
@@ -1063,7 +1360,7 @@
         }
         if (myGroup) {
           displayData = displayData.filter(r => {
-            const gId = String(r['ID nhóm'] || r['Mã nhóm'] || r['Tên nhóm'] || '').trim();
+            const gId = String(r['ID nhóm'] || r['Mã nhóm'] || r['Tên nhóm'] || '').trim().toLowerCase();
             if (sheetName === 'NhomCCR') return gId === myGroup;
             if (gId) return gId === myGroup;
             return true;
