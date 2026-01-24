@@ -196,7 +196,7 @@ function apiCRUD(action, sheetName, jsonData) {
     const ws = ss.getSheetByName(sheetName);
     if (!ws) return { success: false, message: 'Không tìm thấy Sheet: ' + sheetName };
 
-    const dataObj = JSON.parse(jsonData);
+    const dataObj = (typeof jsonData === 'string') ? JSON.parse(jsonData) : jsonData;
     const headers = ws.getRange(1, 1, 1, ws.getLastColumn()).getValues()[0];
     const idColumnName = headers[0]; 
     const idValue = dataObj[idColumnName];
