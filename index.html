@@ -1,713 +1,87 @@
 <!DOCTYPE html>
-<html>
+<html lang="vi">
   <head>
     <base target="_top">
     <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
-    <title>Kim Khanh Jewelry Management</title>
-    
-    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=Be+Vietnam+Pro:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Hệ thống Quản lý Rừng FSC</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <script src="//cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-
-    <style>
-        :root {
-            --primary-color: #054a37; 
-            --secondary-color: #1a6b54;
-            --accent-gold: #c5a059;
-            --accent-gold-light: #e6d3a3;
-            --bg-body: #f4f6f8;       
-            --text-dark: #2c3e50;
-            --sidebar-width: 260px;
-            --navbar-height: 70px;
-            --success-bright: #00C851;
-        }
-
-        body { 
-            font-family: 'Be Vietnam Pro', sans-serif; 
-            background-color: var(--bg-body); 
-            color: var(--text-dark); 
-            font-size: 14px; 
-            overflow-x: hidden;
-        }
-
-        h1, h2, h3, h4, h5, h6, .brand-font { font-family: 'Playfair Display', serif; }
-
-        /* LOGIN SCREEN */
-        #login-screen {
-            background: radial-gradient(circle at center, #0a5c45 0%, #022c20 100%);
-            position: fixed; top: 0; left: 0; width: 100%; height: 100vh; z-index: 9999;
-            display: flex; justify-content: center; align-items: center;
-        }
-        .login-card {
-            background: rgba(255, 255, 255, 0.98);
-            width: 90%; max-width: 400px;
-            border-radius: 12px; padding: 40px;
-            box-shadow: 0 20px 50px rgba(0,0,0,0.5);
-            border: 1px solid var(--accent-gold);
-            text-align: center;
-        }
-        .btn-gold {
-            background: linear-gradient(135deg, var(--accent-gold), #b08d45);
-            border: none; color: #fff; font-weight: 600; text-transform: uppercase; letter-spacing: 1px;
-            transition: all 0.3s; padding: 12px; border-radius: 6px;
-        }
-        .btn-gold:hover {
-            background: linear-gradient(135deg, #b08d45, var(--accent-gold));
-            box-shadow: 0 5px 15px rgba(197, 160, 89, 0.4); transform: translateY(-2px); color: white;
-        }
-
-        /* LOADING */
-        #loading-overlay {
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(255,255,255,0.85); z-index: 10000; display: none;
-            justify-content: center; align-items: center; flex-direction: column;
-        }
-        .spinner-gold { color: var(--accent-gold); font-size: 3rem; animation: spin 1s linear infinite; }
-        @keyframes spin { 100% { transform: rotate(360deg); } }
-
-        /* LAYOUT */
-        .navbar { background: white; box-shadow: 0 2px 10px rgba(0,0,0,0.05); height: var(--navbar-height); z-index: 1030; }
-        .sidebar {
-            background: #fff; position: fixed; top: var(--navbar-height); left: 0;
-            width: var(--sidebar-width); height: calc(100vh - var(--navbar-height));
-            border-right: 1px solid rgba(0,0,0,0.05); z-index: 1020; transition: 0.3s;
-            padding-top: 20px; overflow-y: auto;
-        }
-        .main-content { margin-top: var(--navbar-height); margin-left: var(--sidebar-width); padding: 30px; transition: 0.3s; }
-        @media (max-width: 992px) {
-            .sidebar { transform: translateX(-100%); }
-            .sidebar.show { transform: translateX(0); box-shadow: 5px 0 20px rgba(0,0,0,0.1); }
-            .main-content { margin-left: 0; padding: 15px; }
-        }
-
-        .nav-item {
-            padding: 12px 25px; margin: 5px 15px; border-radius: 8px;
-            cursor: pointer; color: #666; font-weight: 500; transition: 0.2s; display: flex; align-items: center;
-        }
-        .nav-item:hover { background-color: #f1f8f6; color: var(--primary-color); }
-        .nav-item.active {
-            background: linear-gradient(90deg, var(--primary-color), var(--secondary-color));
-            color: white; box-shadow: 0 4px 10px rgba(5, 74, 55, 0.2);
-        }
-
-        /* CARDS & TABLES */
-        .card { border: none; border-radius: 12px; box-shadow: 0 2px 15px rgba(0,0,0,0.03); margin-bottom: 20px; background: white; }
-        .kpi-card {
-            background: white; border-radius: 12px; padding: 25px;
-            box-shadow: 0 4px 20px rgba(0,0,0,0.04); display: flex; justify-content: space-between; align-items: center;
-            border-left: 5px solid var(--accent-gold); height: 100%;
-        }
-        .kpi-value { font-family: 'Playfair Display', serif; font-size: 1.8rem; font-weight: 700; color: var(--primary-color); margin: 0; }
-        
-        .table-custom thead th { 
-            background-color: var(--primary-color); color: white; 
-            font-weight: 500; border: none; padding: 15px 10px; text-transform: uppercase; font-size: 0.8rem;
-        }
-        .table-custom tbody tr { border-bottom: 1px solid #eee; transition: 0.2s; }
-        .table-custom tbody tr:hover { background-color: rgba(197, 160, 89, 0.1); cursor: pointer; }
-        
-        .badge-stock { 
-            background-color: #e8f5e9; color: #00C851; border: 1px solid #00C851; 
-            padding: 5px 12px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px;
-        }
-        .badge-sold { background-color: #fff3e0; color: #ef6c00; border: 1px solid #ffe0b2; padding: 5px 12px; }
-
-        /* PRINT STYLES */
-        @media screen { #print-area, #receipt-area { display: none; } }
-        @media print {
-            body * { visibility: hidden; }
-            #print-area, #print-area * { visibility: visible; }
-            #receipt-area, #receipt-area * { visibility: visible; }
-            
-            /* TEM TRANG SỨC */
-            #print-area { position: absolute; left: 0; top: 0; }
-            .jewelry-tag { 
-                display: flex; width: 44mm; height: 15mm; 
-                font-family: Arial, sans-serif; font-size: 5pt; page-break-inside: avoid; 
-                color: black;
-            }
-            .tag-left { 
-                width: 21mm; height: 15mm; 
-                border-right: 1px dashed #999; 
-                padding: 1px 2px; 
-                display: flex; flex-direction: column; justify-content: space-between;
-                overflow: hidden;
-            }
-            .tag-right { 
-                width: 23mm; height: 15mm; 
-                padding: 1px 2px; padding-left: 4px;
-                display: flex; flex-direction: column; justify-content: start;
-                overflow: hidden; position: relative;
-            }
-            .store-name { font-weight: bold; font-size: 4.5pt; text-transform: uppercase; text-align: center; margin-bottom: 1px; }
-            .store-addr { font-size: 3.5pt; text-align: center; line-height: 1.1; margin-bottom: 2px;}
-            .nxs-block { font-size: 3.5pt; line-height: 1.1; }
-            .tccs { font-size: 3.5pt; margin-top: auto; text-align: center; font-weight: bold;}
-            .row-top { display: flex; justify-content: space-between; margin-bottom: 1px; }
-            .prod-name { font-weight: bold; font-size: 5pt; }
-            .prod-symbol { font-size: 4pt; }
-            .prod-specs { font-size: 4pt; line-height: 1.2; }
-            .klv-row { font-weight: bold; font-size: 6pt; margin-top: 1px; margin-bottom: 1px; }
-            .tag-footer { font-weight: bold; font-size: 4pt; text-transform: uppercase; margin-top: auto; text-align: center; }
-
-            /* HÓA ĐƠN */
-            #receipt-area { 
-                position: absolute; left: 0; top: 0; width: 75mm; 
-                font-family: 'Courier New', monospace; font-size: 12px;
-                color: black; background: white; padding: 5px;
-            }
-            .bill-header { text-align: center; margin-bottom: 10px; }
-            .bill-title { font-weight: bold; font-size: 16px; text-transform: uppercase; }
-            .dashed-line { border-top: 1px dashed #000; margin: 5px 0; }
-            .bill-row { display: flex; justify-content: space-between; }
-            .bill-total { font-weight: bold; font-size: 14px; margin-top: 10px; }
-            .bill-footer { text-align: center; margin-top: 20px; font-style: italic; font-size: 10px; }
-        }
-    </style>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.datatables.net/1.13.4/css/dataTables.bootstrap5.min.css">
+    <?!= include('style'); ?>
   </head>
-  <body>
+  <body style="font-family: 'Be Vietnam Pro', sans-serif; background-color: #F8F9FA;">
+    
+    <div id="login-screen" class="vh-100 d-flex align-items-center justify-content-center">
+      <div class="login-card p-5 text-center bg-white shadow rounded-4" style="max-width: 400px; width: 100%;">
+        <img src="https://github.com/impactslowforest/Logo/blob/main/FSC%20logo%20-%20R.png?raw=true" height="80" class="mb-4 logo-bounce">
+        <h5 class="fw-bold text-success mb-4">QUẢN LÝ RỪNG BỀN VỮNG</h5>
+        
+        <form id="form-login">
+          <input type="email" class="form-control mb-3" id="login-email" placeholder="Email" required>
+          <input type="password" class="form-control mb-2" id="login-pass" placeholder="Mật khẩu" required>
+          <div class="d-flex justify-content-between mb-4">
+             <a href="javascript:void(0)" class="text-decoration-none small text-success fw-bold" onclick="toggleAuth('REGISTER')">Đăng ký mới</a>
+             <a href="javascript:void(0)" class="text-decoration-none small text-muted" onclick="handleForgotPassword()">Quên mật khẩu?</a>
+          </div>
+          <button type="submit" class="btn btn-success w-100 fw-bold" id="btn-login">ĐĂNG NHẬP</button>
+        </form>
 
-    <div id="loading-overlay">
-        <i class="fas fa-circle-notch spinner-gold"></i>
-        <div class="mt-3 fw-bold text-muted">Đang xử lý dữ liệu...</div>
+        <form id="form-register" class="d-none">
+          <input type="text" class="form-control mb-3" id="reg-name" placeholder="Họ tên đầy đủ" required>
+          <input type="email" class="form-control mb-3" id="reg-email" placeholder="Email đăng nhập" required>
+          <input type="text" class="form-control mb-3" id="reg-phone" placeholder="Số điện thoại" required>
+          <input type="password" class="form-control mb-3" id="reg-pass" placeholder="Mật khẩu" required>
+          <input type="password" class="form-control mb-4" id="reg-confirm-pass" placeholder="Nhập lại mật khẩu" required>
+          <button type="submit" class="btn btn-primary w-100 fw-bold mb-3" id="btn-register">ĐĂNG KÝ</button>
+          <div class="text-center">
+            <a href="javascript:void(0)" class="text-decoration-none small text-success fw-bold" onclick="toggleAuth('LOGIN')">← Quay lại Đăng nhập</a>
+          </div>
+        </form>
+        
+        <div id="login-error" class="text-danger mt-3 small fw-bold"></div>
+        <div class="mt-4 text-muted small">© 2026 Lộc Vũ Trung</div>
+      </div>
     </div>
 
-    <div id="login-screen">
-        <div class="login-card">
-            <div class="mb-4">
-                <i class="fa-solid fa-gem text-warning" style="font-size: 3rem;"></i>
-                <h2 class="mt-3 brand-font" style="color: var(--primary-color)">Kim Khánh Gold</h2>
-            </div>
-            <form id="form-login" onsubmit="handleLogin(event)">
-                <div class="mb-3 text-start"><label class="fw-bold small">Mã nhân viên</label><input type="text" class="form-control" id="username" placeholder="KKH001" required></div>
-                <div class="mb-4 text-start"><label class="fw-bold small">Mật khẩu</label><input type="password" class="form-control" id="password" required></div>
-                <button type="submit" class="btn btn-gold w-100">Đăng Nhập</button>
-            </form>
+    <div id="main-app" class="d-none d-flex flex-column vh-100">
+      <nav class="navbar navbar-dark bg-success shadow px-3" style="background: linear-gradient(135deg, #2E7D32 0%, #1B5E20 100%) !important;">
+        <button class="btn text-white" id="sidebarToggle"><i class="fa-solid fa-bars"></i></button>
+        <span class="navbar-brand fw-bold ms-2 fs-6">FSC SYSTEM</span>
+        <div class="ms-auto text-white d-flex align-items-center">
+          <span class="me-2 small d-none d-md-block" id="user-display-name">User</span>
+          <button class="btn btn-sm btn-light text-success fw-bold rounded-pill px-3" onclick="logout()">Thoát</button>
         </div>
+      </nav>
+
+      <div class="d-flex flex-grow-1 overflow-hidden">
+         <div id="sidebar-wrapper" class="bg-white border-end shadow-sm">
+           <div class="sidebar-header p-3 text-center text-white fw-bold" style="background: #2E7D32;">MENU</div>
+           <div class="accordion accordion-flush overflow-auto h-100" id="sidebarAccordion"></div>
+        </div>
+
+        <div id="page-content-wrapper" class="flex-grow-1 bg-light overflow-auto p-3 p-md-4">
+          <div id="dashboard-view">
+            <h5 class="fw-bold text-secondary mb-3"><i class="fa-solid fa-gauge-high me-2"></i>TỔNG QUAN</h5>
+            <ul class="nav nav-pills mb-3" id="dashboardTabs"></ul>
+            <div class="tab-content" id="dashboardTabContent"></div>
+          </div>
+          <div id="data-view" class="d-none">
+            <div id="breadcrumb-container"></div>
+            <div id="page-content-dynamic"></div>
+          </div>
+        </div>
+      </div>
     </div>
 
-    <div id="app-screen" style="display: none;">
-        <nav class="navbar border-bottom fixed-top px-4">
-            <div class="d-flex align-items-center">
-                <button class="btn btn-light me-3 d-lg-none" type="button" onclick="toggleSidebar()"><i class="fas fa-bars"></i></button>
-                <span class="fw-bold fs-4 brand-font" style="color: var(--primary-color)"><i class="fas fa-gem me-2 text-warning"></i>KIM KHÁNH</span>
-            </div>
-            <div class="d-flex align-items-center">
-                <div class="text-end me-3 d-none d-sm-block"><div class="fw-bold text-dark" id="user-display-name">Admin</div></div>
-                <div class="rounded-circle bg-light text-success d-flex justify-content-center align-items-center shadow-sm" style="width: 40px; height: 40px;"><i class="fas fa-user"></i></div>
-            </div>
-        </nav>
+    <div class="modal fade" id="dataModal" tabindex="-1"><div class="modal-dialog modal-lg"><div class="modal-content"><div class="modal-header bg-success text-white"><h5 class="modal-title" id="modalTitle">Form</h5><button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button></div><div class="modal-body"><form id="dynamic-form" class="row g-3"></form></div><div class="modal-footer"><button type="button" class="btn btn-light" data-bs-dismiss="modal">Đóng</button><button type="button" class="btn btn-success" onclick="saveData()">Lưu</button></div></div></div></div>
 
-        <div id="sidebar" class="sidebar">
-            <div class="p-2">
-                <div class="nav-item active" onclick="switchView('dashboard')" id="nav-dashboard"><i class="fas fa-chart-pie me-3"></i>Tổng Quan</div>
-                <div class="nav-item" onclick="switchView('inventory')" id="nav-inventory"><i class="fas fa-boxes me-3"></i>Kho Hàng</div>
-                <div class="nav-item" onclick="switchView('sales')" id="nav-sales"><i class="fas fa-cash-register me-3"></i>Bán Hàng</div>
-                <div class="nav-item" onclick="switchView('users')" id="nav-users"><i class="fas fa-users-cog me-3"></i>Nhân Viên</div>
-                <hr class="mx-3">
-                <div class="nav-item text-danger" onclick="handleLogout()"><i class="fas fa-sign-out-alt me-3"></i>Đăng xuất</div>
-            </div>
-        </div>
-
-        <div class="main-content">
-            <div id="view-dashboard" class="view-section">
-                <div class="d-flex justify-content-between align-items-center mb-4">
-                    <h3 class="brand-font fw-bold m-0" style="color: var(--primary-color)">Bảng Tin</h3>
-                    <span class="badge bg-light text-dark border">Hôm nay: <span id="current-date">--</span></span>
-                </div>
-                <div class="row g-3 mb-4">
-                    <div class="col-12 col-md-4"><div class="kpi-card"><div><div class="kpi-label">Doanh thu</div><div class="kpi-value" id="kpi-revenue">0</div></div><div class="kpi-icon"><i class="fas fa-coins"></i></div></div></div>
-                    <div class="col-6 col-md-4"><div class="kpi-card" style="border-left-color: var(--primary-color)"><div><div class="kpi-label">Tồn kho</div><div class="kpi-value" id="kpi-stock">0</div></div><div class="kpi-icon" style="color:var(--primary-color); background: #e8f5e9"><i class="fas fa-gem"></i></div></div></div>
-                    <div class="col-6 col-md-4"><div class="kpi-card" style="border-left-color: #2c3e50"><div><div class="kpi-label">Đã bán</div><div class="kpi-value" id="kpi-sold">0</div></div><div class="kpi-icon" style="color:#2c3e50; background: #eceff1"><i class="fas fa-check-double"></i></div></div></div>
-                </div>
-                <div class="card p-4"><h5 class="brand-font mb-3">Biểu đồ doanh thu 7 ngày</h5><div style="height: 300px;"><canvas id="chart-revenue"></canvas></div></div>
-            </div>
-
-            <div id="view-inventory" class="view-section d-none">
-                <div class="d-flex justify-content-between align-items-center mb-3">
-                    <h3 class="brand-font fw-bold m-0" style="color: var(--primary-color)">Kho Hàng</h3>
-                    <div>
-                        <button class="btn btn-gold btn-sm me-1" onclick="showAddModal()"><i class="fas fa-plus"></i> Nhập</button>
-                        <button class="btn btn-outline-secondary btn-sm" onclick="forceReload()"><i class="fas fa-sync"></i></button>
-                    </div>
-                </div>
-                <div class="card border-0 shadow-sm">
-                    <div class="table-responsive" style="max-height: 70vh;">
-                        <table class="table table-custom align-middle mb-0 text-nowrap">
-                            <thead class="sticky-top"><tr><th>Thao tác</th><th>ID</th><th>Tên SP</th><th>NXS</th><th>HLV</th><th>KLT</th><th>KLH</th><th>KLV</th><th>Ngày Nhập</th><th>Trạng Thái</th></tr></thead>
-                            <tbody id="inventory-table-body"></tbody>
-                        </table>
-                    </div>
-                </div>
-            </div>
-
-            <div id="view-sales" class="view-section d-none">
-                <h3 class="brand-font fw-bold mb-3" style="color: var(--primary-color)">Bán Hàng</h3>
-                <div class="card p-3 mb-3"><input type="text" class="form-control border-0 bg-light" id="search-sales" placeholder="🔍 Tìm kiếm..." onkeyup="filterSalesTable()"></div>
-                <div class="card border-0 shadow-sm">
-                    <div class="table-responsive" style="max-height: 70vh;">
-                        <table class="table table-custom align-middle mb-0">
-                            <thead class="sticky-top"><tr><th>Chọn</th><th>Mã SP</th><th>Tên SP</th><th class="text-end">Giá Bán</th><th>Trạng Thái</th></tr></thead>
-                            <tbody id="sales-table-body"></tbody>
-                        </table>
-                    </div>
-                </div>
-            </div>
-
-            <div id="view-users" class="view-section d-none">
-                <div class="d-flex justify-content-between align-items-center mb-3"><h3 class="brand-font fw-bold m-0">Nhân Sự</h3><button class="btn btn-primary btn-sm" onclick="showUserModal('add')"><i class="fas fa-user-plus"></i> Thêm</button></div>
-                <div class="card border-0 shadow-sm"><div class="table-responsive"><table class="table table-custom align-middle mb-0"><thead><tr><th>ID</th><th>Tên</th><th>SĐT</th><th>Trạng thái</th><th>Thao tác</th></tr></thead><tbody id="users-table-body"></tbody></table></div></div>
-            </div>
-        </div>
-    </div>
-
-    <div class="modal fade" id="addModal" tabindex="-1">
-        <div class="modal-dialog modal-lg">
-            <div class="modal-content">
-                <div class="modal-header bg-success text-white"><h5 class="modal-title fw-bold">Thông Tin Sản Phẩm</h5><button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button></div>
-                <div class="modal-body">
-                    <form id="form-add">
-                        <div class="row g-3">
-                            <div class="col-md-6"><label>Tên Sản Phẩm</label><input type="text" class="form-control" name="tenSp" required></div>
-                            <div class="col-md-6"><label>Nhà Xuất Xưởng</label><select class="form-select" name="maNxs" id="select-nxs" onchange="autoFillOrigin()" required></select></div>
-                            <div class="col-4"><label>Xuất Xứ</label><input type="text" class="form-control bg-light" name="xuatXu" id="inp-xuatxu" readonly></div>
-                            <div class="col-4"><label>Hàm Lượng</label><select class="form-select" name="hlv" id="select-hlv" required></select></div>
-                            <div class="col-4"><label>Ký Hiệu</label><input type="text" class="form-control" name="kyHieu" placeholder="VD: C"></div>
-                            <div class="col-4"><label>KL Tổng (c)</label><input type="number" step="0.01" class="form-control" name="klt" id="inp-klt" oninput="calcKLV()" required></div>
-                            <div class="col-4"><label>KL Hột (c)</label><input type="number" step="0.01" class="form-control" name="klh" id="inp-klh" value="0" oninput="calcKLV()" required></div>
-                            <div class="col-4"><label class="text-success fw-bold">KL Vàng</label><input type="text" class="form-control fw-bold text-success" id="out-klv" readonly value="0.0"></div>
-                            <div class="col-6"><label>Giá Nhập</label><input type="text" class="form-control money-input" name="giaNhap" placeholder="0"></div>
-                            <div class="col-6"><label>Giá Bán</label><input type="text" class="form-control money-input" name="giaBan" placeholder="0"></div>
-                            <div class="col-12"><label>Tiêu chuẩn cơ sở</label><input type="text" class="form-control" name="tccs" value="01:2024/TCCS"></div>
-                        </div>
-                    </form>
-                </div>
-                <div class="modal-footer"><button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Đóng</button><button type="button" class="btn btn-success" id="btn-save-product" onclick="submitProduct()">Lưu</button></div>
-            </div>
-        </div>
-    </div>
-
-    <div class="modal fade" id="salesDetailModal" tabindex="-1">
-        <div class="modal-dialog">
-            <div class="modal-content border-warning">
-                <div class="modal-header bg-warning text-dark"><h5 class="modal-title fw-bold">Thanh Toán</h5><button type="button" class="btn-close" data-bs-dismiss="modal"></button></div>
-                <div class="modal-body">
-                    <form id="form-edit-sales">
-                       <input type="hidden" id="edit-id">
-                       <div class="mb-3"><label class="text-muted">Sản phẩm:</label><input type="text" class="form-control fw-bold border-0 bg-white fs-5" id="view-name" disabled></div>
-                       <div class="mb-3"><label class="fw-bold">Giá bán thực tế:</label><input type="text" class="form-control fw-bold text-success fs-4 money-input" id="edit-giaban"></div>
-                    </form>
-                </div>
-                <div class="modal-footer"><button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Hủy</button><button type="button" class="btn btn-gold w-100" onclick="submitEditSales()">XÁC NHẬN & IN</button></div>
-            </div>
-        </div>
-    </div>
-
-    <div class="modal fade" id="userModal" tabindex="-1"><div class="modal-dialog"><div class="modal-content"><div class="modal-header bg-primary text-white"><h5 class="modal-title fw-bold" id="userModalTitle">Nhân viên</h5><button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button></div><div class="modal-body"><form id="form-user"><input type="hidden" id="user-action"><div class="mb-3"><label>ID:</label><input type="text" class="form-control" id="u-id" name="id" required></div><div class="mb-3"><label>Tên:</label><input type="text" class="form-control" id="u-name" name="username" required></div><div class="mb-3"><label>Mật khẩu:</label><input type="text" class="form-control" id="u-pass" name="password"></div><div class="mb-3"><label>SĐT:</label><input type="text" class="form-control" id="u-phone" name="phone"></div><div class="mb-3"><label>Trạng thái:</label><select class="form-select" id="u-status" name="status"><option value="Act">Act</option><option value="Off">Off</option></select></div></form></div><div class="modal-footer"><button type="button" class="btn btn-primary" onclick="submitUser()">Lưu</button></div></div></div></div>
-
-    <div id="print-area"></div>
-    <div id="receipt-area"></div>
-
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-    <script>
-    // <<< ĐIỀN URL WEB APP GOOGLE SCRIPT CỦA BẠN VÀO ĐÂY (Kết thúc bằng /exec) >>>
-    const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzv-UUSMqDi-bMl3rNkr1y_nUSvqXmU4CvNM7KLwialDqSa0zjtPaXeyY37JkTD9xk/exec';
+    <script src="https://cdn.datatables.net/1.13.4/js/jquery.dataTables.min.js"></script>
+    <script src="https://cdn.datatables.net/1.13.4/js/dataTables.bootstrap5.min.js"></script>
 
-    // --- CẤU HÌNH HỆ THỐNG ---
-    let GLOBAL_DATA = { products: [], store: {}, nxs: [], hlv: [], revenue: 0, stock: 0, sold: 0 };
-    let userList = [];
-    let charts = {};
-
-    // --- HÀM GỌI API (THAY THẾ GOOGLE.SCRIPT.RUN) ---
-    async function callAPI(action, method = 'GET', bodyData = null) {
-        let url = `${SCRIPT_URL}?action=${action}`;
-        
-        // Cấu hình fetch
-        let options = {
-            method: method,
-            redirect: "follow", // Quan trọng: Google Script luôn trả về redirect 302
-        };
-
-        if (method === 'POST') {
-             // Google Script yêu cầu gửi text/plain để tránh lỗi CORS Preflight
-            options.headers = { "Content-Type": "text/plain;charset=utf-8" };
-            options.body = JSON.stringify(bodyData);
-        }
-
-        try {
-            const response = await fetch(url, options);
-            const json = await response.json();
-            return json;
-        } catch (error) {
-            console.error("Lỗi API:", error);
-            Swal.fire('Lỗi kết nối', 'Không thể kết nối đến máy chủ Google', 'error');
-            return null;
-        }
-    }
-
-    // --- KHỞI TẠO ---
-    document.addEventListener('DOMContentLoaded', function() {
-        document.getElementById('current-date').innerText = new Date().toLocaleDateString('vi-VN');
-        const u = document.getElementById('username'); if(u) u.value = 'KKH001';
-        
-        document.addEventListener('keyup', function(e) {
-            if(e.target.classList.contains('money-input')) {
-                let value = e.target.value.replace(/,/g, '').replace(/\D/g, ''); 
-                e.target.value = value.replace(/\B(?=(\d{3})+(?!\d))/g, ",");
-            }
-        });
-    });
-
-    // --- UI HELPERS ---
-    function toggleSidebar() { document.getElementById('sidebar').classList.toggle('show'); }
-    function showLoading(show = true) { document.getElementById('loading-overlay').style.display = show ? 'flex' : 'none'; }
-    function formatMoney(n) { return n ? parseFloat(n).toLocaleString('en-US') : '0'; }
-    function unformatMoney(str) { return str ? str.toString().replace(/,/g, '') : '0'; }
-
-    function switchView(viewName) {
-        document.querySelectorAll('.view-section').forEach(el => el.classList.add('d-none'));
-        document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
-        document.getElementById(`view-${viewName}`).classList.remove('d-none');
-        const nav = document.getElementById(`nav-${viewName}`); if(nav) nav.classList.add('active');
-        if(viewName === 'users') loadUserList();
-        if(viewName === 'inventory') renderTables(); 
-        if(window.innerWidth < 992) document.getElementById('sidebar').classList.remove('show');
-    }
-
-    // --- 1. XỬ LÝ LOGIN (Đã sửa dùng API POST) ---
-    async function handleLogin(e) {
-        e.preventDefault();
-        showLoading(true);
-        
-        // Gọi API Login
-        const u = document.getElementById('username').value;
-        const p = document.getElementById('password').value;
-        const res = await callAPI('login', 'POST', { username: u, password: p });
-        
-        showLoading(false);
-        if(res && res.success) {
-            document.getElementById('login-screen').style.display = 'none';
-            document.getElementById('app-screen').style.display = 'block';
-            document.getElementById('user-display-name').innerText = res.user.Username;
-            loadData(true); 
-        } else { 
-            Swal.fire('Lỗi', res ? res.message : 'Lỗi không xác định', 'error'); 
-        }
-    }
-
-    function handleLogout() {
-            Swal.fire({
-            title: 'Đăng xuất?', icon: 'warning', showCancelButton: true, confirmButtonColor: '#054a37'
-            }).then((r) => { 
-                if (r.isConfirmed) {
-                    document.getElementById('app-screen').style.display = 'none';
-                    document.getElementById('login-screen').style.display = 'flex';
-                    document.getElementById('form-login').reset();
-                    GLOBAL_DATA = { products: [], store: {}, nxs: [], hlv: [], revenue: 0, stock: 0, sold: 0 };
-                }
-            });
-    }
-
-    // --- 2. TẢI DỮ LIỆU (Đã sửa dùng API GET) ---
-    async function loadData(isInitial = false) {
-        if(isInitial) showLoading(true);
-        
-        // Gọi Configs (GET)
-        const resConfig = await callAPI('getConfigs', 'GET');
-        if(resConfig) {
-            GLOBAL_DATA.store = resConfig.store;
-            GLOBAL_DATA.nxs = resConfig.nxs;
-            GLOBAL_DATA.hlv = resConfig.hlv;
-            renderDropdowns();
-        }
-
-        // Gọi Products & Report (GET)
-        const resData = await callAPI('getReportData', 'GET');
-        if(resData) {
-            GLOBAL_DATA.products = resData.products;
-            GLOBAL_DATA.stock = resData.stock;
-            GLOBAL_DATA.sold = resData.sold;
-            GLOBAL_DATA.revenue = resData.revenue;
-            
-            renderTables();
-            renderDashboard();
-        }
-        
-        if(isInitial) showLoading(false);
-    }
-
-    function forceReload() {
-        showLoading(true);
-        loadData(false);
-        setTimeout(() => showLoading(false), 1000); 
-    }
-
-    // --- 3. RENDER UI (Giữ nguyên) ---
-    function renderTables() {
-        const invBody = document.getElementById('inventory-table-body');
-        invBody.innerHTML = GLOBAL_DATA.products.map(p => `
-        <tr onclick="viewProductDetail('${p.ID}')">
-            <td onclick="event.stopPropagation()">
-                <div class="btn-group">
-                    <button class="btn btn-sm btn-outline-dark" onclick="printLabel('${p.ID}')"><i class="fas fa-barcode"></i></button>
-                    <button class="btn btn-sm btn-outline-danger" onclick="deleteItem('${p.ID}')"><i class="fas fa-trash-alt"></i></button>
-                </div>
-            </td>
-            <td><small class="text-muted">${p.ID}</small></td>
-            <td class="fw-bold">${p.Ten_SP}</td>
-            <td>${p.Ma_NXS}</td>
-            <td>${p.HLV}</td>
-            <td>${p.KLT}</td>
-            <td>${p.KLH}</td>
-            <td class="text-success fw-bold">${p.KLV}</td>
-            <td>${p.Ngay_Nhap}</td>
-            <td><span class="badge ${p.Trang_Thai==='Tồn kho'?'badge-stock':'badge-sold'}">${p.Trang_Thai==='Tồn kho' ? 'SẴN SÀNG' : p.Trang_Thai}</span></td>
-        </tr>`).join('');
-        
-        renderSalesTable();
-    }
-
-    function renderSalesTable() {
-        const t = document.getElementById('search-sales').value.toLowerCase();
-        const salesBody = document.getElementById('sales-table-body');
-        const saleable = GLOBAL_DATA.products.filter(p => p.Trang_Thai === 'Tồn kho' && (p.Ten_SP.toLowerCase().includes(t) || String(p.ID).toLowerCase().includes(t)));
-        
-        salesBody.innerHTML = saleable.map(p => `
-        <tr onclick="showSalesDetail('${p.ID}')" style="cursor:pointer">
-            <td>
-                <button type="button" class="btn btn-sm btn-gold shadow-sm" onclick="event.stopPropagation(); showSalesDetail('${p.ID}')">Bán</button>
-            </td>
-            <td>${p.ID}</td>
-            <td class="fw-bold">${p.Ten_SP}</td>
-            <td class="text-end fw-bold text-success">${formatMoney(p.Gia_Ban)}</td>
-            <td><span class="badge badge-stock">Sẵn sàng</span></td>
-        </tr>`).join('');
-    }
-
-    function renderDashboard() {
-        document.getElementById('kpi-stock').innerText = GLOBAL_DATA.stock;
-        document.getElementById('kpi-sold').innerText = GLOBAL_DATA.sold;
-        document.getElementById('kpi-revenue').innerText = formatMoney(GLOBAL_DATA.revenue); 
-        
-        if(charts.revenue) charts.revenue.destroy();
-        let mapRev = {};
-        GLOBAL_DATA.products.forEach(p => {
-            if(p.Trang_Thai === 'Đã bán' && p.Ngay_Ban) {
-                let date = p.Ngay_Ban.split(' ')[0];
-                let val = parseFloat(String(p.Gia_Ban).replace(/,/g,'')) || 0;
-                mapRev[date] = (mapRev[date] || 0) + val;
-            }
-        });
-        charts.revenue = new Chart(document.getElementById('chart-revenue'), {
-            type: 'bar',
-            data: { labels: Object.keys(mapRev).slice(-7), datasets: [{ label: 'Doanh thu', data: Object.values(mapRev).slice(-7), backgroundColor: '#c5a059' }] },
-            options: { responsive: true, maintainAspectRatio: false }
-        });
-    }
-
-    // --- 4. CÁC ACTION MODAL (Đã sửa dùng API POST) ---
-    function showAddModal() { 
-        document.getElementById('form-add').reset(); 
-        document.getElementById('out-klv').value = '0.0'; 
-        document.querySelectorAll('#form-add input').forEach(i => {
-            if(i.id !== 'out-klv' && i.id !== 'inp-xuatxu') i.readOnly = false;
-        });
-        document.getElementById('btn-save-product').style.display = 'block';
-        new bootstrap.Modal(document.getElementById('addModal')).show(); 
-    }
-
-    function viewProductDetail(id) {
-            const p = GLOBAL_DATA.products.find(x => x.ID == id);
-            if(!p) return;
-            const form = document.getElementById('form-add');
-            form.elements['tenSp'].value = p.Ten_SP;
-            form.elements['maNxs'].value = p.Ma_NXS;
-            form.elements['xuatXu'].value = p.Xuat_Xu;
-            form.elements['hlv'].value = p.HLV;
-            form.elements['kyHieu'].value = p.Ky_Hieu || '';
-            form.elements['klt'].value = p.KLT;
-            form.elements['klh'].value = p.KLH;
-            form.elements['giaNhap'].value = formatMoney(p.Gia_Nhap);
-            form.elements['giaBan'].value = formatMoney(p.Gia_Ban);
-            form.elements['tccs'].value = p.TCCS;
-            document.getElementById('out-klv').value = p.KLV;
-
-            document.querySelectorAll('#form-add input').forEach(i => i.readOnly = true);
-            document.getElementById('btn-save-product').style.display = 'none'; 
-            new bootstrap.Modal(document.getElementById('addModal')).show();
-    }
-    
-    async function submitProduct() { 
-        const form = document.getElementById('form-add');
-        const formData = new FormData(form);
-        const obj = Object.fromEntries(formData.entries());
-        obj.giaNhap = unformatMoney(obj.giaNhap); 
-        obj.giaBan = unformatMoney(obj.giaBan);
-        
-        showLoading(true);
-        // Gọi API POST
-        const res = await callAPI('addProduct', 'POST', obj);
-        
-        showLoading(false);
-        if(res && res.success) { 
-            bootstrap.Modal.getInstance(document.getElementById('addModal')).hide(); 
-            Swal.fire({icon:'success', title:'Đã lưu', timer: 1000, showConfirmButton: false});
-            loadData(false); 
-        } else { 
-            Swal.fire('Lỗi', res ? res.message : 'Error', 'error'); 
-        }
-    }
-
-    function showSalesDetail(id) {
-        const p = GLOBAL_DATA.products.find(x => x.ID == id);
-        if(!p) return;
-        document.getElementById('edit-id').value = p.ID;
-        document.getElementById('view-name').value = p.Ten_SP;
-        document.getElementById('edit-giaban').value = formatMoney(p.Gia_Ban); 
-        new bootstrap.Modal(document.getElementById('salesDetailModal')).show();
-    }
-
-    async function submitEditSales() {
-        const id = document.getElementById('edit-id').value;
-        const finalPrice = unformatMoney(document.getElementById('edit-giaban').value);
-        const p = GLOBAL_DATA.products.find(x => x.ID == id);
-        
-        showLoading(true);
-        // Step 1: Cập nhật giá bán mới (POST)
-        await callAPI('updateSoldProduct', 'POST', {editId: id, editGiaBan: finalPrice});
-        
-        // Step 2: Thực hiện bán (POST)
-        const res = await callAPI('sellProduct', 'POST', {id: id});
-        
-        showLoading(false);
-        if(res && res.success) {
-            bootstrap.Modal.getInstance(document.getElementById('salesDetailModal')).hide();
-            printReceipt(p, GLOBAL_DATA.store, finalPrice);
-            Swal.fire({icon: 'success', title: 'Đã bán', timer: 1500, showConfirmButton: false});
-            loadData(false);
-        } else {
-             Swal.fire('Lỗi', res ? res.message : 'Lỗi bán hàng', 'error');
-        }
-    }
-
-    // --- 5. IN ẤN (Giữ nguyên) ---
-    function printLabel(id) {
-        const product = GLOBAL_DATA.products.find(p => p.ID == id);
-        if(!product) return;
-        const store = GLOBAL_DATA.store;
-        const nxs = GLOBAL_DATA.nxs.find(n => n.Ma_NXS == product.Ma_NXS) || {Ten_Day_Du: product.Ma_NXS, Dia_Chi: ''};
-        
-        document.getElementById('print-area').innerHTML = `
-            <div class="jewelry-tag">
-                <div class="tag-left">
-                    <div class="store-name">${store.Ten_Cua_Hang || 'DOANH NGHIỆP TƯ NHÂN VÀNG BẠC KIM KHÁNH'}</div>
-                    <div class="store-addr">${store.Dia_Chi || 'Đ/c: Lô số 5 nhà 1, Tầng 1 Chợ Đông Hà, TP. Đông Hà, Quảng Trị'}</div>
-                    <div class="nxs-block">
-                        <b>NXS:</b> ${nxs.Ten_Day_Du}<br>
-                        Đ/c: ${nxs.Dia_Chi || ''}
-                    </div>
-                    <div class="tccs">${product.TCCS || 'TCCS 01:2024/PNJP'}</div>
-                </div>
-                <div class="tag-right">
-                    <div class="row-top">
-                        <span class="prod-name">${product.Ten_SP}</span>
-                        <span class="prod-symbol">Ký hiệu: ${product.Ky_Hieu || ''}</span>
-                    </div>
-                    <div class="prod-specs">
-                        Xuất xứ: ${product.Xuat_Xu || 'Việt Nam'}<br>
-                        HLV: ${product.HLV}
-                    </div>
-                    <div class="prod-specs">
-                        KLT: ${product.KLT} chỉ &nbsp;&nbsp;&nbsp; KLH: ${product.KLH} chỉ
-                    </div>
-                    <div class="klv-row">KLV: &nbsp;&nbsp;&nbsp; ${product.KLV} chỉ</div>
-                    <div class="tag-footer">KIM KHÁNH ${product.HLV.replace('K','')}K</div>
-                </div>
-            </div>`;
-        setTimeout(() => window.print(), 300);
-    }
-
-    function printReceipt(p, store, actualPrice) {
-        const area = document.getElementById('receipt-area');
-        const now = new Date();
-        const dateStr = now.toLocaleDateString('vi-VN') + ' ' + now.toLocaleTimeString('vi-VN');
-        const priceStr = formatMoney(actualPrice);
-        
-        area.innerHTML = `
-            <div class="bill-header">
-                <div class="bill-title">${store.Ten_Cua_Hang || 'KIM KHÁNH JEWELRY'}</div>
-                <div>${store.Dia_Chi || 'Đông Hà, Quảng Trị'}</div>
-                <div>Hotline: ${store.SDT || ''}</div>
-            </div>
-            <div class="dashed-line"></div>
-            <div class="text-center">HÓA ĐƠN BÁN LẺ</div>
-            <div class="text-center small">${dateStr}</div>
-            <div class="dashed-line"></div>
-            <div class="bill-row fw-bold"><span>Sản phẩm</span><span>Thành tiền</span></div>
-            <div class="bill-row" style="margin-top:5px">
-                <span style="max-width: 60%">${p.Ten_SP}<br><small>(${p.HLV} - ${p.KLV}c)</small></span>
-                <span>${priceStr}</span>
-            </div>
-            <div class="dashed-line"></div>
-            <div class="bill-row bill-total"><span>TỔNG CỘNG:</span><span>${priceStr} đ</span></div>
-            <div class="bill-footer">Xin cảm ơn và hẹn gặp lại!<br><i>Vui lòng giữ lại hóa đơn để bảo hành.</i></div>
-        `;
-        setTimeout(() => window.print(), 500);
-    }
-
-    // --- HELPERS (Logic cũ, thay đổi cách gọi API) ---
-    async function deleteItem(id) { 
-        if(confirm('Xóa SP này?')) { 
-            showLoading(true); 
-            const res = await callAPI('deleteProduct', 'POST', {id: id});
-            if(res && res.success) loadData(false);
-            else { showLoading(false); Swal.fire('Lỗi', 'Không xóa được', 'error'); }
-        } 
-    }
-    
-    function calcKLV() { document.getElementById('out-klv').value = (parseFloat(document.getElementById('inp-klt').value)||0 - parseFloat(document.getElementById('inp-klh').value)||0).toFixed(1); }
-    function filterSalesTable() { renderSalesTable(); }
-    function renderDropdowns() {
-            const nxs = document.getElementById('select-nxs'); const hlv = document.getElementById('select-hlv');
-            if(nxs) nxs.innerHTML = '<option value="">--Chọn--</option>' + GLOBAL_DATA.nxs.map(n => `<option value="${n.Ma_NXS}">${n.Ten_Day_Du}</option>`).join('');
-            if(hlv) hlv.innerHTML = GLOBAL_DATA.hlv.map(h => `<option value="${h.HLV}">${h.HLV}</option>`).join('');
-    }
-    function autoFillOrigin() { const val = document.getElementById('select-nxs').value; const item = GLOBAL_DATA.nxs.find(n => n.Ma_NXS == val); document.getElementById('inp-xuatxu').value = item ? (item.Xuat_Xu||'VN') : ''; }
-    
-    // --- 6. USERS MANAGEMENT (API POST/GET) ---
-    async function loadUserList() { 
-        const data = await callAPI('getUserList', 'GET');
-        if(data) {
-            userList = data; 
-            document.getElementById('users-table-body').innerHTML = data.map(u => `<tr><td>${u.ID}</td><td>${u.Username}</td><td>${u.Phone}</td><td>${u.Status}</td><td><button class="btn btn-sm btn-warning" onclick="showUserModal('edit','${u.ID}')"><i class="fas fa-edit"></i></button><button class="btn btn-sm btn-danger ms-1" onclick="deleteUser('${u.ID}')"><i class="fas fa-trash"></i></button></td></tr>`).join(''); 
-        }
-    }
-
-    function showUserModal(action, id) { document.getElementById('form-user').reset(); document.getElementById('user-action').value = action; document.getElementById('userModalTitle').innerText = action === 'add' ? 'Thêm NV' : 'Sửa NV'; document.getElementById('u-id').readOnly = (action !== 'add'); if(action === 'edit') { const u = userList.find(x => x.ID == id); if(u) { document.getElementById('u-id').value = u.ID; document.getElementById('u-name').value = u.Username; document.getElementById('u-phone').value = u.Phone; document.getElementById('u-status').value = u.Status; } } new bootstrap.Modal(document.getElementById('userModal')).show(); }
-    
-    async function submitUser() { 
-        const form = document.getElementById('form-user'); 
-        const data = Object.fromEntries(new FormData(form).entries()); 
-        const action = document.getElementById('user-action').value;
-        showLoading(true); 
-        
-        const res = await callAPI('manageUser', 'POST', {actionType: action, userData: data});
-        
-        showLoading(false); 
-        bootstrap.Modal.getInstance(document.getElementById('userModal')).hide(); 
-        if(res && res.success) { Swal.fire('OK', res.message, 'success'); loadUserList(); } 
-        else Swal.fire('Lỗi', res ? res.message : 'Error', 'error'); 
-    }
-    
-    async function deleteUser(id) { 
-        if(confirm('Xóa nhân viên?')) {
-            const res = await callAPI('manageUser', 'POST', {actionType: 'delete', userData: {id: id}});
-            if(res && res.success) loadUserList();
-        }
-    }
-</script>
+    <?!= include('javascript'); ?>
   </body>
 </html>
