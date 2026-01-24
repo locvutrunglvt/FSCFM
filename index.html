@@ -21,15 +21,6 @@
       --text-main: #2c3e50;
     }
 
-    .bg-fsc {
-      font-family: 'Be Vietnam Pro', sans-serif;
-      background-color: #F8F9FA;
-    }
-
-    .navbar-fsc-gradient {
-      background: linear-gradient(135deg, #2E7D32 0%, #1B5E20 100%) !important;
-    }
-
     body {
       font-family: 'Be Vietnam Pro', sans-serif;
       background-color: var(--bg-light);
@@ -324,12 +315,12 @@
   </style>
 </head>
 
-<body class="bg-fsc">
+<body style="font-family: 'Be Vietnam Pro', sans-serif; background-color: #F8F9FA;">
 
   <div id="login-screen" class="vh-100 d-flex align-items-center justify-content-center">
     <div class="login-card p-5 text-center bg-white shadow rounded-4">
       <img src="https://github.com/impactslowforest/Logo/blob/main/FSC%20logo%20-%20R.png?raw=true" height="80"
-        class="mb-4 logo-bounce" alt="FSC Logo">
+        class="mb-4 logo-bounce">
       <h5 class="fw-bold text-success mb-4">QUẢN LÝ RỪNG BỀN VỮNG</h5>
 
       <form id="form-login">
@@ -363,13 +354,13 @@
   </div>
 
   <div id="main-app" class="d-none d-flex flex-column vh-100">
-    <nav class="navbar navbar-dark bg-success shadow px-3 navbar-fsc-gradient">
-      <button class="btn text-white" id="sidebarToggle" type="button"><i class="fa-solid fa-bars"></i></button>
+    <nav class="navbar navbar-dark bg-success shadow px-3"
+      style="background: linear-gradient(135deg, #2E7D32 0%, #1B5E20 100%) !important;">
+      <button class="btn text-white" id="sidebarToggle"><i class="fa-solid fa-bars"></i></button>
       <span class="navbar-brand fw-bold ms-2 fs-6">FSC SYSTEM</span>
       <div class="ms-auto text-white d-flex align-items-center">
         <span class="me-2 small d-none d-md-block" id="user-display-name">User</span>
-        <button class="btn btn-sm btn-light text-success fw-bold rounded-pill px-3" type="button"
-          onclick="logout()">Thoát</button>
+        <button class="btn btn-sm btn-light text-success fw-bold rounded-pill px-3" onclick="logout()">Thoát</button>
       </div>
     </nav>
 
@@ -472,22 +463,11 @@
     });
 
     function showAppMain() {
-      console.log("Hiding login screen and showing main app...");
-      // Xử lý ẩn màn hình đăng nhập chắc chắn hơn bằng CSS trực tiếp
-      $('#login-screen').addClass('d-none').css('display', 'none');
-
-      // Hiện ứng dụng chính với hiệu ứng fade
-      $('#main-app').removeClass('d-none').hide().fadeIn(400);
-
-      if (currentUser) {
-        $('#user-display-name').text(currentUser['Họ và tên'] || 'User');
-      }
-
-      if (APP_DATA && APP_DATA['Menu']) {
+      $('#login-screen').fadeOut(300, function () {
+        $('#main-app').removeClass('d-none').hide().fadeIn(300);
+        $('#user-display-name').text(currentUser['Họ và tên']);
         renderSystemMenu(APP_DATA['Menu']);
-      } else {
-        console.warn("APP_DATA['Menu'] is missing or empty.");
-      }
+      });
     }
 
     function toggleAuth(mode) {
@@ -514,25 +494,18 @@
           password: $('#login-pass').val().trim()
         });
 
-        console.log("Login response:", res);
-
         if (res && res.success) {
           currentUser = res.user;
           APP_DATA = res.data;
-
-          // Lưu vào localStorage để tự động đăng nhập lần sau
           localStorage.setItem('fsc_user', JSON.stringify(currentUser));
           localStorage.setItem('fsc_app_data', JSON.stringify(APP_DATA));
-
           showAppMain();
         } else {
-          err.text(res ? res.message : "Đăng nhập thất bại (Server không phản hồi đúng)!").fadeIn();
+          err.text(res ? res.message : "Đăng nhập thất bại!").fadeIn();
         }
       } catch (error) {
-        console.error("Login Error:", error);
-        err.text("Lỗi kết nối tới máy chủ hoặc xử lý dữ liệu!").fadeIn();
-      }
-      finally {
+        err.text("Lỗi kết nối tới máy chủ!").fadeIn();
+      } finally {
         btn.prop('disabled', false).text('ĐĂNG NHẬP');
       }
     });
