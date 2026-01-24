@@ -429,31 +429,55 @@
       'NhomCCR': {
         columns: [
           'ID nhóm', 'Mã nhóm', 'Tên nhóm', 'Người đại diện', 'Số điện thoại', 'Địa chỉ',
-          'Diện tích FSC', 'Diện tích ngoài FSC', 'Diện tích rừng tự nhiên', 'Tổng diện tích',
-          'Diện tích khai thác', 'Diện tích trồng', 'Số thành viên', 'Ngày cập nhật'
+          'Tỉnh', 'Huyện', 'Xã', 'Xóm', 'Vị trí', 'Diện tích FSC', 'Diện tích ngoài FSC',
+          'Diện tích rừng tự nhiên', 'Tổng diện tích', 'Diện tích khai thác', 'Diện tích trồng',
+          'Số thành viên', 'Ngày cập nhật', 'Người cập nhật', 'Đường dẫn file'
         ],
         main: ['ID nhóm', 'Tên nhóm', 'Người đại diện', 'Số thành viên', 'Tổng diện tích']
       },
       'Churung': {
         columns: [
-          'ID chủ rừng', 'ID nhóm', 'Họ tên chủ rừng', 'Giới tính', 'Số điện thoại', 'Số lô rừng', 'Tổng diện tích'
+          'ID chủ rừng', 'ID nhóm', 'Thông tin cá nhân', 'Họ tên chủ rừng', 'Giới tính', 'Ngày sinh',
+          'Dân tộc', 'CCCD', 'Họ tên vợ', 'Họ tên chồng', 'Thông tin liên hệ và địa chỉ',
+          'Số điện thoại', 'Tỉnh', 'Huyện', 'Xã', 'Thôn', 'Địa chỉ', 'Thông tin tham gia nhóm',
+          'Ngày tham gia', 'Ngày rời nhóm', 'Thông tin rừng quản lý', 'Số lô rừng',
+          'Tổng diện tích', 'Thông tin hệ thống', 'Người nhập dữ liệu', 'Cập nhật', 'Đường dẫn file'
         ],
         main: ['ID chủ rừng', 'Họ tên chủ rừng', 'Số điện thoại', 'Tổng diện tích']
       },
       'Lo_rung': {
         columns: [
-          'ID lô rừng', 'Mã số lô 2024', 'Tổng diện tích', 'Diện tích FSC', 'Diện tích rừng tự nhiên'
+          'ID nhóm', 'ID chủ rừng', 'ID lô rừng', 'Mã số lô 2024', 'Mã số lô 2023', 'QR code', 'Tên lô rừng',
+          '2. Thông tin địa lý – pháp lý', 'Số sổ đỏ', 'Tờ bản đồ', 'Thửa đất', 'Tiểu khu', 'Khoảnh',
+          'Tọa độ tâm lô', 'Khoảng cách tới nhà', 'Địa chỉ lô', '3. Thông tin pháp lý – sở hữu – ổn định',
+          'Tình trạng sổ đỏ', 'Ngày tham gia FSC', 'Tình trạng xói mòn', 'Nguyên nhân xói mòn',
+          'Mốc ranh giới', 'Độ bền vững mốc ranh', 'Trạng thái', '4. Đặc điểm sinh thái – địa hình',
+          'Độ dốc bình quân', 'Giáp ranh rừng tự nhiên', 'Có loài cây bản địa', 'Tên động vật thực vật quý',
+          '5. Cây trồng và nguồn gốc giống', 'Loài cây trồng chính', 'Loài cây trồng xen ghép',
+          'Loài cây trồng FSC', 'Nguồn gốc giống', 'Mô tả nguồn gốc giống', 'Có hóa đơn giống',
+          '6. Mật độ và số cây', 'Mật độ ban đầu', 'Mật độ sau khi tỉa thưa', 'Số cây trồng chính',
+          'Số cây trồng dặm', 'Tổng diện tích', 'Diện tích GCN QSDĐ', 'Diện tích trồng rừng',
+          'Diện tích FSC', 'Diện tích ngoài FSC', 'Diện tích vùng đệm', 'Diện tích rừng tự nhiên',
+          'Diện tích HLVS', 'Có ao hồ', '8. Thời gian – chu kỳ – sản lượng', 'Thời điểm trồng',
+          'Năm trồng', 'Số năm khai thác', 'Năm khai thác', 'Sản lượng khai thác xe',
+          'Sản lượng khai thác đăm', '9. Lao động – an toàn – thiết bị', 'Có thuê lao động',
+          'Phương tiện bảo hộ lao động', 'Loại phương tiện BHLD', '10. Biện pháp kỹ thuật lâm sinh',
+          'Kỹ thuật trước trồng', 'Kỹ thuật chăm sóc', 'Cuốc hố bằng máy', 'Bón phân', 'Loại phân bón',
+          'Định lượng phân bón', 'Kiểm soát dịch bệnh', 'Tình hình sâu bệnh', 'Thuốc sử dụng', 'Phòng cháy chữa cháy'
         ],
         main: ['ID lô rừng', 'Mã số lô 2024', 'Tổng diện tích', 'Diện tích FSC']
       },
       'Taphuan': { columns: ['ID tập huấn', 'ID chủ rừng', 'Loại tập huấn', 'Ngày tập huấn', 'Địa điểm', 'Giảng viên', 'Số lượng tham dự'] },
       'Noidung_taphuan': { columns: ['ID tập huấn', 'Tên lớp tập huấn', 'Loại tập huấn', 'Ghi chú'] },
       'Loai_hoatdong_rung': { columns: ['ID hoạt động', 'Tên hoạt động', 'Mô tả chi tiết'] },
-      'Biendong_lorung': { columns: ['ID biến động', 'ID lô rừng', 'Ngày thay đổi', 'Diện tích FSC', 'Người cập nhật'] },
-      'KH_QL_Lorung': { columns: ['ID kế hoạch', 'ID lô rừng', 'Hoạt động', 'Ngày thực hiện', 'Trạng thái'] },
-      'KH_HD_nhom': { columns: ['ID hoạt động nhóm', 'ID nhóm', 'Tên hoạt động', 'Thời gian bắt đầu', 'Người chịu trách nhiệm'] },
-      'KH_HD_Churung': { columns: ['ID hoạt động chủ rừng', 'ID chủ rừng', 'Tên hoạt động', 'Thời gian bắt đầu', 'Người chịu trách nhiệm'] },
-      'HD_Lorung': { columns: ['ID hoạt động lô', 'ID lô rừng', 'Tên hoạt động', 'Ngày triển khai', 'Kết quả hoạt động'] },
+      'KH_QL_Lorung': {
+        columns: ['ID kế hoạch', 'ID lô rừng', 'Hoạt động', 'Ngày thực hiện', 'Nội dung', 'Trạng thái', 'Người nhập', 'Ghi chú'],
+        main: ['ID kế hoạch', 'Hoạt động', 'Ngày thực hiện', 'Trạng thái']
+      },
+      'HD_Lorung': {
+        columns: ['ID hoạt động lô', 'ID lô rừng', 'ID hoạt động', 'Tên hoạt động', 'Ngày triển khai', 'Ngày kết thúc', 'Ngày báo cáo', 'Địa điểm kiểm tra', 'Người kiểm tra', 'Kết quả hoạt động', 'Diện tích thực hiện', 'Số lao động', 'Tuổi lao động'],
+        main: ['ID hoạt động lô', 'Tên hoạt động', 'Ngày triển khai', 'Kết quả hoạt động']
+      },
       'DS_HDong': { columns: ['ID DS hoat dong', 'Hoạt động chi tiết', 'Nhóm hoạt động'] }
     };
 
@@ -867,7 +891,23 @@
                    </div>
                  </div>`;
       } else if (sheetName === 'Churung') {
-        html += `<div class="mt-3"><button class="btn btn-outline-success w-100 fw-bold" onclick="loadViewWithFilter('Lo_rung', 'ID chủ rừng', '${d['ID chủ rừng']}', 'Lô rừng của ${d['Họ tên chủ rừng']}')"><i class="fa-solid fa-map-location-dot me-2"></i> XEM CHI TIẾT LÔ RỪNG</button></div>`;
+        html += `
+          <div class="mt-4 card p-3 border-0 shadow-sm bg-light">
+            <h6 class="fw-bold text-success mb-3"><i class="fa-solid fa-link me-2"></i>LIÊN KẾT HỘ DÂN</h6>
+            <div class="row g-2">
+              <div class="col-6"><button class="btn btn-success w-100 btn-sm fw-bold shadow-sm" onclick="loadViewWithFilter('Lo_rung', 'ID chủ rừng', '${d['ID chủ rừng']}', 'Lô rừng của ${d['Họ tên chủ rừng']}')"><i class="fa-solid fa-map-location-dot me-2"></i> XEM LÔ RỪNG</button></div>
+              <div class="col-6"><button class="btn btn-primary w-100 btn-sm fw-bold shadow-sm" onclick="loadViewWithFilter('Taphuan', 'ID chủ rừng', '${d['ID chủ rừng']}', 'Tập huấn của ${d['Họ tên chủ rừng']}')"><i class="fa-solid fa-graduation-cap me-2"></i> TẬP HUẤN</button></div>
+            </div>
+          </div>`;
+      } else if (sheetName === 'Lo_rung') {
+        html += `
+          <div class="mt-4 card p-3 border-0 shadow-sm bg-light">
+            <h6 class="fw-bold text-success mb-3"><i class="fa-solid fa-gears me-2"></i>HOẠT ĐỘNG LÂM SINH</h6>
+            <div class="row g-2">
+              <div class="col-6"><button class="btn btn-danger w-100 btn-sm fw-bold shadow-sm" onclick="loadViewWithFilter('KH_QL_Lorung', 'ID lô rừng', '${d['ID lô rừng']}', 'Kế hoạch lô ${d['Mã số lô 2024']}')"><i class="fa-solid fa-calendar-check me-2"></i> KẾ HOẠCH</button></div>
+              <div class="col-6"><button class="btn btn-warning w-100 btn-sm fw-bold shadow-sm" onclick="loadViewWithFilter('HD_Lorung', 'ID lô rừng', '${d['ID lô rừng']}', 'Hoạt động lô ${d['Mã số lô 2024']}')"><i class="fa-solid fa-clipboard-list me-2"></i> BIÊN BẢN/BÁO CÁO</button></div>
+            </div>
+          </div>`;
       } else if (sheetName === 'NhanSu') {
         const isAdmin = currentUser && (String(currentUser['Chức vụ']).toLowerCase().includes('admin'));
         const isPending = d['Trạng thái'] === 'Pending';
