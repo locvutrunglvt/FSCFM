@@ -1,0 +1,19 @@
+<style>
+  :root {
+    --forest-primary: #1B5E20;
+    --forest-gradient: linear-gradient(135deg, #2E7D32 0%, #1B5E20 100%);
+    --bg-light: #F8F9FA;
+    --text-main: #2c3e50;
+  }
+  body { font-family: 'Be Vietnam Pro', sans-serif; background-color: var(--bg-light); color: var(--text-main); font-size: 15px; }
+  
+  /* LOGIN & SIDEBAR */
+  #login-screen { background: linear-gradient(rgba(20,50,20,0.9), rgba(10,30,10,0.95)), url('https://images.unsplash.com/photo-1448375240586-dfd8d395ea6c?ixlib=rb-4.0.3&auto=format&fit=crop&w=1920&q=80'); background-size: cover; position: absolute; top: 0; left: 0; right: 0; bottom: 0; z-index: 9999; }
+  .login-card { background: rgba(255,255,255,0.98); border-radius: 16px; border-top: 5px solid #2E7D32; }
+  #sidebar-wrapper { width: 270px; min-width: 270px; background: #fff; border-right: 1px solid #eaeaea; transition: margin 0.3s ease; }
+  #sidebar-wrapper.toggled { margin-left: -270px; }
+  .sidebar-header { padding: 20px; background: var(--forest-gradient); color: white; font-weight: 700; text-align: center; }
+  .menu-sub-link { display: block; padding: 12px 20px 12px 45px; color: #555; text-decoration: none; font-size: 0.95rem; border-left: 4px solid transparent; transition: all 0.2s; }
+  .menu-sub-link:hover { background-color: #f0f7f1; color: var(--forest-primary); border-left: 4px solid var(--forest-primary); }
+  .accordion-button { font-size: 1rem; font-weight: 700; padding: 14px 15px; color: #444; }
+  .accordion
