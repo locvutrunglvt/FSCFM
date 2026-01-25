@@ -959,8 +959,8 @@
       // Update Sidebar Context (PC Only)
       updateSidebarContext();
       // Xử lý View đặc biệt: Audit (DG_noibo)
-      if (current.viewName === 'InternalAudit' || current.viewName === 'DG_noibo') {
-        renderAuditModule(); // Changed from renderAuditGroupsList
+      if (current.viewName === 'InternalAudit' || current.viewName === 'DG_noibo' || current.title === 'Đánh giá nội bộ') {
+        renderAuditModule();
         return;
       }
 
