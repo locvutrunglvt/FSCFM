@@ -206,6 +206,8 @@ function apiCRUD(action, sheetName, jsonData) {
     console.log("Data Payload:", JSON.stringify(dataObj));
 
     if (!idValue && action !== 'CREATE') {
+      return { success: false, message: `Thiếu ID (${idColumnName}) để thực hiện ${action}` };
+    }
 
     if (action === 'DELETE') {
        const data = ws.getDataRange().getValues();
