@@ -727,8 +727,8 @@
       console.log("Entering showAppMain...", { currentUser, APP_DATA });
       try {
         // Luôn ẩn màn hình đăng nhập trước
-        $('#login-screen').addClass('d-none');
-        $('#main-app').removeClass('d-none');
+        $('#login-screen').removeClass('d-flex').addClass('d-none').hide();
+        $('#main-app').removeClass('d-none').addClass('d-flex');
 
         if (!currentUser) throw new Error("currentUser is missing");
 
@@ -1326,7 +1326,7 @@
             <td>${row['Date']}</td>
             <td>${row['Staff']}</td>
             <td class="text-center">
-              <button class="btn btn-sm btn-outline-secondary" onclick="alert('Tính năng xem chi tiết đang phát triển')"><i class="fas fa-eye"></i></button>
+              <button class="btn btn-sm btn-outline-primary" onclick="viewAuditDetail('${row['ID']}')"><i class="fas fa-eye"></i></button>
             </td>
           </tr>
         `;
@@ -1560,7 +1560,6 @@
                         <div class="card-body p-3">
                            <div class="d-flex justify-content-between mb-2">
                               <span class="badge bg-success bg-opacity-10 text-success">${q.index}</span>
-                              <small class="text-muted fw-bold">${q.id}</small>
                            </div>
                            <h6 class="fw-bold mb-3" style="font-size: 0.95rem; min-height: 45px;">${q.label}</h6>
                            
@@ -1580,6 +1579,7 @@
                               <div class="input-group input-group-sm">
                                 <label class="input-group-text bg-white border-0"><i class="fas fa-paperclip text-muted"></i></label>
                                 <input type="file" class="form-control form-control-sm border-0 bg-white audit-file" multiple data-qid="${q.id}">
+                                <button class="btn btn-outline-secondary border-0" type="button" onclick="clearFileInput(this, '${q.id}')" title="Hủy file"><i class="fas fa-times"></i></button>
                               </div>
                            </div>
 
@@ -1597,13 +1597,112 @@
       }
       html += `</div>`;
 
-      html += `<div class="mt-4 text-center pb-5">
-        <button class="btn btn-primary btn-lg px-5 fw-bold shadow rounded-pill" onclick="submitAuditWithUpload()">
-           <i class="fas fa-save me-2"></i>LƯU KẾT QUẢ
-        </button>
-      </div>`;
-
       html += `</div></div>`;
+      container.html(html);
+    }
+
+    // --- VIEW AUDIT DETAIL ---
+    function viewAuditDetail(idDG) {
+      console.log("Viewing Audit Detail for:", idDG);
+
+      const dgList = APP_DATA['DG_noibo'] || [];
+      const hoiList = APP_DATA['Banghoi_DG_noibo'] || [];
+
+      const dgRecord = dgList.find(r => String(r['ID']) === String(idDG));
+      if (!dgRecord) return alert("Không tìm thấy bản ghi đánh giá!");
+
+      const hoiRecord = hoiList.find(r => String(r['ID_DG']) === String(idDG));
+
+      // prepare UI
+      const container = $('#page-content-dynamic');
+      container.empty();
+
+      const targetId = dgRecord['ID nhóm']; // Helper to find name
+      let targetName = targetId;
+      // Try to find name in Group or Board
+      if (APP_DATA['NhomCCR']) {
+        const g = APP_DATA['NhomCCR'].find(x => String(x['ID nhóm']) === String(targetId) || String(x['Mã nhóm']) === String(targetId));
+        if (g) targetName = g['Tên nhóm'];
+      }
+      if (targetName === targetId && APP_DATA['Ban_Quanlynhom']) {
+        const b = APP_DATA['Ban_Quanlynhom'].find(x => String(x['ID ban quản lý']) === String(targetId));
+        if (b) targetName = b['Tên ban quản lý'];
+      }
+
+      let html = `
+        <div class="card shadow-sm mb-4 border-0">
+          <div class="card-header bg-primary text-white fw-bold py-3">
+             <div class="d-flex justify-content-between align-items-center">
+                <span><i class="fas fa-eye me-2"></i>CHI TIẾT ĐÁNH GIÁ: ${targetName}</span>
+                <button class="btn btn-sm btn-light text-primary fw-bold" onclick="renderAuditModule()"><i class="fas fa-arrow-left me-1"></i>Quay lại</button>
+             </div>
+          </div>
+          <div class="card-body bg-light">
+             <div class="alert alert-light border shadow-sm mb-4">
+               <div class="row">
+                 <div class="col-md-3"><strong>Mã ĐG:</strong> ${dgRecord['ID']}</div>
+                 <div class="col-md-3"><strong>Ngày:</strong> ${dgRecord['Date']}</div>
+                 <div class="col-md-3"><strong>Người ĐG:</strong> ${dgRecord['Staff']}</div>
+                 <div class="col-md-3"><strong>Cập nhật:</strong> ${dgRecord['Update']}</div>
+               </div>
+             </div>
+             
+             <div class="accordion" id="auditDetailAccordion">`;
+
+      let idx = 0;
+      for (const [cat, questions] of Object.entries(AUDIT_DICTIONARY)) {
+        html += `
+          <div class="accordion-item mb-3 border rounded shadow-sm overflow-hidden">
+            <h2 class="accordion-header" id="headingD${idx}">
+              <button class="accordion-button ${idx > 0 ? 'collapsed' : ''} fw-bold text-uppercase bg-white text-primary" type="button" data-bs-toggle="collapse" data-bs-target="#collapseD${idx}">
+                ${cat}
+              </button>
+            </h2>
+            <div id="collapseD${idx}" class="accordion-collapse collapse ${idx === 0 ? 'show' : ''}" data-bs-parent="#auditDetailAccordion">
+              <div class="accordion-body bg-light p-3">
+                <div class="row row-cols-1 row-cols-md-2 g-3">`;
+
+        questions.forEach(q => {
+          let ans = { r: 'NA', n: '' };
+          if (hoiRecord && hoiRecord[q.id]) {
+            try {
+              // Try parsing JSON first
+              if (hoiRecord[q.id].startsWith('{')) {
+                ans = JSON.parse(hoiRecord[q.id]);
+              } else {
+                // Fallback for simple text if any
+                ans = { r: hoiRecord[q.id], n: '' };
+              }
+            } catch (e) {
+              ans = { r: hoiRecord[q.id], n: '' };
+            }
+          }
+
+          let badge = '<span class="badge bg-secondary">N/A</span>';
+          if (ans.r === 'TT') badge = '<span class="badge bg-success">TUÂN THỦ</span>';
+          if (ans.r === 'KTT') badge = '<span class="badge bg-danger">KHÔNG TT</span>';
+
+          html += `
+             <div class="col">
+               <div class="card h-100 border-0 shadow-sm">
+                 <div class="card-body p-3">
+                    <div class="d-flex justify-content-between mb-2">
+                       <span class="badge bg-primary bg-opacity-10 text-primary">${q.index}</span>
+                    </div>
+                    <h6 class="fw-bold mb-3 small" style="min-height:40px">${q.label}</h6>
+                    <div class="mb-2">${badge}</div>
+                    ${ans.n ? `<div class="bg-light p-2 rounded small text-dark mt-2 border"><i class="fas fa-comment-alt me-1 text-muted"></i> ${ans.n}</div>` : ''}
+                 </div>
+               </div>
+             </div>
+           `;
+        });
+
+        html += `</div></div></div></div>`;
+        idx++;
+      }
+
+      html += `</div></div></div>`;
       container.html(html);
     }
 
@@ -1623,6 +1722,12 @@
 
       // Update hidden input
       $(`.audit-result[data-qid="${qid}"]`).val(val);
+    }
+
+    // Helper: Clear File Input
+    function clearFileInput(btn, qid) {
+      const input = $(`.audit-file[data-qid="${qid}"]`);
+      input.val(''); // Clear value
     }
 
     function renderBreadcrumb() {
@@ -1724,10 +1829,11 @@
       if (sheetName === 'Ban_Quanlynhom') {
         html += `<div class="mt-3"><button class="btn btn-success w-100 fw-bold shadow-sm" onclick="loadViewWithFilter('NhomCCR', 'ID ban quản lý', '${d['ID ban quản lý']}', 'Nhóm thuộc ${d['Tên ban quản lý']}')"><i class="fa-solid fa-layer-group me-2"></i> XEM CÁC NHÓM THUỘC BAN</button></div>`;
       } else if (sheetName === 'NhomCCR') {
+        const safeItem = JSON.stringify(d).replace(/"/g, '&quot;');
         html += `<div class="mt-3 card p-3 border-0 shadow-sm">
                    <div class="row g-2">
-                     <div class="col-6"><button class="btn btn-outline-success w-100 btn-sm fw-bold" onclick="loadViewWithFilter('Churung', 'ID nhóm', '${d['ID nhóm']}', 'Chủ rừng thuộc ${d['Tên nhóm']}')"><i class="fa-solid fa-users me-2"></i> CHỦ RỪNG</button></div>
-                     <div class="col-6"><button class="btn btn-outline-success w-100 btn-sm fw-bold" onclick="loadViewWithFilter('Lo_rung', 'ID nhóm', '${d['ID nhóm']}', 'Lô rừng thuộc ${d['Tên nhóm']}')"><i class="fa-solid fa-tree me-2"></i> LÔ RỪNG</button></div>
+                     <div class="col-6"><button class="btn btn-outline-success w-100 btn-sm fw-bold" onclick="loadViewWithFilter('Churung', 'ID nhóm', '${d['ID nhóm']}', 'Hộ dân thuộc ${d['Tên nhóm']}')"><i class="fa-solid fa-users me-2"></i> HỘ DÂN</button></div>
+                     <div class="col-6"><button class="btn btn-outline-primary w-100 btn-sm fw-bold" onclick="showTargetHistory(${safeItem}, 'NhomCCR')"><i class="fa-solid fa-clipboard-check me-2"></i> ĐÁNH GIÁ NỘI BỘ</button></div>
                    </div>
                  </div>`;
       } else if (sheetName === 'Churung') {
