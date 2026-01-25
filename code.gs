@@ -191,6 +191,7 @@ function apiRegister(fullName, email, password, phone) {
 }
 
 // --- 3. API: CRUD (CÓ TỰ ĐỘNG GỬI MAIL KHI KÍCH HOẠT) ---
+// --- 3. API: CRUD (CÓ TỰ ĐỘNG GỬI MAIL KHI KÍCH HOẠT) ---
 function apiCRUD(action, sheetName, jsonData) {
   try {
     const ss = SpreadsheetApp.openById(SPREADSHEET_ID);
@@ -199,20 +200,33 @@ function apiCRUD(action, sheetName, jsonData) {
 
     const dataObj = (typeof jsonData === 'string') ? JSON.parse(jsonData) : jsonData;
     const headers = ws.getRange(1, 1, 1, ws.getLastColumn()).getValues()[0];
-    const idColumnName = headers[0]; 
+    
+    // Tự động xác định cột ID (Ưu tiên các tên cột phổ biến hoặc cột đầu tiên)
+    let idColumnName = headers[0];
+    if (sheetName === 'NhanSu' && headers.includes('ID_staff')) idColumnName = 'ID_staff';
+    else if (dataObj.hasOwnProperty('ID')) idColumnName = 'ID'; // Nếu Payload có trường ID thì ưu tiên tìm cột ID
+    else if (dataObj.hasOwnProperty(headers[0])) idColumnName = headers[0]; // Mặc định cột 0
+    else {
+        // Fallback: Tìm cột nào trong Headers mà có trong Payload và có vẻ là ID
+        const match = headers.find(h => dataObj.hasOwnProperty(h) && (h.toLowerCase().includes('id') || h.toLowerCase().includes('mã')));
+        if (match) idColumnName = match;
+    }
+
+    const idIdx = headers.indexOf(idColumnName);
+    if (idIdx === -1) return { success: false, message: `Lỗi cấu hình: Không tìm thấy cột ID (${idColumnName}) trên Sheet.` };
+
     const idValue = dataObj[idColumnName];
     
-    console.log(`CRUD ${action} on ${sheetName}. ID Col: ${idColumnName}, ID Val: ${idValue}`);
-    console.log("Data Payload:", JSON.stringify(dataObj));
-
+    console.log(`CRUD ${action} on ${sheetName}. ID Col: ${idColumnName} (Idx: ${idIdx}), ID Val: ${idValue}`);
+    
     if (!idValue && action !== 'CREATE') {
-      return { success: false, message: `Thiếu ID (${idColumnName}) để thực hiện ${action}` };
+      return { success: false, message: `Thiếu giá trị ID (${idColumnName}) để thực hiện ${action}` };
     }
 
     if (action === 'DELETE') {
        const data = ws.getDataRange().getValues();
        for (let i = 1; i < data.length; i++) {
-         if (String(data[i][0]) === String(idValue)) {
+         if (String(data[i][idIdx]) === String(idValue)) { // So sánh đúng cột ID tìm được
            ws.deleteRow(i + 1);
            return { success: true, message: 'Đã xóa thành công!' };
          }
@@ -224,7 +238,8 @@ function apiCRUD(action, sheetName, jsonData) {
        const newID = generateID(sheetName); 
        let newRow = [];
        headers.forEach(h => {
-         if (h === idColumnName) newRow.push(newID);
+         // Nếu là cột ID và payload không có giá trị, thì điền ID tự sinh
+         if (h === idColumnName && !dataObj[h]) newRow.push(newID);
          else newRow.push(dataObj[h] || '');
        });
        ws.appendRow(newRow);
@@ -234,7 +249,7 @@ function apiCRUD(action, sheetName, jsonData) {
     if (action === 'UPDATE') {
       const data = ws.getDataRange().getValues();
       for (let i = 1; i < data.length; i++) {
-        if (String(data[i][0]) === String(idValue)) {
+        if (String(data[i][idIdx]) === String(idValue)) { // So sánh đúng cột ID
           
           // Logic gửi mail khi Admin kích hoạt tài khoản (NhanSu)
           if (sheetName === 'NhanSu') {
