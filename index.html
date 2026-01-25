@@ -1145,13 +1145,13 @@
       select.html(opts).prop('disabled', false);
     };
 
-    window.submitAudit = async function () {
+    window.submitAuditWithUpload = async function () {
       const targetId = $('#audit-target-id').val();
       const date = $('#audit-date').val();
 
       if (!targetId || targetId === "") { return alert("Vui lòng chọn đối tượng đánh giá!"); }
 
-      // 1. Prepare DG_noibo data with Custom ID Structure
+      const btn = $('button[onclick="submitAuditWithUpload()"]');
       // Format: [ID nhóm]-yy[Sequence] (e.g. G001-2601)
       const today = new Date();
       const yy = today.getFullYear().toString().slice(-2);
@@ -1214,7 +1214,7 @@
       const score = total === 0 ? 100 : Math.round((passCount / total) * 100);
 
       if (confirm(`Xác nhận lưu kết quả đánh giá?\nĐiểm số dự kiến: ${score}%`)) {
-        const btn = $('button[onclick="submitAudit()"]');
+        const btn = $('button[onclick="submitAuditWithUpload()"]');
         btn.prop('disabled', true).html('ĐANG LƯU...');
 
         try {
