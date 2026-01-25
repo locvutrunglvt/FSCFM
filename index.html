@@ -958,9 +958,9 @@
 
       // Update Sidebar Context (PC Only)
       updateSidebarContext();
-      // Xử lý View đặc biệt: Audit
-      if (current.viewName === 'InternalAudit') {
-        renderAuditView(current);
+      // Xử lý View đặc biệt: Audit (DG_noibo)
+      if (current.viewName === 'InternalAudit' || current.viewName === 'DG_noibo') {
+        renderAuditGroupsList();
         return;
       }
 
@@ -1206,20 +1206,90 @@
       }
     };
 
-    function renderAuditView(current) {
+    function renderAuditGroupsList() {
       const container = $('#page-content-dynamic');
       container.empty();
 
+      if (!APP_DATA['NhomCCR'] || APP_DATA['NhomCCR'].length === 0) {
+        container.html('<div class="alert alert-warning">Chưa có dữ liệu Nhóm Chứng Chỉ Rừng (NhomCCR).</div>');
+        return;
+      }
+
+      let html = `
+        <div class="card shadow-sm">
+          <div class="card-header bg-success text-white fw-bold">
+            <i class="fas fa-clipboard-list me-2"></i>DANH SÁCH NHÓM CẦN ĐÁNH GIÁ
+          </div>
+          <div class="card-body">
+            <div class="table-responsive">
+              <table class="table table-hover table-striped">
+                <thead class="table-light">
+                  <tr>
+                    <th>Mã Nhóm</th>
+                    <th>Tên Nhóm</th>
+                    <th>Người Đại Diện</th>
+                    <th>Diện Tích FSC</th>
+                    <th class="text-center">Hành động</th>
+                  </tr>
+                </thead>
+                <tbody>
+      `;
+
+      APP_DATA['NhomCCR'].forEach(group => {
+        // Escape quotes for safe function call
+        const safeGroup = JSON.stringify(group).replace(/"/g, '&quot;');
+        html += `
+           <tr>
+             <td>${group['ID nhóm'] || group['Mã nhóm']}</td>
+             <td>${group['Tên nhóm']}</td>
+             <td>${group['Người đại diện'] || ''}</td>
+             <td>${group['Diện tích FSC'] || 0} ha</td>
+             <td class="text-center">
+               <button class="btn btn-sm btn-outline-success fw-bold" onclick="openAuditForm(${safeGroup})">
+                 <i class="fas fa-edit me-1"></i>Đánh giá
+               </button>
+             </td>
+           </tr>
+         `;
+      });
+
+      html += `
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      `;
+      container.html(html);
+    }
+
+    function openAuditForm(group) {
+      // Render the form pre-filled with this group
+      renderAuditFormUI(group);
+    }
+
+    function renderAuditFormUI(group) {
+      const container = $('#page-content-dynamic');
+      container.empty();
+
+      const groupID = group['ID nhóm'] || group['Mã nhóm'];
+      const groupName = group['Tên nhóm'];
+
       let html = `
         <div class="card shadow-sm mb-4">
-          <div class="card-header bg-success text-white fw-bold">ĐÁNH GIÁ NỘI BỘ (INTERNAL AUDIT)</div>
+          <div class="card-header bg-success text-white fw-bold">
+            <div class="d-flex justify-content-between align-items-center">
+               <span><i class="fas fa-seedling me-2"></i>ĐÁNH GIÁ NỘI BỘ: ${groupName} (${groupID})</span>
+               <button class="btn btn-sm btn-light text-success fw-bold" onclick="renderAuditGroupsList()"><i class="fas fa-arrow-left me-1"></i>Quay lại</button>
+            </div>
+          </div>
           <div class="card-body">
             <div class="row g-3">
                <div class="col-md-6">
-                 <label class="form-label fw-bold">Chọn Nhóm Chứng Chỉ Rừng (NhomCCR)</label>
-                 <select class="form-select" id="audit-target-id">
-                   <option value="">-- Đang tải danh sách --</option>
-                 </select>
+                 <label class="form-label fw-bold">Nhóm được đánh giá</label>
+                 <input type="text" class="form-control" value="${groupName}" disabled>
+                 <input type="hidden" id="audit-target-id" value="${groupID}">
+                 <input type="hidden" id="audit-target-type" value="NhomCCR">
                </div>
                <div class="col-md-6">
                  <label class="form-label fw-bold">Ngày đánh giá</label>
@@ -1233,7 +1303,6 @@
       html += `<div class="accordion" id="auditAccordion">`;
       let idx = 0;
       for (const [cat, questions] of Object.entries(AUDIT_DICTIONARY)) {
-        const safeCat = cat.replace(/[^\w\s]/gi, '').replace(/\s+/g, '_');
         html += `
           <div class="accordion-item">
             <h2 class="accordion-header" id="heading${idx}">
@@ -1243,7 +1312,7 @@
             </h2>
             <div id="collapse${idx}" class="accordion-collapse collapse ${idx === 0 ? 'show' : ''}" data-bs-parent="#auditAccordion">
               <div class="accordion-body bg-light p-2">
-                ${questions.map((q, i) => `
+                ${questions.map((q) => `
                   <div class="card mb-2 border-0 shadow-sm">
                     <div class="card-body py-2">
                        <div class="d-flex justify-content-between">
@@ -1279,20 +1348,6 @@
       </div>`;
 
       container.html(html);
-
-      // Load NhomCCR list
-      setTimeout(() => {
-        const select = $('#audit-target-id');
-        if (APP_DATA['NhomCCR']) {
-          let opts = '<option value="">-- Chọn Nhóm --</option>';
-          APP_DATA['NhomCCR'].forEach(g => {
-            opts += `<option value="${g['ID nhóm'] || g['Mã nhóm']}">${g['Tên nhóm']} (${g['ID nhóm'] || g['Mã nhóm']})</option>`;
-          });
-          select.html(opts);
-        } else {
-          select.html('<option>Chưa có dữ liệu Nhóm CCR</option>');
-        }
-      }, 100);
     }
 
     function renderBreadcrumb() {
