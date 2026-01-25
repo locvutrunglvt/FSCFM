@@ -960,7 +960,7 @@
       updateSidebarContext();
       // Xử lý View đặc biệt: Audit (DG_noibo)
       if (current.viewName === 'InternalAudit' || current.viewName === 'DG_noibo') {
-        renderAuditGroupsList();
+        renderAuditModule(); // Changed from renderAuditGroupsList
         return;
       }
 
@@ -1206,9 +1206,107 @@
       }
     };
 
-    function renderAuditGroupsList() {
+    function renderAuditModule() {
       const container = $('#page-content-dynamic');
       container.empty();
+
+      const html = `
+        <div class="card shadow border-0 rounded-4">
+          <div class="card-header bg-white border-0 pt-4 px-4">
+            <ul class="nav nav-tabs card-header-tabs" id="auditTabs" role="tablist">
+              <li class="nav-item" role="presentation">
+                <button class="nav-link active fw-bold text-success" id="history-tab" data-bs-toggle="tab" data-bs-target="#history-pane" type="button" role="tab"><i class="fas fa-history me-2"></i>LỊCH SỬ ĐÁNH GIÁ</button>
+              </li>
+              <li class="nav-item" role="presentation">
+                <button class="nav-link fw-bold text-success" id="new-audit-tab" data-bs-toggle="tab" data-bs-target="#new-audit-pane" type="button" role="tab"><i class="fas fa-plus-circle me-2"></i>THỰC HIỆN ĐÁNH GIÁ</button>
+              </li>
+            </ul>
+          </div>
+          <div class="card-body p-4">
+            <div class="tab-content" id="auditTabsContent">
+              <div class="tab-pane fade show active" id="history-pane" role="tabpanel" aria-labelledby="history-tab">
+                <!-- HISTORY TABLE -->
+                <div id="audit-history-container"></div>
+              </div>
+              <div class="tab-pane fade" id="new-audit-pane" role="tabpanel" aria-labelledby="new-audit-tab">
+                <!-- NEW AUDIT LIST -->
+                <div id="audit-new-container"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      `;
+      container.html(html);
+
+      // Render content for tabs
+      renderAuditHistoryTable();
+      renderNewAuditList();
+    }
+
+    function renderAuditHistoryTable() {
+      const data = APP_DATA['DG_noibo'] || [];
+      const container = $('#audit-history-container');
+
+      if (data.length === 0) {
+        container.html('<div class="text-center text-muted py-5"><i class="fas fa-folder-open fa-3x mb-3 opacity-50"></i><br>Chưa có dữ liệu lịch sử đánh giá.</div>');
+        return;
+      }
+
+      // Sort by Date Descending
+      const sortedData = [...data].sort((a, b) => new Date(b.Date) - new Date(a.Date));
+
+      let html = `
+        <div class="table-responsive">
+          <table class="table table-hover table-striped align-middle" id="audit-history-table">
+            <thead class="table-light text-success">
+              <tr>
+                <th>Mã ĐG</th>
+                <th>Đối tượng</th>
+                <th>Ngày đánh giá</th>
+                <th>Người đánh giá</th>
+                <th class="text-center">Chi tiết</th>
+              </tr>
+            </thead>
+            <tbody>
+      `;
+
+      sortedData.forEach(row => {
+        // Tìm tên đối tượng (Nhóm hoặc Chủ rừng)
+        let targetName = row['ID nhóm'];
+        // Thử tìm trong NhomCCR
+        if (APP_DATA['NhomCCR']) {
+          const g = APP_DATA['NhomCCR'].find(x => String(x['ID nhóm']) === String(row['ID nhóm']));
+          if (g) targetName = `${g['Tên nhóm']} (${row['ID nhóm']})`;
+        }
+
+        html += `
+          <tr>
+            <td class="fw-bold">${row['ID']}</td>
+            <td>${targetName}</td>
+            <td>${row['Date']}</td>
+            <td>${row['Staff']}</td>
+            <td class="text-center">
+              <button class="btn btn-sm btn-outline-secondary" onclick="alert('Tính năng xem chi tiết đang phát triển')"><i class="fas fa-eye"></i></button>
+            </td>
+          </tr>
+        `;
+      });
+      html += `</tbody></table></div>`;
+      container.html(html);
+
+      // Datatable init
+      if ($.fn.DataTable) {
+        $('#audit-history-table').DataTable({
+          language: { url: "//cdn.datatables.net/plug-ins/1.13.4/i18n/vi.json" },
+          pageLength: 10,
+          dom: 'ftp', // Simplified DOM
+          ordering: false // Disable sorting to keep our Date desc sort
+        });
+      }
+    }
+
+    function renderNewAuditList() {
+      const container = $('#audit-new-container');
 
       if (!APP_DATA['NhomCCR'] || APP_DATA['NhomCCR'].length === 0) {
         container.html('<div class="alert alert-warning">Chưa có dữ liệu Nhóm Chứng Chỉ Rừng (NhomCCR).</div>');
@@ -1216,50 +1314,36 @@
       }
 
       let html = `
-        <div class="card shadow-sm">
-          <div class="card-header bg-success text-white fw-bold">
-            <i class="fas fa-clipboard-list me-2"></i>DANH SÁCH NHÓM CẦN ĐÁNH GIÁ
-          </div>
-          <div class="card-body">
-            <div class="table-responsive">
-              <table class="table table-hover table-striped">
-                <thead class="table-light">
-                  <tr>
-                    <th>Mã Nhóm</th>
-                    <th>Tên Nhóm</th>
-                    <th>Người Đại Diện</th>
-                    <th>Diện Tích FSC</th>
-                    <th class="text-center">Hành động</th>
-                  </tr>
-                </thead>
-                <tbody>
+        <div class="table-responsive">
+          <table class="table table-hover table-bordered">
+            <thead class="table-light">
+              <tr>
+                <th>Mã Nhóm</th>
+                <th>Tên Nhóm</th>
+                <th>Diện Tích FSC</th>
+                <th class="text-center">Hành động</th>
+              </tr>
+            </thead>
+            <tbody>
       `;
 
       APP_DATA['NhomCCR'].forEach(group => {
-        // Escape quotes for safe function call
         const safeGroup = JSON.stringify(group).replace(/"/g, '&quot;');
         html += `
            <tr>
              <td>${group['ID nhóm'] || group['Mã nhóm']}</td>
-             <td>${group['Tên nhóm']}</td>
-             <td>${group['Người đại diện'] || ''}</td>
+             <td class="fw-bold text-success">${group['Tên nhóm']}</td>
              <td>${group['Diện tích FSC'] || 0} ha</td>
              <td class="text-center">
-               <button class="btn btn-sm btn-outline-success fw-bold" onclick="openAuditForm(${safeGroup})">
-                 <i class="fas fa-edit me-1"></i>Đánh giá
+               <button class="btn btn-sm btn-success fw-bold px-3 shadow-sm rounded-pill" onclick="openAuditForm(${safeGroup})">
+                 <i class="fas fa-play-circle me-1"></i>Đánh giá
                </button>
              </td>
            </tr>
          `;
       });
 
-      html += `
-                </tbody>
-              </table>
-            </div>
-          </div>
-        </div>
-      `;
+      html += `</tbody></table></div>`;
       container.html(html);
     }
 
@@ -1280,7 +1364,7 @@
           <div class="card-header bg-success text-white fw-bold">
             <div class="d-flex justify-content-between align-items-center">
                <span><i class="fas fa-seedling me-2"></i>ĐÁNH GIÁ NỘI BỘ: ${groupName} (${groupID})</span>
-               <button class="btn btn-sm btn-light text-success fw-bold" onclick="renderAuditGroupsList()"><i class="fas fa-arrow-left me-1"></i>Quay lại</button>
+               <button class="btn btn-sm btn-light text-success fw-bold" onclick="renderAuditModule()"><i class="fas fa-arrow-left me-1"></i>Quay lại</button>
             </div>
           </div>
           <div class="card-body">
