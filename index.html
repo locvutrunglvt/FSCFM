@@ -1151,8 +1151,27 @@
 
       if (!targetId || targetId === "") { return alert("Vui lòng chọn đối tượng đánh giá!"); }
 
-      // 1. Prepare DG_noibo data
-      const idDG = 'DG_' + new Date().getTime();
+      // 1. Prepare DG_noibo data with Custom ID Structure
+      // Format: [ID nhóm]-yy[Sequence] (e.g. G001-2601)
+      const today = new Date();
+      const yy = today.getFullYear().toString().slice(-2);
+      const idPrefix = `${targetId}-${yy}`;
+
+      let nextSeq = 1;
+      const existingAudits = APP_DATA['DG_noibo'] || [];
+      existingAudits.forEach(row => {
+        const rID = String(row['ID'] || '');
+        if (rID.startsWith(idPrefix)) {
+          // Extract suffix (expected 2 digits)
+          const suffix = parseInt(rID.replace(idPrefix, ''), 10);
+          if (!isNaN(suffix) && suffix >= nextSeq) {
+            nextSeq = suffix + 1;
+          }
+        }
+      });
+      const seqStr = String(nextSeq).padStart(2, '0');
+      const idDG = `${idPrefix}${seqStr}`;
+
       const dgData = {
         'ID': idDG,
         'ID nhóm': targetId,
@@ -1161,8 +1180,17 @@
         'Update': new Date().toLocaleString()
       };
 
-      // 2. Prepare Banghoi_DG_noibo data
-      const hoiData = { 'ID_DG': idDG };
+      // 2. Prepare Banghoi_DG_noibo data using idDG
+      // Format: idDG-ddmmyyhhmmss
+      const pad = (n) => String(n).padStart(2, '0');
+      const ts = pad(today.getDate()) + pad(today.getMonth() + 1) + yy +
+        pad(today.getHours()) + pad(today.getMinutes()) + pad(today.getSeconds());
+      const idHoi = `${idDG}-${ts}`;
+
+      const hoiData = {
+        'ID_hoi': idHoi, // Explicit ID for Banghoi
+        'ID_DG': idDG
+      };
 
       let passCount = 0;
       let total = 0;
