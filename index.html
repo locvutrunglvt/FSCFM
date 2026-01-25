@@ -522,10 +522,103 @@
       'CauHoi_DanhGia': {
         columns: ['ID câu hỏi', 'Nhóm tiêu chí', 'Nội dung câu hỏi', 'Phương pháp kiểm tra', 'Gợi ý bằng chứng']
       },
-      'KetQua_DanhGia': {
-        columns: ['ID kết quả', 'ID đối tượng', 'Loại đối tượng', 'Ngày đánh giá', 'Người đánh giá', 'Điểm số', 'Dữ liệu chi tiết'],
-        main: ['ID kết quả', 'ID đối tượng', 'Ngày đánh giá', 'Người đánh giá']
+      'DG_noibo': {
+        columns: ['ID', 'ID nhóm', 'Date', 'Staff', 'Update'],
+        main: ['ID', 'ID nhóm', 'Date', 'Staff']
+      },
+      'Banghoi_DG_noibo': {
+        columns: ['ID_hoi', 'ID_DG', 'RanhGioiRoRang', 'NopThuePhiDayDu', 'GiamSatNoiBo', 'XuLyViPham', 'GiaiQuyetTranhChapNgoaiToa', 'HoSoTranhChap', 'NgungHoatDongKhiTranhChap', 'TuDoThamGiaToChuc', 'KhongLaoDongCuongBuc', 'TraLuongCongBang', 'PhuongThucTraLuongNu', 'NghiThaiSan', 'TrangBiBaoHo', 'BatBuocDungBaoHo', 'HoSoAnToanLaoDong', 'CaiThienAnToanSauSuCo', 'MucLuongToiThieu', 'TraLuongDungHan', 'DaoTaoNguoiLaoDong', 'HoSoDaoTao', 'GiaiQuyetKhieuNai', 'BoiThuongThietHai', 'NhanDienNguoiBanDia', 'TaiLieuHoaQuyenLoi', 'ThamVanNguoiBanDia', 'HoSoThoaThuan', 'BaoVeDiaDiemVanHoa', 'NhanDienCongDong', 'ThamVanCongDong', 'BaoVeQuyenLoiCongDong', 'GiaiQuyetXamPhamQuyenLoi', 'QuyTrinhGiaiQuyetTranhChap', 'XuLyTranhChapCongDong', 'CanCuKhaiThac', 'GioiHanKhaiThac', 'NganNguaTacDongXau', 'GiamThieuTacDong', 'BaoVeLoaiQuyHiem', 'NganChanSanBat', 'TuanThuBaoVeDongVat', 'NganNguoiLaoDongSanBat', 'BaoVeNguonNuoc', 'PhucHoiNguonNuoc', 'KhacPhucHauQuaCu', 'NganChanSuyThoaiTiepDien', 'KhongChuyenDoiRungTuNhien', 'ChungChiKhuVucChuyenDoi', 'CongKhaiKeHoach', 'HeThongTruyXuat', 'TaiLieuHoaSanPham', 'LuuTruHoaDon', 'TrongRungSauKhaiThac', 'LoaiCayPhuHop', 'KiemSoatLoaiXamLan', 'KhongGMO', 'BienPhapLamSinh', 'HanChePhanBonHoaHoc', 'GiamThieuTacHaiPhanBon', 'KhongSuDungThuocCam', 'GhiChepSuDungThuoc', 'AnToanSuDungThuoc', 'GiamThieuLuongThuoc', 'HanCheAnhHuongSucKhoe', 'DanhMucThuocDuocPhep', 'KiemSoatSinhHoc', 'CanhBaoChayRung', 'CapNhatVuChay', 'QuanLyRacThai', 'XuLyRacThai']
       }
+    };
+
+    const AUDIT_DICTIONARY = {
+      "TUÂN THỦ PHÁP LUẬT": [
+        { id: "RanhGioiRoRang", label: "Ranh giới của tất cả các Đơn vị Quản lý trong phạm vi chứng chỉ có được xác định hoặc tài liệu hóa rõ ràng và thể hiện rõ trên bản đồ không?", index: "1.2.3" },
+        { id: "NopThuePhiDayDu", label: "Việc chi trả các loại thuế và phí liên quan đến quản lý rừng có được thực hiện kịp thời theo đúng quy định hiện hành không?", index: "1.3.2" },
+        { id: "GiamSatNoiBo", label: "Công tác giám sát nội bộ hoạt động nhóm có được thực hiện không?", index: "1.4.2" },
+        { id: "XuLyViPham", label: "Nếu phát hiện các hoạt động trái phép hoặc bất hợp pháp, chủ rừng có thực thi các biện pháp để giải quyết các vấn đề không?", index: "1.4.3" },
+        { id: "GiaiQuyetTranhChapNgoaiToa", label: "Các tranh chấp liên quan đến pháp luật và quyền truyền thống có được giải quyết kịp thời ngoài tòa án không?", index: "1.6.2" },
+        { id: "HoSoTranhChap", label: "Hồ sơ tranh chấp có được cập nhật đầy đủ các bước giải quyết, kết quả, hoặc lý do chưa giải quyết xong không?", index: "1.6.3" },
+        { id: "NgungHoatDongKhiTranhChap", label: "Chủ rừng có ngừng hoạt động ở các nơi có tranh chấp nghiêm trọng, kéo dài hoặc liên quan đến nhiều bên không?", index: "1.6.4" }
+      ],
+      "QUYỀN NGƯỜI LAO ĐỘNG": [
+        { id: "TuDoThamGiaToChuc", label: "Người lao động có được tự do tham gia tổ chức lao động mà họ lựa chọn không?", index: "2.1.2" },
+        { id: "KhongLaoDongCuongBuc", label: "Có tồn tại bất cứ hình thức lao động cưỡng bức nào đối với người lao động của chủ rừng và nhà thầu không?", index: "2.1.4" },
+        { id: "TraLuongCongBang", label: "Phụ nữ và nam giới có được trả lương công bằng khi làm cùng một công việc không?", index: "2.2.4" },
+        { id: "PhuongThucTraLuongNu", label: "Phụ nữ có được trả lương trực tiếp và sử dụng các phương thức an toàn (chuyển khoản, thanh toán học phí...) không?", index: "2.2.5" },
+        { id: "NghiThaiSan", label: "Phụ nữ có được nghỉ thai sản theo quy định của luật bảo hiểm xã hội không?", index: "2.2.6" },
+        { id: "TrangBiBaoHo", label: "Người lao động có được trang bị đầy đủ thiết bị bảo hộ cá nhân phù hợp không?", index: "2.3.2" },
+        { id: "BatBuocDungBaoHo", label: "Việc sử dụng thiết bị bảo hộ cá nhân có phải là yêu cầu bắt buộc không?", index: "2.3.3" },
+        { id: "HoSoAnToanLaoDong", label: "Hồ sơ về an toàn lao động, bao gồm tai nạn và thời gian nghỉ việc do tai nạn, có được lưu giữ không?", index: "2.3.4" },
+        { id: "CaiThienAnToanSauSuCo", label: "Công tác an toàn lao động có được xem xét và cải thiện sau các sự cố, tai nạn nghiêm trọng không?", index: "2.3.6" },
+        { id: "MucLuongToiThieu", label: "Mức lương chi trả có bằng hoặc cao hơn mức lương tối thiểu vùng/ngành hoặc thỏa thuận không?", index: "2.4.1" },
+        { id: "TraLuongDungHan", label: "Tiền lương và các khoản theo hợp đồng có được chi trả kịp thời và đúng thỏa thuận không?", index: "2.4.3" },
+        { id: "DaoTaoNguoiLaoDong", label: "Người lao động có được đào tạo công việc cụ thể và giám sát an toàn để đóng góp vào kế hoạch quản lý rừng không?", index: "2.5.1" },
+        { id: "HoSoDaoTao", label: "Hồ sơ đào tạo cập nhật cho tất cả người lao động có được lưu giữ không?", index: "2.5.2" },
+        { id: "GiaiQuyetKhieuNai", label: "Các khiếu nại, tố cáo của người lao động có được xác định, phản hồi và giải quyết thỏa đáng không?", index: "2.6.2" },
+        { id: "BoiThuongThietHai", label: "Người lao động có được bồi thường công bằng cho các thiệt hại liên quan đến công việc (tai nạn, bệnh nghề nghiệp...) không?", index: "2.6.4" }
+      ],
+      "QUYỀN NGƯỜI BẢN ĐỊA": [
+        { id: "NhanDienNguoiBanDia", label: "Có xác định được Người dân tộc (nếu có) bị ảnh hưởng bởi hoạt động quản lý rừng không?", index: "3.1.1" },
+        { id: "TaiLieuHoaQuyenLoi", label: "Các quyền lợi hợp pháp, truyền thống và nguyện vọng của người dân tộc có được tài liệu hóa và đưa vào bản đồ không?", index: "3.1.2" },
+        { id: "ThamVanNguoiBanDia", label: "Người dân tộc có được thông báo và tham vấn về các hoạt động quản lý rừng để bảo vệ quyền lợi của họ không?", index: "3.2.1" },
+        { id: "HoSoThoaThuan", label: "Hồ sơ về các thỏa thuận ràng buộc với người dân tộc có được lưu giữ không?", index: "3.3.2" },
+        { id: "BaoVeDiaDiemVanHoa", label: "Các địa điểm có ý nghĩa văn hóa, tâm linh đặc biệt của người dân tộc có được xác định và bảo vệ không?", index: "3.5.1" }
+      ],
+      "QUAN HỆ CỘNG ĐỒNG": [
+        { id: "NhanDienCongDong", label: "Có xác định được cộng đồng địa phương bên trong và xung quanh Đơn vị Quản lý không?", index: "4.1.1" },
+        { id: "ThamVanCongDong", label: "Cộng đồng địa phương có được thông báo và tham vấn về các hoạt động quản lý rừng không?", index: "4.2.1" },
+        { id: "BaoVeQuyenLoiCongDong", label: "Các quyền hợp pháp và truyền thống của cộng đồng địa phương có được tôn trọng và không bị vi phạm không?", index: "4.2.2" },
+        { id: "GiaiQuyetXamPhamQuyenLoi", label: "Nếu có vi phạm quyền lợi cộng đồng, tình hình có được điều chỉnh và giải quyết tranh chấp thỏa đáng không?", index: "4.2.3" },
+        { id: "QuyTrinhGiaiQuyetTranhChap", label: "Có quy trình giải quyết tranh chấp công khai, được xây dựng với sự tham gia của cộng đồng không?", index: "4.6.1" },
+        { id: "XuLyTranhChapCongDong", label: "Các tranh chấp liên quan đến hoạt động quản lý rừng có được phản hồi và giải quyết kịp thời không?", index: "4.6.2" }
+      ],
+      "LỢI ÍCH TỪ RỪNG": [
+        { id: "CanCuKhaiThac", label: "Lượng khai thác gỗ có dựa trên các tài liệu chứng minh về tăng trưởng, sản lượng và bảo vệ hệ sinh thái không?", index: "5.2.1" },
+        { id: "GioiHanKhaiThac", label: "Lượng gỗ khai thác hàng năm có đảm bảo không vượt quá lượng tăng trưởng của rừng không?", index: "5.2.2" }
+      ],
+      "MÔI TRƯỜNG": [
+        { id: "NganNguaTacDongXau", label: "Các hoạt động quản lý có ngăn ngừa tác động tiêu cực tới môi trường không?", index: "6.3.1" },
+        { id: "GiamThieuTacDong", label: "Tại nơi xảy ra tác động tiêu cực, có áp dụng biện pháp ngăn chặn, giảm nhẹ hoặc sửa chữa không?", index: "6.3.2" },
+        { id: "BaoVeLoaiQuyHiem", label: "Có xác định và bảo vệ các loài quý hiếm, bị đe dọa và sinh cảnh sống của chúng không?", index: "6.4.1" },
+        { id: "NganChanSanBat", label: "Có biện pháp ngăn chặn săn bắt, thu hái các loài lâm sản quý hiếm và bị đe dọa không?", index: "6.4.4" },
+        { id: "TuanThuBaoVeDongVat", label: "Có tuân thủ các quy định về bảo vệ động vật hoang dã, cấm săn bắn và buôn bán trái phép không?", index: "6.6.5" },
+        { id: "NganNguoiLaoDongSanBat", label: "Có đảm bảo người lao động không tham gia săn bắn các loài bị cấm không?", index: "6.6.6" },
+        { id: "BaoVeNguonNuoc", label: "Có thực hiện biện pháp bảo vệ nguồn nước, vùng ven sông và chất lượng nước không?", index: "6.7.1" },
+        { id: "PhucHoiNguonNuoc", label: "Nếu chưa bảo vệ tốt, có thực hiện các hoạt động phục hồi nguồn nước không?", index: "6.7.2" },
+        { id: "KhacPhucHauQuaCu", label: "Có thực hiện phục hồi nguồn nước bị ảnh hưởng bởi các hoạt động trong quá khứ không?", index: "6.7.3" },
+        { id: "NganChanSuyThoaiTiepDien", label: "Có biện pháp ngăn chặn suy thoái nguồn nước do các bên khác gây ra không?", index: "6.7.4" },
+        { id: "KhongChuyenDoiRungTuNhien", label: "Có đảm bảo không chuyển đổi rừng tự nhiên sang rừng trồng hoặc đất khác (trừ trường hợp đặc biệt cho phép) không?", index: "6.9.1" },
+        { id: "ChungChiKhuVucChuyenDoi", label: "Các khu vực chuyển đổi từ rừng tự nhiên sau 1994 có đáp ứng đủ điều kiện để được cấp chứng chỉ không?", index: "6.10.1" }
+      ],
+      "KẾ HOẠCH QUẢN LÝ": [
+        { id: "CongKhaiKeHoach", label: "Bản tóm tắt Kế hoạch Quản lý rừng (trừ thông tin mật) có được công khai miễn phí cho các bên liên quan không?", index: "7.5.1" }
+      ],
+      "GIÁM SÁT & ĐÁNH GIÁ": [
+        { id: "HeThongTruyXuat", label: "Có hệ thống theo dõi và truy xuất nguồn gốc tất cả sản phẩm FSC không?", index: "8.5.1" },
+        { id: "TaiLieuHoaSanPham", label: "Thông tin chi tiết về các sản phẩm đã bán (tên loài, khối lượng, ngày khai thác...) có được ghi chép đầy đủ không?", index: "8.5.2" },
+        { id: "LuuTruHoaDon", label: "Các hóa đơn bán hàng và tài liệu liên quan có được lưu giữ ít nhất 5 năm không?", index: "8.5.3" }
+      ],
+      "THỰC HIỆN QUẢN LÝ": [
+        { id: "TrongRungSauKhaiThac", label: "Hiện trường khai thác có được trồng lại ngay trong 1 mùa vụ không?", index: "10.1.1" },
+        { id: "LoaiCayPhuHop", label: "Việc lựa chọn loài cây trồng có phù hợp với điều kiện lập địa không?", index: "10.2.1" },
+        { id: "KiemSoatLoaiXamLan", label: "Danh sách các loài xâm lấn ngoại lai có được cập nhật thường xuyên không?", index: "10.3.3" },
+        { id: "KhongGMO", label: "Có đảm bảo không sử dụng sinh vật biến đổi gen (GMO) không?", index: "10.4.1" },
+        { id: "BienPhapLamSinh", label: "Các biện pháp lâm sinh có phù hợp với đặc điểm sinh thái và mục tiêu quản lý không?", index: "10.5.1" },
+        { id: "HanChePhanBonHoaHoc", label: "Việc sử dụng phân bón hóa học có được hạn chế hoặc tránh sử dụng không?", index: "10.6.1" },
+        { id: "GiamThieuTacHaiPhanBon", label: "Có biện pháp giảm thiểu hoặc khắc phục thiệt hại môi trường do phân bón hóa học gây ra không?", index: "10.6.5" },
+        { id: "KhongSuDungThuocCam", label: "Có đảm bảo không sử dụng hoặc lưu trữ các loại thuốc BVTV bị cấm bởi FSC không?", index: "10.7.2" },
+        { id: "GhiChepSuDungThuoc", label: "Có hồ sơ ghi chép chi tiết việc sử dụng thuốc BVTV (tên, liều lượng, địa điểm...) không?", index: "10.7.3" },
+        { id: "AnToanSuDungThuoc", label: "Việc sử dụng thuốc BVTV có tuân thủ hướng dẫn an toàn của ILO không?", index: "10.7.4" },
+        { id: "GiamThieuLuongThuoc", label: "Có biện pháp giảm thiểu lượng thuốc BVTV sử dụng mà vẫn đảm bảo hiệu quả không?", index: "10.7.5" },
+        { id: "HanCheAnhHuongSucKhoe", label: "Có biện pháp hạn chế tác hại của thuốc BVTV đến sức khỏe con người và môi trường không?", index: "10.7.6" },
+        { id: "DanhMucThuocDuocPhep", label: "Chỉ sử dụng các loại thuốc BVTV nằm trong danh mục cho phép đúng không?", index: "10.7.7" },
+        { id: "KiemSoatSinhHoc", label: "Các tác nhân kiểm soát sinh học có được cập nhật không?", index: "10.8.1" },
+        { id: "CanhBaoChayRung", label: "Hệ thống cảnh báo cháy rừng có được thiết lập và hoạt động hiệu quả không?", index: "10.9.1" },
+        { id: "CapNhatVuChay", label: "Thông tin về các vụ cháy rừng có được cập nhật đầy đủ không?", index: "10.9.3" },
+        { id: "QuanLyRacThai", label: "Có đảm bảo không vứt rác thải bừa bãi và thu gom vỏ thuốc BVTV đúng quy định không?", index: "10.12.1" },
+        { id: "XuLyRacThai", label: "Hệ thống xử lý rác thải có hoạt động đúng chức năng không?", index: "10.12.2" }
+      ]
     };
 
     const VIEW_MAP = {
@@ -1047,64 +1140,160 @@
     };
 
     window.submitAudit = async function () {
-      const targetType = $('#audit-target-type').val();
       const targetId = $('#audit-target-id').val();
       const date = $('#audit-date').val();
 
-      if (!targetType || !targetId) { return alert("Vui lòng chọn đối tượng đánh giá!"); }
+      if (!targetId || targetId === "") { return alert("Vui lòng chọn đối tượng đánh giá!"); }
 
-      // Gom dữ liệu
-      const results = [];
+      // 1. Prepare DG_noibo data
+      const idDG = 'DG_' + new Date().getTime();
+      const dgData = {
+        'ID': idDG,
+        'ID nhóm': targetId,
+        'Date': date,
+        'Staff': currentUser['Email'],
+        'Update': new Date().toLocaleString()
+      };
+
+      // 2. Prepare Banghoi_DG_noibo data
+      const hoiData = { 'ID_DG': idDG };
+
       let passCount = 0;
       let total = 0;
 
       $('.audit-result').each(function () {
         const qid = $(this).data('qid');
         const val = $(this).val();
-        const note = $(`.audit-note[data-qid="${qid}"]`).val();
+        const note = $(`.audit-note[data-qid="${qid}"]`).val() || '';
+
         if (val !== 'NA') {
           total++;
-          if (val === 'Pass') passCount++;
+          if (val === 'TT') passCount++;
         }
-        results.push({ id: qid, result: val, note: note });
+
+        // Store as simple text or JSON. Request implies "result" and "note".
+        // Using concise JSON format: {"r":"TT","n":"Ghi chu"}
+        const cellVal = JSON.stringify({ r: val, n: note });
+        hoiData[qid] = cellVal;
       });
 
       const score = total === 0 ? 100 : Math.round((passCount / total) * 100);
-      const jsonDetails = JSON.stringify(results);
 
-      const dataObj = {
-        'ID đối tượng': targetId,
-        'Loại đối tượng': targetType,
-        'Ngày đánh giá': date,
-        'Người đánh giá': currentUser['Email'],
-        'Điểm số': score,
-        'Dữ liệu chi tiết': jsonDetails
-      };
-
-      if (confirm(`Xác nhận lưu kết quả đánh giá?\nĐiểm số: ${score}%`)) {
-        // Gọi API save
-        currentSheetTarget = 'KetQua_DanhGia';
-        currentAction = 'CREATE';
-
+      if (confirm(`Xác nhận lưu kết quả đánh giá?\nĐiểm số dự kiến: ${score}%`)) {
         const btn = $('button[onclick="submitAudit()"]');
         btn.prop('disabled', true).html('ĐANG LƯU...');
 
         try {
-          const res = await callGAS('apiCRUD', { action: 'CREATE', sheetName: 'KetQua_DanhGia', jsonData: dataObj });
-          if (res && res.success) {
-            alert("Lưu thành công!");
-            // Reload data or redirect
-            // Update local
-            if (!APP_DATA['KetQua_DanhGia']) APP_DATA['KetQua_DanhGia'] = [];
-            APP_DATA['KetQua_DanhGia'].push({ ...dataObj, 'ID kết quả': res.newID });
-            navigateBack();
-          } else {
-            alert("Lỗi: " + res.message);
-          }
-        } catch (e) { alert("Lỗi kết nối Server"); }
-        finally { btn.prop('disabled', false).html('<i class="fas fa-save me-2"></i>LƯU KẾT QUẢ ĐÁNH GIÁ'); }
+          // Step 1: Save DG_noibo
+          console.log("Saving DG_noibo...", dgData);
+          const res1 = await callGAS('apiCRUD', { action: 'CREATE', sheetName: 'DG_noibo', jsonData: dgData });
+          if (!res1 || !res1.success) throw new Error("Lỗi lưu DG_noibo: " + (res1 ? res1.message : 'Unknown'));
+
+          // Step 2: Save Banghoi_DG_noibo
+          console.log("Saving Banghoi_DG_noibo...", hoiData);
+          const res2 = await callGAS('apiCRUD', { action: 'CREATE', sheetName: 'Banghoi_DG_noibo', jsonData: hoiData });
+          if (!res2 || !res2.success) throw new Error("Lỗi lưu Banghoi_DG_noibo: " + (res2 ? res2.message : 'Unknown'));
+
+          alert("Lưu thành công!");
+          navigateBack();
+
+        } catch (e) {
+          alert("Lỗi: " + e.message);
+          console.error(e);
+        } finally {
+          btn.prop('disabled', false).html('<i class="fas fa-save me-2"></i>LƯU KẾT QUẢ ĐÁNH GIÁ');
+        }
       }
     };
+
+    function renderAuditView(current) {
+      const container = $('#page-content-dynamic');
+      container.empty();
+
+      let html = `
+        <div class="card shadow-sm mb-4">
+          <div class="card-header bg-success text-white fw-bold">ĐÁNH GIÁ NỘI BỘ (INTERNAL AUDIT)</div>
+          <div class="card-body">
+            <div class="row g-3">
+               <div class="col-md-6">
+                 <label class="form-label fw-bold">Chọn Nhóm Chứng Chỉ Rừng (NhomCCR)</label>
+                 <select class="form-select" id="audit-target-id">
+                   <option value="">-- Đang tải danh sách --</option>
+                 </select>
+               </div>
+               <div class="col-md-6">
+                 <label class="form-label fw-bold">Ngày đánh giá</label>
+                 <input type="date" class="form-control" id="audit-date" value="${new Date().toISOString().split('T')[0]}">
+               </div>
+            </div>
+          </div>
+        </div>
+      `;
+
+      html += `<div class="accordion" id="auditAccordion">`;
+      let idx = 0;
+      for (const [cat, questions] of Object.entries(AUDIT_DICTIONARY)) {
+        const safeCat = cat.replace(/[^\w\s]/gi, '').replace(/\s+/g, '_');
+        html += `
+          <div class="accordion-item">
+            <h2 class="accordion-header" id="heading${idx}">
+              <button class="accordion-button ${idx > 0 ? 'collapsed' : ''}" type="button" data-bs-toggle="collapse" data-bs-target="#collapse${idx}">
+                <span class="fw-bold">${cat}</span> <span class="badge bg-secondary ms-2">${questions.length}</span>
+              </button>
+            </h2>
+            <div id="collapse${idx}" class="accordion-collapse collapse ${idx === 0 ? 'show' : ''}" data-bs-parent="#auditAccordion">
+              <div class="accordion-body bg-light p-2">
+                ${questions.map((q, i) => `
+                  <div class="card mb-2 border-0 shadow-sm">
+                    <div class="card-body py-2">
+                       <div class="d-flex justify-content-between">
+                          <h6 class="fw-bold text-success mb-1" style="font-size: 0.95rem;">${q.index} - ${q.label}</h6>
+                          <small class="text-muted fw-bold">${q.id}</small>
+                       </div>
+                       <div class="row g-2 mt-1">
+                         <div class="col-md-3">
+                           <select class="form-select form-select-sm audit-result" data-qid="${q.id}">
+                             <option value="TT">Tuân thủ (TT)</option>
+                             <option value="KTT">Không tuân thủ (KTT)</option>
+                             <option value="NA">Không áp dụng (N/A)</option>
+                             <option value="Other">Ý kiến khác</option>
+                           </select>
+                         </div>
+                         <div class="col-md-9">
+                           <input type="text" class="form-control form-control-sm audit-note" placeholder="Chi tiết / Minh chứng..." data-qid="${q.id}">
+                         </div>
+                       </div>
+                    </div>
+                  </div>
+                `).join('')}
+              </div>
+            </div>
+          </div>
+        `;
+        idx++;
+      }
+      html += `</div>`;
+
+      html += `<div class="mt-4 text-center pb-5">
+        <button class="btn btn-primary btn-lg px-5 fw-bold shadow" onclick="submitAudit()"><i class="fas fa-save me-2"></i>LƯU ĐÁNH GIÁ</button>
+      </div>`;
+
+      container.html(html);
+
+      // Load NhomCCR list
+      setTimeout(() => {
+        const select = $('#audit-target-id');
+        if (APP_DATA['NhomCCR']) {
+          let opts = '<option value="">-- Chọn Nhóm --</option>';
+          APP_DATA['NhomCCR'].forEach(g => {
+            opts += `<option value="${g['ID nhóm'] || g['Mã nhóm']}">${g['Tên nhóm']} (${g['ID nhóm'] || g['Mã nhóm']})</option>`;
+          });
+          select.html(opts);
+        } else {
+          select.html('<option>Chưa có dữ liệu Nhóm CCR</option>');
+        }
+      }, 100);
+    }
 
     function renderBreadcrumb() {
       let bc = '<div class="fsc-breadcrumb"><span class="breadcrumb-item" onclick="showDashboard()"><i class="fa-solid fa-house"></i> Home</span>';

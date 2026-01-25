@@ -117,7 +117,8 @@ function apiLoginAndLoadData(loginKey, password) {
       'Menu', 'Admin', 'NhanSu', 'Ban_Quanlynhom', 'NhomCCR', 'Churung', 
       'Taphuan', 'Noidung_taphuan', 'Lo_rung', 'KH_QL_Lorung', 
       'Loai_hoatdong_rung', 'Biendong_lorung', 'KH_HD_nhom', 
-      'KH_HD_Churung', 'HD_Lorung', 'DS_HDong', 'CauHoi_DanhGia', 'KetQua_DanhGia'
+      'KH_HD_Churung', 'HD_Lorung', 'DS_HDong', 'CauHoi_DanhGia', 'KetQua_DanhGia',
+      'DG_noibo', 'Banghoi_DG_noibo'
     ]; 
     const appData = {};
 
@@ -200,6 +201,11 @@ function apiCRUD(action, sheetName, jsonData) {
     const headers = ws.getRange(1, 1, 1, ws.getLastColumn()).getValues()[0];
     const idColumnName = headers[0]; 
     const idValue = dataObj[idColumnName];
+    
+    console.log(`CRUD ${action} on ${sheetName}. ID Col: ${idColumnName}, ID Val: ${idValue}`);
+    console.log("Data Payload:", JSON.stringify(dataObj));
+
+    if (!idValue && action !== 'CREATE') {
 
     if (action === 'DELETE') {
        const data = ws.getDataRange().getValues();
