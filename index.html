@@ -1320,34 +1320,84 @@
     function renderNewAuditList() {
       const container = $('#audit-new-container');
 
-      if (!APP_DATA['NhomCCR'] || APP_DATA['NhomCCR'].length === 0) {
-        container.html('<div class="alert alert-warning">Chưa có dữ liệu Nhóm Chứng Chỉ Rừng (NhomCCR).</div>');
+      const html = `
+        <div class="card bg-light border-0 mb-3">
+          <div class="card-body py-3">
+             <div class="row align-items-center">
+               <div class="col-md-4">
+                 <label class="fw-bold text-success mb-1">Chọn loại đối tượng:</label>
+                 <select class="form-select border-success" id="audit-type-select" onchange="renderAuditCandidateTable(this.value)">
+                   <option value="NhomCCR">Nhóm Chứng Chỉ Rừng (Groups)</option>
+                   <option value="Ban_Quanlynhom">Ban Quản lý (Management Boards)</option>
+                 </select>
+               </div>
+               <div class="col-md-8 text-end">
+                  <small class="text-muted fst-italic"><i class="fas fa-info-circle me-1"></i>Chọn đối tượng để tiến hành đánh giá mới</small>
+               </div>
+             </div>
+          </div>
+        </div>
+        <div id="audit-candidate-table-container"></div>
+      `;
+      container.html(html);
+      renderAuditCandidateTable('NhomCCR');
+    }
+
+    function renderAuditCandidateTable(type) {
+      const container = $('#audit-candidate-table-container');
+      const data = APP_DATA[type] || [];
+
+      if (data.length === 0) {
+        container.html('<div class="alert alert-warning">Chưa có dữ liệu cho loại đối tượng này.</div>');
         return;
+      }
+
+      let th = '';
+      if (type === 'NhomCCR') {
+        th = `<th>Mã Nhóm</th><th>Tên Nhóm</th><th>Diện Tích FSC</th>`;
+      } else {
+        th = `<th>ID Ban</th><th>Tên Ban Quản lý</th><th>Tổng Diện Tích</th>`;
       }
 
       let html = `
         <div class="table-responsive">
-          <table class="table table-hover table-bordered">
-            <thead class="table-light">
+          <table class="table table-hover table-bordered bg-white shadow-sm">
+            <thead class="table-light text-success">
               <tr>
-                <th>Mã Nhóm</th>
-                <th>Tên Nhóm</th>
-                <th>Diện Tích FSC</th>
-                <th class="text-center">Hành động</th>
+                ${th}
+                <th class="text-center" style="width: 150px;">Hành động</th>
               </tr>
             </thead>
             <tbody>
       `;
 
-      APP_DATA['NhomCCR'].forEach(group => {
-        const safeGroup = JSON.stringify(group).replace(/"/g, '&quot;');
+      data.forEach(item => {
+        // Prepare data for rendering
+        let col1 = '', col2 = '', col3 = '';
+        let idVal = '';
+
+        if (type === 'NhomCCR') {
+          idVal = item['ID nhóm'] || item['Mã nhóm'];
+          col1 = idVal;
+          col2 = item['Tên nhóm'];
+          col3 = (item['Diện tích FSC'] || 0) + ' ha';
+        } else {
+          idVal = item['ID ban quản lý'];
+          col1 = idVal;
+          col2 = item['Tên ban quản lý'];
+          col3 = (item['Tổng diện tích'] || 0) + ' ha';
+        }
+
+        // Safe JSON for button onClick
+        const safeItem = JSON.stringify(item).replace(/"/g, '&quot;');
+
         html += `
            <tr>
-             <td>${group['ID nhóm'] || group['Mã nhóm']}</td>
-             <td class="fw-bold text-success">${group['Tên nhóm']}</td>
-             <td>${group['Diện tích FSC'] || 0} ha</td>
+             <td>${col1}</td>
+             <td class="fw-bold text-dark">${col2}</td>
+             <td>${col3}</td>
              <td class="text-center">
-               <button class="btn btn-sm btn-success fw-bold px-3 shadow-sm rounded-pill" onclick="openAuditForm(${safeGroup})">
+               <button class="btn btn-sm btn-success fw-bold px-3 shadow-sm rounded-pill" onclick="openAuditForm(${safeItem}, '${type}')">
                  <i class="fas fa-play-circle me-1"></i>Đánh giá
                </button>
              </td>
@@ -1359,33 +1409,43 @@
       container.html(html);
     }
 
-    function openAuditForm(group) {
-      // Render the form pre-filled with this group
-      renderAuditFormUI(group);
+    function openAuditForm(item, type) {
+      // Default info if type missing (legacy support)
+      if (!type) type = 'NhomCCR';
+      renderAuditFormUI(item, type);
     }
 
-    function renderAuditFormUI(group) {
+    function renderAuditFormUI(item, type) {
       const container = $('#page-content-dynamic');
       container.empty();
 
-      const groupID = group['ID nhóm'] || group['Mã nhóm'];
-      const groupName = group['Tên nhóm'];
+      // Determine ID and Name based on Type
+      let idVal = '', nameVal = '';
+      if (type === 'NhomCCR') {
+        idVal = item['ID nhóm'] || item['Mã nhóm'];
+        nameVal = item['Tên nhóm'];
+      } else {
+        idVal = item['ID ban quản lý'];
+        nameVal = item['Tên ban quản lý'];
+      }
+
+      const typeLabel = (type === 'NhomCCR') ? 'Nhóm' : 'Ban Quản Lý';
 
       let html = `
         <div class="card shadow-sm mb-4">
           <div class="card-header bg-success text-white fw-bold">
             <div class="d-flex justify-content-between align-items-center">
-               <span><i class="fas fa-seedling me-2"></i>ĐÁNH GIÁ NỘI BỘ: ${groupName} (${groupID})</span>
+               <span><i class="fas fa-seedling me-2"></i>ĐÁNH GIÁ: ${nameVal} (${idVal})</span>
                <button class="btn btn-sm btn-light text-success fw-bold" onclick="renderAuditModule()"><i class="fas fa-arrow-left me-1"></i>Quay lại</button>
             </div>
           </div>
           <div class="card-body">
             <div class="row g-3">
                <div class="col-md-6">
-                 <label class="form-label fw-bold">Nhóm được đánh giá</label>
-                 <input type="text" class="form-control" value="${groupName}" disabled>
-                 <input type="hidden" id="audit-target-id" value="${groupID}">
-                 <input type="hidden" id="audit-target-type" value="NhomCCR">
+                 <label class="form-label fw-bold">${typeLabel} được đánh giá</label>
+                 <input type="text" class="form-control" value="${nameVal}" disabled>
+                 <input type="hidden" id="audit-target-id" value="${idVal}">
+                 <input type="hidden" id="audit-target-type" value="${type}">
                </div>
                <div class="col-md-6">
                  <label class="form-label fw-bold">Ngày đánh giá</label>
