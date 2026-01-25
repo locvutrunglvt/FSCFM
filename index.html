@@ -1371,6 +1371,8 @@
       renderAuditCandidateTable('NhomCCR');
     }
 
+    // --- IMPROVED AUDIT FLOW ---
+
     function renderAuditCandidateTable(type) {
       const container = $('#audit-candidate-table-container');
       const data = APP_DATA[type] || [];
@@ -1389,21 +1391,18 @@
 
       let html = `
         <div class="table-responsive">
-          <table class="table table-hover table-bordered bg-white shadow-sm">
+          <table class="table table-hover table-bordered bg-white shadow-sm align-middle">
             <thead class="table-light text-success">
               <tr>
                 ${th}
-                <th class="text-center" style="width: 150px;">Hành động</th>
+                <th class="text-center" style="width: 180px;">Hành động</th>
               </tr>
             </thead>
             <tbody>
       `;
 
       data.forEach(item => {
-        // Prepare data for rendering
-        let col1 = '', col2 = '', col3 = '';
-        let idVal = '';
-
+        let col1 = '', col2 = '', col3 = '', idVal = '';
         if (type === 'NhomCCR') {
           idVal = item['ID nhóm'] || item['Mã nhóm'];
           col1 = idVal;
@@ -1416,17 +1415,16 @@
           col3 = (item['Tổng diện tích'] || 0) + ' ha';
         }
 
-        // Safe JSON for button onClick
         const safeItem = JSON.stringify(item).replace(/"/g, '&quot;');
 
         html += `
-           <tr>
-             <td>${col1}</td>
-             <td class="fw-bold text-dark">${col2}</td>
+           <tr class="clickable-row" onclick="showTargetHistory(${safeItem}, '${type}')">
+             <td class="fw-bold text-success">${col1}</td>
+             <td class="fw-bold">${col2}</td>
              <td>${col3}</td>
              <td class="text-center">
-               <button class="btn btn-sm btn-success fw-bold px-3 shadow-sm rounded-pill" onclick="openAuditForm(${safeItem}, '${type}')">
-                 <i class="fas fa-play-circle me-1"></i>Đánh giá
+               <button class="btn btn-sm btn-outline-success fw-bold px-3 rounded-pill" onclick="event.stopPropagation(); showTargetHistory(${safeItem}, '${type}')">
+                 <i class="fas fa-history me-1"></i>Lịch sử & Đánh giá
                </button>
              </td>
            </tr>
@@ -1437,99 +1435,160 @@
       container.html(html);
     }
 
-    function openAuditForm(item, type) {
-      // Default info if type missing (legacy support)
-      if (!type) type = 'NhomCCR';
-      renderAuditFormUI(item, type);
+    // New: Show History and Option to Create New
+    function showTargetHistory(item, type) {
+      const container = $('#page-content-dynamic');
+
+      let idVal = '', nameVal = '';
+      if (type === 'NhomCCR') { idVal = item['ID nhóm'] || item['Mã nhóm']; nameVal = item['Tên nhóm']; }
+      else { idVal = item['ID ban quản lý']; nameVal = item['Tên ban quản lý']; }
+
+      // Filter History
+      const allHistory = APP_DATA['DG_noibo'] || [];
+      const myHistory = allHistory.filter(h => String(h['ID nhóm']).trim() === String(idVal).trim());
+      // Note: 'ID nhóm' in DG_noibo stores the Target ID regardless of type (Group or Manager)
+
+      // Sort recent first
+      myHistory.sort((a, b) => new Date(b.Date) - new Date(a.Date));
+
+      const safeItem = JSON.stringify(item).replace(/"/g, '&quot;');
+
+      let html = `
+        <div class="card shadow-sm border-0 mb-4">
+           <div class="card-header bg-success text-white py-3">
+              <div class="d-flex justify-content-between align-items-center">
+                 <h5 class="mb-0 fw-bold"><i class="fas fa-clipboard-list me-2"></i>HỒ SƠ ĐÁNH GIÁ: ${nameVal}</h5>
+                 <button class="btn btn-light btn-sm fw-bold text-success" onclick="renderAuditModule()"><i class="fas fa-arrow-left me-1"></i>Quay lại DS</button>
+              </div>
+           </div>
+           <div class="card-body">
+              <div class="row g-3 mb-4">
+                 <div class="col-md-8">
+                    <div class="alert alert-info border-0 bg-light text-dark mb-0">
+                       <strong><i class="fas fa-info-circle me-1"></i>Thông tin:</strong> ${nameVal} (${idVal})
+                    </div>
+                 </div>
+                 <div class="col-md-4 text-end">
+                    <button class="btn btn-success fw-bold w-100 shadow py-2" onclick="renderAuditFormUI(${safeItem}, '${type}')">
+                       <i class="fas fa-plus-circle me-2"></i>THỰC HIỆN ĐÁNH GIÁ MỚI
+                    </button>
+                 </div>
+              </div>
+
+              <h6 class="fw-bold text-success border-bottom pb-2 mb-3">LỊCH SỬ ĐÁNH GIÁ (${myHistory.length} bản ghi)</h6>
+              <div class="table-responsive">
+                <table class="table table-hover align-middle">
+                   <thead class="table-light">
+                      <tr>
+                         <th>Mã ĐG</th><th>Ngày đánh giá</th><th>Người thực hiện</th><th>Kết quả</th><th>Hành động</th>
+                      </tr>
+                   </thead>
+                   <tbody>
+      `;
+
+      if (myHistory.length === 0) {
+        html += `<tr><td colspan="5" class="text-center py-4 text-muted">Chưa có lịch sử đánh giá nào.</td></tr>`;
+      } else {
+        myHistory.forEach(h => {
+          html += `
+                <tr>
+                   <td class="fw-bold text-primary">${h['ID']}</td>
+                   <td>${h['Date']}</td>
+                   <td>${h['Staff']}</td>
+                   <td><span class="badge bg-secondary">Đã xong</span></td>
+                   <td><button class="btn btn-sm btn-outline-secondary" onclick="alert('Xem chi tiết: ${h['ID']}')">Chi tiết</button></td>
+                </tr>
+             `;
+        });
+      }
+
+      html += `</tbody></table></div></div></div>`;
+      container.html(html);
     }
 
+    // New: 2-Column Grid + Button Answers + Files
     function renderAuditFormUI(item, type) {
       const container = $('#page-content-dynamic');
       container.empty();
 
-      // Determine ID and Name based on Type
       let idVal = '', nameVal = '';
-      if (type === 'NhomCCR') {
-        idVal = item['ID nhóm'] || item['Mã nhóm'];
-        nameVal = item['Tên nhóm'];
-      } else {
-        idVal = item['ID ban quản lý'];
-        nameVal = item['Tên ban quản lý'];
-      }
-
-      const typeLabel = (type === 'NhomCCR') ? 'Nhóm' : 'Ban Quản Lý';
+      if (type === 'NhomCCR') { idVal = item['ID nhóm'] || item['Mã nhóm']; nameVal = item['Tên nhóm']; }
+      else { idVal = item['ID ban quản lý']; nameVal = item['Tên ban quản lý']; }
+      const safeItem = JSON.stringify(item).replace(/"/g, '&quot;');
 
       let html = `
-        <div class="card shadow-sm mb-4">
-          <div class="card-header bg-success text-white fw-bold">
+        <div class="card shadow-sm mb-4 border-0">
+          <div class="card-header bg-success text-white fw-bold py-3">
             <div class="d-flex justify-content-between align-items-center">
-               <span><i class="fas fa-seedling me-2"></i>ĐÁNH GIÁ: ${nameVal} (${idVal})</span>
-               <button class="btn btn-sm btn-light text-success fw-bold" onclick="renderAuditModule()"><i class="fas fa-arrow-left me-1"></i>Quay lại</button>
+               <span><i class="fas fa-edit me-2"></i>PHIẾU ĐÁNH GIÁ: ${nameVal}</span>
+               <button class="btn btn-sm btn-light text-success fw-bold" onclick="showTargetHistory(${safeItem}, '${type}')"><i class="fas fa-arrow-left me-1"></i>Hủy / Quay lại</button>
             </div>
           </div>
-          <div class="card-body">
-            <div class="row g-3">
-               <div class="col-md-6">
-                 <label class="form-label fw-bold">${typeLabel} được đánh giá</label>
-                 <input type="text" class="form-control" value="${nameVal}" disabled>
-                 <input type="hidden" id="audit-target-id" value="${idVal}">
-                 <input type="hidden" id="audit-target-type" value="${type}">
-               </div>
-               <div class="col-md-6">
-                 <label class="form-label fw-bold">Ngày đánh giá</label>
-                 <input type="date" class="form-control" id="audit-date" value="${new Date().toISOString().split('T')[0]}">
+          <div class="card-body bg-light">
+             <!-- Hidden Context -->
+             <input type="hidden" id="audit-target-id" value="${idVal}">
+             <input type="hidden" id="audit-target-type" value="${type}">
+             
+             <div class="row g-3 align-items-center bg-white p-3 rounded shadow-sm mb-4">
+               <div class="col-md-6"><h6 class="m-0 text-muted">Đối tượng: <strong class="text-dark">${nameVal}</strong> (${idVal})</h6></div>
+               <div class="col-md-6 text-md-end">
+                  <div class="input-group input-group-sm w-auto d-inline-flex">
+                     <span class="input-group-text fw-bold">Ngày:</span>
+                     <input type="date" class="form-control" id="audit-date" value="${new Date().toISOString().split('T')[0]}">
+                  </div>
                </div>
             </div>
-          </div>
-        </div>
       `;
 
       html += `<div class="accordion" id="auditAccordion">`;
       let idx = 0;
       for (const [cat, questions] of Object.entries(AUDIT_DICTIONARY)) {
         html += `
-          <div class="accordion-item">
+          <div class="accordion-item mb-3 border rounded shadow-sm overflow-hidden">
             <h2 class="accordion-header" id="heading${idx}">
-              <button class="accordion-button ${idx > 0 ? 'collapsed' : ''}" type="button" data-bs-toggle="collapse" data-bs-target="#collapse${idx}">
-                <span class="fw-bold text-uppercase">${cat}</span> <span class="badge bg-secondary ms-2">${questions.length}</span>
+              <button class="accordion-button ${idx > 0 ? 'collapsed' : ''} fw-bold text-uppercase bg-white text-success" type="button" data-bs-toggle="collapse" data-bs-target="#collapse${idx}">
+                ${cat} <span class="badge bg-light text-dark ms-2 border">${questions.length}</span>
               </button>
             </h2>
             <div id="collapse${idx}" class="accordion-collapse collapse ${idx === 0 ? 'show' : ''}" data-bs-parent="#auditAccordion">
-              <div class="accordion-body bg-light p-2">
-                ${questions.map((q) => `
-                  <div class="card mb-3 border-0 shadow-sm audit-row" id="row-${q.id}">
-                    <div class="card-body">
-                       <h6 class="fw-bold text-success mb-2">${q.index} - ${q.label} <small class="text-muted fw-normal ms-2">(${q.id})</small></h6>
-                       
-                       <div class="row g-3">
-                         <!-- Select Result -->
-                         <div class="col-md-3">
-                           <label class="form-label small fw-bold text-muted">Kết quả</label>
-                           <select class="form-select audit-result" data-qid="${q.id}">
-                             <option value="TT">Tuân thủ (TT)</option>
-                             <option value="KTT">Không tuân thủ (KTT)</option>
-                             <option value="NA">Không áp dụng (N/A)</option>
-                             <option value="Other">Ý kiến khác</option>
-                           </select>
-                         </div>
+              <div class="accordion-body bg-light p-3">
+                
+                <div class="row row-cols-1 row-cols-md-2 g-3">
+                  ${questions.map((q) => `
+                    <div class="col">
+                      <div class="card h-100 border-0 shadow-sm audit-card">
+                        <div class="card-body p-3">
+                           <div class="d-flex justify-content-between mb-2">
+                              <span class="badge bg-success bg-opacity-10 text-success">${q.index}</span>
+                              <small class="text-muted fw-bold">${q.id}</small>
+                           </div>
+                           <h6 class="fw-bold mb-3" style="font-size: 0.95rem; min-height: 45px;">${q.label}</h6>
+                           
+                           <!-- Answer Buttons -->
+                           <input type="hidden" class="audit-result" data-qid="${q.id}" value="NA">
+                           <div class="btn-group w-100 mb-3" role="group">
+                              <button type="button" class="btn btn-outline-success btn-sm" onclick="toggleScoreBtn(this, '${q.id}', 'TT')">Tuân thủ</button>
+                              <button type="button" class="btn btn-outline-danger btn-sm" onclick="toggleScoreBtn(this, '${q.id}', 'KTT')">Không TT</button>
+                              <button type="button" class="btn btn-secondary btn-sm active" onclick="toggleScoreBtn(this, '${q.id}', 'NA')">N/A</button>
+                           </div>
+                           
+                           <!-- Tools: Note + File -->
+                           <div class="bg-light p-2 rounded">
+                              <div class="mb-2">
+                                <textarea class="form-control form-control-sm audit-note border-0 bg-white" rows="1" placeholder="Ghi chú chi tiết..." data-qid="${q.id}" style="resize: none;"></textarea>
+                              </div>
+                              <div class="input-group input-group-sm">
+                                <label class="input-group-text bg-white border-0"><i class="fas fa-paperclip text-muted"></i></label>
+                                <input type="file" class="form-control form-control-sm border-0 bg-white audit-file" multiple data-qid="${q.id}">
+                              </div>
+                           </div>
 
-                         <!-- Evidence Upload -->
-                         <div class="col-md-4">
-                            <label class="form-label small fw-bold text-muted">Minh chứng (Ảnh/Tài liệu)</label>
-                            <input type="file" class="form-control audit-file" multiple data-qid="${q.id}" accept="image/*,.pdf,.doc,.docx,.xls,.xlsx">
-                            <div class="form-text small" id="file-list-${q.id}"></div>
-                         </div>
-
-                         <!-- Note/Details -->
-                         <div class="col-md-5">
-                            <label class="form-label small fw-bold text-muted">Chi tiết / Ghi chú</label>
-                            <textarea class="form-control audit-note" rows="1" placeholder="Nhập chi tiết..." data-qid="${q.id}"></textarea>
-                         </div>
-                       </div>
-
+                        </div>
+                      </div>
                     </div>
-                  </div>
-                `).join('')}
+                  `).join('')}
+                </div>
+
               </div>
             </div>
           </div>
@@ -1539,10 +1598,31 @@
       html += `</div>`;
 
       html += `<div class="mt-4 text-center pb-5">
-        <button class="btn btn-primary btn-lg px-5 fw-bold shadow" onclick="submitAuditWithUpload()"><i class="fas fa-save me-2"></i>LƯU ĐÁNH GIÁ</button>
+        <button class="btn btn-primary btn-lg px-5 fw-bold shadow rounded-pill" onclick="submitAuditWithUpload()">
+           <i class="fas fa-save me-2"></i>LƯU KẾT QUẢ
+        </button>
       </div>`;
 
+      html += `</div></div>`;
       container.html(html);
+    }
+
+    // Helper: Toggle Answer Button Styling and Update Hidden Input
+    function toggleScoreBtn(btn, qid, val) {
+      const wrapper = $(btn).parent();
+      wrapper.find('.btn').removeClass('active');
+
+      // Add active class based on type
+      if (val === 'TT') $(btn).addClass('active btn-success text-white').removeClass('btn-outline-success');
+      else if (val === 'KTT') $(btn).addClass('active btn-danger text-white').removeClass('btn-outline-danger');
+      else $(btn).addClass('active');
+
+      // Reset siblings style
+      wrapper.find('.btn-outline-success').not(btn).removeClass('active btn-success text-white');
+      wrapper.find('.btn-outline-danger').not(btn).removeClass('active btn-danger text-white');
+
+      // Update hidden input
+      $(`.audit-result[data-qid="${qid}"]`).val(val);
     }
 
     function renderBreadcrumb() {
