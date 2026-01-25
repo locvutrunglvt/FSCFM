@@ -1559,7 +1559,17 @@
     }
 
     function navigateBack(index) {
-      navHistory = navHistory.slice(0, index + 1);
+      if (typeof index === 'number') {
+        navHistory = navHistory.slice(0, index + 1);
+      } else {
+        if (navHistory.length > 1) {
+          navHistory.pop();
+        } else {
+          // If we are at root or empty, show dashboard to reset
+          showDashboard();
+          return;
+        }
+      }
       renderBreadcrumb();
       renderContent();
     }
