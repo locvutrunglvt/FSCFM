@@ -1491,31 +1491,42 @@
           <div class="accordion-item">
             <h2 class="accordion-header" id="heading${idx}">
               <button class="accordion-button ${idx > 0 ? 'collapsed' : ''}" type="button" data-bs-toggle="collapse" data-bs-target="#collapse${idx}">
-                <span class="fw-bold">${cat}</span> <span class="badge bg-secondary ms-2">${questions.length}</span>
+                <span class="fw-bold text-uppercase">${cat}</span> <span class="badge bg-secondary ms-2">${questions.length}</span>
               </button>
             </h2>
             <div id="collapse${idx}" class="accordion-collapse collapse ${idx === 0 ? 'show' : ''}" data-bs-parent="#auditAccordion">
               <div class="accordion-body bg-light p-2">
                 ${questions.map((q) => `
-                  <div class="card mb-2 border-0 shadow-sm">
-                    <div class="card-body py-2">
-                       <div class="d-flex justify-content-between">
-                          <h6 class="fw-bold text-success mb-1" style="font-size: 0.95rem;">${q.index} - ${q.label}</h6>
-                          <small class="text-muted fw-bold">${q.id}</small>
-                       </div>
-                       <div class="row g-2 mt-1">
+                  <div class="card mb-3 border-0 shadow-sm audit-row" id="row-${q.id}">
+                    <div class="card-body">
+                       <h6 class="fw-bold text-success mb-2">${q.index} - ${q.label} <small class="text-muted fw-normal ms-2">(${q.id})</small></h6>
+                       
+                       <div class="row g-3">
+                         <!-- Select Result -->
                          <div class="col-md-3">
-                           <select class="form-select form-select-sm audit-result" data-qid="${q.id}">
+                           <label class="form-label small fw-bold text-muted">Kết quả</label>
+                           <select class="form-select audit-result" data-qid="${q.id}">
                              <option value="TT">Tuân thủ (TT)</option>
                              <option value="KTT">Không tuân thủ (KTT)</option>
                              <option value="NA">Không áp dụng (N/A)</option>
                              <option value="Other">Ý kiến khác</option>
                            </select>
                          </div>
-                         <div class="col-md-9">
-                           <input type="text" class="form-control form-control-sm audit-note" placeholder="Chi tiết / Minh chứng..." data-qid="${q.id}">
+
+                         <!-- Evidence Upload -->
+                         <div class="col-md-4">
+                            <label class="form-label small fw-bold text-muted">Minh chứng (Ảnh/Tài liệu)</label>
+                            <input type="file" class="form-control audit-file" multiple data-qid="${q.id}" accept="image/*,.pdf,.doc,.docx,.xls,.xlsx">
+                            <div class="form-text small" id="file-list-${q.id}"></div>
+                         </div>
+
+                         <!-- Note/Details -->
+                         <div class="col-md-5">
+                            <label class="form-label small fw-bold text-muted">Chi tiết / Ghi chú</label>
+                            <textarea class="form-control audit-note" rows="1" placeholder="Nhập chi tiết..." data-qid="${q.id}"></textarea>
                          </div>
                        </div>
+
                     </div>
                   </div>
                 `).join('')}
@@ -1528,7 +1539,7 @@
       html += `</div>`;
 
       html += `<div class="mt-4 text-center pb-5">
-        <button class="btn btn-primary btn-lg px-5 fw-bold shadow" onclick="submitAudit()"><i class="fas fa-save me-2"></i>LƯU ĐÁNH GIÁ</button>
+        <button class="btn btn-primary btn-lg px-5 fw-bold shadow" onclick="submitAuditWithUpload()"><i class="fas fa-save me-2"></i>LƯU ĐÁNH GIÁ</button>
       </div>`;
 
       container.html(html);
