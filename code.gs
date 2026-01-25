@@ -192,6 +192,7 @@ function apiRegister(fullName, email, password, phone) {
 
 // --- 3. API: CRUD (CÓ TỰ ĐỘNG GỬI MAIL KHI KÍCH HOẠT) ---
 // --- 3. API: CRUD (CÓ TỰ ĐỘNG GỬI MAIL KHI KÍCH HOẠT) ---
+// --- 3. API: CRUD (CÓ TỰ ĐỘNG GỬI MAIL KHI KÍCH HOẠT) ---
 function apiCRUD(action, sheetName, jsonData) {
   try {
     const ss = SpreadsheetApp.openById(SPREADSHEET_ID);
@@ -202,14 +203,22 @@ function apiCRUD(action, sheetName, jsonData) {
     const headers = ws.getRange(1, 1, 1, ws.getLastColumn()).getValues()[0];
     
     // Tự động xác định cột ID (Ưu tiên các tên cột phổ biến hoặc cột đầu tiên)
-    let idColumnName = headers[0];
-    if (sheetName === 'NhanSu' && headers.includes('ID_staff')) idColumnName = 'ID_staff';
-    else if (dataObj.hasOwnProperty('ID')) idColumnName = 'ID'; // Nếu Payload có trường ID thì ưu tiên tìm cột ID
-    else if (dataObj.hasOwnProperty(headers[0])) idColumnName = headers[0]; // Mặc định cột 0
+    let idColumnName = '';
+    
+    // 1. Nếu Payload có trường ID và Sheet cũng có cột ID -> Chọn luôn
+    if (dataObj.hasOwnProperty('ID') && headers.includes('ID')) {
+        idColumnName = 'ID';
+    } 
+    // 2. Nếu là NhanSu và có ID_staff
+    else if (sheetName === 'NhanSu' && headers.includes('ID_staff')) {
+        idColumnName = 'ID_staff';
+    }
+    // 3. Fallback: Tìm cột nào trong Headers mà có trong Payload và có vẻ là ID
     else {
-        // Fallback: Tìm cột nào trong Headers mà có trong Payload và có vẻ là ID
         const match = headers.find(h => dataObj.hasOwnProperty(h) && (h.toLowerCase().includes('id') || h.toLowerCase().includes('mã')));
         if (match) idColumnName = match;
+        // 4. Nếu vẫn chưa tìm thấy, lấy cột đầu tiên
+        else idColumnName = headers[0];
     }
 
     const idIdx = headers.indexOf(idColumnName);
@@ -238,7 +247,7 @@ function apiCRUD(action, sheetName, jsonData) {
        const newID = generateID(sheetName); 
        let newRow = [];
        headers.forEach(h => {
-         // Nếu là cột ID và payload không có giá trị, thì điền ID tự sinh
+         // Nếu là cột ID và payload không có giá trị (hoặc rỗng), thì điền ID tự sinh
          if (h === idColumnName && !dataObj[h]) newRow.push(newID);
          else newRow.push(dataObj[h] || '');
        });
@@ -257,20 +266,22 @@ function apiCRUD(action, sheetName, jsonData) {
              const emailIdx = headers.indexOf('Email');
              const nameIdx = headers.indexOf('Họ và tên');
              
-             const oldStatus = data[i][statusIdx];
-             const newStatus = dataObj['Trạng thái'];
-             const userEmail = dataObj['Email'] || data[i][emailIdx];
-             const userName = dataObj['Họ và tên'] || data[i][nameIdx];
+             if (statusIdx > -1) {
+                const oldStatus = data[i][statusIdx];
+                const newStatus = dataObj['Trạng thái'];
+                const userEmail = dataObj['Email'] || (emailIdx > -1 ? data[i][emailIdx] : '');
+                const userName = dataObj['Họ và tên'] || (nameIdx > -1 ? data[i][nameIdx] : '');
 
-             if (String(oldStatus) !== 'Act' && String(newStatus) === 'Act') {
-                try {
-                  MailApp.sendEmail({
-                    to: userEmail,
-                    subject: "[FSC SYSTEM] Tài khoản của bạn đã được kích hoạt!",
-                    htmlBody: `<p>Chúc mừng <b>${userName}</b>,<br>Tài khoản của bạn đã được Admin phê duyệt. Bạn có thể đăng nhập ngay bây giờ.</p>`
-                  });
-                } catch (mailErr) {
-                  Logger.log("Lỗi gửi mail User: " + mailErr.toString());
+                if (String(oldStatus) !== 'Act' && String(newStatus) === 'Act' && userEmail) {
+                    try {
+                      MailApp.sendEmail({
+                        to: userEmail,
+                        subject: "[FSC SYSTEM] Tài khoản của bạn đã được kích hoạt!",
+                        htmlBody: `<p>Chúc mừng <b>${userName}</b>,<br>Tài khoản của bạn đã được Admin phê duyệt. Bạn có thể đăng nhập ngay bây giờ.</p>`
+                      });
+                    } catch (mailErr) {
+                      Logger.log("Lỗi gửi mail User: " + mailErr.toString());
+                    }
                 }
              }
           }
@@ -289,6 +300,43 @@ function apiCRUD(action, sheetName, jsonData) {
   } catch (e) {
     return { success: false, message: 'Lỗi CRUD: ' + e.toString() };
   }
+}
+
+// --- 4. API: UPLOAD FILE (BASE64) ---
+// Uploads files to a specific folder path (creates folders if missing)
+function apiUpload(data) {
+    try {
+        const folderName = data.folderName || 'FSCFM_Uploads'; // Default root folder if not specified
+        const files = data.files; // Array of { name, mimeType, base64 }
+
+        // Find or Create Folder
+        let folder;
+        const folders = DriveApp.getFoldersByName(folderName);
+        if (folders.hasNext()) {
+            folder = folders.next();
+        } else {
+            folder = DriveApp.createFolder(folderName);
+        }
+
+        const uploadedFiles = [];
+
+        files.forEach(f => {
+            const blob = Utilities.newBlob(Utilities.base64Decode(f.base64), f.mimeType, f.name);
+            const file = folder.createFile(blob);
+            file.setSharing(DriveApp.Access.ANYONE_WITH_LINK, DriveApp.Permission.VIEW);
+            
+            uploadedFiles.push({
+                name: f.name,
+                url: file.getUrl(),
+                id: file.getId()
+            });
+        });
+
+        return { success: true, files: uploadedFiles };
+
+    } catch (e) {
+        return { success: false, message: "Lỗi Upload: " + e.toString() };
+    }
 }
 
 // --- 4. API: ADMIN DUYỆT NHANH ---
