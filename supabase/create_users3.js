@@ -4,9 +4,9 @@ const SUPABASE_URL = 'https://rvvctklkxjhypgmzcaym.supabase.co';
 const sleep = ms => new Promise(r => setTimeout(r, ms));
 
 const USERS = [
-  { username: 'ledinhduy', email: 'duc.lethien@cleaverforestry.com', password: '111111', name: 'Le Dinh Duy' },
-  { username: 'lethienduc', email: 'duy.ledinh@cleaverforestry.com', password: '111111', name: 'Le Thien Duc' },
-  { username: 'locvutrung', email: 'trung.locvu@cleaverforestry.com', password: '111111', name: 'Loc Vu Trung' }
+  { username: 'ledinhduy', email: 'duc.lethien@cleverforestry.com', password: '111111', name: 'Le Dinh Duy' },
+  { username: 'lethienduc', email: 'duy.ledinh@cleverforestry.com', password: '111111', name: 'Le Thien Duc' },
+  { username: 'locvutrung', email: 'trung.locvu@cleverforestry.com', password: '111111', name: 'Loc Vu Trung' }
 ];
 
 async function runSQL(sql, label) {
