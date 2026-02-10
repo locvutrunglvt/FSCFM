@@ -905,7 +905,7 @@
     }
     .kpi-card:hover { transform: translateY(-3px); box-shadow: 0 6px 16px rgba(0,0,0,0.1); }
     .kpi-value { font-size: 1.3rem; font-weight: 800; color: #1B5E20 !important; letter-spacing: -0.5px; }
-    .kpi-label { font-size: 11px; color: #777; font-weight: 600; text-transform: uppercase; letter-spacing: 0.3px; }
+    .kpi-label { font-size: 11px; color: #777; font-weight: 600; letter-spacing: 0.3px; }
     .kpi-card.blue { border-left-color: #1B5E20; }
     .kpi-card.blue .kpi-value { color: #1B5E20; }
     .kpi-card.orange { border-left-color: #1B5E20; }
@@ -1948,7 +1948,7 @@
       'Ngày tham gia':'Join Date','Ngày rời nhóm':'Leave Date',
       'Số lô rừng':'Number of Plots','Người nhập dữ liệu':'Data Entry By',
       // Lo_rung
-      'ID lô rừng':'Plot ID','Mã số lô 2024':'Plot Code 2024','Mã số lô 2023':'Plot Code 2023',
+      'ID lô rừng':'Plot ID','Mã số lô rừng':'Plot Code','Mã số lô 2023':'Plot Code 2023',
       'Tên lô rừng':'Plot Name','Số sổ đỏ':'Land Title No.','Tờ bản đồ':'Map Sheet',
       'Thửa đất':'Land Parcel','Tiểu khu':'Sub-zone','Khoảnh':'Compartment',
       'Tọa độ tâm lô':'Plot Center Coordinates','Khoảng cách tới nhà':'Distance to House',
@@ -2369,7 +2369,7 @@
       }},
       'Lo_rung': { table: 'lo_rung', cols: {
         id:'ID lô rừng', id_nhom:'ID nhóm', id_chu_rung:'ID chủ rừng',
-        ma_so_lo_2024:'Mã số lô 2024', ma_so_lo_2023:'Mã số lô 2023', qr_code:'QR code', ten_lo_rung:'Tên lô rừng',
+        ma_so_lo_rung:'Mã số lô rừng', ma_so_lo_2023:'Mã số lô 2023', qr_code:'QR code', ten_lo_rung:'Tên lô rừng',
         so_so_do:'Số sổ đỏ', to_ban_do:'Tờ bản đồ', thua_dat:'Thửa đất', tieu_khu:'Tiểu khu', khoanh:'Khoảnh',
         toa_do_tam_lo:'Tọa độ tâm lô', khoang_cach_toi_nha:'Khoảng cách tới nhà', dia_chi_lo:'Địa chỉ lô',
         tinh_trang_so_do:'Tình trạng sổ đỏ', ngay_tham_gia_fsc:'Ngày tham gia FSC',
@@ -2563,7 +2563,7 @@
       },
       'Lo_rung': {
         columns: [
-          'ID nhóm', 'ID chủ rừng', 'ID lô rừng', 'Mã số lô 2024', 'Mã số lô 2023', 'QR code', 'Tên lô rừng',
+          'ID nhóm', 'ID chủ rừng', 'ID lô rừng', 'Mã số lô rừng', 'Mã số lô 2023', 'QR code', 'Tên lô rừng',
           '2. Thông tin địa lý – pháp lý', 'Số sổ đỏ', 'Tờ bản đồ', 'Thửa đất', 'Tiểu khu', 'Khoảnh',
           'Tọa độ tâm lô', 'Khoảng cách tới nhà', 'Địa chỉ lô', '3. Thông tin pháp lý – sở hữu – ổn định',
           'Tình trạng sổ đỏ', 'Ngày tham gia FSC', 'Tình trạng xói mòn', 'Nguyên nhân xói mòn',
@@ -2581,7 +2581,7 @@
           'Kỹ thuật trước trồng', 'Kỹ thuật chăm sóc', 'Cuốc hố bằng máy', 'Bón phân', 'Loại phân bón',
           'Định lượng phân bón', 'Kiểm soát dịch bệnh', 'Tình hình sâu bệnh', 'Thuốc sử dụng', 'Phòng cháy chữa cháy'
         ],
-        main: ['ID lô rừng', 'Mã số lô 2024', 'Tổng diện tích', 'Diện tích FSC']
+        main: ['ID lô rừng', 'Mã số lô rừng', 'Tổng diện tích', 'Diện tích FSC']
       },
       'Taphuan': { columns: ['ID tập huấn', 'ID chủ rừng', 'Loại tập huấn', 'Ngày tập huấn', 'Địa điểm', 'Giảng viên', 'Số lượng tham dự'] },
       'Noidung_taphuan': { columns: ['ID tập huấn', 'Tên lớp tập huấn', 'Loại tập huấn', 'Ghi chú'] },
@@ -3011,6 +3011,21 @@
     };
 
     // === SUPABASE DATA LOADING ===
+    // Fetch all rows from a Supabase table (paginated to bypass 1000-row limit)
+    async function fetchAll(table) {
+      const PAGE = 1000;
+      let allData = [], from = 0;
+      while (true) {
+        const { data, error } = await sb.from(table).select('*').range(from, from + PAGE - 1);
+        if (error) return { data: null, error };
+        if (!data || data.length === 0) break;
+        allData = allData.concat(data);
+        if (data.length < PAGE) break;
+        from += PAGE;
+      }
+      return { data: allData, error: null };
+    }
+
     async function loadAllData() {
       const sheetsToLoad = [
         'Menu', 'NhanSu', 'Ban_Quanlynhom', 'NhomCCR', 'Churung',
@@ -3036,7 +3051,7 @@
 
       const promises = sheetsToLoad.map(sheetName => {
         const dbTable = getDBTable(sheetName);
-        return sb.from(dbTable).select('*').then(res => ({ sheetName, data: res.data, error: res.error }));
+        return fetchAll(dbTable).then(res => ({ sheetName, data: res.data, error: res.error }));
       });
 
       const results = await Promise.all(promises);
@@ -4371,7 +4386,7 @@
         return;
       }
 
-      mapInstance = L.map('map-container').setView([21.6, 105.8], 10);
+      mapInstance = L.map('map-container', { preferCanvas: true }).setView([21.6, 105.8], 10);
 
       const osmLayer = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
         attribution: '&copy; OpenStreetMap',
@@ -4423,11 +4438,9 @@
       mapLayers['Nhãn lô rừng'] = mapPlotLabels;
 
       loadLoRungMarkers();
-      loadGeoJSONFromKho().then(() => {
-        loadStoredGeoJSON().then(() => {
-          createPlotLabels();
-          setTimeout(() => { zoomToAllData(); updateZoomLayerMenu(); }, 300);
-        });
+      loadStoredGeoJSON().then(() => {
+        createPlotLabels();
+        setTimeout(() => { zoomToAllData(); updateZoomLayerMenu(); renderMapLayerPanel(); }, 300);
       });
       renderMapLayerPanel();
     }
@@ -4450,7 +4463,7 @@
         if (layer.loRungId) {
           const lr = loRungData.find(r => String(r['ID lô rừng']) === String(layer.loRungId));
           if (lr) {
-            plotCode = lr['Mã số lô 2024'] || '';
+            plotCode = lr['Mã số lô rừng'] || '';
             ownerName = ownerMap[lr['ID chủ rừng']] || '';
             area = lr['Tổng diện tích'] || '';
           }
@@ -4518,7 +4531,7 @@
         if (parts.length === 2 && !isNaN(parts[0]) && !isNaN(parts[1])) {
           const marker = L.marker([parts[0], parts[1]])
             .bindPopup(`
-              <strong>${lr['Tên lô rừng'] || lr['Mã số lô 2024'] || 'Lô rừng'}</strong><br>
+              <strong>${lr['Tên lô rừng'] || lr['Mã số lô rừng'] || 'Lô rừng'}</strong><br>
               ID: ${lr['ID lô rừng']}<br>
               Diện tích: ${lr['Tổng diện tích'] || '?'} ha
               <br><button class="btn btn-sm btn-outline-success mt-1" onclick="viewLoRungFromMap('${lr['ID lô rừng']}')">Xem chi tiết</button>
@@ -4561,7 +4574,7 @@
                   const vStr = String(v).trim();
                   const match = loRungData.find(lr =>
                     String(lr['ID lô rừng']).trim() === vStr ||
-                    String(lr['Mã số lô 2024']).trim() === vStr ||
+                    String(lr['Mã số lô rừng']).trim() === vStr ||
                     String(lr['Mã số lô 2023']).trim() === vStr ||
                     String(lr['Tên lô rừng']).trim() === vStr
                   );
@@ -4571,7 +4584,7 @@
                 for (const [k, v] of Object.entries(feature.properties)) popup += `<strong>${k}:</strong> ${v}<br>`;
                 if (linkedId) {
                   const lr = loRungData.find(r => String(r['ID lô rừng']) === String(linkedId));
-                  popup += `<span class="badge bg-success mt-1">Liên kết: ${lr ? (lr['Mã số lô 2024'] || linkedId) : linkedId}</span>`;
+                  popup += `<span class="badge bg-success mt-1">Liên kết: ${lr ? (lr['Mã số lô rừng'] || linkedId) : linkedId}</span>`;
                   popup += `<br><button class="btn btn-sm btn-outline-success mt-1" onclick="viewLoRungFromMap('${linkedId}')">Xem chi tiết</button>`;
                 }
                 popup += '</div>';
@@ -4633,7 +4646,7 @@
     function promptLinkPolygonToLoRung(layer) {
       const loRungData = APP_DATA['Lo_rung'] || [];
       let options = loRungData.map(lr =>
-        `<option value="${lr['ID lô rừng']}">${lr['Mã số lô 2024'] || lr['Tên lô rừng'] || lr['ID lô rừng']}</option>`
+        `<option value="${lr['ID lô rừng']}">${lr['Mã số lô rừng'] || lr['Tên lô rừng'] || lr['ID lô rừng']}</option>`
       ).join('');
 
       const popup = L.popup()
@@ -4666,7 +4679,7 @@
         const lr = (APP_DATA['Lo_rung'] || []).find(r => String(r['ID lô rừng']) === String(loRungId));
         if (lr) {
           popup._linkedLayer.bindPopup(`
-            <strong>${lr['Mã số lô 2024'] || lr['Tên lô rừng']}</strong><br>
+            <strong>${lr['Mã số lô rừng'] || lr['Tên lô rừng']}</strong><br>
             <span class="badge bg-success">Đã liên kết</span><br>
             <button class="btn btn-sm btn-outline-success mt-1" onclick="viewLoRungFromMap('${loRungId}')">Xem chi tiết</button>
             <button class="btn btn-sm btn-outline-danger mt-1" onclick="unlinkPolygon('${loRungId}')">Hủy liên kết</button>
@@ -4725,7 +4738,7 @@
               const vStr = String(v).trim();
               const match = loRungData.find(lr =>
                 String(lr['ID lô rừng']).trim() === vStr ||
-                String(lr['Mã số lô 2024']).trim() === vStr ||
+                String(lr['Mã số lô rừng']).trim() === vStr ||
                 String(lr['Mã số lô 2023']).trim() === vStr ||
                 String(lr['Tên lô rừng']).trim() === vStr
               );
@@ -4735,7 +4748,7 @@
             for (const [k, v] of Object.entries(feature.properties)) popup += `<strong>${k}:</strong> ${v}<br>`;
             if (linkedId) {
               const lr = loRungData.find(r => String(r['ID lô rừng']) === String(linkedId));
-              popup += `<span class="badge bg-success mt-1">Liên kết: ${lr ? (lr['Mã số lô 2024'] || linkedId) : linkedId}</span>`;
+              popup += `<span class="badge bg-success mt-1">Liên kết: ${lr ? (lr['Mã số lô rừng'] || linkedId) : linkedId}</span>`;
               popup += `<br><button class="btn btn-sm btn-outline-success mt-1" onclick="viewLoRungFromMap('${linkedId}')">Xem chi tiết</button>`;
               popup += `<button class="btn btn-sm btn-outline-danger mt-1 ms-1" onclick="unlinkPolygon('${linkedId}')">Hủy liên kết</button>`;
             }
@@ -4785,31 +4798,35 @@
       }
     }
 
-    // Load individually linked polygons from lo_rung_geojson
+    // Load all polygons from lo_rung_geojson (paginated)
     async function loadStoredGeoJSON() {
       try {
-        const { data, error } = await sb.from('lo_rung_geojson').select('*');
-        if (error || !data) return;
+        const { data, error } = await fetchAll('lo_rung_geojson');
+        if (error || !data) { console.error('Load lo_rung_geojson error:', error); return; }
+        console.log(`Loading ${data.length} polygons from lo_rung_geojson...`);
+        const loRungData = APP_DATA['Lo_rung'] || [];
+        const churungData = APP_DATA['Churung'] || [];
+        const ownerMap = {};
+        churungData.forEach(cr => { ownerMap[cr['ID chủ rừng']] = cr['Họ tên chủ rừng'] || ''; });
+
         data.forEach(row => {
-          if (row.geojson) {
-            const layer = L.geoJSON(row.geojson, {
-              style: { color: '#2E7D32', weight: 2, fillColor: '#4CAF50', fillOpacity: 0.2 }
-            });
-            layer.eachLayer(l => { l.loRungId = row.id_lo_rung; });
-            const lr = (APP_DATA['Lo_rung'] || []).find(r => String(r['ID lô rừng']) === String(row.id_lo_rung));
-            if (lr) {
-              layer.bindPopup(`<div class="small">
-                <strong>${lr['Mã số lô 2024'] || lr['Tên lô rừng']}</strong><br>
-                Chủ rừng: ${lr['Họ tên chủ rừng'] || '?'}<br>
-                Diện tích: ${lr['Tổng diện tích'] || '?'} ha<br>
-                <span class="badge bg-success mt-1">Đã liên kết</span><br>
-                <button class="btn btn-sm btn-outline-success mt-1" onclick="viewLoRungFromMap('${row.id_lo_rung}')">Xem chi tiết</button>
-                <button class="btn btn-sm btn-outline-danger mt-1 ms-1" onclick="unlinkPolygon('${row.id_lo_rung}')">Hủy liên kết</button>
-              </div>`);
-            }
-            mapDrawnItems.addLayer(layer);
-          }
+          if (!row.geojson) return;
+          const layer = L.geoJSON(row.geojson, {
+            style: { color: '#FFFF00', weight: 2, fillColor: '#2E7D32', fillOpacity: 0.15 }
+          });
+          layer.eachLayer(l => { l.loRungId = row.id_lo_rung; });
+          const lr = loRungData.find(r => String(r['ID lô rừng']) === String(row.id_lo_rung));
+          const ownerName = lr ? (ownerMap[lr['ID chủ rừng']] || '') : '';
+          const plotName = lr ? (lr['Mã số lô rừng'] || lr['Tên lô rừng'] || row.id_lo_rung) : row.id_lo_rung;
+          layer.bindPopup(`<div class="small">
+            <strong>${plotName}</strong><br>
+            ${ownerName ? 'Chủ rừng: ' + ownerName + '<br>' : ''}
+            Diện tích: ${lr ? (lr['Tổng diện tích'] || '?') : '?'} ha<br>
+            <button class="btn btn-sm btn-outline-success mt-1" onclick="viewLoRungFromMap('${row.id_lo_rung}')">Xem chi tiết</button>
+          </div>`);
+          mapDrawnItems.addLayer(layer);
         });
+        console.log(`Loaded ${data.length} polygons.`);
       } catch (e) {
         console.error('Load stored GeoJSON error:', e);
       }
@@ -5006,7 +5023,7 @@
       if (row) {
         $('#map-view').addClass('d-none');
         $('#page-content-dynamic').removeClass('d-none');
-        navHistory.push({ mode: 'DETAIL', viewName: 'Lo_rung', title: row['Mã số lô 2024'] || 'Lô rừng', rowData: row });
+        navHistory.push({ mode: 'DETAIL', viewName: 'Lo_rung', title: row['Mã số lô rừng'] || 'Lô rừng', rowData: row });
         renderBreadcrumb();
         renderDetailMaster('Lo_rung', row);
       }
@@ -6161,7 +6178,7 @@
         const plots = APP_DATA['Lo_rung'] || [];
         plots.forEach(p => {
           const ownerName = findOwnerName(p['ID chủ rừng']);
-          select.append(`<option value="${p['ID lô rừng']}" data-type="lo_rung">${p['Mã số lô 2024'] || p['ID lô rừng']} - ${ownerName}</option>`);
+          select.append(`<option value="${p['ID lô rừng']}" data-type="lo_rung">${p['Mã số lô rừng'] || p['ID lô rừng']} - ${ownerName}</option>`);
         });
       }
     }
@@ -6192,7 +6209,7 @@
       } else {
         const plots = APP_DATA['Lo_rung'] || [];
         const p = plots.find(x => String(x['ID lô rừng']) === String(targetId));
-        targetName = p ? (p['Mã số lô 2024'] || p['Tên lô rừng'] || targetId) : targetId;
+        targetName = p ? (p['Mã số lô rừng'] || p['Tên lô rừng'] || targetId) : targetId;
       }
 
       renderMonitoringFormUI(typeKey, targetId, targetName);
@@ -6538,7 +6555,7 @@
       let targetName = gsRecord['ID lô rừng'] || gsRecord['ID nhóm'] || '';
       if (gsRecord['ID lô rừng']) {
         const p = (APP_DATA['Lo_rung'] || []).find(x => String(x['ID lô rừng']) === String(gsRecord['ID lô rừng']));
-        if (p) targetName = p['Mã số lô 2024'] || p['Tên lô rừng'] || targetName;
+        if (p) targetName = p['Mã số lô rừng'] || p['Tên lô rừng'] || targetName;
       } else if (gsRecord['ID nhóm']) {
         targetName = findGroupName(gsRecord['ID nhóm']);
       }
@@ -6652,7 +6669,7 @@
       let plotInfo = null;
       if (gsRecord['ID lô rừng']) {
         plotInfo = (APP_DATA['Lo_rung'] || []).find(x => String(x['ID lô rừng']) === String(gsRecord['ID lô rừng']));
-        if (plotInfo) targetName = plotInfo['Mã số lô 2024'] || plotInfo['Tên lô rừng'] || targetName;
+        if (plotInfo) targetName = plotInfo['Mã số lô rừng'] || plotInfo['Tên lô rừng'] || targetName;
       } else if (gsRecord['ID nhóm']) {
         targetName = findGroupName(gsRecord['ID nhóm']);
       }
@@ -6815,7 +6832,7 @@ ${gsRecord['Đề xuất'] ? `<div class="proposal-box"><h4>${t('mon_proposal')}
       container.empty();
 
       const plotId = d['ID lô rừng'];
-      const plotName = d['Mã số lô 2024'] || d['Tên lô rừng'] || plotId;
+      const plotName = d['Mã số lô rừng'] || d['Tên lô rừng'] || plotId;
       const ownerName = d['Họ tên chủ rừng'] || '';
       const groupName = findGroupName(d['ID nhóm'] || '');
       const area = d['Diện tích GIS'] || d['Diện tích đăng ký'] || '';
@@ -6905,7 +6922,7 @@ ${gsRecord['Đề xuất'] ? `<div class="proposal-box"><h4>${t('mon_proposal')}
       if (!_monReturnContext || _monReturnContext.type !== 'plot') return;
       const d = _monReturnContext.data;
       const targetId = d['ID lô rừng'];
-      const targetName = d['Mã số lô 2024'] || d['Tên lô rừng'] || targetId;
+      const targetName = d['Mã số lô rừng'] || d['Tên lô rừng'] || targetId;
       renderMonitoringFormUI(typeKey, targetId, targetName);
     }
 
@@ -7395,9 +7412,14 @@ ${gsRecord['Đề xuất'] ? `<div class="proposal-box"><h4>${t('mon_proposal')}
 
       const totalStakeholders = stakeholders.length;
       const totalResponses = responses.length;
+      const nonRespondents = totalStakeholders - totalResponses;
       const responseRate = totalStakeholders > 0 ? ((totalResponses / totalStakeholders) * 100).toFixed(1) : 0;
 
-      // === Analyze rating questions ===
+      // === Identify non-respondent stakeholders ===
+      const respondentBLQIds = new Set(responses.map(r => r['ID BLQ']).filter(Boolean));
+      const nonRespondentList = stakeholders.filter(s => !respondentBLQIds.has(s['ID']));
+
+      // === Analyze rating questions (ONLY from actual respondents) ===
       const ratingQs = CONSULTATION_DICTIONARY["B-I. Đánh giá hoạt động quản lý rừng"] || [];
       const ratingStats = ratingQs.map(q => {
         let good = 0, mod = 0, poor = 0;
@@ -7415,19 +7437,19 @@ ${gsRecord['Đề xuất'] ? `<div class="proposal-box"><h4>${t('mon_proposal')}
         return { ...q, good, mod, poor, total, goodPct: total > 0 ? (good / total * 100).toFixed(1) : 0, poorPct: total > 0 ? (poor / total * 100).toFixed(1) : 0 };
       });
 
-      // Strengths: >60% Tốt
-      const strengths = ratingStats.filter(s => parseFloat(s.goodPct) >= 60);
-      // Weaknesses: >30% Chưa tốt or <40% Tốt
-      const weaknesses = ratingStats.filter(s => parseFloat(s.poorPct) >= 30 || parseFloat(s.goodPct) < 40);
+      // Strengths: >60% Tốt (only from respondents)
+      const strengths = ratingStats.filter(s => s.total > 0 && parseFloat(s.goodPct) >= 60);
+      // Weaknesses: >30% Chưa tốt or <40% Tốt (only from respondents who answered)
+      const weaknesses = ratingStats.filter(s => s.total > 0 && (parseFloat(s.poorPct) >= 30 || parseFloat(s.goodPct) < 40));
 
-      // Overall positive/negative
+      // Overall positive/negative (only from respondents)
       const totalRatings = ratingStats.reduce((s, q) => s + q.total, 0);
       const totalGood = ratingStats.reduce((s, q) => s + q.good, 0);
       const totalPoor = ratingStats.reduce((s, q) => s + q.poor, 0);
       const overallPositive = totalRatings > 0 ? (totalGood / totalRatings * 100).toFixed(1) : 0;
       const overallNegative = totalRatings > 0 ? (totalPoor / totalRatings * 100).toFixed(1) : 0;
 
-      // === Analyze yes/no questions ===
+      // === Analyze yes/no questions (ONLY from actual respondents) ===
       const ynQs = CONSULTATION_DICTIONARY["C. Giá trị bảo tồn cao"] || [];
       const ynStats = ynQs.map(q => {
         let yes = 0, no = 0;
@@ -7467,20 +7489,25 @@ ${gsRecord['Đề xuất'] ? `<div class="proposal-box"><h4>${t('mon_proposal')}
         <p class="text-muted small">${session['Nội dung giới thiệu'] || ''}</p>
       </div>`;
 
-      // 1. Overview
+      // 1. Overview - clearly separate respondents vs non-respondents
       rpt += `<h5 class="fw-bold text-success mb-3"><i class="fas fa-info-circle me-2"></i>1. ${t('rpt_overview')}</h5>`;
-      rpt += `<div class="row g-3 mb-4">
-        <div class="col-md-3"><div class="border rounded p-3 text-center"><div class="fs-2 fw-bold text-primary">${totalResponses}</div><div class="small text-muted">${t('rpt_respondents')}</div></div></div>
+      rpt += `<div class="row g-3 mb-3">
+        <div class="col-md-3"><div class="border rounded p-3 text-center"><div class="fs-2 fw-bold text-primary">${totalResponses}</div><div class="small text-muted">${currentLang === 'vi' ? 'Phản hồi' : 'Responses'}</div></div></div>
         <div class="col-md-3"><div class="border rounded p-3 text-center"><div class="fs-2 fw-bold text-info">${totalStakeholders}</div><div class="small text-muted">${t('rpt_stakeholders')}</div></div></div>
         <div class="col-md-3"><div class="border rounded p-3 text-center"><div class="fs-2 fw-bold text-success">${responseRate}%</div><div class="small text-muted">${t('rpt_response_rate')}</div></div></div>
-        <div class="col-md-3"><div class="border rounded p-3 text-center"><div class="fs-2 fw-bold text-warning">${overallPositive}%</div><div class="small text-muted">${t('rpt_positive_pct')}</div></div></div>
+        <div class="col-md-3"><div class="border rounded p-3 text-center"><div class="fs-2 fw-bold text-warning">${overallPositive}%</div><div class="small text-muted">${currentLang === 'vi' ? 'Đánh giá tích cực' : 'Positive rating'}</div></div></div>
       </div>`;
+      rpt += `<div class="alert alert-info border-0 rounded-3 small mb-4"><i class="fas fa-info-circle me-2"></i>${currentLang === 'vi'
+        ? '<strong>Lưu ý:</strong> Tất cả số liệu phân tích bên dưới chỉ được tính dựa trên <strong>' + totalResponses + ' bên liên quan đã phản hồi</strong>. Các bên không phản hồi (' + nonRespondents + ') được liệt kê riêng ở mục cuối báo cáo.'
+        : '<strong>Note:</strong> All analysis below is based only on <strong>' + totalResponses + ' respondents</strong>. Non-respondents (' + nonRespondents + ') are listed separately at the end.'}</div>`;
 
-      // 2. Rating analysis table
+      // 2. Rating analysis table (only from respondents)
       rpt += `<h5 class="fw-bold text-success mb-3"><i class="fas fa-poll me-2"></i>2. ${t('rpt_rating_analysis')}</h5>`;
+      rpt += `<p class="small text-muted mb-2">${currentLang === 'vi' ? 'Cơ sở phân tích: ' + totalResponses + ' phản hồi' : 'Analysis base: ' + totalResponses + ' responses'}</p>`;
       rpt += `<div class="table-responsive mb-4"><table class="table table-sm table-bordered align-middle">
         <thead class="table-success"><tr><th style="width:40px">#</th><th>${currentLang === 'vi' ? 'Tiêu chí đánh giá' : 'Evaluation Criteria'}</th>
         <th class="text-center" style="width:80px">${t('con_good')}</th><th class="text-center" style="width:80px">${t('con_moderate')}</th><th class="text-center" style="width:80px">${t('con_poor')}</th>
+        <th class="text-center" style="width:60px">N</th>
         <th class="text-center" style="width:100px">% ${t('con_good')}</th></tr></thead><tbody>`;
       ratingStats.forEach((s, idx) => {
         const barColor = parseFloat(s.goodPct) >= 60 ? '#4CAF50' : parseFloat(s.goodPct) >= 40 ? '#FF9800' : '#f44336';
@@ -7489,6 +7516,7 @@ ${gsRecord['Đề xuất'] ? `<div class="proposal-box"><h4>${t('mon_proposal')}
           <td class="text-center fw-bold text-success">${s.good}</td>
           <td class="text-center fw-bold text-warning">${s.mod}</td>
           <td class="text-center fw-bold text-danger">${s.poor}</td>
+          <td class="text-center text-muted">${s.total}</td>
           <td><div class="d-flex align-items-center gap-1"><div class="progress flex-grow-1" style="height:16px"><div class="progress-bar" style="width:${s.goodPct}%;background:${barColor}">${s.goodPct}%</div></div></div></td>
         </tr>`;
       });
@@ -7499,19 +7527,19 @@ ${gsRecord['Đề xuất'] ? `<div class="proposal-box"><h4>${t('mon_proposal')}
       if (strengths.length > 0) {
         rpt += `<div class="alert alert-success border-0 rounded-3"><ul class="mb-0">`;
         strengths.forEach(s => {
-          rpt += `<li><strong>${s.label}</strong> — ${s.goodPct}% ${t('con_good')}</li>`;
+          rpt += `<li><strong>${s.label}</strong> — ${s.goodPct}% ${t('con_good')} (n=${s.total})</li>`;
         });
         rpt += `</ul></div>`;
       } else {
         rpt += `<p class="text-muted">${currentLang === 'vi' ? 'Chưa có tiêu chí nào đạt mức thuận lợi rõ ràng (>60% Tốt).' : 'No criteria clearly rated as favorable (>60% Good).'}</p>`;
       }
 
-      // 4. Weaknesses
-      rpt += `<h5 class="fw-bold text-danger mb-3"><i class="fas fa-thumbs-down me-2"></i>4. ${t('rpt_weaknesses')}</h5>`;
+      // 4. Weaknesses / Risks
+      rpt += `<h5 class="fw-bold text-danger mb-3"><i class="fas fa-exclamation-triangle me-2"></i>4. ${currentLang === 'vi' ? 'Điểm yếu và rủi ro' : 'Weaknesses & Risks'}</h5>`;
       if (weaknesses.length > 0) {
         rpt += `<div class="alert alert-danger border-0 rounded-3"><ul class="mb-0">`;
         weaknesses.forEach(s => {
-          rpt += `<li><strong>${s.label}</strong> — ${s.poorPct}% ${t('con_poor')}, ${s.goodPct}% ${t('con_good')}</li>`;
+          rpt += `<li><strong>${s.label}</strong> — ${s.poorPct}% ${t('con_poor')}, ${s.goodPct}% ${t('con_good')} (n=${s.total})</li>`;
         });
         rpt += `</ul></div>`;
       } else {
@@ -7552,18 +7580,20 @@ ${gsRecord['Đề xuất'] ? `<div class="proposal-box"><h4>${t('mon_proposal')}
       rpt += `<div class="table-responsive mb-4"><table class="table table-sm table-bordered align-middle">
         <thead class="table-success"><tr><th style="width:40px">#</th><th>${currentLang === 'vi' ? 'Tiêu chí' : 'Criteria'}</th>
         <th class="text-center" style="width:80px">${t('con_yes')}</th><th class="text-center" style="width:80px">${t('con_no')}</th>
+        <th class="text-center" style="width:60px">N</th>
         <th class="text-center" style="width:100px">% ${t('con_yes')}</th></tr></thead><tbody>`;
       ynStats.forEach((s, idx) => {
         rpt += `<tr><td>${idx + 1}</td><td class="small">${s.label}</td>
           <td class="text-center fw-bold text-success">${s.yes}</td>
           <td class="text-center fw-bold text-danger">${s.no}</td>
+          <td class="text-center text-muted">${s.total}</td>
           <td class="text-center"><span class="badge ${parseFloat(s.yesPct) >= 50 ? 'bg-success' : 'bg-secondary'}">${s.yesPct}%</span></td>
         </tr>`;
       });
       rpt += `</tbody></table></div>`;
 
       // 7. Text responses (opinions, recommendations)
-      rpt += `<h5 class="fw-bold text-success mb-3"><i class="fas fa-comment-dots me-2"></i>7. ${t('rpt_opinions')}</h5>`;
+      rpt += `<h5 class="fw-bold text-success mb-3"><i class="fas fa-comment-dots me-2"></i>7. ${currentLang === 'vi' ? 'Ý kiến và kiến nghị' : 'Opinions & Recommendations'}</h5>`;
       textResponses.forEach(q => {
         if (q.texts.length === 0) return;
         rpt += `<h6 class="fw-bold mt-3 mb-2">${q.label}</h6>`;
@@ -7574,27 +7604,55 @@ ${gsRecord['Đề xuất'] ? `<div class="proposal-box"><h4>${t('mon_proposal')}
         rpt += `</div>`;
       });
 
-      // 8. Conclusion
-      rpt += `<h5 class="fw-bold text-success mb-3"><i class="fas fa-flag-checkered me-2"></i>8. ${t('rpt_conclusion')}</h5>`;
+      // 8. Non-respondents section
+      rpt += `<h5 class="fw-bold text-secondary mb-3"><i class="fas fa-user-slash me-2"></i>8. ${currentLang === 'vi' ? 'Các bên liên quan chưa phản hồi' : 'Non-respondent Stakeholders'}</h5>`;
+      if (nonRespondentList.length > 0) {
+        rpt += `<div class="alert alert-secondary border-0 rounded-3 small mb-3">
+          <i class="fas fa-info-circle me-2"></i>${currentLang === 'vi'
+            ? '<strong>' + nonRespondentList.length + '/' + totalStakeholders + '</strong> bên liên quan chưa gửi phản hồi. Các lý do khách quan có thể bao gồm:'
+            : '<strong>' + nonRespondentList.length + '/' + totalStakeholders + '</strong> stakeholders did not respond. Objective reasons may include:'}
+          <ul class="mt-2 mb-0">
+            <li>${currentLang === 'vi' ? 'Đã nhận báo cáo nhưng chưa có thời gian phản hồi' : 'Received the report but did not have time to respond'}</li>
+            <li>${currentLang === 'vi' ? 'Nội dung tham vấn không liên quan trực tiếp đến hoạt động của bên liên quan' : 'Consultation content not directly relevant to stakeholder activities'}</li>
+            <li>${currentLang === 'vi' ? 'Thông tin liên lạc không chính xác hoặc không tiếp cận được' : 'Contact information inaccurate or unreachable'}</li>
+            <li>${currentLang === 'vi' ? 'Lý do khác (bận công tác, thay đổi nhân sự, v.v.)' : 'Other reasons (busy, personnel changes, etc.)'}</li>
+          </ul>
+        </div>`;
+        rpt += `<div class="table-responsive mb-4"><table class="table table-sm table-bordered">
+          <thead class="table-light"><tr><th style="width:40px">#</th><th>${currentLang === 'vi' ? 'Tên bên liên quan' : 'Stakeholder Name'}</th>
+          <th>${currentLang === 'vi' ? 'Loại' : 'Type'}</th><th>${currentLang === 'vi' ? 'Liên hệ' : 'Contact'}</th></tr></thead><tbody>`;
+        nonRespondentList.forEach((s, idx) => {
+          rpt += `<tr><td>${idx + 1}</td><td class="small">${s['Tên tổ chức'] || s['Họ và tên'] || '—'}</td>
+            <td class="small">${s['Loại bên liên quan'] || '—'}</td>
+            <td class="small">${s['Điện thoại'] || s['Email'] || '—'}</td></tr>`;
+        });
+        rpt += `</tbody></table></div>`;
+      } else {
+        rpt += `<p class="text-success"><i class="fas fa-check-circle me-1"></i>${currentLang === 'vi' ? 'Tất cả bên liên quan đã phản hồi.' : 'All stakeholders have responded.'}</p>`;
+      }
+
+      // 9. Conclusion
+      rpt += `<h5 class="fw-bold text-success mb-3"><i class="fas fa-flag-checkered me-2"></i>9. ${t('rpt_conclusion')}</h5>`;
       rpt += `<div class="alert alert-light border rounded-3">`;
       if (parseFloat(overallPositive) >= 70) {
         rpt += `<p class="mb-2"><strong class="text-success"><i class="fas fa-check-circle me-1"></i>${currentLang === 'vi'
-          ? 'Kết quả tham vấn cho thấy hoạt động quản lý rừng bền vững được đánh giá TÍCH CỰC với tỉ lệ ' + overallPositive + '% đánh giá tốt.'
-          : 'Consultation results show forest management activities are rated POSITIVELY with ' + overallPositive + '% good ratings.'}</strong></p>`;
+          ? 'Kết quả tham vấn cho thấy hoạt động quản lý rừng bền vững được đánh giá TÍCH CỰC với tỉ lệ ' + overallPositive + '% đánh giá tốt (dựa trên ' + totalResponses + ' phản hồi).'
+          : 'Consultation results show forest management activities are rated POSITIVELY with ' + overallPositive + '% good ratings (based on ' + totalResponses + ' responses).'}</strong></p>`;
       } else if (parseFloat(overallPositive) >= 50) {
         rpt += `<p class="mb-2"><strong class="text-warning"><i class="fas fa-exclamation-circle me-1"></i>${currentLang === 'vi'
-          ? 'Kết quả tham vấn ở mức TRUNG BÌNH với ' + overallPositive + '% đánh giá tốt. Cần cải thiện một số tiêu chí.'
-          : 'Consultation results are MODERATE with ' + overallPositive + '% good ratings. Some criteria need improvement.'}</strong></p>`;
+          ? 'Kết quả tham vấn ở mức TRUNG BÌNH với ' + overallPositive + '% đánh giá tốt (dựa trên ' + totalResponses + ' phản hồi). Cần cải thiện một số tiêu chí.'
+          : 'Consultation results are MODERATE with ' + overallPositive + '% good ratings (based on ' + totalResponses + ' responses). Some criteria need improvement.'}</strong></p>`;
       } else {
         rpt += `<p class="mb-2"><strong class="text-danger"><i class="fas fa-times-circle me-1"></i>${currentLang === 'vi'
-          ? 'Kết quả tham vấn CẦN CẢI THIỆN ĐÁNG KỂ. Chỉ có ' + overallPositive + '% đánh giá tốt.'
-          : 'Consultation results NEED SIGNIFICANT IMPROVEMENT. Only ' + overallPositive + '% good ratings.'}</strong></p>`;
+          ? 'Kết quả tham vấn CẦN CẢI THIỆN ĐÁNG KỂ. Chỉ có ' + overallPositive + '% đánh giá tốt (dựa trên ' + totalResponses + ' phản hồi).'
+          : 'Consultation results NEED SIGNIFICANT IMPROVEMENT. Only ' + overallPositive + '% good ratings (based on ' + totalResponses + ' responses).'}</strong></p>`;
       }
 
       rpt += `<ul class="mb-0">
-        <li>${currentLang === 'vi' ? 'Tổng số phản hồi: ' + totalResponses + ' / ' + totalStakeholders + ' bên liên quan (' + responseRate + '%)' : 'Total responses: ' + totalResponses + ' / ' + totalStakeholders + ' stakeholders (' + responseRate + '%)'}</li>
-        <li>${currentLang === 'vi' ? 'Điểm mạnh: ' + strengths.length + ' tiêu chí' : 'Strengths: ' + strengths.length + ' criteria'}</li>
+        <li>${currentLang === 'vi' ? 'Tổng số phản hồi: <strong>' + totalResponses + '</strong> / ' + totalStakeholders + ' bên liên quan (' + responseRate + '%)' : 'Total responses: <strong>' + totalResponses + '</strong> / ' + totalStakeholders + ' stakeholders (' + responseRate + '%)'}</li>
+        <li>${currentLang === 'vi' ? 'Điểm mạnh: ' + strengths.length + ' tiêu chí (>60% đánh giá Tốt)' : 'Strengths: ' + strengths.length + ' criteria (>60% Good rating)'}</li>
         <li>${currentLang === 'vi' ? 'Cần cải thiện: ' + weaknesses.length + ' tiêu chí' : 'Needs improvement: ' + weaknesses.length + ' criteria'}</li>
+        ${nonRespondents > 0 ? `<li>${currentLang === 'vi' ? 'Chưa phản hồi: ' + nonRespondents + ' bên liên quan (xem mục 8)' : 'Non-respondents: ' + nonRespondents + ' stakeholders (see section 8)'}</li>` : ''}
       </ul></div>`;
 
       rpt += `</div>`; // close rpt-printable
@@ -7779,7 +7837,7 @@ ${gsRecord['Đề xuất'] ? `<div class="proposal-box"><h4>${t('mon_proposal')}
 
     function handleRowClick(sheetName, rowJson) {
       const rowData = JSON.parse(decodeURIComponent(rowJson));
-      let title = rowData['Tên ban quản lý'] || rowData['Tên nhóm'] || rowData['Họ tên chủ rừng'] || rowData['Mã số lô 2024'] || rowData['Họ và tên'] || t('detail_title');
+      let title = rowData['Tên ban quản lý'] || rowData['Tên nhóm'] || rowData['Họ tên chủ rừng'] || rowData['Mã số lô rừng'] || rowData['Họ và tên'] || t('detail_title');
 
       // Chế độ xem chi tiết mặc định
       navHistory.push({ mode: 'DETAIL', viewName: sheetName, title: title, rowData: rowData });
@@ -7817,7 +7875,7 @@ ${gsRecord['Đề xuất'] ? `<div class="proposal-box"><h4>${t('mon_proposal')}
 
       let html = `
           <div class="d-flex justify-content-between align-items-center mb-2 p-2 bg-white rounded-3 shadow-sm border-start border-4 border-success">
-            <div><h6 class="fw-bold text-success m-0">${d['Tên nhóm'] || d['Họ tên chủ rừng'] || d['Mã số lô 2024'] || d['Họ và tên'] || t('detail_title')}</h6><div class="text-muted small">ID: ${d[Object.keys(d)[0]]}</div></div>
+            <div><h6 class="fw-bold text-success m-0">${d['Tên nhóm'] || d['Họ tên chủ rừng'] || d['Mã số lô rừng'] || d['Họ và tên'] || t('detail_title')}</h6><div class="text-muted small">ID: ${d[Object.keys(d)[0]]}</div></div>
             <div>
               ${canEdit ? `<button class="btn btn-outline-primary btn-sm me-1" onclick="openModal('UPDATE', '${sheetName}', '${rowJson}')"><i class="fa-solid fa-pen"></i></button>` : ''}
               ${canDelete ? `<button class="btn btn-outline-danger btn-sm" onclick="deleteRow('${sheetName}', '${rowJson}')"><i class="fa-solid fa-trash"></i></button>` : ''}
@@ -7846,8 +7904,8 @@ ${gsRecord['Đề xuất'] ? `<div class="proposal-box"><h4>${t('mon_proposal')}
         const plotSafe = JSON.stringify(d).replace(/"/g, '&quot;');
         html += `<div class="d-flex gap-1 mb-2 flex-nowrap detail-action-bar">
           <button class="btn btn-success btn-sm fw-bold shadow-sm flex-fill" onclick="showOnMap('${d['ID lô rừng']}')"><i class="fa-solid fa-map me-1"></i> ${t('dd_bando')}</button>
-          <button class="btn btn-outline-success btn-sm fw-bold shadow-sm flex-fill" onclick="loadViewWithFilter('HD_Lorung', 'ID lô rừng', '${d['ID lô rừng']}', 'Hoạt động lô ${d['Mã số lô 2024']}')"><i class="fa-solid fa-clipboard-list me-1"></i> ${t('dd_baocao')}</button>
-          <button class="btn btn-outline-success btn-sm fw-bold shadow-sm flex-fill" onclick="loadViewWithFilter('KH_QL_Lorung', 'ID lô rừng', '${d['ID lô rừng']}', 'Kế hoạch lô ${d['Mã số lô 2024']}')"><i class="fa-solid fa-calendar-check me-1"></i> ${t('dd_kehoach')}</button>
+          <button class="btn btn-outline-success btn-sm fw-bold shadow-sm flex-fill" onclick="loadViewWithFilter('HD_Lorung', 'ID lô rừng', '${d['ID lô rừng']}', 'Hoạt động lô ${d['Mã số lô rừng']}')"><i class="fa-solid fa-clipboard-list me-1"></i> ${t('dd_baocao')}</button>
+          <button class="btn btn-outline-success btn-sm fw-bold shadow-sm flex-fill" onclick="loadViewWithFilter('KH_QL_Lorung', 'ID lô rừng', '${d['ID lô rừng']}', 'Kế hoạch lô ${d['Mã số lô rừng']}')"><i class="fa-solid fa-calendar-check me-1"></i> ${t('dd_kehoach')}</button>
           <button class="btn btn-outline-primary btn-sm fw-bold shadow-sm flex-fill" onclick="showPlotMonitoring(${plotSafe})"><i class="fa-solid fa-clipboard-check me-1"></i> ${t('dd_giamsat')}</button>
         </div>`;
       } else if (sheetName === 'NhanSu') {
