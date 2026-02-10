@@ -955,7 +955,7 @@
       }
     }
 
-    /* Plot label tooltips on map */
+    /* Plot label tooltips on map (visible at high zoom only) */
     .plot-label {
       background: transparent !important;
       border: none !important;
@@ -4641,7 +4641,7 @@
     let mapDrawControl = null;
     let mapEditMode = false;
     let geoJsonNamedLayers = {}; // { layerName: L.FeatureGroup }
-    let mapPlotLabels = null; // L.LayerGroup for plot labels
+    let mapPlotLabels = null; // L.LayerGroup for plot labels (shown at high zoom only)
 
     function renderMapView() {
       $('#page-content-dynamic').addClass('d-none');
@@ -4703,8 +4703,18 @@
         });
       });
 
-      mapPlotLabels = L.layerGroup().addTo(mapInstance);
+      mapPlotLabels = L.layerGroup(); // Don't add to map yet — shown only at zoom >= 17
       mapLayers['Nhãn lô rừng'] = mapPlotLabels;
+
+      // Show/hide plot labels based on zoom level (~1:2000 = zoom 17+)
+      mapInstance.on('zoomend', function() {
+        const z = mapInstance.getZoom();
+        if (z >= 17 && !mapInstance.hasLayer(mapPlotLabels)) {
+          mapInstance.addLayer(mapPlotLabels);
+        } else if (z < 17 && mapInstance.hasLayer(mapPlotLabels)) {
+          mapInstance.removeLayer(mapPlotLabels);
+        }
+      });
 
       loadStoredGeoJSON().then(() => {
         createPlotLabels();
@@ -4718,7 +4728,6 @@
       mapPlotLabels.clearLayers();
       const loRungData = APP_DATA['Lo_rung'] || [];
       const churungData = APP_DATA['Churung'] || [];
-      // Build owner lookup: ID chủ rừng → Họ tên chủ rừng
       const ownerMap = {};
       churungData.forEach(cr => { ownerMap[cr['ID chủ rừng']] = cr['Họ tên chủ rừng'] || ''; });
 
@@ -4726,8 +4735,6 @@
         if (!layer.getBounds && !layer.getLatLng) return;
         const center = layer.getBounds ? layer.getBounds().getCenter() : layer.getLatLng();
         let plotCode = '', ownerName = '', area = '';
-
-        // Try linked lo_rung data first
         if (layer.loRungId) {
           const lr = loRungData.find(r => String(r['ID lô rừng']) === String(layer.loRungId));
           if (lr) {
@@ -4736,7 +4743,6 @@
             area = lr['Tổng diện tích'] || '';
           }
         }
-        // Fallback: try GeoJSON feature properties
         if (!plotCode && layer.feature && layer.feature.properties) {
           const p = layer.feature.properties;
           plotCode = p['Mã số lô rừng'] || p['ma_so_lo'] || '';
