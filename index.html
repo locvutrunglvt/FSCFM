@@ -1153,6 +1153,9 @@
         </div>
         <span class="text-white me-1 small d-none d-md-block" id="user-display-name" style="opacity:0.85">User</span>
         <span id="offline-badge" class="badge bg-warning text-dark d-none" style="font-size:10px"><i class="fa-solid fa-wifi-slash me-1"></i>Offline</span>
+        <span id="sync-badge" class="badge bg-info text-white d-none" style="font-size:10px;cursor:pointer" onclick="showSyncPanel()" title="Pending sync">
+          <i class="fa-solid fa-arrows-rotate me-1"></i><span id="sync-count">0</span>
+        </span>
         <button type="button" class="btn btn-sm btn-logout fw-bold rounded-pill px-2 px-md-3 shadow-sm"
           style="background:rgba(255,255,255,0.15);color:#fff;border:1px solid rgba(255,255,255,0.3);white-space:nowrap"
           onmouseenter="this.style.background='rgba(255,255,255,0.3)'" onmouseleave="this.style.background='rgba(255,255,255,0.15)'"
@@ -1292,7 +1295,15 @@
       const badge = document.getElementById('offline-badge');
       if (badge) { navigator.onLine ? badge.classList.add('d-none') : badge.classList.remove('d-none'); }
     }
-    window.addEventListener('online', () => { updateOnlineStatus(); console.log('Back online'); });
+    window.addEventListener('online', () => {
+      updateOnlineStatus();
+      console.log('Back online - checking sync queue...');
+      setTimeout(async () => {
+        try {
+          await syncManager.processQueue();
+        } catch (e) { console.warn('Auto-sync error:', e); }
+      }, 2000);
+    });
     window.addEventListener('offline', () => { updateOnlineStatus(); console.log('Gone offline'); });
 
     // === INTERNATIONALIZATION (i18n) ===
@@ -1477,6 +1488,14 @@
         map_search_no_result: 'Không tìm thấy kết quả',
         map_search_owner: 'Chủ rừng',
         map_search_area: 'Diện tích',
+
+        // Sync
+        sync_pending: 'Đang chờ đồng bộ',
+        sync_syncing: 'Đang đồng bộ...',
+        sync_success: 'Đồng bộ thành công',
+        sync_error: 'Lỗi đồng bộ',
+        sync_saved_offline: 'Đã lưu offline — sẽ đồng bộ khi có mạng',
+        sync_panel_title: 'Hàng đợi đồng bộ',
 
         // Settings
         settings_title: 'Cài đặt hệ thống',
@@ -1828,6 +1847,14 @@
         map_search_no_result: 'No results found',
         map_search_owner: 'Owner',
         map_search_area: 'Area',
+
+        // Sync
+        sync_pending: 'Pending sync',
+        sync_syncing: 'Syncing...',
+        sync_success: 'Sync successful',
+        sync_error: 'Sync error',
+        sync_saved_offline: 'Saved offline — will sync when online',
+        sync_panel_title: 'Sync Queue',
 
         settings_title: 'System Settings',
         settings_save: 'Save',
@@ -2425,6 +2452,290 @@
     let currentUser = null;
     let APP_DATA = {};
     let navHistory = [];
+
+    // === IndexedDB Wrapper (fscDB) ===
+    const fscDB = {
+      _db: null,
+      DB_NAME: 'fscfm_offline',
+      DB_VERSION: 1,
+
+      open() {
+        if (this._db) return Promise.resolve(this._db);
+        return new Promise((resolve, reject) => {
+          const req = indexedDB.open(this.DB_NAME, this.DB_VERSION);
+          req.onupgradeneeded = (e) => {
+            const db = e.target.result;
+            if (!db.objectStoreNames.contains('app_data'))
+              db.createObjectStore('app_data', { keyPath: 'sheetName' });
+            if (!db.objectStoreNames.contains('sync_queue')) {
+              const qs = db.createObjectStore('sync_queue', { keyPath: 'id', autoIncrement: true });
+              qs.createIndex('status', 'status', { unique: false });
+              qs.createIndex('timestamp', 'timestamp', { unique: false });
+            }
+            if (!db.objectStoreNames.contains('user_profile'))
+              db.createObjectStore('user_profile', { keyPath: 'key' });
+          };
+          req.onsuccess = (e) => { this._db = e.target.result; resolve(this._db); };
+          req.onerror = (e) => reject(e.target.error);
+        });
+      },
+
+      async put(storeName, data) {
+        const db = await this.open();
+        return new Promise((resolve, reject) => {
+          const tx = db.transaction(storeName, 'readwrite');
+          const req = tx.objectStore(storeName).put(data);
+          req.onsuccess = () => resolve(req.result);
+          tx.onerror = (e) => reject(e.target.error);
+        });
+      },
+
+      async get(storeName, key) {
+        const db = await this.open();
+        return new Promise((resolve, reject) => {
+          const tx = db.transaction(storeName, 'readonly');
+          const req = tx.objectStore(storeName).get(key);
+          req.onsuccess = () => resolve(req.result);
+          tx.onerror = (e) => reject(e.target.error);
+        });
+      },
+
+      async getAll(storeName) {
+        const db = await this.open();
+        return new Promise((resolve, reject) => {
+          const tx = db.transaction(storeName, 'readonly');
+          const req = tx.objectStore(storeName).getAll();
+          req.onsuccess = () => resolve(req.result);
+          tx.onerror = (e) => reject(e.target.error);
+        });
+      },
+
+      async delete(storeName, key) {
+        const db = await this.open();
+        return new Promise((resolve, reject) => {
+          const tx = db.transaction(storeName, 'readwrite');
+          tx.objectStore(storeName).delete(key);
+          tx.oncomplete = () => resolve();
+          tx.onerror = (e) => reject(e.target.error);
+        });
+      },
+
+      async getAllByIndex(storeName, indexName, value) {
+        const db = await this.open();
+        return new Promise((resolve, reject) => {
+          const tx = db.transaction(storeName, 'readonly');
+          const req = tx.objectStore(storeName).index(indexName).getAll(value);
+          req.onsuccess = () => resolve(req.result);
+          tx.onerror = (e) => reject(e.target.error);
+        });
+      },
+
+      async clear(storeName) {
+        const db = await this.open();
+        return new Promise((resolve, reject) => {
+          const tx = db.transaction(storeName, 'readwrite');
+          tx.objectStore(storeName).clear();
+          tx.oncomplete = () => resolve();
+          tx.onerror = (e) => reject(e.target.error);
+        });
+      }
+    };
+
+    // === IndexedDB Cache Helpers ===
+    async function cacheTableToIDB(sheetName) {
+      try {
+        await fscDB.put('app_data', { sheetName, data: APP_DATA[sheetName] || [], updatedAt: Date.now() });
+      } catch (e) { console.warn('IDB cache error:', sheetName, e); }
+    }
+
+    async function cacheAllDataToIDB() {
+      for (const sheetName of Object.keys(APP_DATA)) {
+        await cacheTableToIDB(sheetName);
+      }
+    }
+
+    async function loadAllDataFromIDB() {
+      try {
+        const records = await fscDB.getAll('app_data');
+        records.forEach(rec => { APP_DATA[rec.sheetName] = rec.data || []; });
+        return Object.keys(APP_DATA).length > 0;
+      } catch (e) { console.warn('IDB load error:', e); return false; }
+    }
+
+    // === Sync Queue Manager ===
+    const syncManager = {
+      _syncing: false,
+
+      async enqueue(op) {
+        const entry = {
+          timestamp: Date.now(),
+          table: op.table,
+          sheetName: op.sheetName || '',
+          action: op.action,
+          data: op.data,
+          idField: op.idField || 'id',
+          idValue: op.idValue || (op.data && op.data.id) || null,
+          displayData: op.displayData || null,
+          status: 'pending',
+          error: null,
+          retryCount: 0
+        };
+        await fscDB.put('sync_queue', entry);
+        updateSyncBadge();
+        return entry;
+      },
+
+      async getPendingCount() {
+        try {
+          const pending = await fscDB.getAllByIndex('sync_queue', 'status', 'pending');
+          const errors = await fscDB.getAllByIndex('sync_queue', 'status', 'error');
+          return pending.length + errors.length;
+        } catch (e) { return 0; }
+      },
+
+      async processQueue() {
+        if (this._syncing || !navigator.onLine) return;
+        this._syncing = true;
+        updateSyncBadge('syncing');
+        let successCount = 0, errorCount = 0;
+
+        try {
+          const pending = await fscDB.getAllByIndex('sync_queue', 'status', 'pending');
+          pending.sort((a, b) => a.timestamp - b.timestamp);
+
+          for (const op of pending) {
+            try {
+              op.status = 'syncing';
+              await fscDB.put('sync_queue', op);
+
+              let result;
+              if (op.action === 'INSERT') {
+                result = await sb.from(op.table).insert(op.data).select();
+              } else if (op.action === 'UPDATE') {
+                const upd = { ...op.data };
+                delete upd.id; delete upd.created_at;
+                result = await sb.from(op.table).update(upd).eq(op.idField, op.idValue).select();
+              } else if (op.action === 'DELETE') {
+                result = await sb.from(op.table).delete().eq(op.idField, op.idValue);
+              } else if (op.action === 'UPSERT') {
+                result = await sb.from(op.table).upsert(op.data, { onConflict: op.idField }).select();
+              }
+
+              if (result && result.error) throw new Error(result.error.message);
+              op.status = 'synced';
+              await fscDB.put('sync_queue', op);
+              successCount++;
+            } catch (err) {
+              console.error('Sync error op', op.id, ':', err);
+              op.status = 'error';
+              op.error = err.message;
+              op.retryCount = (op.retryCount || 0) + 1;
+              await fscDB.put('sync_queue', op);
+              errorCount++;
+            }
+          }
+
+          // Clean synced entries
+          const synced = await fscDB.getAllByIndex('sync_queue', 'status', 'synced');
+          for (const op of synced) await fscDB.delete('sync_queue', op.id);
+
+          // Refresh data from server after successful syncs
+          if (successCount > 0) await loadAllData();
+
+          if (errorCount > 0) showSyncNotification(t('sync_success') + ` (${successCount}), ${errorCount} ` + t('sync_error').toLowerCase(), 'warning');
+          else if (successCount > 0) showSyncNotification(t('sync_success') + ` (${successCount})`, 'success');
+        } finally {
+          this._syncing = false;
+          updateSyncBadge();
+        }
+      },
+
+      async retryErrors() {
+        const errors = await fscDB.getAllByIndex('sync_queue', 'status', 'error');
+        for (const op of errors) {
+          if (op.retryCount < 3) { op.status = 'pending'; await fscDB.put('sync_queue', op); }
+        }
+        return this.processQueue();
+      },
+
+      async clearErrors() {
+        const errors = await fscDB.getAllByIndex('sync_queue', 'status', 'error');
+        for (const op of errors) await fscDB.delete('sync_queue', op.id);
+        updateSyncBadge();
+      }
+    };
+
+    // === Sync UI Helpers ===
+    async function updateSyncBadge(state) {
+      const badge = document.getElementById('sync-badge');
+      const countEl = document.getElementById('sync-count');
+      if (!badge || !countEl) return;
+      if (state === 'syncing') {
+        badge.classList.remove('d-none', 'bg-info', 'bg-warning');
+        badge.classList.add('bg-primary');
+        countEl.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i>';
+        return;
+      }
+      try {
+        const count = await syncManager.getPendingCount();
+        if (count > 0) {
+          badge.classList.remove('d-none', 'bg-primary');
+          const errors = await fscDB.getAllByIndex('sync_queue', 'status', 'error');
+          badge.classList.toggle('bg-warning', errors.length > 0);
+          badge.classList.toggle('bg-info', errors.length === 0);
+          countEl.textContent = count;
+        } else {
+          badge.classList.add('d-none');
+        }
+      } catch (e) { badge.classList.add('d-none'); }
+    }
+
+    function showSyncNotification(message, type) {
+      const colors = { success: '#2E7D32', warning: '#F57F17', info: '#1565C0' };
+      const icons = { success: 'fa-check-circle', warning: 'fa-exclamation-triangle', info: 'fa-info-circle' };
+      const toast = $(`<div style="position:fixed;bottom:70px;right:15px;z-index:9999;padding:12px 20px;
+        background:${colors[type] || colors.info};color:#fff;border-radius:10px;box-shadow:0 4px 12px rgba(0,0,0,0.3);
+        font-size:13px;font-weight:500;max-width:300px" class="sync-toast">
+        <i class="fas ${icons[type] || icons.info} me-2"></i>${message}
+      </div>`);
+      $('body').append(toast);
+      setTimeout(() => toast.fadeOut(300, function() { $(this).remove(); }), 4000);
+    }
+
+    async function showSyncPanel() {
+      const pending = await fscDB.getAllByIndex('sync_queue', 'status', 'pending');
+      const errors = await fscDB.getAllByIndex('sync_queue', 'status', 'error');
+      let html = `<div class="modal fade" id="syncModal" tabindex="-1">
+        <div class="modal-dialog"><div class="modal-content">
+          <div class="modal-header bg-success text-white py-2">
+            <h6 class="modal-title m-0"><i class="fas fa-arrows-rotate me-2"></i>${t('sync_panel_title')}</h6>
+            <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+          </div>
+          <div class="modal-body" style="max-height:400px;overflow-y:auto">
+            <p class="small text-muted mb-2">${pending.length} ${t('sync_pending').toLowerCase()}, ${errors.length} ${t('sync_error').toLowerCase()}</p>`;
+      [...pending, ...errors].forEach(op => {
+        const icon = op.status === 'error' ? 'text-danger fa-exclamation-circle' : 'text-info fa-clock';
+        const actionLabels = { INSERT: 'Thêm', UPDATE: 'Sửa', DELETE: 'Xóa', UPSERT: 'Cập nhật' };
+        html += `<div class="border rounded p-2 mb-1 small">
+          <i class="fas ${icon} me-1"></i>
+          <strong>${actionLabels[op.action] || op.action}</strong> ${op.sheetName || op.table}
+          ${op.idValue ? ' <span class="text-muted">(' + op.idValue + ')</span>' : ''}
+          ${op.error ? '<br><span class="text-danger small">' + op.error + '</span>' : ''}
+        </div>`;
+      });
+      if (!pending.length && !errors.length) html += '<p class="text-muted text-center small mb-0">Không có dữ liệu chờ đồng bộ</p>';
+      html += `</div><div class="modal-footer py-1">`;
+      if (navigator.onLine && (pending.length + errors.length) > 0)
+        html += `<button class="btn btn-success btn-sm" onclick="syncManager.processQueue();bootstrap.Modal.getInstance(document.getElementById('syncModal')).hide()"><i class="fas fa-play me-1"></i>Sync</button>`;
+      if (errors.length > 0) {
+        html += `<button class="btn btn-warning btn-sm" onclick="syncManager.retryErrors()"><i class="fas fa-redo me-1"></i>Retry</button>`;
+        html += `<button class="btn btn-outline-danger btn-sm" onclick="syncManager.clearErrors();bootstrap.Modal.getInstance(document.getElementById('syncModal')).hide()"><i class="fas fa-trash me-1"></i>Clear</button>`;
+      }
+      html += `</div></div></div></div>`;
+      $('#syncModal').remove();
+      $('body').append(html);
+      new bootstrap.Modal(document.getElementById('syncModal')).show();
+    }
 
     // === DB TABLE MAPPING: oldSheetName → { table, cols: {dbCol: displayCol} } ===
     const DB_MAP = {
@@ -3413,13 +3724,20 @@
         'BenLienQuan', 'DotThamVan', 'PhanHoiThamVan'
       ];
 
-      // Offline mode: load from localStorage cache
+      // Offline mode: load from IndexedDB (fallback localStorage for migration)
       if (!navigator.onLine) {
-        console.log('OFFLINE MODE - Loading cached data from localStorage');
+        console.log('OFFLINE MODE - Loading cached data from IndexedDB');
+        const loaded = await loadAllDataFromIDB();
+        if (loaded) { console.log('Loaded offline data from IDB:', Object.keys(APP_DATA)); return; }
+        // Legacy fallback: localStorage
         const cached = localStorage.getItem('fscfm_app_data');
         if (cached) {
-          try { APP_DATA = JSON.parse(cached); console.log('Loaded offline data:', Object.keys(APP_DATA)); return; }
-          catch(e) { console.warn('Cache parse error:', e); }
+          try {
+            APP_DATA = JSON.parse(cached);
+            console.log('Loaded from legacy localStorage, migrating to IDB...');
+            await cacheAllDataToIDB();
+            return;
+          } catch(e) { console.warn('Cache parse error:', e); }
         }
         console.warn('No cached data available offline');
         return;
@@ -3471,9 +3789,10 @@
         }
       });
 
-      // Cache data to localStorage for offline use
-      try { localStorage.setItem('fscfm_app_data', JSON.stringify(APP_DATA)); }
-      catch(e) { console.warn('Cannot cache data to localStorage:', e); }
+      // Cache data to IndexedDB for offline use
+      await cacheAllDataToIDB();
+      // Remove legacy localStorage cache
+      try { localStorage.removeItem('fscfm_app_data'); } catch(e) {}
 
       console.log("All data loaded:", Object.keys(APP_DATA));
     }
@@ -3579,14 +3898,20 @@
         let profileDisplay;
 
         if (!navigator.onLine) {
-          // Offline: load cached profile
-          const cached = localStorage.getItem('fscfm_user_profile');
-          if (cached) {
-            profileDisplay = JSON.parse(cached);
-            console.log('Offline mode - using cached profile');
+          // Offline: load cached profile from IndexedDB, fallback localStorage
+          const idbCached = await fscDB.get('user_profile', 'current');
+          if (idbCached) {
+            profileDisplay = idbCached.profile;
+            console.log('Offline mode - using IDB cached profile');
           } else {
-            alert(t('no_network'));
-            return;
+            const lsCached = localStorage.getItem('fscfm_user_profile');
+            if (lsCached) {
+              profileDisplay = JSON.parse(lsCached);
+              console.log('Offline mode - using legacy localStorage profile');
+            } else {
+              alert(t('no_network'));
+              return;
+            }
           }
         } else {
           // Online: load profile from Supabase
@@ -3601,14 +3926,25 @@
             return;
           }
           profileDisplay = fromDB('NhanSu', [profile])[0];
-          // Cache profile for offline use
-          try { localStorage.setItem('fscfm_user_profile', JSON.stringify(profileDisplay)); } catch(e) {}
+          // Cache profile to IndexedDB
+          await fscDB.put('user_profile', { key: 'current', profile: profileDisplay, updatedAt: Date.now() });
+          try { localStorage.removeItem('fscfm_user_profile'); } catch(e) {}
         }
 
         currentUser = profileDisplay;
         await loadAllData();
         showAppMain();
         updateOnlineStatus();
+
+        // Auto-sync pending operations if online
+        if (navigator.onLine) {
+          const pending = await syncManager.getPendingCount();
+          if (pending > 0) {
+            console.log(`Found ${pending} pending sync operations, starting sync...`);
+            setTimeout(() => syncManager.processQueue(), 1500);
+          }
+        }
+        updateSyncBadge();
       } catch (err) {
         console.error("Error initializing session:", err);
       }
@@ -5368,11 +5704,16 @@
       const geojson = layer.toGeoJSON();
       const loRungId = layer.loRungId;
       if (!loRungId) return;
+      const upsertData = { id_lo_rung: loRungId, geojson: geojson, updated_at: new Date().toISOString() };
       try {
-        const { error } = await sb.from('lo_rung_geojson')
-          .upsert({ id_lo_rung: loRungId, geojson: geojson, updated_at: new Date().toISOString() }, { onConflict: 'id_lo_rung' });
-        if (error) console.error('Save GeoJSON error:', error);
-        else console.log('GeoJSON saved for', loRungId);
+        if (navigator.onLine) {
+          const { error } = await sb.from('lo_rung_geojson').upsert(upsertData, { onConflict: 'id_lo_rung' });
+          if (error) console.error('Save GeoJSON error:', error);
+          else console.log('GeoJSON saved for', loRungId);
+        } else {
+          await syncManager.enqueue({ table: 'lo_rung_geojson', action: 'UPSERT', data: upsertData, idField: 'id_lo_rung', idValue: loRungId });
+          showSyncNotification(t('sync_saved_offline'), 'info');
+        }
       } catch (e) {
         console.error('Save polygon error:', e);
       }
@@ -6205,31 +6546,36 @@
         btn.prop('disabled', true).html('ĐANG LƯU...');
 
         try {
-          // Step 1: Save DG_noibo
-          const { error: err1 } = await sb.from('dg_noi_bo').insert({
-            id: idDG, id_nhom: targetId, audit_date: date,
-            staff: currentUser['Email']
-          });
-          if (err1) throw new Error("Lỗi lưu DG_noibo: " + err1.message);
-
-          // Step 2: Save Banghoi_DG_noibo with answers JSONB
           const pad = (n) => String(n).padStart(2, '0');
           const ts = pad(today.getDate()) + pad(today.getMonth() + 1) + yy +
             pad(today.getHours()) + pad(today.getMinutes()) + pad(today.getSeconds());
           const idHoi = `${idDG}-${ts}`;
 
-          const { error: err2 } = await sb.from('bang_hoi_dg_noi_bo').insert({
-            id: idHoi, id_dg: idDG, answers: answers
-          });
-          if (err2) throw new Error("Lỗi lưu Banghoi_DG_noibo: " + err2.message);
+          const dgData = { id: idDG, id_nhom: targetId, audit_date: date, staff: currentUser['Email'] };
+          const hoiData = { id: idHoi, id_dg: idDG, answers: answers };
+
+          if (navigator.onLine) {
+            // Step 1: Save DG_noibo
+            const { error: err1 } = await sb.from('dg_noi_bo').insert(dgData);
+            if (err1) throw new Error("Lỗi lưu DG_noibo: " + err1.message);
+            // Step 2: Save Banghoi_DG_noibo
+            const { error: err2 } = await sb.from('bang_hoi_dg_noi_bo').insert(hoiData);
+            if (err2) throw new Error("Lỗi lưu Banghoi_DG_noibo: " + err2.message);
+          } else {
+            await syncManager.enqueue({ table: 'dg_noi_bo', sheetName: 'DG_noibo', action: 'INSERT', data: dgData, idValue: idDG });
+            await syncManager.enqueue({ table: 'bang_hoi_dg_noi_bo', sheetName: 'Banghoi_DG_noibo', action: 'INSERT', data: hoiData, idValue: idHoi });
+            showSyncNotification(t('sync_saved_offline'), 'info');
+          }
 
           // Update local data
           APP_DATA['DG_noibo'].push({ 'ID': idDG, 'ID nhóm': targetId, 'Date': date, 'Staff': currentUser['Email'], 'Update': new Date().toLocaleString() });
           const hoiLocal = { 'ID_hoi': idHoi, 'ID_DG': idDG, ...answers };
           if (!APP_DATA['Banghoi_DG_noibo']) APP_DATA['Banghoi_DG_noibo'] = [];
           APP_DATA['Banghoi_DG_noibo'].push(hoiLocal);
+          await cacheTableToIDB('DG_noibo');
+          await cacheTableToIDB('Banghoi_DG_noibo');
 
-          alert("Lưu thành công!");
+          if (navigator.onLine) alert("Lưu thành công!");
           navigateBack();
 
         } catch (e) {
@@ -6890,17 +7236,22 @@
 
       const currentVal = row[monthKey] || '';
       const newVal = prompt(`${monthKey} (${row['Loại giám sát']}):`, currentVal);
-      if (newVal === null) return; // cancelled
+      if (newVal === null) return;
 
       try {
         const dbCol = DB_MAP['KH_GiamSat_Nhom'].cols;
         const colName = Object.entries(dbCol).find(([k, v]) => v === monthKey);
         if (!colName) return;
 
-        const { error } = await sb.from('kh_giam_sat_nhom').update({ [colName[0]]: newVal }).eq('id', rowId);
-        if (error) throw new Error(error.message);
-
+        if (navigator.onLine) {
+          const { error } = await sb.from('kh_giam_sat_nhom').update({ [colName[0]]: newVal }).eq('id', rowId);
+          if (error) throw new Error(error.message);
+        } else {
+          await syncManager.enqueue({ table: 'kh_giam_sat_nhom', sheetName: 'KH_GiamSat_Nhom', action: 'UPDATE', data: { id: rowId, [colName[0]]: newVal }, idValue: rowId });
+          showSyncNotification(t('sync_saved_offline'), 'info');
+        }
         row[monthKey] = newVal;
+        await cacheTableToIDB('KH_GiamSat_Nhom');
         filterPlanYear();
       } catch(e) {
         alert('Error: ' + e.message);
@@ -6910,10 +7261,15 @@
     async function deletePlanRow(rowId) {
       if (!confirm(t('mon_confirm_save'))) return;
       try {
-        const { error } = await sb.from('kh_giam_sat_nhom').delete().eq('id', rowId);
-        if (error) throw new Error(error.message);
-
+        if (navigator.onLine) {
+          const { error } = await sb.from('kh_giam_sat_nhom').delete().eq('id', rowId);
+          if (error) throw new Error(error.message);
+        } else {
+          await syncManager.enqueue({ table: 'kh_giam_sat_nhom', sheetName: 'KH_GiamSat_Nhom', action: 'DELETE', data: {}, idValue: rowId });
+          showSyncNotification(t('sync_saved_offline'), 'info');
+        }
         APP_DATA['KH_GiamSat_Nhom'] = (APP_DATA['KH_GiamSat_Nhom'] || []).filter(r => r['ID'] !== rowId);
+        await cacheTableToIDB('KH_GiamSat_Nhom');
         filterPlanYear();
       } catch(e) {
         alert('Error: ' + e.message);
@@ -7398,19 +7754,22 @@
           }
         }
 
-        const { error: err1 } = await sb.from('giam_sat_lo_rung').insert(gsData);
-        if (err1) throw new Error("Error saving monitoring: " + err1.message);
-
-        // Save answers
         const pad = (n) => String(n).padStart(2, '0');
         const ts = pad(today.getDate()) + pad(today.getMonth() + 1) + yy +
           pad(today.getHours()) + pad(today.getMinutes()) + pad(today.getSeconds());
         const idHoi = `${idGS}-${ts}`;
+        const hoiData = { id: idHoi, id_giam_sat: idGS, answers: answers };
 
-        const { error: err2 } = await sb.from('bang_hoi_giam_sat').insert({
-          id: idHoi, id_giam_sat: idGS, answers: answers
-        });
-        if (err2) throw new Error("Error saving answers: " + err2.message);
+        if (navigator.onLine) {
+          const { error: err1 } = await sb.from('giam_sat_lo_rung').insert(gsData);
+          if (err1) throw new Error("Error saving monitoring: " + err1.message);
+          const { error: err2 } = await sb.from('bang_hoi_giam_sat').insert(hoiData);
+          if (err2) throw new Error("Error saving answers: " + err2.message);
+        } else {
+          await syncManager.enqueue({ table: 'giam_sat_lo_rung', sheetName: 'GiamSat_LoRung', action: 'INSERT', data: gsData, idValue: idGS });
+          await syncManager.enqueue({ table: 'bang_hoi_giam_sat', sheetName: 'Banghoi_GiamSat', action: 'INSERT', data: hoiData, idValue: idHoi });
+          showSyncNotification(t('sync_saved_offline'), 'info');
+        }
 
         // Update local data
         if (!APP_DATA['GiamSat_LoRung']) APP_DATA['GiamSat_LoRung'] = [];
@@ -7423,8 +7782,10 @@
 
         if (!APP_DATA['Banghoi_GiamSat']) APP_DATA['Banghoi_GiamSat'] = [];
         APP_DATA['Banghoi_GiamSat'].push({ 'ID_hoi': idHoi, 'ID_GS': idGS, ...answers });
+        await cacheTableToIDB('GiamSat_LoRung');
+        await cacheTableToIDB('Banghoi_GiamSat');
 
-        alert(t('mon_save_ok'));
+        if (navigator.onLine) alert(t('mon_save_ok'));
         monGoBack();
 
       } catch (e) {
@@ -8174,14 +8535,20 @@ ${gsRecord['Đề xuất'] ? `<div class="proposal-box"><h4>${t('mon_proposal')}
       const staff = currentUser ? (currentUser['Họ và tên'] || currentUser['Username'] || '') : '';
 
       const insertData = { id, ten_dot: name, nam: year, noi_dung_gioi_thieu: intro, trang_thai: 'Đang mở', nguoi_tao: staff };
-      const { error } = await sb.from('dot_tham_van').insert(insertData);
-      if (error) { alert('Lỗi: ' + error.message); return; }
+
+      if (navigator.onLine) {
+        const { error } = await sb.from('dot_tham_van').insert(insertData);
+        if (error) { alert('Lỗi: ' + error.message); return; }
+      } else {
+        await syncManager.enqueue({ table: 'dot_tham_van', sheetName: 'DotThamVan', action: 'INSERT', data: insertData, idValue: id });
+        showSyncNotification(t('sync_saved_offline'), 'info');
+      }
 
       if (!APP_DATA['DotThamVan']) APP_DATA['DotThamVan'] = [];
       APP_DATA['DotThamVan'].push({ 'ID': id, 'Tên đợt': name, 'Năm': year, 'Nội dung giới thiệu': intro, 'Trạng thái': 'Đang mở', 'Người tạo': staff });
+      await cacheTableToIDB('DotThamVan');
 
       renderConsultationModule();
-      // Switch to sessions tab and show the new session
       setTimeout(() => { $('#con-sessions-tab').tab('show'); }, 100);
     }
 
@@ -8268,10 +8635,16 @@ ${gsRecord['Đề xuất'] ? `<div class="proposal-box"><h4>${t('mon_proposal')}
 
     async function closeConsultationSession(idDot) {
       if (!confirm('Đóng đợt tham vấn này? Sẽ không nhận phản hồi mới.')) return;
-      const { error } = await sb.from('dot_tham_van').update({ trang_thai: 'Đã đóng' }).eq('id', idDot);
-      if (error) { alert('Lỗi: ' + error.message); return; }
+      if (navigator.onLine) {
+        const { error } = await sb.from('dot_tham_van').update({ trang_thai: 'Đã đóng' }).eq('id', idDot);
+        if (error) { alert('Lỗi: ' + error.message); return; }
+      } else {
+        await syncManager.enqueue({ table: 'dot_tham_van', sheetName: 'DotThamVan', action: 'UPDATE', data: { id: idDot, trang_thai: 'Đã đóng' }, idValue: idDot });
+        showSyncNotification(t('sync_saved_offline'), 'info');
+      }
       const s = (APP_DATA['DotThamVan'] || []).find(s => s['ID'] === idDot);
       if (s) s['Trạng thái'] = 'Đã đóng';
+      await cacheTableToIDB('DotThamVan');
       renderConsultationModule();
     }
 
@@ -8285,18 +8658,25 @@ ${gsRecord['Đề xuất'] ? `<div class="proposal-box"><h4>${t('mon_proposal')}
         : `Xóa đợt "${tenDot}"? Hành động này không thể hoàn tác!`;
       if (!confirm(msg)) return;
 
-      // Delete responses first (CASCADE should handle, but explicit for safety)
-      if (responses.length > 0) {
-        const { error: rErr } = await sb.from('phan_hoi_tham_van').delete().eq('id_dot', idDot);
-        if (rErr) { alert('Lỗi xóa phản hồi: ' + rErr.message); return; }
+      if (navigator.onLine) {
+        if (responses.length > 0) {
+          const { error: rErr } = await sb.from('phan_hoi_tham_van').delete().eq('id_dot', idDot);
+          if (rErr) { alert('Lỗi xóa phản hồi: ' + rErr.message); return; }
+        }
+        const { error } = await sb.from('dot_tham_van').delete().eq('id', idDot);
+        if (error) { alert('Lỗi xóa đợt: ' + error.message); return; }
+      } else {
+        if (responses.length > 0) {
+          await syncManager.enqueue({ table: 'phan_hoi_tham_van', sheetName: 'PhanHoiThamVan', action: 'DELETE', data: {}, idField: 'id_dot', idValue: idDot });
+        }
+        await syncManager.enqueue({ table: 'dot_tham_van', sheetName: 'DotThamVan', action: 'DELETE', data: {}, idValue: idDot });
+        showSyncNotification(t('sync_saved_offline'), 'info');
       }
 
-      const { error } = await sb.from('dot_tham_van').delete().eq('id', idDot);
-      if (error) { alert('Lỗi xóa đợt: ' + error.message); return; }
-
-      // Update local data
       APP_DATA['DotThamVan'] = (APP_DATA['DotThamVan'] || []).filter(s => s['ID'] !== idDot);
       APP_DATA['PhanHoiThamVan'] = (APP_DATA['PhanHoiThamVan'] || []).filter(r => r['ID đợt'] !== idDot);
+      await cacheTableToIDB('DotThamVan');
+      await cacheTableToIDB('PhanHoiThamVan');
       renderConsultationModule();
     }
 
@@ -9649,45 +10029,64 @@ ${gsRecord['Đề xuất'] ? `<div class="proposal-box"><h4>${t('mon_proposal')}
         const dbTable = getDBTable(currentSheetTarget);
         const dbData = toDB(currentSheetTarget, dataObj);
 
-        let result;
-        if (currentAction === 'CREATE') {
-          // Auto-generate ID if empty
-          if (!dbData.id || dbData.id === '') {
-            const prefix = currentSheetTarget.substring(0, 3).toUpperCase();
-            dbData.id = `${prefix}-${new Date().getFullYear().toString().substr(-2)}-${Math.floor(1000 + Math.random() * 9000)}`;
-          }
-          result = await sb.from(dbTable).insert(dbData).select();
-        } else {
-          const idVal = dbData.id;
-          delete dbData.id; // Don't update the PK
-          delete dbData.created_at;
-          result = await sb.from(dbTable).update(dbData).eq('id', idVal).select();
+        if (currentAction === 'CREATE' && (!dbData.id || dbData.id === '')) {
+          const prefix = currentSheetTarget.substring(0, 3).toUpperCase();
+          dbData.id = `${prefix}-${new Date().getFullYear().toString().substr(-2)}-${Math.floor(1000 + Math.random() * 9000)}`;
+          // Write generated ID back to dataObj
+          const idCol = Object.keys(dataObj)[0];
+          if (idCol) dataObj[idCol] = dbData.id;
         }
 
-        if (result.error) {
-          alert("Lỗi: " + result.error.message);
-          return;
+        if (navigator.onLine) {
+          // === ONLINE: original Supabase call ===
+          let result;
+          if (currentAction === 'CREATE') {
+            result = await sb.from(dbTable).insert(dbData).select();
+          } else {
+            const idVal = dbData.id;
+            delete dbData.id; delete dbData.created_at;
+            result = await sb.from(dbTable).update(dbData).eq('id', idVal).select();
+          }
+          if (result.error) { alert("Lỗi: " + result.error.message); return; }
+          // Update local data from server response
+          if (currentAction === 'CREATE') {
+            if (!APP_DATA[currentSheetTarget]) APP_DATA[currentSheetTarget] = [];
+            const newRows = fromDB(currentSheetTarget, result.data);
+            if (newRows.length > 0) APP_DATA[currentSheetTarget].push(newRows[0]);
+          } else {
+            const updated = fromDB(currentSheetTarget, result.data);
+            if (updated.length > 0) {
+              const idCol = Object.keys(dataObj)[0];
+              const idx = APP_DATA[currentSheetTarget].findIndex(r => String(r[idCol]) === String(dataObj[idCol]));
+              if (idx !== -1) APP_DATA[currentSheetTarget][idx] = updated[0];
+            }
+          }
+        } else {
+          // === OFFLINE: queue + optimistic local update ===
+          const action = currentAction === 'CREATE' ? 'INSERT' : 'UPDATE';
+          const idVal = dbData.id || toDB(currentSheetTarget, dataObj).id;
+          const queueData = currentAction === 'CREATE' ? dbData : { ...toDB(currentSheetTarget, dataObj) };
+          await syncManager.enqueue({
+            table: dbTable, sheetName: currentSheetTarget,
+            action, data: queueData, idField: 'id', idValue: idVal
+          });
+          // Optimistic update
+          if (currentAction === 'CREATE') {
+            if (!APP_DATA[currentSheetTarget]) APP_DATA[currentSheetTarget] = [];
+            APP_DATA[currentSheetTarget].push(dataObj);
+          } else {
+            const idCol = Object.keys(dataObj)[0];
+            const idx = APP_DATA[currentSheetTarget].findIndex(r => String(r[idCol]) === String(dataObj[idCol]));
+            if (idx !== -1) Object.assign(APP_DATA[currentSheetTarget][idx], dataObj);
+          }
+          showSyncNotification(t('sync_saved_offline'), 'info');
         }
 
         bootstrap.Modal.getInstance(document.getElementById('dataModal')).hide();
-
-        // Update local data
-        if (currentAction === 'CREATE') {
-          if (!APP_DATA[currentSheetTarget]) APP_DATA[currentSheetTarget] = [];
-          const newRows = fromDB(currentSheetTarget, result.data);
-          if (newRows.length > 0) APP_DATA[currentSheetTarget].push(newRows[0]);
-        } else {
-          const updated = fromDB(currentSheetTarget, result.data);
-          if (updated.length > 0) {
-            const idCol = Object.keys(dataObj)[0];
-            const idx = APP_DATA[currentSheetTarget].findIndex(r => String(r[idCol]) === String(dataObj[idCol]));
-            if (idx !== -1) APP_DATA[currentSheetTarget][idx] = updated[0];
-          }
-        }
-
+        await cacheTableToIDB(currentSheetTarget);
         performAggregation();
         renderContent();
-        alert('Thành công!');
+        if (navigator.onLine) alert('Thành công!');
 
       } catch (err) {
         console.error("Save error:", err);
@@ -9708,16 +10107,22 @@ ${gsRecord['Đề xuất'] ? `<div class="proposal-box"><h4>${t('mon_proposal')}
         const dbData = toDB(sheetName, rowData);
         const dbId = dbData.id;
 
-        const { error } = await sb.from(dbTable).delete().eq('id', dbId);
-        if (error) {
-          alert("Lỗi khi xóa: " + error.message);
-          return;
+        if (navigator.onLine) {
+          const { error } = await sb.from(dbTable).delete().eq('id', dbId);
+          if (error) { alert("Lỗi khi xóa: " + error.message); return; }
+        } else {
+          await syncManager.enqueue({
+            table: dbTable, sheetName, action: 'DELETE',
+            data: dbData, idField: 'id', idValue: dbId
+          });
+          showSyncNotification(t('sync_saved_offline'), 'info');
         }
 
         APP_DATA[sheetName] = APP_DATA[sheetName].filter(r => String(r[idCol]) !== String(idVal));
+        await cacheTableToIDB(sheetName);
         performAggregation();
         navigateBack();
-        alert('Đã xóa thành công.');
+        if (navigator.onLine) alert('Đã xóa thành công.');
 
       } catch (err) { alert("Lỗi: " + err.message); }
     }
@@ -9725,29 +10130,25 @@ ${gsRecord['Đề xuất'] ? `<div class="proposal-box"><h4>${t('mon_proposal')}
     async function approveMember(targetID) {
       if (!confirm("Xác nhận duyệt thành viên này?")) return;
       try {
-        // Find the profile by id_staff
-        const { data: profiles, error: findErr } = await sb.from('profiles')
-          .select('id').eq('id_staff', targetID).single();
-
-        if (findErr || !profiles) {
-          alert("Không tìm thấy nhân sự.");
-          return;
+        if (navigator.onLine) {
+          const { data: profiles, error: findErr } = await sb.from('profiles')
+            .select('id').eq('id_staff', targetID).single();
+          if (findErr || !profiles) { alert("Không tìm thấy nhân sự."); return; }
+          const { error } = await sb.from('profiles').update({ trang_thai: 'Act' }).eq('id', profiles.id);
+          if (error) { alert("Lỗi: " + error.message); return; }
+        } else {
+          // Queue update by id_staff (sync will need to resolve to profile id)
+          await syncManager.enqueue({ table: 'profiles', sheetName: 'NhanSu', action: 'UPDATE', data: { trang_thai: 'Act' }, idField: 'id_staff', idValue: targetID });
+          showSyncNotification(t('sync_saved_offline'), 'info');
         }
 
-        const { error } = await sb.from('profiles')
-          .update({ trang_thai: 'Act' }).eq('id', profiles.id);
-
-        if (error) {
-          alert("Lỗi: " + error.message);
-          return;
-        }
-
-        alert("Đã duyệt thành công!");
         const idx = APP_DATA['NhanSu'].findIndex(u => String(u['ID_staff']) === String(targetID));
         if (idx !== -1) {
           APP_DATA['NhanSu'][idx]['Trạng thái'] = 'Act';
+          await cacheTableToIDB('NhanSu');
           renderDetailMaster('NhanSu', APP_DATA['NhanSu'][idx]);
         }
+        if (navigator.onLine) alert("Đã duyệt thành công!");
 
       } catch (err) { alert("Lỗi: " + err.message); }
     }
