@@ -4057,7 +4057,7 @@
       buildChart(chartKey, newType);
     }
 
-    // KPI Detail: show list grouped by Nhóm FSC when clicking a KPI
+    // KPI Detail: show list grouped by Nhóm FSC with drill-down
     window.showKpiDetail = function(kpiType) {
       const safeFloat = v => parseFloat(String(v || '0').replace(/,/g, '')) || 0;
       const plots = APP_DATA['Lo_rung'] || [];
@@ -4066,148 +4066,102 @@
       const currentYear = new Date().getFullYear();
       const prevYear = currentYear - 1;
 
-      // Build group name lookup
+      // Build lookups
       const groupNameMap = {};
       groups.forEach(g => { groupNameMap[g['ID nhóm']] = g['Tên nhóm'] || g['Mã nhóm'] || g['ID nhóm']; });
-
-      // Build owner name lookup
       const ownerNameMap = {};
       owners.forEach(o => { ownerNameMap[o['ID chủ rừng']] = o['Họ tên chủ rừng'] || o['ID chủ rừng']; });
+
+      // Build plots by group and by owner
+      const plotsByGroup = {};
+      const plotsByOwner = {};
+      const ownerGroupMap = {};
+      plots.forEach(p => {
+        const gid = p['ID nhóm'], oid = p['ID chủ rừng'];
+        if (gid) { if (!plotsByGroup[gid]) plotsByGroup[gid] = []; plotsByGroup[gid].push(p); }
+        if (oid) { if (!plotsByOwner[oid]) plotsByOwner[oid] = []; plotsByOwner[oid].push(p); ownerGroupMap[oid] = gid; }
+      });
 
       // Aggregate data by group based on KPI type
       const groupData = {};
       const initGroup = (gid) => {
-        if (!groupData[gid]) groupData[gid] = { name: groupNameMap[gid] || gid, count: 0, area: 0, items: [] };
+        if (!groupData[gid]) groupData[gid] = { name: groupNameMap[gid] || gid, households: 0, plotCount: 0, area: 0, ownerIds: new Set() };
       };
 
-      let title = '', colLabel = '';
-      if (kpiType === 'households') {
-        title = t('kpi_households');
-        colLabel = 'Số hộ';
-        const ownersByGroup = {};
-        owners.forEach(o => {
-          const gid = plots.find(p => p['ID chủ rừng'] === o['ID chủ rừng'])?.['ID nhóm'] || '';
-          if (!gid) return;
-          if (!ownersByGroup[gid]) ownersByGroup[gid] = new Set();
-          ownersByGroup[gid].add(o['ID chủ rừng']);
-        });
-        Object.entries(ownersByGroup).forEach(([gid, set]) => {
-          initGroup(gid);
-          groupData[gid].count = set.size;
-        });
-      } else if (kpiType === 'plots') {
-        title = t('kpi_plots');
-        colLabel = 'Số lô rừng';
-        plots.forEach(p => {
-          const gid = p['ID nhóm'];
-          if (!gid) return;
-          initGroup(gid);
-          groupData[gid].count++;
-        });
+      // Filter function per KPI type (returns true if plot matches)
+      let plotFilter;
+      let title = '', areaLabel = '';
+      if (kpiType === 'households' || kpiType === 'plots') {
+        title = kpiType === 'households' ? t('kpi_households') : t('kpi_plots');
+        plotFilter = () => true;
       } else if (kpiType === 'fsc_area') {
         title = t('kpi_fsc_area');
-        colLabel = 'DT FSC (ha)';
-        plots.forEach(p => {
-          const gid = p['ID nhóm'];
-          if (!gid) return;
-          initGroup(gid);
-          groupData[gid].area += safeFloat(p['Diện tích FSC']);
-          groupData[gid].count++;
-        });
+        areaLabel = 'DT FSC (ha)';
+        plotFilter = () => true;
       } else if (kpiType === 'harvest_actual') {
         title = t('kpi_harvest_actual');
-        colLabel = 'DT khai thác (ha)';
-        plots.forEach(p => {
-          const tgkt = p['Thời gian khai thác'] || '';
-          if (!tgkt || !tgkt.includes('/' + currentYear)) return;
-          const gid = p['ID nhóm'];
-          if (!gid) return;
-          initGroup(gid);
-          groupData[gid].area += safeFloat(p['Tổng diện tích']);
-          groupData[gid].count++;
-          groupData[gid].items.push({ plot: p['Mã số lô rừng'], owner: ownerNameMap[p['ID chủ rừng']] || '', area: safeFloat(p['Tổng diện tích']), time: tgkt });
-        });
+        areaLabel = 'DT KT (ha)';
+        plotFilter = p => { const tgkt = p['Thời gian khai thác'] || ''; return tgkt && tgkt.includes('/' + currentYear); };
       } else if (kpiType === 'plant') {
         title = t('kpi_plant');
-        colLabel = 'DT trồng rừng (ha)';
-        plots.forEach(p => {
-          const tgkt = p['Thời gian khai thác'] || '';
-          if (tgkt !== 'T11/' + prevYear && tgkt !== 'T12/' + prevYear) return;
-          const gid = p['ID nhóm'];
-          if (!gid) return;
-          initGroup(gid);
-          groupData[gid].area += safeFloat(p['Tổng diện tích']);
-          groupData[gid].count++;
-          groupData[gid].items.push({ plot: p['Mã số lô rừng'], owner: ownerNameMap[p['ID chủ rừng']] || '', area: safeFloat(p['Tổng diện tích']), time: tgkt });
-        });
+        areaLabel = 'DT trồng (ha)';
+        plotFilter = p => { const tgkt = p['Thời gian khai thác'] || ''; return tgkt === 'T11/' + prevYear || tgkt === 'T12/' + prevYear; };
       } else if (kpiType === 'harvest_plan') {
         title = t('kpi_harvest_plan');
-        colLabel = 'DT KT kế hoạch (ha)';
-        plots.forEach(p => {
-          const yr = parseInt(p['Năm trồng']);
-          if (!yr || (currentYear - yr) <= 5) return;
-          const gid = p['ID nhóm'];
-          if (!gid) return;
-          initGroup(gid);
-          groupData[gid].area += safeFloat(p['Tổng diện tích']);
-          groupData[gid].count++;
-        });
+        areaLabel = 'DT KH (ha)';
+        plotFilter = p => { const yr = parseInt(p['Năm trồng']); return yr && (currentYear - yr) > 5; };
       } else if (kpiType === 'hlvs') {
         title = t('kpi_hlvs');
-        colLabel = 'DT HLVS (ha)';
-        plots.forEach(p => {
-          const hlvs = safeFloat(p['Diện tích HLVS']);
-          if (hlvs <= 0) return;
-          const gid = p['ID nhóm'];
-          if (!gid) return;
-          initGroup(gid);
-          groupData[gid].area += hlvs;
-          groupData[gid].count++;
-        });
+        areaLabel = 'DT HLVS (ha)';
+        plotFilter = p => safeFloat(p['Diện tích HLVS']) > 0;
       }
 
-      // Sort groups by area descending (or count if no area)
-      const sorted = Object.entries(groupData).sort((a, b) => (b[1].area || b[1].count) - (a[1].area || a[1].count));
+      // Populate groupData
+      plots.forEach(p => {
+        if (!plotFilter(p)) return;
+        const gid = p['ID nhóm'];
+        if (!gid) return;
+        initGroup(gid);
+        groupData[gid].plotCount++;
+        if (p['ID chủ rừng']) groupData[gid].ownerIds.add(p['ID chủ rừng']);
+        if (kpiType === 'fsc_area') groupData[gid].area += safeFloat(p['Diện tích FSC']);
+        else if (kpiType === 'hlvs') groupData[gid].area += safeFloat(p['Diện tích HLVS']);
+        else if (['harvest_actual', 'plant', 'harvest_plan'].includes(kpiType)) groupData[gid].area += safeFloat(p['Tổng diện tích']);
+      });
+      // Set household counts from ownerIds
+      Object.values(groupData).forEach(g => { g.households = g.ownerIds.size; });
+
+      // Sort groups
+      const hasArea = ['fsc_area', 'harvest_actual', 'plant', 'harvest_plan', 'hlvs'].includes(kpiType);
+      const sorted = Object.entries(groupData).sort((a, b) => (b[1].area || b[1].plotCount) - (a[1].area || a[1].plotCount));
+      const totalHH = sorted.reduce((s, [, g]) => s + g.households, 0);
+      const totalPlots = sorted.reduce((s, [, g]) => s + g.plotCount, 0);
       const totalArea = sorted.reduce((s, [, g]) => s + g.area, 0);
-      const totalCount = sorted.reduce((s, [, g]) => s + g.count, 0);
 
       // Build modal HTML
-      const hasArea = ['fsc_area', 'harvest_actual', 'plant', 'harvest_plan', 'hlvs'].includes(kpiType);
-      const hasItems = ['harvest_actual', 'plant'].includes(kpiType);
-
       let html = `<div class="modal fade" id="kpiDetailModal" tabindex="-1"><div class="modal-dialog modal-lg modal-dialog-scrollable">
         <div class="modal-content"><div class="modal-header py-2" style="background:var(--forest-primary);color:#fff">
           <h6 class="modal-title fw-bold"><i class="fa-solid fa-chart-line me-2"></i>${title}</h6>
           <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
         </div><div class="modal-body p-2">
-          <table class="table table-sm table-striped table-hover small mb-0">
+          <table class="table table-sm table-hover small mb-0" id="kpiDrillTable">
             <thead class="table-success"><tr>
-              <th>#</th><th>Mã nhóm</th><th>Tên nhóm</th>
-              <th class="text-end">Số lô</th>
-              ${hasArea ? '<th class="text-end">' + colLabel + '</th>' : ''}
+              <th style="width:30px">#</th><th>Mã nhóm</th><th>Tên nhóm</th>
+              <th class="text-end">Số hộ</th><th class="text-end">Số lô</th>
+              ${hasArea ? '<th class="text-end">' + areaLabel + '</th>' : ''}
             </tr></thead><tbody>`;
 
       sorted.forEach(([gid, g], i) => {
-        html += `<tr>
-          <td>${i + 1}</td><td><strong>${gid}</strong></td><td>${g.name}</td>
-          <td class="text-end">${g.count}</td>
+        html += `<tr class="kpi-group-row" style="cursor:pointer" data-gid="${gid}" title="Bấm để xem danh sách hộ dân">
+          <td>${i + 1}</td><td><strong>${gid}</strong> <i class="fa-solid fa-chevron-right fa-2xs text-muted kpi-chevron"></i></td><td>${g.name}</td>
+          <td class="text-end">${g.households}</td><td class="text-end">${g.plotCount}</td>
           ${hasArea ? '<td class="text-end fw-bold">' + g.area.toFixed(2) + '</td>' : ''}
         </tr>`;
-        // Show detail items if available
-        if (hasItems && g.items && g.items.length > 0) {
-          g.items.forEach(item => {
-            html += `<tr class="table-light" style="font-size:11px">
-              <td></td><td colspan="2" class="ps-4 text-muted">${item.plot} — ${item.owner}</td>
-              <td class="text-end text-muted">${item.time}</td>
-              <td class="text-end">${item.area.toFixed(2)}</td>
-            </tr>`;
-          });
-        }
       });
 
       html += `</tbody><tfoot class="table-success fw-bold"><tr>
         <td colspan="3">Tổng</td>
-        <td class="text-end">${totalCount}</td>
+        <td class="text-end">${totalHH}</td><td class="text-end">${totalPlots}</td>
         ${hasArea ? '<td class="text-end">' + totalArea.toFixed(2) + '</td>' : ''}
       </tr></tfoot></table>
         </div></div></div></div>`;
@@ -4215,7 +4169,108 @@
       // Remove old modal and show new
       $('#kpiDetailModal').remove();
       $('body').append(html);
-      new bootstrap.Modal(document.getElementById('kpiDetailModal')).show();
+      const modal = new bootstrap.Modal(document.getElementById('kpiDetailModal'));
+      modal.show();
+
+      // Drill-down: click group row → expand owners
+      const colSpan = hasArea ? 6 : 5;
+      $('#kpiDrillTable').on('click', '.kpi-group-row', function() {
+        const $row = $(this);
+        const gid = $row.data('gid');
+        const $chevron = $row.find('.kpi-chevron');
+        // Toggle: remove if already expanded
+        if ($row.hasClass('kpi-expanded')) {
+          $row.removeClass('kpi-expanded');
+          $chevron.removeClass('fa-chevron-down').addClass('fa-chevron-right');
+          $row.nextUntil('.kpi-group-row').remove();
+          return;
+        }
+        // Collapse any other expanded group
+        $('#kpiDrillTable .kpi-expanded').each(function() {
+          $(this).removeClass('kpi-expanded').find('.kpi-chevron').removeClass('fa-chevron-down').addClass('fa-chevron-right');
+          $(this).nextUntil('.kpi-group-row').remove();
+        });
+        $row.addClass('kpi-expanded');
+        $chevron.removeClass('fa-chevron-right').addClass('fa-chevron-down');
+        // Find distinct owners for this group matching the filter
+        const ownerMap = {};
+        (plotsByGroup[gid] || []).forEach(p => {
+          if (!plotFilter(p)) return;
+          const oid = p['ID chủ rừng'];
+          if (!oid) return;
+          if (!ownerMap[oid]) ownerMap[oid] = { name: ownerNameMap[oid] || oid, plotCount: 0, area: 0 };
+          ownerMap[oid].plotCount++;
+          if (kpiType === 'fsc_area') ownerMap[oid].area += safeFloat(p['Diện tích FSC']);
+          else if (kpiType === 'hlvs') ownerMap[oid].area += safeFloat(p['Diện tích HLVS']);
+          else if (['harvest_actual', 'plant', 'harvest_plan'].includes(kpiType)) ownerMap[oid].area += safeFloat(p['Tổng diện tích']);
+        });
+        const ownerEntries = Object.entries(ownerMap).sort((a, b) => a[0].localeCompare(b[0]));
+        let ownerHtml = '';
+        ownerEntries.forEach(([oid, o], idx) => {
+          ownerHtml += `<tr class="kpi-owner-row table-light" style="cursor:pointer" data-oid="${oid}" data-gid="${gid}" title="Bấm để xem lô rừng">
+            <td></td><td class="ps-3"><i class="fa-solid fa-user text-success fa-xs me-1"></i>${oid} <i class="fa-solid fa-chevron-right fa-2xs text-muted kpi-chevron-owner"></i></td>
+            <td>${o.name}</td>
+            <td class="text-end">${idx + 1}</td><td class="text-end">${o.plotCount}</td>
+            ${hasArea ? '<td class="text-end">' + o.area.toFixed(2) + '</td>' : ''}
+          </tr>`;
+        });
+        if (!ownerEntries.length) {
+          ownerHtml = `<tr class="kpi-owner-row table-light"><td colspan="${colSpan}" class="text-center text-muted">Không có dữ liệu</td></tr>`;
+        }
+        $row.after(ownerHtml);
+      });
+
+      // Drill-down: click owner row → expand plots
+      $('#kpiDrillTable').on('click', '.kpi-owner-row', function(e) {
+        e.stopPropagation();
+        const $row = $(this);
+        const oid = $row.data('oid');
+        const $chevron = $row.find('.kpi-chevron-owner');
+        // Toggle: remove if already expanded
+        if ($row.hasClass('kpi-owner-expanded')) {
+          $row.removeClass('kpi-owner-expanded');
+          $chevron.removeClass('fa-chevron-down').addClass('fa-chevron-right');
+          $row.nextUntil('.kpi-owner-row, .kpi-group-row').remove();
+          return;
+        }
+        // Collapse other expanded owners in same group
+        const gid = $row.data('gid');
+        $row.siblings('.kpi-owner-expanded[data-gid="' + gid + '"]').each(function() {
+          $(this).removeClass('kpi-owner-expanded').find('.kpi-chevron-owner').removeClass('fa-chevron-down').addClass('fa-chevron-right');
+          $(this).nextUntil('.kpi-owner-row, .kpi-group-row').remove();
+        });
+        $row.addClass('kpi-owner-expanded');
+        $chevron.removeClass('fa-chevron-right').addClass('fa-chevron-down');
+        // Find plots for this owner matching the filter
+        const ownerPlots = (plotsByOwner[oid] || []).filter(plotFilter);
+        let plotHtml = '';
+        ownerPlots.forEach(p => {
+          const pid = p['ID lô rừng'] || '';
+          const maLo = p['Mã số lô rừng'] || pid;
+          const area = kpiType === 'fsc_area' ? safeFloat(p['Diện tích FSC']) : kpiType === 'hlvs' ? safeFloat(p['Diện tích HLVS']) : safeFloat(p['Tổng diện tích']);
+          const extra = p['Thời gian khai thác'] ? ' <span class="text-muted">(' + p['Thời gian khai thác'] + ')</span>' : '';
+          plotHtml += `<tr class="kpi-plot-row" style="cursor:pointer;font-size:11px;background:#f0faf0" data-pid="${pid}" title="Bấm để xem trên bản đồ">
+            <td></td><td class="ps-5"><i class="fa-solid fa-tree text-success fa-xs me-1"></i>${maLo}${extra}</td>
+            <td>${p['Tên lô rừng'] || ''}</td>
+            <td></td><td class="text-end">${safeFloat(p['Tổng diện tích']).toFixed(2)}</td>
+            ${hasArea ? '<td class="text-end">' + area.toFixed(2) + '</td>' : ''}
+          </tr>`;
+        });
+        if (!ownerPlots.length) {
+          plotHtml = `<tr class="kpi-plot-row"><td colspan="${colSpan}" class="text-center text-muted ps-5" style="font-size:11px">Không có lô rừng</td></tr>`;
+        }
+        $row.after(plotHtml);
+      });
+
+      // Drill-down: click plot row → navigate to map
+      $('#kpiDrillTable').on('click', '.kpi-plot-row[data-pid]', function(e) {
+        e.stopPropagation();
+        const pid = $(this).data('pid');
+        if (!pid) return;
+        // Close modal and navigate to map
+        bootstrap.Modal.getInstance(document.getElementById('kpiDetailModal'))?.hide();
+        setTimeout(() => { showOnMap(String(pid)); }, 300);
+      });
     };
 
     // Icon mapping for sub-menu items based on keywords
