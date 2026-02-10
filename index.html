@@ -515,7 +515,7 @@
     /* Mobile Responsive */
     @media (max-width: 767px) {
       body {
-        font-size: 11px !important;
+        font-size: 12px !important;
         -webkit-text-size-adjust: 100%;
       }
       /* Navbar mobile */
@@ -556,11 +556,11 @@
         padding: 10px !important;
       }
       #sidebarAccordion .accordion-button {
-        font-size: 11px !important;
+        font-size: 12px !important;
         padding: 6px 10px !important;
       }
       .menu-sub-link {
-        font-size: 11px !important;
+        font-size: 12px !important;
         padding: 5px 10px 5px 28px !important;
       }
       .menu-sub-link i {
@@ -826,12 +826,12 @@
       #dashboard-view h6 { font-size: 10px !important; margin-bottom: 4px !important; }
       #dashboard-view .icon-3d-wrapper { width: 30px !important; height: 30px !important; font-size: 0.8rem !important; border-radius: 8px !important; margin-bottom: 3px !important; }
       #dashboard-view .card-title-3d { font-size: 9px !important; }
-      #dashboard-view .kpi-value { font-size: 0.8rem !important; }
-      #dashboard-view .kpi-label { font-size: 7px !important; letter-spacing: 0; text-transform: none; }
-      #dashboard-view .kpi-card { padding: 4px 5px !important; border-radius: 6px !important; }
+      #dashboard-view .kpi-value { font-size: 0.9rem !important; }
+      #dashboard-view .kpi-label { font-size: 8px !important; letter-spacing: 0; text-transform: none; }
+      #dashboard-view .kpi-card { padding: 6px 6px !important; border-radius: 8px !important; text-align: center; }
+      #dashboard-view .kpi-grid { margin-bottom: 6px !important; }
       #dashboard-view .dashboard-card-3d { padding: 8px 4px 6px !important; border-radius: 8px !important; }
       #dashboard-view .row.g-3 { --bs-gutter-x: 0.5rem; --bs-gutter-y: 0.5rem; }
-      #dashboard-view .d-flex.gap-2.mb-2 { gap: 3px !important; margin-bottom: 4px !important; }
     }
 
     /* Sub-menu Screen Cards */
@@ -1049,7 +1049,7 @@
       </div>
       <div class="d-md-none d-flex align-items-center justify-content-center flex-grow-1 min-w-0 ms-1" style="gap:6px">
         <img src="Logo Clever forestry.png" height="28" class="flex-shrink-0" alt="CF" style="border-radius:4px">
-        <span class="text-white fw-bold text-center" id="navbar-project-name-mobile" style="font-size:13px;line-height:1.2;letter-spacing:0.3px;flex:1;min-width:0">QUẢN LÝ RỪNG FSC</span>
+        <span class="text-white fw-bold text-center text-nowrap" id="navbar-project-name-mobile" style="font-size:12px;line-height:1;letter-spacing:0.3px">QUẢN LÝ RỪNG FSC</span>
         <img src="https://github.com/impactslowforest/Logo/blob/main/FSC%20logo%20-%20R.png?raw=true" height="28" class="flex-shrink-0" alt="FSC">
       </div>
       <div class="d-flex align-items-center gap-1 gap-md-2 ms-auto flex-shrink-0">
@@ -1140,9 +1140,6 @@
       </button>
       <button type="button" class="mob-nav-btn" onclick="loadView('Bando_lorung','Bản đồ quản lý lô rừng')">
         <i class="fa-solid fa-map"></i><span data-i18n="nav_map">Bản đồ</span>
-      </button>
-      <button type="button" class="mob-nav-btn" onclick="logout()">
-        <i class="fa-solid fa-right-from-bracket"></i><span data-i18n="nav_logout">Thoát</span>
       </button>
     </div>
   </div>
@@ -3007,15 +3004,15 @@
 
         <!-- KPIs -->
         <h6 class="fw-bold text-secondary mb-2"><i class="fa-solid fa-chart-line me-2"></i>${t('kpi_title')}</h6>
-        <div class="d-flex gap-2 mb-2 flex-nowrap" style="overflow-x:auto">
-          <div class="kpi-card flex-fill" style="min-width:0"><div class="kpi-value">${soHo}</div><div class="kpi-label">${t('kpi_households')}</div></div>
-          <div class="kpi-card blue flex-fill" style="min-width:0"><div class="kpi-value">${soFarm}</div><div class="kpi-label">${t('kpi_plots')}</div></div>
-          <div class="kpi-card flex-fill" style="min-width:0"><div class="kpi-value">${tongDTFSC.toFixed(1)}</div><div class="kpi-label">${t('kpi_fsc_area')}</div></div>
-          <div class="kpi-card orange flex-fill" style="min-width:0"><div class="kpi-value">${haPerHo}</div><div class="kpi-label">${t('kpi_ha_per_ho')}</div></div>
-          <div class="kpi-card blue flex-fill" style="min-width:0"><div class="kpi-value">${haPerFarm}</div><div class="kpi-label">${t('kpi_ha_per_farm')}</div></div>
-          <div class="kpi-card orange flex-fill" style="min-width:0"><div class="kpi-value">${dtKhaiThac.toFixed(1)}</div><div class="kpi-label">${t('kpi_harvest')}</div></div>
-          <div class="kpi-card purple flex-fill" style="min-width:0"><div class="kpi-value">${dtTrongRung.toFixed(1)}</div><div class="kpi-label">${t('kpi_plant')}</div></div>
-          <div class="kpi-card flex-fill" style="min-width:0"><div class="kpi-value">${dtHLVS.toFixed(1)}</div><div class="kpi-label">${t('kpi_hlvs')}</div></div>
+        <div class="row row-cols-4 row-cols-md-8 g-1 g-md-2 mb-2 kpi-grid">
+          <div class="col"><div class="kpi-card h-100"><div class="kpi-value">${soHo}</div><div class="kpi-label">${t('kpi_households')}</div></div></div>
+          <div class="col"><div class="kpi-card blue h-100"><div class="kpi-value">${soFarm}</div><div class="kpi-label">${t('kpi_plots')}</div></div></div>
+          <div class="col"><div class="kpi-card h-100"><div class="kpi-value">${tongDTFSC.toFixed(1)}</div><div class="kpi-label">${t('kpi_fsc_area')}</div></div></div>
+          <div class="col"><div class="kpi-card orange h-100"><div class="kpi-value">${haPerHo}</div><div class="kpi-label">${t('kpi_ha_per_ho')}</div></div></div>
+          <div class="col"><div class="kpi-card blue h-100"><div class="kpi-value">${haPerFarm}</div><div class="kpi-label">${t('kpi_ha_per_farm')}</div></div></div>
+          <div class="col"><div class="kpi-card orange h-100"><div class="kpi-value">${dtKhaiThac.toFixed(1)}</div><div class="kpi-label">${t('kpi_harvest')}</div></div></div>
+          <div class="col"><div class="kpi-card purple h-100"><div class="kpi-value">${dtTrongRung.toFixed(1)}</div><div class="kpi-label">${t('kpi_plant')}</div></div></div>
+          <div class="col"><div class="kpi-card h-100"><div class="kpi-value">${dtHLVS.toFixed(1)}</div><div class="kpi-label">${t('kpi_hlvs')}</div></div></div>
         </div>
 
         <!-- Charts -->
