@@ -977,7 +977,7 @@
       background: transparent !important;
       border: none !important;
       box-shadow: none !important;
-      font-size: 8px !important;
+      font-size: 9px !important;
       line-height: 1.2 !important;
       color: #1a1a1a;
       font-weight: 600;
@@ -5050,18 +5050,18 @@
       const osmLayer = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
         attribution: '&copy; OpenStreetMap',
         maxZoom: 19
-      }).addTo(mapInstance);
+      });
 
       const satelliteLayer = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
         attribution: 'Tiles &copy; Esri',
         maxZoom: 19
       });
 
-      // Google Satellite
+      // Google Satellite (default layer)
       const googleSatLayer = L.tileLayer('https://mt1.google.com/vt/lyrs=s&x={x}&y={y}&z={z}', {
         attribution: '&copy; Google',
         maxZoom: 20
-      });
+      }).addTo(mapInstance);
 
       mapLayers['OpenStreetMap'] = osmLayer;
       mapLayers['Vệ tinh (Esri)'] = satelliteLayer;
@@ -5749,23 +5749,26 @@
                 if (found) return;
                 if (sub.loRungId === loRungId) {
                   found = true;
-                  if (sub.getBounds) {
-                    const center = sub.getBounds().getCenter();
-                    mapInstance.setView(center, PLOT_ZOOM);
+                  if (sub.getBounds) mapInstance.flyTo(sub.getBounds().getCenter(), PLOT_ZOOM, { duration: 0.8 });
+                  setTimeout(() => { if (sub.openPopup) sub.openPopup(); }, 900);
+                  if (sub.setStyle) {
+                    const orig = { color: '#FFFF00', weight: 1.5, fillColor: '#2E7D32', fillOpacity: 0.12 };
+                    sub.setStyle({ color: '#ff5722', weight: 3, fillColor: '#ff5722', fillOpacity: 0.3 });
+                    setTimeout(() => sub.setStyle(orig), 2500);
                   }
-                  if (sub.openPopup) sub.openPopup();
                 }
               });
             }
             if (!found && layer.loRungId === loRungId) {
               found = true;
-              if (layer.getBounds) {
-                const center = layer.getBounds().getCenter();
-                mapInstance.setView(center, PLOT_ZOOM);
-              } else if (layer.getLatLng) {
-                mapInstance.setView(layer.getLatLng(), PLOT_ZOOM);
+              if (layer.getBounds) mapInstance.flyTo(layer.getBounds().getCenter(), PLOT_ZOOM, { duration: 0.8 });
+              else if (layer.getLatLng) mapInstance.flyTo(layer.getLatLng(), PLOT_ZOOM, { duration: 0.8 });
+              setTimeout(() => { if (layer.openPopup) layer.openPopup(); }, 900);
+              if (layer.setStyle) {
+                const orig = { color: '#FFFF00', weight: 1.5, fillColor: '#2E7D32', fillOpacity: 0.12 };
+                layer.setStyle({ color: '#ff5722', weight: 3, fillColor: '#ff5722', fillOpacity: 0.3 });
+                setTimeout(() => layer.setStyle(orig), 2500);
               }
-              if (layer.openPopup) layer.openPopup();
             }
           });
         }
@@ -9427,7 +9430,23 @@ ${gsRecord['Đề xuất'] ? `<div class="proposal-box"><h4>${t('mon_proposal')}
       const canDelete = hasPermission(sheetName, 'Xóa');
       const vcols = getVisibleColumns(sheetName);
 
-      let html = `
+      // For Lo_rung: resolve owner name from Churung data
+      let _detailOwnerName = '';
+      if (sheetName === 'Lo_rung' && d['ID chủ rừng']) {
+        const _cr = (APP_DATA['Churung'] || []).find(c => String(c['ID chủ rừng']) === String(d['ID chủ rừng']));
+        _detailOwnerName = _cr ? (_cr['Họ tên chủ rừng'] || '') : '';
+      }
+
+      let html = '';
+      // Lo_rung: show owner name large and centered at top
+      if (sheetName === 'Lo_rung' && _detailOwnerName) {
+        html += `<div class="text-center mb-2 p-2 bg-white rounded-3 shadow-sm">
+          <div class="fw-bold text-success" style="font-size:1.4rem"><i class="fa-solid fa-user me-2"></i>${_detailOwnerName}</div>
+          <div class="text-muted small">${d['Mã số lô rừng'] || ''} ${d['Địa danh'] ? '&mdash; ' + d['Địa danh'] : ''}</div>
+        </div>`;
+      }
+
+      html += `
           <div class="d-flex justify-content-between align-items-center mb-2 p-2 bg-white rounded-3 shadow-sm border-start border-4 border-success">
             <div><h6 class="fw-bold text-success m-0">${d['Tên nhóm'] || d['Họ tên chủ rừng'] || d['Mã số lô rừng'] || d['Họ và tên'] || t('detail_title')}</h6><div class="text-muted small">ID: ${d[Object.keys(d)[0]]}</div></div>
             <div>
