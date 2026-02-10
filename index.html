@@ -944,38 +944,44 @@
 
   <div id="login-screen" class="d-flex align-items-center justify-content-center" style="min-height:100vh;min-height:100dvh">
     <div class="login-card">
-      <div class="login-header">
-        <img src="https://github.com/impactslowforest/Logo/blob/main/FSC%20logo%20-%20R.png?raw=true" height="64" alt="FSC Logo" style="filter:brightness(10);margin-bottom:10px">
-        <h5 style="color:#fff;font-weight:700;font-size:16px;margin:0;letter-spacing:0.5px">HE THONG QUAN LY RUNG FSC</h5>
-        <div style="color:rgba(255,255,255,0.7);font-size:12px;margin-top:4px">Forest Stewardship Council</div>
+      <div class="login-header" style="position:relative">
+        <button type="button" class="btn btn-sm" onclick="toggleLang()" style="position:absolute;top:10px;right:10px;background:rgba(255,255,255,0.15);color:#fff;border:1px solid rgba(255,255,255,0.3);border-radius:20px;padding:3px 10px;font-size:11px;font-weight:600" id="lang-toggle-login">
+          <i class="fa-solid fa-globe me-1"></i><span id="lang-label-login">EN</span>
+        </button>
+        <div class="d-flex align-items-center justify-content-center" style="gap:12px;margin-bottom:10px">
+          <img src="Logo Clever forestry.png" height="52" alt="Clever Forestry" style="border-radius:8px;background:#fff;padding:2px" onerror="this.style.display='none'">
+          <img src="https://github.com/impactslowforest/Logo/blob/main/FSC%20logo%20-%20R.png?raw=true" height="52" alt="FSC Logo" onerror="this.style.display='none'">
+        </div>
+        <h5 style="color:#fff;font-weight:700;font-size:15px;margin:0;letter-spacing:0.3px" data-i18n="login_title">He thong Quan ly Rung FSC</h5>
+        <div style="color:rgba(255,255,255,0.7);font-size:11px;margin-top:4px" data-i18n="login_subtitle">Forest Stewardship Council</div>
       </div>
 
       <div class="login-body">
         <form id="form-login">
           <div class="login-input-group">
             <i class="fa-solid fa-user input-icon"></i>
-            <input type="text" class="form-control" id="login-email" placeholder="Email hoac Username" required autocomplete="username" autocapitalize="none" autocorrect="off" spellcheck="false" inputmode="email">
+            <input type="text" class="form-control" id="login-email" data-i18n-ph="ph_email_user" placeholder="Email hoac Username" required autocomplete="username" autocapitalize="none" autocorrect="off" spellcheck="false" inputmode="email">
           </div>
           <div class="login-input-group">
             <i class="fa-solid fa-lock input-icon"></i>
-            <input type="password" class="form-control" id="login-pass" placeholder="Mat khau" required autocomplete="current-password">
+            <input type="password" class="form-control" id="login-pass" data-i18n-ph="ph_password" placeholder="Mat khau" required autocomplete="current-password">
             <button type="button" class="toggle-pass" onclick="togglePasswordVis(this)" tabindex="-1"><i class="fa-solid fa-eye"></i></button>
           </div>
           <div class="d-flex justify-content-between align-items-center mb-3" style="margin-top:-2px">
-            <a href="javascript:void(0)" class="text-decoration-none text-success fw-semibold" style="font-size:13px" onclick="toggleAuth('REGISTER')">Dang ky moi</a>
-            <a href="javascript:void(0)" class="text-decoration-none text-muted" style="font-size:12px" onclick="handleForgotPassword()">Quen mat khau?</a>
+            <a href="javascript:void(0)" class="text-decoration-none text-success fw-semibold" style="font-size:13px" onclick="toggleAuth('REGISTER')" data-i18n="register_new">Dang ky moi</a>
+            <a href="javascript:void(0)" class="text-decoration-none text-muted" style="font-size:12px" onclick="handleForgotPassword()" data-i18n="forgot_pass">Quen mat khau?</a>
           </div>
-          <button type="submit" class="btn btn-login-main" id="btn-login"><i class="fa-solid fa-right-to-bracket me-2"></i>Dang nhap</button>
+          <button type="submit" class="btn btn-login-main" id="btn-login"><i class="fa-solid fa-right-to-bracket me-2"></i><span data-i18n="btn_login">Dang nhap</span></button>
         </form>
 
         <form id="form-register" class="d-none">
           <div class="login-input-group">
             <i class="fa-solid fa-user-pen input-icon"></i>
-            <input type="text" class="form-control" id="reg-name" placeholder="Ho ten day du" required>
+            <input type="text" class="form-control" id="reg-name" data-i18n-ph="ph_fullname" placeholder="Ho ten day du" required>
           </div>
           <div class="login-input-group">
             <i class="fa-solid fa-at input-icon"></i>
-            <input type="text" class="form-control" id="reg-username" placeholder="Username (viet lien, khong dau)" required autocapitalize="none" autocorrect="off" spellcheck="false" pattern="[a-zA-Z0-9_]+" title="Chi cho phep chu cai, so va dau gach duoi">
+            <input type="text" class="form-control" id="reg-username" data-i18n-ph="ph_username" placeholder="Username (viet lien, khong dau)" required autocapitalize="none" autocorrect="off" spellcheck="false" pattern="[a-zA-Z0-9_]+" title="Chi cho phep chu cai, so va dau gach duoi">
           </div>
           <div class="login-input-group">
             <i class="fa-solid fa-envelope input-icon"></i>
@@ -983,20 +989,20 @@
           </div>
           <div class="login-input-group">
             <i class="fa-solid fa-phone input-icon"></i>
-            <input type="tel" class="form-control" id="reg-phone" placeholder="So dien thoai">
+            <input type="tel" class="form-control" id="reg-phone" data-i18n-ph="ph_phone" placeholder="So dien thoai">
           </div>
           <div class="login-input-group">
             <i class="fa-solid fa-lock input-icon"></i>
-            <input type="password" class="form-control" id="reg-pass" placeholder="Mat khau" required autocomplete="new-password">
+            <input type="password" class="form-control" id="reg-pass" data-i18n-ph="ph_password" placeholder="Mat khau" required autocomplete="new-password">
             <button type="button" class="toggle-pass" onclick="togglePasswordVis(this)" tabindex="-1"><i class="fa-solid fa-eye"></i></button>
           </div>
           <div class="login-input-group">
             <i class="fa-solid fa-check-double input-icon"></i>
-            <input type="password" class="form-control" id="reg-confirm-pass" placeholder="Nhap lai mat khau" required autocomplete="new-password">
+            <input type="password" class="form-control" id="reg-confirm-pass" data-i18n-ph="ph_confirm_pass" placeholder="Nhap lai mat khau" required autocomplete="new-password">
           </div>
-          <button type="submit" class="btn btn-register-main mb-3" id="btn-register"><i class="fa-solid fa-user-plus me-2"></i>Dang ky</button>
+          <button type="submit" class="btn btn-register-main mb-3" id="btn-register"><i class="fa-solid fa-user-plus me-2"></i><span data-i18n="btn_register">Dang ky</span></button>
           <div class="text-center">
-            <a href="javascript:void(0)" class="text-decoration-none text-success fw-semibold" style="font-size:13px" onclick="toggleAuth('LOGIN')"><i class="fa-solid fa-arrow-left me-1"></i>Quay lai Dang nhap</a>
+            <a href="javascript:void(0)" class="text-decoration-none text-success fw-semibold" style="font-size:13px" onclick="toggleAuth('LOGIN')"><i class="fa-solid fa-arrow-left me-1"></i><span data-i18n="back_login">Quay lai Dang nhap</span></a>
           </div>
         </form>
 
@@ -1004,7 +1010,7 @@
       </div>
 
       <div class="text-center py-3" style="background:#f8f9fa;border-top:1px solid #eee;font-size:11px;color:#999">
-        <i class="fa-solid fa-shield-halved me-1"></i> Bao mat boi Supabase Auth
+        <i class="fa-solid fa-shield-halved me-1"></i> <span data-i18n="secured_by">Bao mat boi Supabase Auth</span>
       </div>
     </div>
   </div>
@@ -1033,14 +1039,14 @@
         <button type="button" class="btn btn-sm btn-logout fw-bold rounded-pill px-2 px-md-3 shadow-sm"
           style="background:#fff;color:#C62828;border:2px solid rgba(255,255,255,0.3);white-space:nowrap"
           onmouseenter="this.style.background='#FFEBEE';this.style.color='#B71C1C'" onmouseleave="this.style.background='#fff';this.style.color='#C62828'"
-          onclick="logout()"><i class="fa-solid fa-right-from-bracket me-1"></i><span class="d-none d-sm-inline">Thoát</span></button>
+          onclick="logout()"><i class="fa-solid fa-right-from-bracket me-1"></i><span class="d-none d-sm-inline" data-i18n="btn_logout">Thoát</span></button>
       </div>
     </nav>
 
     <div class="d-flex flex-grow-1 overflow-hidden">
       <div id="sidebar-overlay" onclick="toggleSidebar()"></div>
       <div id="sidebar-wrapper" class="bg-white border-end shadow-sm">
-        <div class="sidebar-header d-flex align-items-center justify-content-center" style="cursor:pointer" onclick="goHome()" title="Trang chủ">
+        <div class="sidebar-header d-flex align-items-center justify-content-center" style="cursor:pointer" onclick="goHome()" id="sidebar-home-btn">
           <span class="home-icon"><i class="fa-solid fa-house"></i></span>
         </div>
         <div class="accordion accordion-flush overflow-auto h-100" id="sidebarAccordion"></div>
@@ -1051,7 +1057,7 @@
         <div id="data-view" class="d-none">
           <div class="d-flex align-items-center mb-3">
             <button class="btn btn-outline-success btn-sm me-3 px-3 rounded-pill fw-bold" onclick="navigateBack()">
-              <i class="fa-solid fa-arrow-left me-1"></i> Quay lại
+              <i class="fa-solid fa-arrow-left me-1"></i> <span data-i18n="btn_back">Quay lại</span>
             </button>
             <div id="breadcrumb-container" class="flex-grow-1"></div>
           </div>
@@ -1060,38 +1066,38 @@
             <div class="map-toolbar d-flex align-items-center justify-content-between flex-wrap gap-2">
               <div>
                 <button type="button" class="btn btn-outline-success btn-sm" onclick="navigateBack()">
-                  <i class="fa-solid fa-arrow-left me-1"></i> Quay lại
+                  <i class="fa-solid fa-arrow-left me-1"></i> <span data-i18n="btn_back">Quay lại</span>
                 </button>
-                <span class="fw-bold text-success ms-2">Bản đồ quản lý lô rừng</span>
+                <span class="fw-bold text-success ms-2" data-i18n="map_title">Bản đồ quản lý lô rừng</span>
               </div>
               <div class="d-flex gap-2 flex-wrap">
                 <label class="btn btn-outline-primary btn-sm mb-0">
-                  <i class="fa-solid fa-upload me-1"></i> Tải GeoJSON
+                  <i class="fa-solid fa-upload me-1"></i> <span data-i18n="btn_upload_geojson">Tải GeoJSON</span>
                   <input type="file" accept=".geojson,.json" class="d-none" id="geojson-upload" onchange="handleGeoJSONUpload(event)">
                 </label>
                 <button type="button" class="btn btn-outline-warning btn-sm" id="btn-edit-polygon" onclick="togglePolygonEdit()">
-                  <i class="fa-solid fa-pen-to-square me-1"></i> Chỉnh sửa
+                  <i class="fa-solid fa-pen-to-square me-1"></i> <span data-i18n="btn_edit_polygon">Chỉnh sửa</span>
                 </button>
                 <button type="button" class="btn btn-outline-secondary btn-sm" onclick="toggleMapLayers()">
-                  <i class="fa-solid fa-layer-group me-1"></i> Lớp
+                  <i class="fa-solid fa-layer-group me-1"></i> <span data-i18n="btn_layers">Lớp</span>
                 </button>
                 <button type="button" class="btn btn-outline-info btn-sm" onclick="addMapNote()">
-                  <i class="fa-solid fa-sticky-note me-1"></i> Ghi chú
+                  <i class="fa-solid fa-sticky-note me-1"></i> <span data-i18n="map_notes">Ghi chú</span>
                 </button>
                 <div class="btn-group">
                   <button type="button" class="btn btn-outline-dark btn-sm" onclick="zoomToAllData()">
-                    <i class="fa-solid fa-expand me-1"></i> Toàn bộ
+                    <i class="fa-solid fa-expand me-1"></i> <span data-i18n="btn_zoom_all">Toàn bộ</span>
                   </button>
                   <button type="button" class="btn btn-outline-dark btn-sm dropdown-toggle dropdown-toggle-split" data-bs-toggle="dropdown"></button>
                   <ul class="dropdown-menu dropdown-menu-end" id="zoom-layer-menu">
-                    <li><a class="dropdown-item small" href="#" onclick="zoomToAllData();return false"><i class="fa-solid fa-globe me-1"></i> Tất cả lớp</a></li>
+                    <li><a class="dropdown-item small" href="#" onclick="zoomToAllData();return false"><i class="fa-solid fa-globe me-1"></i> <span data-i18n="btn_all_layers">Tất cả lớp</span></a></li>
                   </ul>
                 </div>
                 <button type="button" class="btn btn-outline-purple btn-sm" onclick="openGeoJSONRepo()" style="border-color:#7B1FA2;color:#7B1FA2">
-                  <i class="fa-solid fa-database me-1"></i> Kho bản đồ
+                  <i class="fa-solid fa-database me-1"></i> <span data-i18n="btn_geo_repo">Kho bản đồ</span>
                 </button>
                 <button type="button" class="btn btn-success btn-sm" onclick="goHome()">
-                  <i class="fa-solid fa-house me-1"></i> Trang chủ
+                  <i class="fa-solid fa-house me-1"></i> <span data-i18n="btn_home">Trang chủ</span>
                 </button>
               </div>
             </div>
@@ -1104,16 +1110,16 @@
 
     <div id="mobile-home-bar" class="d-md-none">
       <button type="button" class="mob-nav-btn" onclick="toggleSidebar()">
-        <i class="fa-solid fa-bars"></i><span>Menu</span>
+        <i class="fa-solid fa-bars"></i><span data-i18n="nav_menu">Menu</span>
       </button>
       <button type="button" class="mob-nav-btn active" onclick="goHome()">
-        <i class="fa-solid fa-house"></i><span>Trang chủ</span>
+        <i class="fa-solid fa-house"></i><span data-i18n="nav_home">Trang chủ</span>
       </button>
       <button type="button" class="mob-nav-btn" onclick="loadView('Bando_lorung','Bản đồ quản lý lô rừng')">
-        <i class="fa-solid fa-map"></i><span>Bản đồ</span>
+        <i class="fa-solid fa-map"></i><span data-i18n="nav_map">Bản đồ</span>
       </button>
       <button type="button" class="mob-nav-btn" onclick="logout()">
-        <i class="fa-solid fa-right-from-bracket"></i><span>Thoát</span>
+        <i class="fa-solid fa-right-from-bracket"></i><span data-i18n="nav_logout">Thoát</span>
       </button>
     </div>
   </div>
@@ -1129,8 +1135,8 @@
           <form id="dynamic-form" class="row g-3"></form>
         </div>
         <div class="modal-footer"><button type="button" class="btn btn-light"
-            data-bs-dismiss="modal">Đóng</button><button type="button" class="btn btn-success" id="btn-save"
-            onclick="saveData()">Lưu</button></div>
+            data-bs-dismiss="modal"><span data-i18n="modal_close">Đóng</span></button><button type="button" class="btn btn-success" id="btn-save"
+            onclick="saveData()"><span data-i18n="modal_save">Lưu</span></button></div>
       </div>
     </div>
   </div>
@@ -1169,6 +1175,363 @@
     }
     window.addEventListener('online', () => { updateOnlineStatus(); console.log('Back online'); });
     window.addEventListener('offline', () => { updateOnlineStatus(); console.log('Gone offline'); });
+
+    // === INTERNATIONALIZATION (i18n) ===
+    let currentLang = localStorage.getItem('fscfm_lang') || 'vi';
+
+    const LANG = {
+      vi: {
+        // Login screen
+        login_title: 'Hệ thống Quản lý Rừng FSC',
+        login_subtitle: 'Forest Stewardship Council',
+        ph_email_user: 'Email hoặc Username',
+        ph_password: 'Mật khẩu',
+        ph_fullname: 'Họ tên đầy đủ',
+        ph_username: 'Username (viết liền, không dấu)',
+        ph_phone: 'Số điện thoại',
+        ph_confirm_pass: 'Nhập lại mật khẩu',
+        register_new: 'Đăng ký mới',
+        forgot_pass: 'Quên mật khẩu?',
+        btn_login: 'Đăng nhập',
+        btn_register: 'Đăng ký',
+        back_login: 'Quay lại Đăng nhập',
+        secured_by: 'Bảo mật bởi Supabase Auth',
+        processing: 'Đang xử lý...',
+        registering: 'Đang đăng ký...',
+        username_not_found: 'Không tìm thấy username này',
+        conn_error: 'Lỗi kết nối',
+        pass_mismatch: 'Mật khẩu nhập lại không khớp!',
+        pass_min6: 'Mật khẩu phải có ít nhất 6 ký tự!',
+        username_invalid: 'Username chỉ được chứa chữ cái thường, số và dấu _',
+        username_taken: 'đã được sử dụng!',
+        reg_success: 'Đăng ký thành công! Vui lòng xác thực email rồi đăng nhập.',
+        reg_error: 'Lỗi đăng ký',
+        forgot_prompt: 'Vui lòng nhập Email đã đăng ký để lấy lại mật khẩu:',
+        forgot_sent: 'Link đặt lại mật khẩu đã được gửi về Email!',
+        forgot_error: 'Lỗi khi gửi yêu cầu!',
+
+        // Dashboard
+        dashboard_title: 'Tổng quan hệ thống',
+        search_placeholder: 'Tìm kiếm dữ liệu, menu, chức năng...',
+        kpi_title: 'Chỉ số KPI',
+        kpi_households: 'Số hộ dân',
+        kpi_plots: 'Số lô rừng',
+        kpi_fsc_area: 'Tổng DT FSC (ha)',
+        kpi_ha_per_ho: 'ha/hộ',
+        kpi_ha_per_farm: 'TB ha/lô rừng',
+        kpi_harvest: 'SL khai thác (xe)',
+        kpi_plant: 'DT trồng rừng (ha)',
+        kpi_hlvs: 'DT HLVS (ha)',
+        chart_area: 'Phân bổ diện tích',
+        chart_groups: 'Thống kê theo nhóm',
+        no_results: 'Không tìm thấy kết quả cho',
+
+        // Main menus
+        menu_group_mgmt: 'Quản lý nhóm',
+        menu_forest_mgmt: 'Quản lý rừng bền vững',
+        menu_trade: 'Mua bán sản phẩm',
+        menu_docs: 'Tài liệu tham khảo',
+        menu_system: 'Hệ thống',
+        menu_report: 'Báo cáo',
+        menu_settings: 'Cài đặt hệ thống',
+
+        // Chart labels
+        chart_fsc_area: 'Diện tích FSC',
+        chart_non_fsc: 'DT ngoài FSC',
+        chart_riparian: 'Hành lang ven suối',
+        chart_planted: 'DT trồng rừng',
+
+        // Buttons & Actions
+        btn_back: 'Quay lại',
+        btn_add: 'Thêm mới',
+        btn_edit: 'Sửa',
+        btn_delete: 'Xóa',
+        btn_save: 'Lưu',
+        btn_close: 'Đóng',
+        btn_home: 'Trang chủ',
+        btn_map: 'Bản đồ',
+        btn_upload_geojson: 'Tải GeoJSON',
+        btn_edit_polygon: 'Chỉnh sửa',
+        btn_layers: 'Lớp',
+        btn_zoom_all: 'Toàn bộ',
+        btn_all_layers: 'Tất cả lớp',
+        btn_geo_repo: 'Kho bản đồ',
+        btn_logout: 'Thoát',
+        btn_save_settings: 'Lưu cài đặt',
+        btn_reset_settings: 'Khôi phục mặc định',
+
+        // Map
+        map_title: 'Bản đồ quản lý lô rừng',
+
+        // Search categories
+        search_menu: 'Menu',
+        search_functions: 'Chức năng',
+
+        // SEARCH_TABLES titles
+        st_ban_ql: 'Ban quản lý nhóm',
+        st_nhom: 'Nhóm CCR',
+        st_churung: 'Chủ rừng',
+        st_lorung: 'Lô rừng',
+        st_nhansu: 'Nhân sự',
+        st_taphuan: 'Tập huấn',
+        st_danhgia: 'Đánh giá nội bộ',
+
+        // Detail drill-down
+        dd_nhom: 'Nhóm',
+        dd_hodan: 'Hộ dân',
+        dd_danhgia: 'Đánh giá',
+        dd_lorung: 'Lô rừng',
+        dd_taphuan: 'Tập huấn',
+        dd_bando: 'Bản đồ',
+        dd_baocao: 'Báo cáo',
+        dd_kehoach: 'Kế hoạch',
+        dd_giamsat: 'Giám sát',
+        dd_pheduyet: 'Phê duyệt',
+
+        // App functions (smart search)
+        fn_gis_map: 'Bản đồ GIS',
+        fn_internal_audit: 'Đánh giá nội bộ',
+        fn_settings: 'Cài đặt hệ thống',
+        fn_staff_mgmt: 'Quản lý nhân sự',
+        fn_training: 'Tập huấn',
+        fn_geo_repo: 'Kho bản đồ GeoJSON',
+        fn_reports: 'Báo cáo',
+        fn_plot_mgmt: 'Quản lý lô rừng',
+        fn_owner_mgmt: 'Quản lý chủ rừng',
+        fn_ccr_groups: 'Danh sách nhóm CCR',
+        fn_mgmt_board: 'Ban quản lý nhóm',
+
+        // Sidebar group names
+        grp_group_mgmt: 'Quản lý nhóm',
+        grp_forest_mgmt: 'Quản lý rừng bền vững',
+        grp_trade: 'Mua bán sản phẩm',
+        grp_docs: 'Tài liệu tham khảo',
+        grp_system: 'Hệ thống',
+        grp_report: 'Báo cáo',
+        grp_other: 'Khác',
+
+        // Mobile nav bar
+        nav_menu: 'Menu',
+        nav_home: 'Trang chủ',
+        nav_map: 'Bản đồ',
+        nav_logout: 'Thoát',
+
+        // Modal & form
+        modal_add: 'Thêm mới',
+        modal_update: 'Cập nhật',
+        modal_close: 'Đóng',
+        modal_save: 'Lưu',
+
+        // Detail view
+        detail_title: 'Chi tiết',
+        detail_show_table: 'Hiện ở bảng danh sách',
+
+        // Map toolbar
+        map_notes: 'Ghi chú',
+
+        // Settings
+        settings_title: 'Cài đặt hệ thống',
+        settings_save: 'Lưu',
+        settings_default: 'Mặc định',
+        settings_preview: 'Xem trước',
+
+        // Misc
+        offline: 'Ngoại tuyến',
+        language: 'Ngôn ngữ',
+        confirm_delete: 'Bạn có chắc chắn muốn xóa?',
+        saved_ok: 'Đã lưu cài đặt thành công!',
+        reset_ok: 'Đã khôi phục cài đặt mặc định.',
+        no_network: 'Không có kết nối mạng và không có dữ liệu được lưu trước đó.',
+        account_locked: 'Tài khoản chưa kích hoạt hoặc đã bị khóa!'
+      },
+      en: {
+        login_title: 'FSC Forest Management System',
+        login_subtitle: 'Forest Stewardship Council',
+        ph_email_user: 'Email or Username',
+        ph_password: 'Password',
+        ph_fullname: 'Full name',
+        ph_username: 'Username (letters, numbers, _)',
+        ph_phone: 'Phone number',
+        ph_confirm_pass: 'Confirm password',
+        register_new: 'Register',
+        forgot_pass: 'Forgot password?',
+        btn_login: 'Sign in',
+        btn_register: 'Register',
+        back_login: 'Back to Sign in',
+        secured_by: 'Secured by Supabase Auth',
+        processing: 'Processing...',
+        registering: 'Registering...',
+        username_not_found: 'Username not found',
+        conn_error: 'Connection error',
+        pass_mismatch: 'Passwords do not match!',
+        pass_min6: 'Password must be at least 6 characters!',
+        username_invalid: 'Username can only contain lowercase letters, numbers and _',
+        username_taken: 'is already taken!',
+        reg_success: 'Registration successful! Please verify your email, then sign in.',
+        reg_error: 'Registration error',
+        forgot_prompt: 'Enter your registered email to reset password:',
+        forgot_sent: 'Password reset link has been sent to your email!',
+        forgot_error: 'Error sending request!',
+
+        dashboard_title: 'System Overview',
+        search_placeholder: 'Search data, menus, features...',
+        kpi_title: 'KPI Indicators',
+        kpi_households: 'Households',
+        kpi_plots: 'Forest Plots',
+        kpi_fsc_area: 'FSC Area (ha)',
+        kpi_ha_per_ho: 'ha/household',
+        kpi_ha_per_farm: 'Avg ha/plot',
+        kpi_harvest: 'Harvest (loads)',
+        kpi_plant: 'Planted (ha)',
+        kpi_hlvs: 'Riparian (ha)',
+        chart_area: 'Area Distribution',
+        chart_groups: 'Statistics by Group',
+        no_results: 'No results found for',
+
+        menu_group_mgmt: 'Group Management',
+        menu_forest_mgmt: 'Sustainable Forest Management',
+        menu_trade: 'Product Trading',
+        menu_docs: 'Reference Documents',
+        menu_system: 'System',
+        menu_report: 'Reports',
+        menu_settings: 'System Settings',
+
+        chart_fsc_area: 'FSC Area',
+        chart_non_fsc: 'Non-FSC Area',
+        chart_riparian: 'Riparian corridor',
+        chart_planted: 'Planted area',
+
+        btn_back: 'Back',
+        btn_add: 'Add New',
+        btn_edit: 'Edit',
+        btn_delete: 'Delete',
+        btn_save: 'Save',
+        btn_close: 'Close',
+        btn_home: 'Home',
+        btn_map: 'Map',
+        btn_upload_geojson: 'Upload GeoJSON',
+        btn_edit_polygon: 'Edit',
+        btn_layers: 'Layers',
+        btn_zoom_all: 'Zoom All',
+        btn_all_layers: 'All layers',
+        btn_geo_repo: 'Map Repository',
+        btn_logout: 'Logout',
+        btn_save_settings: 'Save Settings',
+        btn_reset_settings: 'Reset to Defaults',
+
+        map_title: 'Forest Plot Map Management',
+
+        search_menu: 'Menu',
+        search_functions: 'Features',
+
+        st_ban_ql: 'Management Board',
+        st_nhom: 'CCR Group',
+        st_churung: 'Forest Owner',
+        st_lorung: 'Forest Plot',
+        st_nhansu: 'Staff',
+        st_taphuan: 'Training',
+        st_danhgia: 'Internal Audit',
+
+        dd_nhom: 'Groups',
+        dd_hodan: 'Households',
+        dd_danhgia: 'Audit',
+        dd_lorung: 'Plots',
+        dd_taphuan: 'Training',
+        dd_bando: 'Map',
+        dd_baocao: 'Report',
+        dd_kehoach: 'Plan',
+        dd_giamsat: 'Monitor',
+        dd_pheduyet: 'Approve',
+
+        fn_gis_map: 'GIS Map',
+        fn_internal_audit: 'Internal Audit',
+        fn_settings: 'System Settings',
+        fn_staff_mgmt: 'Staff Management',
+        fn_training: 'Training',
+        fn_geo_repo: 'GeoJSON Repository',
+        fn_reports: 'Reports',
+        fn_plot_mgmt: 'Forest Plot Management',
+        fn_owner_mgmt: 'Forest Owner Management',
+        fn_ccr_groups: 'CCR Group List',
+        fn_mgmt_board: 'Management Board',
+
+        grp_group_mgmt: 'Group Management',
+        grp_forest_mgmt: 'Sustainable Forest Management',
+        grp_trade: 'Product Trading',
+        grp_docs: 'Reference Documents',
+        grp_system: 'System',
+        grp_report: 'Reports',
+        grp_other: 'Other',
+
+        nav_menu: 'Menu',
+        nav_home: 'Home',
+        nav_map: 'Map',
+        nav_logout: 'Logout',
+
+        modal_add: 'Add New',
+        modal_update: 'Update',
+        modal_close: 'Close',
+        modal_save: 'Save',
+
+        detail_title: 'Details',
+        detail_show_table: 'Show in table list',
+
+        map_notes: 'Notes',
+
+        settings_title: 'System Settings',
+        settings_save: 'Save',
+        settings_default: 'Defaults',
+        settings_preview: 'Preview',
+
+        offline: 'Offline',
+        language: 'Language',
+        confirm_delete: 'Are you sure you want to delete?',
+        saved_ok: 'Settings saved successfully!',
+        reset_ok: 'Settings have been reset to defaults.',
+        no_network: 'No internet connection and no cached data available.',
+        account_locked: 'Account not activated or has been locked!'
+      }
+    };
+
+    function t(key) {
+      return (LANG[currentLang] && LANG[currentLang][key]) || (LANG['vi'] && LANG['vi'][key]) || key;
+    }
+
+    function toggleLang() {
+      currentLang = currentLang === 'vi' ? 'en' : 'vi';
+      localStorage.setItem('fscfm_lang', currentLang);
+      applyI18n();
+    }
+
+    function applyI18n() {
+      // Update text content for elements with data-i18n
+      document.querySelectorAll('[data-i18n]').forEach(el => {
+        const key = el.getAttribute('data-i18n');
+        if (LANG[currentLang][key]) el.textContent = LANG[currentLang][key];
+      });
+      // Update placeholders for elements with data-i18n-ph
+      document.querySelectorAll('[data-i18n-ph]').forEach(el => {
+        const key = el.getAttribute('data-i18n-ph');
+        if (LANG[currentLang][key]) el.placeholder = LANG[currentLang][key];
+      });
+      // Update lang toggle button label
+      const nextLang = currentLang === 'vi' ? 'EN' : 'VI';
+      const lblLogin = document.getElementById('lang-label-login');
+      if (lblLogin) lblLogin.textContent = nextLang;
+      const lblDash = document.getElementById('lang-label-dash');
+      if (lblDash) lblDash.textContent = nextLang;
+      // Re-render dashboard if visible
+      if ($('#dashboard-view').is(':visible') && typeof renderDashboardContent === 'function') {
+        renderDashboardContent();
+      }
+      // Re-render sidebar menu if loaded
+      if (typeof renderSystemMenu === 'function' && APP_DATA && APP_DATA['Menu']) {
+        renderSystemMenu(APP_DATA['Menu']);
+      }
+    }
+
+    // Apply language on page load
+    document.addEventListener('DOMContentLoaded', () => applyI18n());
 
     // === SUPABASE CONFIG ===
     const SUPABASE_URL = 'https://rvvctklkxjhypgmzcaym.supabase.co';
@@ -1650,7 +2013,7 @@
             profileDisplay = JSON.parse(cached);
             console.log('Offline mode - using cached profile');
           } else {
-            alert('Không có kết nối mạng và không có dữ liệu được lưu trước đó.');
+            alert(t('no_network'));
             return;
           }
         } else {
@@ -1661,7 +2024,7 @@
             return;
           }
           if (profile.trang_thai !== 'Act') {
-            alert('Tài khoản chưa kích hoạt hoặc đã bị khóa!');
+            alert(t('account_locked'));
             await sb.auth.signOut();
             return;
           }
@@ -1735,7 +2098,7 @@
       e.preventDefault();
       const btn = $('#btn-login');
       const err = $('#login-error');
-      btn.prop('disabled', true).html('<i class="fas fa-spinner fa-spin me-2"></i>Dang xu ly...');
+      btn.prop('disabled', true).html(`<i class="fas fa-spinner fa-spin me-2"></i>${t('processing')}`);
       err.hide();
 
       try {
@@ -1743,12 +2106,11 @@
         const password = $('#login-pass').val().trim();
         let loginEmail = input;
 
-        // If input is not an email, look up username in profiles
         if (!input.includes('@')) {
           const { data: profile, error: lookupErr } = await sb.from('profiles')
             .select('email').eq('username', input.toLowerCase()).single();
           if (lookupErr || !profile || !profile.email) {
-            err.html('<i class="fas fa-exclamation-circle me-1"></i> Khong tim thay username nay').show();
+            err.html(`<i class="fas fa-exclamation-circle me-1"></i> ${t('username_not_found')}`).show();
             return;
           }
           loginEmail = profile.email;
@@ -1765,13 +2127,12 @@
 
       } catch (error) {
         console.error("Login Error:", error);
-        err.html(`<i class="fas fa-wifi me-1"></i> Loi ket noi: ${error.message}`).show();
+        err.html(`<i class="fas fa-wifi me-1"></i> ${t('conn_error')}: ${error.message}`).show();
       } finally {
-        btn.prop('disabled', false).html('<i class="fa-solid fa-right-to-bracket me-2"></i>Dang nhap');
+        btn.prop('disabled', false).html(`<i class="fa-solid fa-right-to-bracket me-2"></i>${t('btn_login')}`);
       }
     });
 
-    // Username validation on input
     $(document).on('input', '#reg-username', function() {
       this.value = this.value.toLowerCase().replace(/[^a-z0-9_]/g, '');
     });
@@ -1783,21 +2144,21 @@
 
       const password = $('#reg-pass').val();
       if (password !== $('#reg-confirm-pass').val()) {
-        err.text("Mat khau nhap lai khong khop!").show();
+        err.text(t('pass_mismatch')).show();
         return;
       }
       if (password.length < 6) {
-        err.text("Mat khau phai co it nhat 6 ky tu!").show();
+        err.text(t('pass_min6')).show();
         return;
       }
 
       const username = $('#reg-username').val().trim().toLowerCase();
       if (!username || !/^[a-z0-9_]+$/.test(username)) {
-        err.text("Username chi duoc chua chu cai thuong, so va dau _").show();
+        err.text(t('username_invalid')).show();
         return;
       }
 
-      btn.prop('disabled', true).html('<i class="fas fa-spinner fa-spin me-2"></i>Dang ky...');
+      btn.prop('disabled', true).html(`<i class="fas fa-spinner fa-spin me-2"></i>${t('registering')}`);
       err.hide();
 
       try {
@@ -1805,10 +2166,9 @@
         const fullName = $('#reg-name').val().trim();
         const phone = $('#reg-phone').val().trim();
 
-        // Check if username already taken
         const { data: existing } = await sb.from('profiles').select('id').eq('username', username).single();
         if (existing) {
-          err.text("Username '" + username + "' da duoc su dung!").show();
+          err.text("Username '" + username + "' " + t('username_taken')).show();
           return;
         }
 
@@ -1826,7 +2186,6 @@
           return;
         }
 
-        // Update profile with extra fields (trigger creates profile with Act status)
         if (data.user) {
           await sb.from('profiles').update({
             ho_va_ten: fullName,
@@ -1837,34 +2196,33 @@
           }).eq('id', data.user.id);
         }
 
-        // Auto-login after registration
         if (data.session) {
           await initUserSession(data.user);
         } else {
-          alert('Dang ky thanh cong! Vui long xac thuc email roi dang nhap.');
+          alert(t('reg_success'));
           toggleAuth('LOGIN');
           $('#login-email').val(username);
         }
 
       } catch (error) {
-        err.text("Loi dang ky: " + error.message).show();
+        err.text(t('reg_error') + ': ' + error.message).show();
       } finally {
-        btn.prop('disabled', false).html('<i class="fa-solid fa-user-plus me-2"></i>Dang ky');
+        btn.prop('disabled', false).html(`<i class="fa-solid fa-user-plus me-2"></i>${t('btn_register')}`);
       }
     });
 
     async function handleForgotPassword() {
-      const email = prompt("Vui lòng nhập Email đã đăng ký để lấy lại mật khẩu:");
+      const email = prompt(t('forgot_prompt'));
       if (!email) return;
 
       try {
         const { error } = await sb.auth.resetPasswordForEmail(email.trim(), {
           redirectTo: window.location.origin + window.location.pathname
         });
-        if (error) alert("Lỗi: " + error.message);
-        else alert("Link đặt lại mật khẩu đã được gửi về Email!");
+        if (error) alert(error.message);
+        else alert(t('forgot_sent'));
       } catch (error) {
-        alert("Lỗi khi gửi yêu cầu!");
+        alert(t('forgot_error'));
       }
     }
 
@@ -2085,11 +2443,11 @@
         <div class="card border-0 shadow-sm">
           <div class="card-body p-3">
             <div class="d-flex justify-content-between align-items-center mb-3">
-              <h6 class="fw-bold text-success mb-0"><i class="fa-solid fa-sliders me-2"></i>Cài đặt hệ thống</h6>
+              <h6 class="fw-bold text-success mb-0"><i class="fa-solid fa-sliders me-2"></i>${t('settings_title')}</h6>
               <div class="d-flex gap-2">
-                <button class="btn btn-success btn-sm fw-bold" onclick="saveSettingsFromForm()"><i class="fa-solid fa-check me-1"></i>Lưu</button>
-                <button class="btn btn-outline-secondary btn-sm" onclick="resetSettingsToDefault()"><i class="fa-solid fa-rotate-left me-1"></i>Mặc định</button>
-                <button class="btn btn-outline-primary btn-sm" onclick="previewSettings()"><i class="fa-solid fa-eye me-1"></i>Xem trước</button>
+                <button class="btn btn-success btn-sm fw-bold" onclick="saveSettingsFromForm()"><i class="fa-solid fa-check me-1"></i>${t('settings_save')}</button>
+                <button class="btn btn-outline-secondary btn-sm" onclick="resetSettingsToDefault()"><i class="fa-solid fa-rotate-left me-1"></i>${t('settings_default')}</button>
+                <button class="btn btn-outline-primary btn-sm" onclick="previewSettings()"><i class="fa-solid fa-eye me-1"></i>${t('settings_preview')}</button>
               </div>
             </div>
 
@@ -2253,26 +2611,30 @@
 
       // 6 Main menu icon cards
       const mainMenus = [
-        { icon: 'fa-users-between-lines', label: 'Quản lý nhóm', color: '#2E7D32', group: 'Quản lý nhóm' },
-        { icon: 'fa-tree', label: 'Quản lý rừng bền vững', color: '#1565C0', group: 'Quản lý rừng bền vững' },
-        { icon: 'fa-cart-shopping', label: 'Mua bán sản phẩm', color: '#E65100', group: 'Mua bán sản phẩm' },
-        { icon: 'fa-book-open', label: 'Tài liệu tham khảo', color: '#6A1B9A', group: 'Tài liệu tham khảo' },
-        { icon: 'fa-gears', label: 'Hệ thống', color: '#455A64', group: 'Hệ thống' },
-        { icon: 'fa-chart-pie', label: 'Báo cáo', color: '#C62828', group: 'Báo cáo' }
+        { icon: 'fa-users-between-lines', labelKey: 'menu_group_mgmt', color: '#2E7D32', group: 'Quản lý nhóm' },
+        { icon: 'fa-tree', labelKey: 'menu_forest_mgmt', color: '#1565C0', group: 'Quản lý rừng bền vững' },
+        { icon: 'fa-cart-shopping', labelKey: 'menu_trade', color: '#E65100', group: 'Mua bán sản phẩm' },
+        { icon: 'fa-book-open', labelKey: 'menu_docs', color: '#6A1B9A', group: 'Tài liệu tham khảo' },
+        { icon: 'fa-gears', labelKey: 'menu_system', color: '#455A64', group: 'Hệ thống' },
+        { icon: 'fa-chart-pie', labelKey: 'menu_report', color: '#C62828', group: 'Báo cáo' }
       ];
 
+      const nextLang = currentLang === 'vi' ? 'EN' : 'VI';
       let html = `
         <div class="d-flex align-items-center mb-2">
           <div class="me-auto">
-            <h5 class="fw-bold mb-0" style="color:var(--forest-primary)"><i class="fa-solid fa-gauge-high me-2"></i>Tổng quan hệ thống</h5>
+            <h5 class="fw-bold mb-0" style="color:var(--forest-primary)"><i class="fa-solid fa-gauge-high me-2"></i>${t('dashboard_title')}</h5>
           </div>
+          <button class="btn btn-sm btn-outline-success rounded-pill px-2" onclick="toggleLang()" style="font-size:11px;font-weight:600" id="lang-toggle-dash">
+            <i class="fa-solid fa-globe me-1"></i><span id="lang-label-dash">${nextLang}</span>
+          </button>
         </div>
 
         <!-- Smart Search -->
         <div class="position-relative mb-3">
           <div class="input-group input-group-sm shadow-sm" style="max-width:100%">
             <span class="input-group-text bg-white border-end-0"><i class="fa-solid fa-magnifying-glass text-muted"></i></span>
-            <input type="text" class="form-control border-start-0" id="smart-search-input" placeholder="Tìm kiếm dữ liệu, menu, chức năng..." autocomplete="off" oninput="smartSearch(this.value)">
+            <input type="text" class="form-control border-start-0" id="smart-search-input" placeholder="${t('search_placeholder')}" autocomplete="off" oninput="smartSearch(this.value)">
             <button class="btn btn-outline-secondary border-start-0" type="button" onclick="$('#smart-search-input').val('');$('#smart-search-results').addClass('d-none')"><i class="fa-solid fa-xmark"></i></button>
           </div>
           <div id="smart-search-results" class="d-none position-absolute w-100 bg-white border rounded shadow mt-1" style="z-index:1050;max-height:350px;overflow-y:auto"></div>
@@ -2284,32 +2646,32 @@
             <div class="col">
               <div class="dashboard-card-3d" style="--card-accent:${m.color}" onclick="openMenuGroup('${m.group}')">
                 <div class="icon-3d-wrapper" style="background:${m.color}"><i class="fa-solid ${m.icon}"></i></div>
-                <div class="card-title-3d">${m.label}</div>
+                <div class="card-title-3d">${t(m.labelKey)}</div>
               </div>
             </div>
           `).join('')}
         </div>
 
-        <!-- KPIs - 1 hàng duy nhất -->
-        <h6 class="fw-bold text-secondary mb-2"><i class="fa-solid fa-chart-line me-2"></i>Chỉ số KPI</h6>
+        <!-- KPIs -->
+        <h6 class="fw-bold text-secondary mb-2"><i class="fa-solid fa-chart-line me-2"></i>${t('kpi_title')}</h6>
         <div class="d-flex gap-2 mb-2 flex-nowrap" style="overflow-x:auto">
-          <div class="kpi-card flex-fill" style="min-width:0"><div class="kpi-value">${soHo}</div><div class="kpi-label">Số hộ dân</div></div>
-          <div class="kpi-card blue flex-fill" style="min-width:0"><div class="kpi-value">${soFarm}</div><div class="kpi-label">Số lô rừng</div></div>
-          <div class="kpi-card flex-fill" style="min-width:0"><div class="kpi-value">${tongDTFSC.toFixed(1)}</div><div class="kpi-label">Tổng DT FSC (ha)</div></div>
-          <div class="kpi-card orange flex-fill" style="min-width:0"><div class="kpi-value">${haPerHo}</div><div class="kpi-label">ha/hộ</div></div>
-          <div class="kpi-card blue flex-fill" style="min-width:0"><div class="kpi-value">${haPerFarm}</div><div class="kpi-label">TB ha/lô rừng</div></div>
-          <div class="kpi-card orange flex-fill" style="min-width:0"><div class="kpi-value">${dtKhaiThac.toFixed(1)}</div><div class="kpi-label">SL khai thác (xe)</div></div>
-          <div class="kpi-card purple flex-fill" style="min-width:0"><div class="kpi-value">${dtTrongRung.toFixed(1)}</div><div class="kpi-label">DT trồng rừng (ha)</div></div>
-          <div class="kpi-card flex-fill" style="min-width:0"><div class="kpi-value">${dtHLVS.toFixed(1)}</div><div class="kpi-label">DT HLVS (ha)</div></div>
+          <div class="kpi-card flex-fill" style="min-width:0"><div class="kpi-value">${soHo}</div><div class="kpi-label">${t('kpi_households')}</div></div>
+          <div class="kpi-card blue flex-fill" style="min-width:0"><div class="kpi-value">${soFarm}</div><div class="kpi-label">${t('kpi_plots')}</div></div>
+          <div class="kpi-card flex-fill" style="min-width:0"><div class="kpi-value">${tongDTFSC.toFixed(1)}</div><div class="kpi-label">${t('kpi_fsc_area')}</div></div>
+          <div class="kpi-card orange flex-fill" style="min-width:0"><div class="kpi-value">${haPerHo}</div><div class="kpi-label">${t('kpi_ha_per_ho')}</div></div>
+          <div class="kpi-card blue flex-fill" style="min-width:0"><div class="kpi-value">${haPerFarm}</div><div class="kpi-label">${t('kpi_ha_per_farm')}</div></div>
+          <div class="kpi-card orange flex-fill" style="min-width:0"><div class="kpi-value">${dtKhaiThac.toFixed(1)}</div><div class="kpi-label">${t('kpi_harvest')}</div></div>
+          <div class="kpi-card purple flex-fill" style="min-width:0"><div class="kpi-value">${dtTrongRung.toFixed(1)}</div><div class="kpi-label">${t('kpi_plant')}</div></div>
+          <div class="kpi-card flex-fill" style="min-width:0"><div class="kpi-value">${dtHLVS.toFixed(1)}</div><div class="kpi-label">${t('kpi_hlvs')}</div></div>
         </div>
 
-        <!-- Charts (flex-grow to fill remaining space) -->
+        <!-- Charts -->
         <div class="row g-3 flex-grow-1" style="min-height:0">
           <div class="col-md-6 d-flex">
             <div class="card border-0 shadow-sm flex-grow-1">
               <div class="card-body p-2 p-md-3 d-flex flex-column">
                 <div class="d-flex justify-content-between align-items-center mb-2">
-                  <h6 class="fw-bold text-success mb-0" style="font-size:12px"><i class="fa-solid fa-chart-pie me-1"></i>Phân bổ diện tích</h6>
+                  <h6 class="fw-bold text-success mb-0" style="font-size:12px"><i class="fa-solid fa-chart-pie me-1"></i>${t('chart_area')}</h6>
                   <select class="form-select form-select-sm" style="width:auto;font-size:11px;padding:2px 24px 2px 8px" onchange="switchChartType('area', this.value)">
                     <option value="doughnut" selected>Doughnut</option>
                     <option value="pie">Pie</option>
@@ -2326,7 +2688,7 @@
             <div class="card border-0 shadow-sm flex-grow-1">
               <div class="card-body p-2 p-md-3 d-flex flex-column">
                 <div class="d-flex justify-content-between align-items-center mb-2">
-                  <h6 class="fw-bold text-success mb-0" style="font-size:12px"><i class="fa-solid fa-chart-bar me-1"></i>Thống kê theo nhóm</h6>
+                  <h6 class="fw-bold text-success mb-0" style="font-size:12px"><i class="fa-solid fa-chart-bar me-1"></i>${t('chart_groups')}</h6>
                   <select class="form-select form-select-sm" style="width:auto;font-size:11px;padding:2px 24px 2px 8px" onchange="switchChartType('groups', this.value)">
                     <option value="bar" selected>Bar</option>
                     <option value="line">Line</option>
@@ -2358,7 +2720,7 @@
       // Store chart data for later type switching
       const dtNgoaiFSC = Math.max(0, tongDT - tongDTFSC - dtHLVS);
       chartDataStore.area = {
-        labels: ['Diện tích FSC', 'DT ngoài FSC', 'Hành lang ven suối', 'DT trồng rừng'],
+        labels: [t('chart_fsc_area'), t('chart_non_fsc'), t('chart_riparian'), t('chart_planted')],
         values: [tongDTFSC.toFixed(1), dtNgoaiFSC.toFixed(1), dtHLVS.toFixed(1), dtTrongRung.toFixed(1)],
         colors: ['#2E7D32', '#42A5F5', '#FFA726', '#AB47BC']
       };
@@ -2589,26 +2951,33 @@
           'Mua bán sản phẩm': 'fa-cart-shopping', 'Tài liệu tham khảo': 'fa-book-open',
           'Hệ thống': 'fa-gears', 'Báo cáo': 'fa-chart-pie', 'Khác': 'fa-folder'
         };
+        // Map Vietnamese group names to i18n keys
+        const GROUP_I18N = {
+          'Quản lý nhóm': 'grp_group_mgmt', 'Quản lý rừng bền vững': 'grp_forest_mgmt',
+          'Mua bán sản phẩm': 'grp_trade', 'Tài liệu tham khảo': 'grp_docs',
+          'Hệ thống': 'grp_system', 'Báo cáo': 'grp_report', 'Khác': 'grp_other'
+        };
 
         let accordionHtml = ''; let idx = 0;
         for (const [group, items] of Object.entries(grouped)) {
           idx++; const cId = `collapseSidebar${idx}`;
           const groupIcon = GROUP_ICONS[group] || 'fa-folder';
+          const groupLabel = GROUP_I18N[group] ? t(GROUP_I18N[group]) : group;
           let sub = items.map(i => {
             const v = (i['View'] || '').replace(/'/g, "\\'");
             const m = (i['Module'] || '').replace(/'/g, "\\'");
             const mIcon = getSubMenuIcon(m);
             return `<a href="#" class="menu-sub-link" onclick="loadView('${v}', '${m}')"><i class="fa-solid ${mIcon} me-2" style="width:16px;text-align:center;opacity:0.7"></i>${i['Module']}</a>`;
           }).join('');
-          accordionHtml += `<div class="accordion-item"><h2 class="accordion-header"><button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#${cId}"><i class="fa-solid ${groupIcon} me-2" style="opacity:0.6"></i><span class="fw-bold">${group}</span></button></h2><div id="${cId}" class="accordion-collapse collapse show"><div class="accordion-body p-0">${sub}</div></div></div>`;
+          accordionHtml += `<div class="accordion-item" data-group-vi="${group}"><h2 class="accordion-header"><button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#${cId}"><i class="fa-solid ${groupIcon} me-2" style="opacity:0.6"></i><span class="fw-bold">${groupLabel}</span></button></h2><div id="${cId}" class="accordion-collapse collapse show"><div class="accordion-body p-0">${sub}</div></div></div>`;
         }
         $('#sidebarAccordion').html(accordionHtml);
 
         // Inject "Cài đặt hệ thống" vào group Hệ thống
-        $('#sidebarAccordion .accordion-body').each(function() {
-          const btn = $(this).closest('.accordion-item').find('.accordion-button span').text();
-          if (btn.trim().toLowerCase() === 'hệ thống') {
-            $(this).append('<a href="#" class="menu-sub-link" onclick="loadView(\'CaiDat_HeThong\', \'Cài đặt hệ thống\')"><i class="fa-solid fa-sliders me-2"></i>Cài đặt hệ thống</a>');
+        $('#sidebarAccordion .accordion-item').each(function() {
+          const grpVi = $(this).attr('data-group-vi');
+          if (grpVi && grpVi.trim().toLowerCase() === 'hệ thống') {
+            $(this).find('.accordion-body').append(`<a href="#" class="menu-sub-link" onclick="loadView('CaiDat_HeThong', '${t('menu_settings')}')"><i class="fa-solid fa-sliders me-2"></i>${t('menu_settings')}</a>`);
           }
         });
 
@@ -4165,7 +4534,7 @@
     }
 
     function renderBreadcrumb() {
-      let bc = '<div class="fsc-breadcrumb"><span class="breadcrumb-item" onclick="showDashboard()"><i class="fa-solid fa-house"></i> Home</span>';
+      let bc = `<div class="fsc-breadcrumb"><span class="breadcrumb-item" onclick="showDashboard()"><i class="fa-solid fa-house"></i> ${t('btn_home')}</span>`;
       navHistory.forEach((item, index) => {
         bc += `<span class="breadcrumb-separator">/</span>`;
         let t = item.title;
@@ -4195,7 +4564,7 @@
 
     function handleRowClick(sheetName, rowJson) {
       const rowData = JSON.parse(decodeURIComponent(rowJson));
-      let title = rowData['Tên ban quản lý'] || rowData['Tên nhóm'] || rowData['Họ tên chủ rừng'] || rowData['Mã số lô 2024'] || rowData['Họ và tên'] || 'Chi tiết';
+      let title = rowData['Tên ban quản lý'] || rowData['Tên nhóm'] || rowData['Họ tên chủ rừng'] || rowData['Mã số lô 2024'] || rowData['Họ và tên'] || t('detail_title');
 
       // Chế độ xem chi tiết mặc định
       navHistory.push({ mode: 'DETAIL', viewName: sheetName, title: title, rowData: rowData });
@@ -4233,7 +4602,7 @@
 
       let html = `
           <div class="d-flex justify-content-between align-items-center mb-2 p-2 bg-white rounded-3 shadow-sm border-start border-4 border-success">
-            <div><h6 class="fw-bold text-success m-0">${d['Tên nhóm'] || d['Họ tên chủ rừng'] || d['Mã số lô 2024'] || d['Họ và tên'] || 'Chi tiết'}</h6><div class="text-muted small">ID: ${d[Object.keys(d)[0]]}</div></div>
+            <div><h6 class="fw-bold text-success m-0">${d['Tên nhóm'] || d['Họ tên chủ rừng'] || d['Mã số lô 2024'] || d['Họ và tên'] || t('detail_title')}</h6><div class="text-muted small">ID: ${d[Object.keys(d)[0]]}</div></div>
             <div>
               ${canEdit ? `<button class="btn btn-outline-primary btn-sm me-1" onclick="openModal('UPDATE', '${sheetName}', '${rowJson}')"><i class="fa-solid fa-pen"></i></button>` : ''}
               ${canDelete ? `<button class="btn btn-outline-danger btn-sm" onclick="deleteRow('${sheetName}', '${rowJson}')"><i class="fa-solid fa-trash"></i></button>` : ''}
@@ -4243,32 +4612,32 @@
       // ACTION BUTTONS AT TOP (before data) - Ông-Cha-Con-Cháu hierarchy
       if (sheetName === 'Ban_Quanlynhom') {
         html += `<div class="d-flex gap-1 mb-2 flex-nowrap detail-action-bar">
-          <button class="btn btn-success btn-sm fw-bold shadow-sm flex-fill" onclick="loadViewWithFilter('NhomCCR', 'ID ban quản lý', '${d['ID ban quản lý']}', 'Nhóm thuộc ${d['Tên ban quản lý']}')"><i class="fa-solid fa-layer-group me-1"></i> Nhóm</button>
+          <button class="btn btn-success btn-sm fw-bold shadow-sm flex-fill" onclick="loadViewWithFilter('NhomCCR', 'ID ban quản lý', '${d['ID ban quản lý']}', 'Nhóm thuộc ${d['Tên ban quản lý']}')"><i class="fa-solid fa-layer-group me-1"></i> ${t('dd_nhom')}</button>
         </div>`;
       } else if (sheetName === 'NhomCCR') {
         const safeItem = JSON.stringify(d).replace(/"/g, '&quot;');
         html += `<div class="d-flex gap-1 mb-2 flex-nowrap detail-action-bar">
-          <button class="btn btn-success btn-sm fw-bold shadow-sm flex-fill" onclick="loadViewWithFilter('Churung', 'ID nhóm', '${d['ID nhóm']}', 'Hộ dân thuộc ${d['Tên nhóm']}')"><i class="fa-solid fa-users me-1"></i> Hộ dân</button>
-          <button class="btn btn-primary btn-sm fw-bold shadow-sm flex-fill" onclick="showTargetHistory(${safeItem}, 'NhomCCR')"><i class="fa-solid fa-clipboard-check me-1"></i> Đánh giá</button>
+          <button class="btn btn-success btn-sm fw-bold shadow-sm flex-fill" onclick="loadViewWithFilter('Churung', 'ID nhóm', '${d['ID nhóm']}', 'Hộ dân thuộc ${d['Tên nhóm']}')"><i class="fa-solid fa-users me-1"></i> ${t('dd_hodan')}</button>
+          <button class="btn btn-primary btn-sm fw-bold shadow-sm flex-fill" onclick="showTargetHistory(${safeItem}, 'NhomCCR')"><i class="fa-solid fa-clipboard-check me-1"></i> ${t('dd_danhgia')}</button>
         </div>`;
       } else if (sheetName === 'Churung') {
         html += `<div class="d-flex gap-1 mb-2 flex-nowrap detail-action-bar">
-          <button class="btn btn-success btn-sm fw-bold shadow-sm flex-fill" onclick="loadViewWithFilter('Lo_rung', 'ID chủ rừng', '${d['ID chủ rừng']}', 'Lô rừng của ${d['Họ tên chủ rừng']}')"><i class="fa-solid fa-map-location-dot me-1"></i> Lô rừng</button>
-          <button class="btn btn-primary btn-sm fw-bold shadow-sm flex-fill" onclick="loadViewWithFilter('Taphuan', 'ID chủ rừng', '${d['ID chủ rừng']}', 'Tập huấn của ${d['Họ tên chủ rừng']}')"><i class="fa-solid fa-graduation-cap me-1"></i> Tập huấn</button>
+          <button class="btn btn-success btn-sm fw-bold shadow-sm flex-fill" onclick="loadViewWithFilter('Lo_rung', 'ID chủ rừng', '${d['ID chủ rừng']}', 'Lô rừng của ${d['Họ tên chủ rừng']}')"><i class="fa-solid fa-map-location-dot me-1"></i> ${t('dd_lorung')}</button>
+          <button class="btn btn-primary btn-sm fw-bold shadow-sm flex-fill" onclick="loadViewWithFilter('Taphuan', 'ID chủ rừng', '${d['ID chủ rừng']}', 'Tập huấn của ${d['Họ tên chủ rừng']}')"><i class="fa-solid fa-graduation-cap me-1"></i> ${t('dd_taphuan')}</button>
         </div>`;
       } else if (sheetName === 'Lo_rung') {
         html += `<div class="d-flex gap-1 mb-2 flex-nowrap detail-action-bar">
-          <button class="btn btn-success btn-sm fw-bold shadow-sm flex-fill" onclick="showOnMap('${d['ID lô rừng']}')"><i class="fa-solid fa-map me-1"></i> Bản đồ</button>
-          <button class="btn btn-warning btn-sm fw-bold shadow-sm flex-fill" onclick="loadViewWithFilter('HD_Lorung', 'ID lô rừng', '${d['ID lô rừng']}', 'Hoạt động lô ${d['Mã số lô 2024']}')"><i class="fa-solid fa-clipboard-list me-1"></i> Báo cáo</button>
-          <button class="btn btn-danger btn-sm fw-bold shadow-sm flex-fill" onclick="loadViewWithFilter('KH_QL_Lorung', 'ID lô rừng', '${d['ID lô rừng']}', 'Kế hoạch lô ${d['Mã số lô 2024']}')"><i class="fa-solid fa-calendar-check me-1"></i> Kế hoạch</button>
-          <button class="btn btn-primary btn-sm fw-bold shadow-sm flex-fill" onclick="loadViewWithFilter('Biendong_lorung', 'ID lô rừng', '${d['ID lô rừng']}', 'Giám sát lô ${d['Mã số lô 2024']}')"><i class="fa-solid fa-chart-line me-1"></i> Giám sát</button>
+          <button class="btn btn-success btn-sm fw-bold shadow-sm flex-fill" onclick="showOnMap('${d['ID lô rừng']}')"><i class="fa-solid fa-map me-1"></i> ${t('dd_bando')}</button>
+          <button class="btn btn-warning btn-sm fw-bold shadow-sm flex-fill" onclick="loadViewWithFilter('HD_Lorung', 'ID lô rừng', '${d['ID lô rừng']}', 'Hoạt động lô ${d['Mã số lô 2024']}')"><i class="fa-solid fa-clipboard-list me-1"></i> ${t('dd_baocao')}</button>
+          <button class="btn btn-danger btn-sm fw-bold shadow-sm flex-fill" onclick="loadViewWithFilter('KH_QL_Lorung', 'ID lô rừng', '${d['ID lô rừng']}', 'Kế hoạch lô ${d['Mã số lô 2024']}')"><i class="fa-solid fa-calendar-check me-1"></i> ${t('dd_kehoach')}</button>
+          <button class="btn btn-primary btn-sm fw-bold shadow-sm flex-fill" onclick="loadViewWithFilter('Biendong_lorung', 'ID lô rừng', '${d['ID lô rừng']}', 'Giám sát lô ${d['Mã số lô 2024']}')"><i class="fa-solid fa-chart-line me-1"></i> ${t('dd_giamsat')}</button>
         </div>`;
       } else if (sheetName === 'NhanSu') {
         const isAdmin = currentUser && (String(currentUser['Chức vụ']).toLowerCase().includes('admin'));
         const isPending = d['Trạng thái'] === 'Pending';
         if (isAdmin && isPending) {
           html += `<div class="d-flex gap-1 mb-2 detail-action-bar">
-            <button class="btn btn-success btn-sm fw-bold shadow-sm flex-fill" onclick="approveMember('${d['ID_staff']}')"><i class="fa-solid fa-check-circle me-1"></i> Phê duyệt</button>
+            <button class="btn btn-success btn-sm fw-bold shadow-sm flex-fill" onclick="approveMember('${d['ID_staff']}')"><i class="fa-solid fa-check-circle me-1"></i> ${t('dd_pheduyet')}</button>
           </div>`;
         }
       }
@@ -4285,7 +4654,7 @@
           <div class="col-md-4 mb-2">
             <div class="d-flex justify-content-between align-items-center mb-1">
                <label class="text-muted small fw-bold m-0">${k}</label>
-               <div class="form-check form-switch" title="Hiện ở bảng danh sách">
+               <div class="form-check form-switch" title="${t('detail_show_table')}">
                  <input class="form-check-input" type="checkbox" style="width: 1.5em; height: 0.8em;" ${isVisible ? 'checked' : ''} onclick="toggleColumnVisibility('${sheetName}', '${k}')">
                </div>
             </div>
@@ -4301,7 +4670,7 @@
     function openModal(action, sheetName, rowJson = null) {
       currentAction = action;
       currentSheetTarget = (sheetName === 'PhanQuyen') ? 'NhanSu' : sheetName;
-      $('#modalTitle').text(action === 'CREATE' ? 'Thêm mới' : 'Cập nhật');
+      $('#modalTitle').text(action === 'CREATE' ? t('modal_add') : t('modal_update'));
       const form = $('#dynamic-form'); form.empty();
 
       let columns = TABLE_CONFIG[sheetName] ? TABLE_CONFIG[sheetName].columns : (APP_DATA[sheetName] && APP_DATA[sheetName][0] ? Object.keys(APP_DATA[sheetName][0]) : []);
@@ -4480,7 +4849,7 @@
     }
 
     async function deleteRow(sheetName, rowJson) {
-      if (!confirm('Chắc chắn muốn xóa dòng này?')) return;
+      if (!confirm(t('confirm_delete'))) return;
       const rowData = JSON.parse(decodeURIComponent(rowJson));
       const idCol = Object.keys(rowData)[0];
       const idVal = rowData[idCol];
@@ -4566,7 +4935,7 @@
       if (context.filter) displayData = displayData.filter(row => String(row[context.filter.key]) === String(context.filter.value));
 
       const canAdd = hasPermission(sheetName, 'Thêm');
-      const addBtn = canAdd ? `<button class="btn btn-light btn-sm text-success fw-bold rounded-pill px-3 shadow-sm" onclick="openModal('CREATE', '${sheetName}')"><i class="fa-solid fa-plus"></i> Thêm mới</button>` : '';
+      const addBtn = canAdd ? `<button class="btn btn-light btn-sm text-success fw-bold rounded-pill px-3 shadow-sm" onclick="openModal('CREATE', '${sheetName}')"><i class="fa-solid fa-plus"></i> ${t('btn_add')}</button>` : '';
 
       if (!displayData || !displayData.length) {
         $('#page-content-dynamic').html(`
@@ -4629,27 +4998,27 @@
 
     // === SMART SEARCH ===
     const SEARCH_TABLES = {
-      'Ban_Quanlynhom': { title: 'Ban quản lý nhóm', icon: 'fa-building', viewName: 'Ban_Quanly', displayCols: ['Tên ban quản lý','Địa chỉ','Người đại diện'] },
-      'NhomCCR': { title: 'Nhóm CCR', icon: 'fa-users', viewName: 'DS_NhomCCR', displayCols: ['Tên nhóm','Mã nhóm','Người đại diện','Địa chỉ'] },
-      'Churung': { title: 'Chủ rừng', icon: 'fa-user', viewName: 'Churung', displayCols: ['Họ tên chủ rừng','Số điện thoại','Xã','Thôn'] },
-      'Lo_rung': { title: 'Lô rừng', icon: 'fa-tree', viewName: 'Lo_rung', displayCols: ['Tên lô rừng','ID lô rừng','Loài cây trồng chính','Trạng thái'] },
-      'NhanSu': { title: 'Nhân sự', icon: 'fa-id-badge', viewName: 'Nhan_Su', displayCols: ['Họ và tên','Email','Chức vụ'] },
-      'Taphuan': { title: 'Tập huấn', icon: 'fa-chalkboard-teacher', viewName: 'Taphuan', displayCols: ['Loại tập huấn','Ngày tập huấn','Giảng viên'] },
-      'DG_noibo': { title: 'Đánh giá nội bộ', icon: 'fa-clipboard-check', viewName: 'DG_noibo', displayCols: ['ID','ID nhóm','Date','Staff'] }
+      'Ban_Quanlynhom': { titleKey: 'st_ban_ql', icon: 'fa-building', viewName: 'Ban_Quanly', displayCols: ['Tên ban quản lý','Địa chỉ','Người đại diện'] },
+      'NhomCCR': { titleKey: 'st_nhom', icon: 'fa-users', viewName: 'DS_NhomCCR', displayCols: ['Tên nhóm','Mã nhóm','Người đại diện','Địa chỉ'] },
+      'Churung': { titleKey: 'st_churung', icon: 'fa-user', viewName: 'Churung', displayCols: ['Họ tên chủ rừng','Số điện thoại','Xã','Thôn'] },
+      'Lo_rung': { titleKey: 'st_lorung', icon: 'fa-tree', viewName: 'Lo_rung', displayCols: ['Tên lô rừng','ID lô rừng','Loài cây trồng chính','Trạng thái'] },
+      'NhanSu': { titleKey: 'st_nhansu', icon: 'fa-id-badge', viewName: 'Nhan_Su', displayCols: ['Họ và tên','Email','Chức vụ'] },
+      'Taphuan': { titleKey: 'st_taphuan', icon: 'fa-chalkboard-teacher', viewName: 'Taphuan', displayCols: ['Loại tập huấn','Ngày tập huấn','Giảng viên'] },
+      'DG_noibo': { titleKey: 'st_danhgia', icon: 'fa-clipboard-check', viewName: 'DG_noibo', displayCols: ['ID','ID nhóm','Date','Staff'] }
     };
 
     const APP_FUNCTIONS = [
-      { label: 'Bản đồ GIS', icon: 'fa-map-location-dot', action: "loadView('BanDo','Bản đồ')" },
-      { label: 'Đánh giá nội bộ', icon: 'fa-clipboard-check', action: "loadView('DG_noibo','Đánh giá nội bộ')" },
-      { label: 'Cài đặt hệ thống', icon: 'fa-sliders', action: "loadView('CaiDat_HeThong','Cài đặt hệ thống')" },
-      { label: 'Quản lý nhân sự', icon: 'fa-id-badge', action: "loadView('Nhan_Su','Nhân sự')" },
-      { label: 'Tập huấn', icon: 'fa-chalkboard-teacher', action: "loadView('Taphuan','Tập huấn')" },
-      { label: 'Kho bản đồ GeoJSON', icon: 'fa-database', action: "loadView('BanDo','Bản đồ');setTimeout(()=>openGeoJSONRepo&&openGeoJSONRepo(),500)" },
-      { label: 'Báo cáo', icon: 'fa-chart-pie', action: "openMenuGroup('Báo cáo')" },
-      { label: 'Quản lý lô rừng', icon: 'fa-tree', action: "loadView('Lo_rung','Lô rừng')" },
-      { label: 'Quản lý chủ rừng', icon: 'fa-user', action: "loadView('Churung','Chủ rừng')" },
-      { label: 'Danh sách nhóm CCR', icon: 'fa-users', action: "loadView('DS_NhomCCR','Nhóm CCR')" },
-      { label: 'Ban quản lý nhóm', icon: 'fa-building', action: "loadView('Ban_Quanly','Ban quản lý nhóm')" }
+      { labelKey: 'fn_gis_map', icon: 'fa-map-location-dot', action: "loadView('BanDo','Bản đồ')" },
+      { labelKey: 'fn_internal_audit', icon: 'fa-clipboard-check', action: "loadView('DG_noibo','Đánh giá nội bộ')" },
+      { labelKey: 'fn_settings', icon: 'fa-sliders', action: "loadView('CaiDat_HeThong','Cài đặt hệ thống')" },
+      { labelKey: 'fn_staff_mgmt', icon: 'fa-id-badge', action: "loadView('Nhan_Su','Nhân sự')" },
+      { labelKey: 'fn_training', icon: 'fa-chalkboard-teacher', action: "loadView('Taphuan','Tập huấn')" },
+      { labelKey: 'fn_geo_repo', icon: 'fa-database', action: "loadView('BanDo','Bản đồ');setTimeout(()=>openGeoJSONRepo&&openGeoJSONRepo(),500)" },
+      { labelKey: 'fn_reports', icon: 'fa-chart-pie', action: "openMenuGroup('Báo cáo')" },
+      { labelKey: 'fn_plot_mgmt', icon: 'fa-tree', action: "loadView('Lo_rung','Lô rừng')" },
+      { labelKey: 'fn_owner_mgmt', icon: 'fa-user', action: "loadView('Churung','Chủ rừng')" },
+      { labelKey: 'fn_ccr_groups', icon: 'fa-users', action: "loadView('DS_NhomCCR','Nhóm CCR')" },
+      { labelKey: 'fn_mgmt_board', icon: 'fa-building', action: "loadView('Ban_Quanly','Ban quản lý nhóm')" }
     ];
 
     let searchDebounce = null;
@@ -4673,7 +5042,7 @@
         return txt.includes(q);
       });
       if (menuMatches.length) {
-        html += `<div class="px-3 py-1 bg-light border-bottom"><small class="fw-bold text-muted"><i class="fa-solid fa-bars me-1"></i>Menu</small></div>`;
+        html += `<div class="px-3 py-1 bg-light border-bottom"><small class="fw-bold text-muted"><i class="fa-solid fa-bars me-1"></i>${t('search_menu')}</small></div>`;
         menuMatches.slice(0, 5).forEach(m => {
           const v = (m['View'] || '').replace(/'/g, "\\'");
           const mod = m['Module'] || '';
@@ -4686,12 +5055,12 @@
       }
 
       // 2. Search app functions
-      const funcMatches = APP_FUNCTIONS.filter(f => f.label.toLowerCase().includes(q));
+      const funcMatches = APP_FUNCTIONS.filter(f => t(f.labelKey).toLowerCase().includes(q));
       if (funcMatches.length) {
-        html += `<div class="px-3 py-1 bg-light border-bottom"><small class="fw-bold text-muted"><i class="fa-solid fa-bolt me-1"></i>Chức năng</small></div>`;
+        html += `<div class="px-3 py-1 bg-light border-bottom"><small class="fw-bold text-muted"><i class="fa-solid fa-bolt me-1"></i>${t('search_functions')}</small></div>`;
         funcMatches.slice(0, 5).forEach(f => {
           html += `<a href="#" class="d-block px-3 py-2 text-decoration-none border-bottom search-result-item" onclick="$('#smart-search-results').addClass('d-none');$('#smart-search-input').val('');${f.action};return false">
-            <div class="fw-semibold text-dark" style="font-size:13px"><i class="fa-solid ${f.icon} me-2 text-success"></i>${highlightMatch(f.label, q)}</div></a>`;
+            <div class="fw-semibold text-dark" style="font-size:13px"><i class="fa-solid ${f.icon} me-2 text-success"></i>${highlightMatch(t(f.labelKey), q)}</div></a>`;
           totalResults++;
         });
       }
@@ -4708,20 +5077,21 @@
           if (allVals.some(v => v.includes(q))) matches.push(row);
         }
         if (matches.length) {
-          html += `<div class="px-3 py-1 bg-light border-bottom"><small class="fw-bold text-muted"><i class="fa-solid ${cfg.icon} me-1"></i>${cfg.title}</small></div>`;
+          const cfgTitle = t(cfg.titleKey);
+          html += `<div class="px-3 py-1 bg-light border-bottom"><small class="fw-bold text-muted"><i class="fa-solid ${cfg.icon} me-1"></i>${cfgTitle}</small></div>`;
           matches.forEach(row => {
             const mainVal = cfg.displayCols.map(c => row[c]).filter(Boolean).join(' - ');
             const realView = cfg.viewName;
-            html += `<a href="#" class="d-block px-3 py-2 text-decoration-none border-bottom search-result-item" onclick="$('#smart-search-results').addClass('d-none');$('#smart-search-input').val('');loadView('${realView}','${cfg.title.replace(/'/g,"\\'")}');return false">
+            html += `<a href="#" class="d-block px-3 py-2 text-decoration-none border-bottom search-result-item" onclick="$('#smart-search-results').addClass('d-none');$('#smart-search-input').val('');loadView('${realView}','${cfgTitle.replace(/'/g,"\\'")}');return false">
               <div class="fw-semibold text-dark" style="font-size:13px">${highlightMatch(mainVal, q)}</div>
-              <small class="text-muted">${cfg.title}</small></a>`;
+              <small class="text-muted">${cfgTitle}</small></a>`;
             totalResults++;
           });
         }
       }
 
       if (!totalResults) {
-        html = `<div class="px-3 py-3 text-center text-muted"><i class="fa-solid fa-search me-2"></i>Không tìm thấy kết quả cho "<b>${q}</b>"</div>`;
+        html = `<div class="px-3 py-3 text-center text-muted"><i class="fa-solid fa-search me-2"></i>${t('no_results')} "<b>${q}</b>"</div>`;
       }
 
       $r.html(html).removeClass('d-none');
