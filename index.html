@@ -7137,6 +7137,7 @@ ${gsRecord['Đề xuất'] ? `<div class="proposal-box"><h4>${t('mon_proposal')}
     function renderMonDrillDown(current) {
       const container = $('#page-content-dynamic');
       container.empty();
+      _selectedMonType = (_monTypeFilter && _monTypeFilter.length) ? _monTypeFilter[0] : null;
       const plots = APP_DATA['Lo_rung'] || [];
       const groups = APP_DATA['NhomCCR'] || [];
       const owners = APP_DATA['Churung'] || [];
@@ -7169,7 +7170,22 @@ ${gsRecord['Đề xuất'] ? `<div class="proposal-box"><h4>${t('mon_proposal')}
       const totalPlots = sorted.reduce((s, [, g]) => s + g.plotCount, 0);
       const totalArea = sorted.reduce((s, [, g]) => s + g.area, 0);
 
-      let html = `<div class="table-responsive"><table class="table table-sm table-hover small mb-0" id="monDrillTable">
+      // Build type selector if multiple monitoring types
+      const types = _monTypeFilter || [];
+      let typeSelectorHtml = '';
+      if (types.length > 1) {
+        const opts = types.map((tk, i) => {
+          const info = MONITORING_TYPES[tk] || {};
+          return `<button class="btn btn-sm fw-bold ${i === 0 ? 'text-white' : 'btn-outline-secondary'}" style="${i === 0 ? 'background:' + (info.color || '#666') : ''}" data-mon-type="${tk}" onclick="selectMonType(this,'${tk}')">
+            <i class="fas ${info.icon || 'fa-circle'} me-1"></i>${tmt(tk)}
+          </button>`;
+        }).join('');
+        typeSelectorHtml = `<div class="d-flex gap-2 flex-wrap mb-3 align-items-center">
+          <span class="fw-bold text-muted small">Loại giám sát:</span>${opts}
+        </div>`;
+      }
+
+      let html = typeSelectorHtml + `<div class="table-responsive"><table class="table table-sm table-hover small mb-0" id="monDrillTable">
         <thead class="table-success"><tr>
           <th style="width:30px">#</th><th>Mã nhóm</th><th>Tên nhóm</th>
           <th class="text-end">Số hộ</th><th class="text-end">Số lô</th><th class="text-end">DT (ha)</th>
@@ -7246,10 +7262,26 @@ ${gsRecord['Đề xuất'] ? `<div class="proposal-box"><h4>${t('mon_proposal')}
       });
     }
 
+    let _selectedMonType = null; // Currently selected monitoring sub-type
+
+    window.selectMonType = function(btn, typeKey) {
+      _selectedMonType = typeKey;
+      // Update button styles
+      $(btn).closest('.d-flex').find('button[data-mon-type]').each(function() {
+        const tk = $(this).data('mon-type');
+        const info = MONITORING_TYPES[tk] || {};
+        if (tk === typeKey) {
+          $(this).removeClass('btn-outline-secondary').addClass('text-white').css('background', info.color || '#666');
+        } else {
+          $(this).addClass('btn-outline-secondary').removeClass('text-white').css('background', '');
+        }
+      });
+    };
+
     window.monStartFromPlot = function(plotId) {
       const typeFilter = _monTypeFilter;
       if (!typeFilter || !typeFilter.length) return;
-      const typeKey = typeFilter[0];
+      const typeKey = _selectedMonType && typeFilter.includes(_selectedMonType) ? _selectedMonType : typeFilter[0];
       const plots = APP_DATA['Lo_rung'] || [];
       const p = plots.find(x => String(x['ID lô rừng']) === String(plotId));
       const targetName = p ? (p['Mã số lô rừng'] || p['Tên lô rừng'] || plotId) : plotId;
