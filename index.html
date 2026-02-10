@@ -1279,7 +1279,8 @@
         kpi_fsc_area: 'Tổng DT FSC (ha)',
         kpi_ha_per_ho: 'ha/hộ',
         kpi_ha_per_farm: 'TB ha/lô rừng',
-        kpi_harvest: 'SL khai thác (xe)',
+        kpi_harvest_actual: 'DT khai thác (ha)',
+        kpi_harvest_plan: 'DT KT kế hoạch (ha)',
         kpi_plant: 'DT trồng rừng (ha)',
         kpi_hlvs: 'DT HLVS (ha)',
         chart_area: 'Phân bổ diện tích',
@@ -1623,7 +1624,8 @@
         kpi_fsc_area: 'FSC Area (ha)',
         kpi_ha_per_ho: 'ha/household',
         kpi_ha_per_farm: 'Avg ha/plot',
-        kpi_harvest: 'Harvest (loads)',
+        kpi_harvest_actual: 'Harvest (ha)',
+        kpi_harvest_plan: 'Harvest plan (ha)',
         kpi_plant: 'Planted (ha)',
         kpi_hlvs: 'Riparian (ha)',
         chart_area: 'Area Distribution',
@@ -1974,6 +1976,8 @@
       'Loại phân bón':'Fertilizer Type','Định lượng phân bón':'Fertilizer Amount',
       'Kiểm soát dịch bệnh':'Pest Control','Tình hình sâu bệnh':'Pest Situation',
       'Thuốc sử dụng':'Pesticides Used','Phòng cháy chữa cháy':'Fire Prevention',
+      'Thời gian khai thác':'Harvest Time','Địa danh':'Locality','Số hiệu lô':'Plot Number',
+      'Kinh độ':'Longitude','Vĩ độ':'Latitude','Tên tỉnh':'Province','Tên huyện':'District','Tên xã':'Commune','Tên xã mới':'New Commune',
       // Section headers in Lo_rung
       '2. Thông tin địa lý – pháp lý':'2. Geographic & Legal Info',
       '3. Thông tin pháp lý – sở hữu – ổn định':'3. Legal & Ownership Info',
@@ -2395,7 +2399,11 @@
         cuoc_ho_bang_may:'Cuốc hố bằng máy', bon_phan:'Bón phân', loai_phan_bon:'Loại phân bón',
         dinh_luong_phan_bon:'Định lượng phân bón', kiem_soat_dich_benh:'Kiểm soát dịch bệnh',
         tinh_hinh_sau_benh:'Tình hình sâu bệnh', thuoc_su_dung:'Thuốc sử dụng',
-        phong_chay_chua_chay:'Phòng cháy chữa cháy'
+        phong_chay_chua_chay:'Phòng cháy chữa cháy',
+        thoi_gian_khai_thac:'Thời gian khai thác',
+        dia_danh:'Địa danh', so_hieu_lo:'Số hiệu lô',
+        kinh_do:'Kinh độ', vi_do:'Vĩ độ',
+        ten_tinh:'Tên tỉnh', ten_huyen:'Tên huyện', ten_xa:'Tên xã', ten_xa_moi:'Tên xã mới'
       }},
       'Taphuan': { table: 'tap_huan', cols: {
         id:'ID tập huấn', id_chu_rung:'ID chủ rừng', loai_tap_huan:'Loại tập huấn',
@@ -2564,8 +2572,10 @@
       'Lo_rung': {
         columns: [
           'ID nhóm', 'ID chủ rừng', 'ID lô rừng', 'Mã số lô rừng', 'Mã số lô 2023', 'QR code', 'Tên lô rừng',
-          '2. Thông tin địa lý – pháp lý', 'Số sổ đỏ', 'Tờ bản đồ', 'Thửa đất', 'Tiểu khu', 'Khoảnh',
-          'Tọa độ tâm lô', 'Khoảng cách tới nhà', 'Địa chỉ lô', '3. Thông tin pháp lý – sở hữu – ổn định',
+          '2. Thông tin địa lý – pháp lý', 'Số sổ đỏ', 'Tờ bản đồ', 'Thửa đất', 'Tiểu khu', 'Khoảnh', 'Số hiệu lô',
+          'Tọa độ tâm lô', 'Kinh độ', 'Vĩ độ', 'Khoảng cách tới nhà', 'Địa chỉ lô',
+          'Địa danh', 'Tên tỉnh', 'Tên huyện', 'Tên xã', 'Tên xã mới',
+          '3. Thông tin pháp lý – sở hữu – ổn định',
           'Tình trạng sổ đỏ', 'Ngày tham gia FSC', 'Tình trạng xói mòn', 'Nguyên nhân xói mòn',
           'Mốc ranh giới', 'Độ bền vững mốc ranh', 'Trạng thái', '4. Đặc điểm sinh thái – địa hình',
           'Độ dốc bình quân', 'Giáp ranh rừng tự nhiên', 'Có loài cây bản địa', 'Tên động vật thực vật quý',
@@ -2575,7 +2585,7 @@
           'Số cây trồng dặm', 'Tổng diện tích', 'Diện tích GCN QSDĐ', 'Diện tích trồng rừng',
           'Diện tích FSC', 'Diện tích ngoài FSC', 'Diện tích vùng đệm', 'Diện tích rừng tự nhiên',
           'Diện tích HLVS', 'Có ao hồ', '8. Thời gian – chu kỳ – sản lượng', 'Thời điểm trồng',
-          'Năm trồng', 'Số năm khai thác', 'Năm khai thác', 'Sản lượng khai thác xe',
+          'Năm trồng', 'Số năm khai thác', 'Năm khai thác', 'Thời gian khai thác', 'Sản lượng khai thác xe',
           'Sản lượng khai thác đăm', '9. Lao động – an toàn – thiết bị', 'Có thuê lao động',
           'Phương tiện bảo hộ lao động', 'Loại phương tiện BHLD', '10. Biện pháp kỹ thuật lâm sinh',
           'Kỹ thuật trước trồng', 'Kỹ thuật chăm sóc', 'Cuốc hố bằng máy', 'Bón phân', 'Loại phân bón',
@@ -3140,28 +3150,37 @@
 
       const plots = APP_DATA['Lo_rung'];
       const groups = APP_DATA['NhomCCR'];
+      const owners = APP_DATA['Churung'] || [];
       const safeFloat = v => parseFloat(String(v || '0').replace(/,/g, '')) || 0;
+      const currentYear = new Date().getFullYear();
 
+      // Aggregate lo_rung → chu_rung (owner level)
+      owners.forEach(owner => {
+        const ownerId = owner['ID chủ rừng'];
+        const ownerPlots = plots.filter(p => p['ID chủ rừng'] === ownerId);
+        owner['Tổng diện tích'] = ownerPlots.reduce((s, p) => s + safeFloat(p['Tổng diện tích']), 0).toFixed(2);
+        owner['Diện tích FSC'] = ownerPlots.reduce((s, p) => s + safeFloat(p['Diện tích FSC']), 0).toFixed(2);
+        owner['Diện tích HLVS'] = ownerPlots.reduce((s, p) => s + safeFloat(p['Diện tích HLVS']), 0).toFixed(2);
+        owner['Số lô rừng'] = ownerPlots.length;
+      });
+
+      // Aggregate lo_rung → nhom_ccr (group level)
       groups.forEach(group => {
         const groupID = group['ID nhóm'];
         const groupPlots = plots.filter(p => p['ID nhóm'] === groupID);
 
-        // Đếm distinct chủ rừng
         const distinctOwners = new Set(groupPlots.map(p => p['ID chủ rừng']).filter(Boolean));
         group['Số thành viên'] = distinctOwners.size;
+        group['Số lô rừng'] = groupPlots.length;
 
-        // Tổng diện tích
         group['Tổng diện tích'] = groupPlots.reduce((s, p) => s + safeFloat(p['Tổng diện tích']), 0).toFixed(2);
-
-        // Diện tích FSC
         group['Diện tích FSC'] = groupPlots.reduce((s, p) => s + safeFloat(p['Diện tích FSC']), 0).toFixed(2);
-
-        // Bonus: cũng tính thêm các trường khác nếu cần cho aggregateManagementBoardData
+        group['Diện tích HLVS'] = groupPlots.reduce((s, p) => s + safeFloat(p['Diện tích HLVS']), 0).toFixed(2);
         group['Diện tích rừng tự nhiên'] = groupPlots.reduce((s, p) => s + safeFloat(p['Diện tích rừng tự nhiên']), 0).toFixed(2);
         group['Diện tích vùng đệm'] = groupPlots.reduce((s, p) => s + safeFloat(p['Diện tích vùng đệm']), 0).toFixed(2);
       });
 
-      console.log("Group stats computed:", groups.length, "groups updated");
+      console.log("Group stats computed:", groups.length, "groups,", owners.length, "owners updated");
     }
 
     $(document).ready(function () {
@@ -3790,10 +3809,33 @@
       const tongDTFSC = plots.reduce((s, p) => s + safeFloat(p['Diện tích FSC']), 0);
       const haPerHo = soHo > 0 ? (tongDTFSC / soHo).toFixed(2) : 0;
       const haPerFarm = soFarm > 0 ? (tongDTFSC / soFarm).toFixed(2) : 0;
-      const dtKhaiThac = plots.reduce((s, p) => s + safeFloat(p['Sản lượng khai thác xe']), 0);
-      const dtTrongRung = plots.reduce((s, p) => s + safeFloat(p['Diện tích trồng rừng']), 0);
       const dtHLVS = plots.reduce((s, p) => s + safeFloat(p['Diện tích HLVS']), 0);
       const tongDT = plots.reduce((s, p) => s + safeFloat(p['Tổng diện tích']), 0);
+
+      // KPI: Harvest calculations based on Thời gian khai thác
+      const currentYear = new Date().getFullYear();
+      const prevYear = currentYear - 1;
+
+      // DT khai thác thực tế: plots with harvest time in current year
+      const dtKhaiThacTT = plots.reduce((s, p) => {
+        const tgkt = p['Thời gian khai thác'] || '';
+        if (tgkt && tgkt.includes('/' + currentYear)) return s + safeFloat(p['Tổng diện tích']);
+        return s;
+      }, 0);
+
+      // DT trồng rừng: plots harvested T11-T12 of previous year (replanted current year)
+      const dtTrongRung = plots.reduce((s, p) => {
+        const tgkt = p['Thời gian khai thác'] || '';
+        if (tgkt === 'T11/' + prevYear || tgkt === 'T12/' + prevYear) return s + safeFloat(p['Tổng diện tích']);
+        return s;
+      }, 0);
+
+      // DT khai thác kế hoạch: plots with age > 5 years (nam_trong + 5 < currentYear)
+      const dtKTKeHoach = plots.reduce((s, p) => {
+        const yr = parseInt(p['Năm trồng']);
+        if (yr && (currentYear - yr) > 5) return s + safeFloat(p['Tổng diện tích']);
+        return s;
+      }, 0);
 
       // Main menu icon cards (Hệ thống moved to header bar)
       const mainMenus = [
@@ -3843,14 +3885,15 @@
 
         <!-- KPIs -->
         <h6 class="fw-bold text-secondary mb-2"><i class="fa-solid fa-chart-line me-2"></i>${t('kpi_title')}</h6>
-        <div class="row row-cols-4 row-cols-md-8 g-1 g-md-2 mb-2 kpi-grid">
+        <div class="row row-cols-3 row-cols-md-9 g-1 g-md-2 mb-2 kpi-grid">
           <div class="col"><div class="kpi-card h-100"><div class="kpi-value">${soHo}</div><div class="kpi-label">${t('kpi_households')}</div></div></div>
           <div class="col"><div class="kpi-card blue h-100"><div class="kpi-value">${soFarm}</div><div class="kpi-label">${t('kpi_plots')}</div></div></div>
           <div class="col"><div class="kpi-card h-100"><div class="kpi-value">${tongDTFSC.toFixed(1)}</div><div class="kpi-label">${t('kpi_fsc_area')}</div></div></div>
           <div class="col"><div class="kpi-card orange h-100"><div class="kpi-value">${haPerHo}</div><div class="kpi-label">${t('kpi_ha_per_ho')}</div></div></div>
           <div class="col"><div class="kpi-card blue h-100"><div class="kpi-value">${haPerFarm}</div><div class="kpi-label">${t('kpi_ha_per_farm')}</div></div></div>
-          <div class="col"><div class="kpi-card orange h-100"><div class="kpi-value">${dtKhaiThac.toFixed(1)}</div><div class="kpi-label">${t('kpi_harvest')}</div></div></div>
+          <div class="col"><div class="kpi-card orange h-100"><div class="kpi-value">${dtKhaiThacTT.toFixed(1)}</div><div class="kpi-label">${t('kpi_harvest_actual')}</div></div></div>
           <div class="col"><div class="kpi-card purple h-100"><div class="kpi-value">${dtTrongRung.toFixed(1)}</div><div class="kpi-label">${t('kpi_plant')}</div></div></div>
+          <div class="col"><div class="kpi-card blue h-100"><div class="kpi-value">${dtKTKeHoach.toFixed(1)}</div><div class="kpi-label">${t('kpi_harvest_plan')}</div></div></div>
           <div class="col"><div class="kpi-card h-100"><div class="kpi-value">${dtHLVS.toFixed(1)}</div><div class="kpi-label">${t('kpi_hlvs')}</div></div></div>
         </div>
 
@@ -3897,27 +3940,37 @@
       $('#dashboard-view').html(html);
 
       // Render charts after DOM is ready
-      setTimeout(() => renderDashboardCharts(groups, plots, tongDT, tongDTFSC, dtTrongRung, dtHLVS), 200);
+      setTimeout(() => renderDashboardCharts(groups, plots, tongDT, tongDTFSC, dtTrongRung, dtHLVS, dtKhaiThacTT, dtKTKeHoach), 200);
     }
 
     let chartInstances = {};
     let chartDataStore = {};
 
-    function renderDashboardCharts(groups, plots, tongDT, tongDTFSC, dtTrongRung, dtHLVS) {
+    function renderDashboardCharts(groups, plots, tongDT, tongDTFSC, dtTrongRung, dtHLVS, dtKhaiThacTT, dtKTKeHoach) {
       const safeFloat = v => parseFloat(String(v || 0).replace(/,/g, '')) || 0;
 
-      // Store chart data for later type switching
+      // Area comparison chart: FSC, non-FSC, HLVS, harvest actual, harvest plan
       const dtNgoaiFSC = Math.max(0, tongDT - tongDTFSC - dtHLVS);
       chartDataStore.area = {
-        labels: [t('chart_fsc_area'), t('chart_non_fsc'), t('chart_riparian'), t('chart_planted')],
-        values: [tongDTFSC.toFixed(1), dtNgoaiFSC.toFixed(1), dtHLVS.toFixed(1), dtTrongRung.toFixed(1)],
-        colors: ['#1B5E20', '#43A047', '#81C784', '#C8E6C9']
+        labels: [t('chart_fsc_area'), t('chart_non_fsc'), t('chart_riparian'),
+                 t('kpi_harvest_actual'), t('kpi_harvest_plan'), t('kpi_plant')],
+        values: [tongDTFSC.toFixed(1), dtNgoaiFSC.toFixed(1), dtHLVS.toFixed(1),
+                 (dtKhaiThacTT || 0).toFixed(1), (dtKTKeHoach || 0).toFixed(1), dtTrongRung.toFixed(1)],
+        colors: ['#1B5E20', '#43A047', '#81C784', '#FF8F00', '#0277BD', '#7B1FA2']
       };
 
-      const labels = groups.map(g => g['Tên nhóm'] || g['Mã nhóm'] || g['ID nhóm']);
-      const members = groups.map(g => safeFloat(g['Số thành viên']));
-      const areas = groups.map(g => safeFloat(g['Tổng diện tích']));
-      chartDataStore.groups = { labels, members, areas };
+      // Groups chart: sort by area descending
+      const groupData = groups.map(g => ({
+        label: g['Tên nhóm'] || g['Mã nhóm'] || g['ID nhóm'],
+        members: safeFloat(g['Số thành viên']),
+        area: safeFloat(g['Tổng diện tích'])
+      })).sort((a, b) => b.area - a.area);
+
+      chartDataStore.groups = {
+        labels: groupData.map(g => g.label),
+        members: groupData.map(g => g.members),
+        areas: groupData.map(g => g.area)
+      };
 
       buildChart('area', 'doughnut');
       buildChart('groups', 'bar');
@@ -4525,19 +4578,30 @@
       const markerLayer = L.layerGroup();
 
       loRungData.forEach(lr => {
-        const coords = lr['Tọa độ tâm lô'];
-        if (!coords) return;
-        const parts = String(coords).split(',').map(s => parseFloat(s.trim()));
-        if (parts.length === 2 && !isNaN(parts[0]) && !isNaN(parts[1])) {
-          const marker = L.marker([parts[0], parts[1]])
-            .bindPopup(`
-              <strong>${lr['Tên lô rừng'] || lr['Mã số lô rừng'] || 'Lô rừng'}</strong><br>
-              ID: ${lr['ID lô rừng']}<br>
-              Diện tích: ${lr['Tổng diện tích'] || '?'} ha
-              <br><button class="btn btn-sm btn-outline-success mt-1" onclick="viewLoRungFromMap('${lr['ID lô rừng']}')">Xem chi tiết</button>
-            `);
-          markerLayer.addLayer(marker);
+        // Use separate kinh_do/vi_do fields first, fallback to toa_do_tam_lo
+        let lat, lng;
+        const kd = parseFloat(lr['Kinh độ']);
+        const vd = parseFloat(lr['Vĩ độ']);
+        if (!isNaN(vd) && !isNaN(kd)) {
+          lat = vd; lng = kd;
+        } else {
+          const coords = lr['Tọa độ tâm lô'];
+          if (!coords) return;
+          const parts = String(coords).split(',').map(s => parseFloat(s.trim()));
+          if (parts.length !== 2 || isNaN(parts[0]) || isNaN(parts[1])) return;
+          lat = parts[0]; lng = parts[1];
         }
+
+        const marker = L.circleMarker([lat, lng], {
+          radius: 3, fillColor: '#1B5E20', fillOpacity: 0.8,
+          color: '#fff', weight: 1, opacity: 0.9
+        }).bindPopup(`
+          <strong>${lr['Mã số lô rừng'] || lr['Tên lô rừng'] || 'Lô rừng'}</strong><br>
+          ${lr['Địa danh'] ? 'Địa danh: ' + lr['Địa danh'] + '<br>' : ''}
+          Diện tích: ${lr['Tổng diện tích'] || '?'} ha
+          <br><button class="btn btn-sm btn-outline-success mt-1" onclick="viewLoRungFromMap('${lr['ID lô rừng']}')">Xem chi tiết</button>
+        `);
+        markerLayer.addLayer(marker);
       });
 
       markerLayer.addTo(mapInstance);
@@ -4806,27 +4870,68 @@
         console.log(`Loading ${data.length} polygons from lo_rung_geojson...`);
         const loRungData = APP_DATA['Lo_rung'] || [];
         const churungData = APP_DATA['Churung'] || [];
+
+        // Build lookup maps for fast matching
         const ownerMap = {};
         churungData.forEach(cr => { ownerMap[cr['ID chủ rừng']] = cr['Họ tên chủ rừng'] || ''; });
+        const loRungById = {};
+        const loRungByPlotCode = {};
+        loRungData.forEach(lr => {
+          loRungById[String(lr['ID lô rừng'])] = lr;
+          const code = lr['Mã số lô rừng'];
+          if (code) loRungByPlotCode[String(code).trim()] = lr;
+        });
 
+        // Batch all features into a single FeatureCollection for performance
+        const features = [];
+        const featureMeta = [];
         data.forEach(row => {
           if (!row.geojson) return;
-          const layer = L.geoJSON(row.geojson, {
-            style: { color: '#FFFF00', weight: 2, fillColor: '#2E7D32', fillOpacity: 0.15 }
-          });
-          layer.eachLayer(l => { l.loRungId = row.id_lo_rung; });
-          const lr = loRungData.find(r => String(r['ID lô rừng']) === String(row.id_lo_rung));
-          const ownerName = lr ? (ownerMap[lr['ID chủ rừng']] || '') : '';
-          const plotName = lr ? (lr['Mã số lô rừng'] || lr['Tên lô rừng'] || row.id_lo_rung) : row.id_lo_rung;
-          layer.bindPopup(`<div class="small">
-            <strong>${plotName}</strong><br>
-            ${ownerName ? 'Chủ rừng: ' + ownerName + '<br>' : ''}
-            Diện tích: ${lr ? (lr['Tổng diện tích'] || '?') : '?'} ha<br>
-            <button class="btn btn-sm btn-outline-success mt-1" onclick="viewLoRungFromMap('${row.id_lo_rung}')">Xem chi tiết</button>
-          </div>`);
-          mapDrawnItems.addLayer(layer);
+          const geo = row.geojson;
+          // Link by id_lo_rung first, then by plot code from GeoJSON properties
+          let lr = loRungById[String(row.id_lo_rung)];
+          if (!lr && geo.properties) {
+            const plotCode = geo.properties['Mã số lô rừng'];
+            if (plotCode) lr = loRungByPlotCode[String(plotCode).trim()];
+          }
+          // Store feature with metadata
+          if (geo.type === 'Feature') {
+            geo.properties = geo.properties || {};
+            geo.properties._loRungId = row.id_lo_rung;
+            geo.properties._linked = !!lr;
+            if (lr) {
+              geo.properties._plotName = lr['Mã số lô rừng'] || lr['Tên lô rừng'] || row.id_lo_rung;
+              geo.properties._ownerName = ownerMap[lr['ID chủ rừng']] || '';
+              geo.properties._area = lr['Tổng diện tích'] || '?';
+              geo.properties._diaDanh = lr['Địa danh'] || '';
+            } else {
+              geo.properties._plotName = row.id_lo_rung;
+              geo.properties._ownerName = '';
+              geo.properties._area = '?';
+              geo.properties._diaDanh = '';
+            }
+            features.push(geo);
+          }
         });
-        console.log(`Loaded ${data.length} polygons.`);
+
+        // Create single GeoJSON layer from all features
+        const fc = { type: 'FeatureCollection', features };
+        const geoLayer = L.geoJSON(fc, {
+          style: { color: '#FFFF00', weight: 1.5, fillColor: '#2E7D32', fillOpacity: 0.12 },
+          onEachFeature: function(feature, layer) {
+            const p = feature.properties;
+            layer.loRungId = p._loRungId;
+            layer.bindPopup(`<div class="small">
+              <strong>${p._plotName}</strong><br>
+              ${p._ownerName ? 'Chủ rừng: ' + p._ownerName + '<br>' : ''}
+              ${p._diaDanh ? 'Địa danh: ' + p._diaDanh + '<br>' : ''}
+              Diện tích: ${p._area} ha<br>
+              <button class="btn btn-sm btn-outline-success mt-1" onclick="viewLoRungFromMap('${p._loRungId}')">Xem chi tiết</button>
+            </div>`);
+            mapDrawnItems.addLayer(layer);
+          }
+        });
+        console.log(`Loaded ${features.length} polygons as single FeatureCollection.`);
       } catch (e) {
         console.error('Load stored GeoJSON error:', e);
       }
