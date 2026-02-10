@@ -8,7 +8,7 @@
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <link rel="manifest" href="manifest.json">
-  <title>Hệ thống Quản lý Rừng FSC</title>
+  <title>Nhóm hộ CCR Nam Phát - Định Hoá</title>
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@300;400;500;600;700&display=swap"
@@ -955,6 +955,22 @@
       }
     }
 
+    /* Plot label tooltips on map */
+    .plot-label {
+      background: transparent !important;
+      border: none !important;
+      box-shadow: none !important;
+      font-size: 8px !important;
+      line-height: 1.2 !important;
+      color: #1a1a1a;
+      font-weight: 600;
+      text-align: center;
+      white-space: nowrap;
+      text-shadow: 1px 1px 2px #fff, -1px -1px 2px #fff, 1px -1px 2px #fff, -1px 1px 2px #fff;
+      padding: 0 !important;
+    }
+    .plot-label::before { display: none !important; }
+
     /* Handbook content styles */
     .handbook-content { font-size: 15px; line-height: 1.7; color: #333; padding: 10px 0; }
     .handbook-content h1 { color: #1b5e20; font-size: 1.5rem; font-weight: 800; border-bottom: 3px solid #a5d6a7; padding-bottom: 8px; margin: 28px 0 14px; }
@@ -1115,10 +1131,7 @@
           <div id="map-view" class="d-none">
             <div class="map-toolbar d-flex align-items-center justify-content-between flex-wrap gap-2">
               <div>
-                <button type="button" class="btn btn-outline-success btn-sm" onclick="navigateBack()">
-                  <i class="fa-solid fa-arrow-left me-1"></i> <span data-i18n="btn_back">Quay lại</span>
-                </button>
-                <span class="fw-bold text-success ms-2" data-i18n="map_title">Bản đồ quản lý lô rừng</span>
+                <span class="fw-bold text-success" data-i18n="map_title">Bản đồ quản lý lô rừng</span>
               </div>
               <div class="d-flex gap-2 flex-wrap">
                 <label class="btn btn-outline-success btn-sm mb-0">
@@ -1229,8 +1242,8 @@
     const LANG = {
       vi: {
         // Login screen
-        login_title: 'Hệ thống Quản lý Rừng FSC',
-        login_subtitle: 'Forest Stewardship Council',
+        login_title: 'Nhóm hộ CCR Nam Phát - Định Hoá',
+        login_subtitle: 'Quản lý Rừng bền vững FSC',
         ph_email_user: 'Email hoặc Username',
         ph_password: 'Mật khẩu',
         ph_fullname: 'Họ tên đầy đủ',
@@ -1358,6 +1371,29 @@
         grp_system: 'Hệ thống',
         grp_report: 'Báo cáo',
         grp_other: 'Khác',
+        grp_consultation: 'Tham vấn các bên liên quan',
+        // Consultation Report
+        rpt_title: 'Báo cáo phân tích tham vấn',
+        rpt_select_session: 'Chọn đợt tham vấn',
+        rpt_generate: 'Tạo báo cáo',
+        rpt_export_pdf: 'Xuất PDF',
+        rpt_overview: 'Tổng quan',
+        rpt_response_rate: 'Tỉ lệ phản hồi',
+        rpt_strengths: 'Điểm mạnh / Thuận lợi',
+        rpt_weaknesses: 'Điểm yếu / Khó khăn',
+        rpt_objective: 'Yếu tố khách quan',
+        rpt_subjective: 'Yếu tố chủ quan',
+        rpt_hcv_analysis: 'Phân tích Giá trị bảo tồn cao',
+        rpt_recommendations: 'Kiến nghị và đề xuất',
+        rpt_conclusion: 'Kết luận',
+        rpt_no_data: 'Chưa có dữ liệu phản hồi cho đợt tham vấn này.',
+        rpt_rating_analysis: 'Phân tích đánh giá hoạt động QLRBV',
+        rpt_respondents: 'người phản hồi',
+        rpt_of_total: 'trên tổng số',
+        rpt_stakeholders: 'bên liên quan',
+        rpt_positive_pct: 'Tỉ lệ đánh giá tích cực',
+        rpt_negative_pct: 'Tỉ lệ đánh giá tiêu cực',
+        rpt_opinions: 'Ý kiến và quan điểm',
 
         // Mobile nav bar
         nav_menu: 'Menu',
@@ -1670,6 +1706,29 @@
         grp_system: 'System',
         grp_report: 'Reports',
         grp_other: 'Other',
+        grp_consultation: 'Stakeholder Consultation',
+        // Consultation Report
+        rpt_title: 'Consultation Analysis Report',
+        rpt_select_session: 'Select consultation session',
+        rpt_generate: 'Generate report',
+        rpt_export_pdf: 'Export PDF',
+        rpt_overview: 'Overview',
+        rpt_response_rate: 'Response rate',
+        rpt_strengths: 'Strengths / Advantages',
+        rpt_weaknesses: 'Weaknesses / Challenges',
+        rpt_objective: 'Objective factors',
+        rpt_subjective: 'Subjective factors',
+        rpt_hcv_analysis: 'High Conservation Value Analysis',
+        rpt_recommendations: 'Recommendations',
+        rpt_conclusion: 'Conclusion',
+        rpt_no_data: 'No response data for this consultation session.',
+        rpt_rating_analysis: 'Forest Management Activity Evaluation',
+        rpt_respondents: 'respondents',
+        rpt_of_total: 'out of',
+        rpt_stakeholders: 'stakeholders',
+        rpt_positive_pct: 'Positive evaluation rate',
+        rpt_negative_pct: 'Negative evaluation rate',
+        rpt_opinions: 'Opinions and viewpoints',
 
         nav_menu: 'Menu',
         nav_home: 'Home',
@@ -2181,6 +2240,7 @@
       'Kế hoạch hoạt động':'Activity Plan','Đánh giá nội bộ':'Internal Audit',
       'Hoạt động giám sát':'Monitoring Activities','Thực hiện giám sát':'Execute Monitoring','Kế hoạch giám sát':'Monitoring Plan','Quản lý hồ sơ':'Records Management',
       'Bộ tiêu chuẩn FSC':'FSC Standards','Tham vấn các bên liên quan':'Stakeholder Consultation',
+      'Danh sách bên liên quan':'Stakeholder List','Thực hiện tham vấn':'Conduct Consultation','Báo cáo tham vấn':'Consultation Report',
       'Tổng hợp báo cáo':'Report Summary','Bản đồ quản lý lô rừng':'Forest Plot Map',
       'Kế hoạch quản lý lô rừng':'Plot Management Plan','Kế hoạch khai thác':'Harvesting Plan',
       'Kế hoạch trồng rừng':'Reforestation Plan',
@@ -2946,7 +3006,8 @@
       'GS_KhaiThac': 'NhomCCR',
       'GS_MoiTruong': 'NhomCCR',
       'DS_BenLienQuan': 'BenLienQuan',
-      'ThucHien_ThamVan': 'DotThamVan'
+      'ThucHien_ThamVan': 'DotThamVan',
+      'BaoCao_ThamVan': 'DotThamVan'
     };
 
     // === SUPABASE DATA LOADING ===
@@ -3052,6 +3113,42 @@
       console.log("Aggregation complete.");
     }
 
+    /**
+     * Tính toán thống kê nhóm CCR từ dữ liệu Lô rừng
+     * - Số thành viên: đếm distinct ID chủ rừng trong nhóm
+     * - Tổng diện tích: tổng diện tích tất cả lô trong nhóm
+     * - Diện tích FSC: tổng diện tích FSC tất cả lô trong nhóm
+     */
+    function computeGroupStats() {
+      if (!APP_DATA['NhomCCR'] || !APP_DATA['Lo_rung']) return;
+      console.log("Computing group stats from Lo_rung...");
+
+      const plots = APP_DATA['Lo_rung'];
+      const groups = APP_DATA['NhomCCR'];
+      const safeFloat = v => parseFloat(String(v || '0').replace(/,/g, '')) || 0;
+
+      groups.forEach(group => {
+        const groupID = group['ID nhóm'];
+        const groupPlots = plots.filter(p => p['ID nhóm'] === groupID);
+
+        // Đếm distinct chủ rừng
+        const distinctOwners = new Set(groupPlots.map(p => p['ID chủ rừng']).filter(Boolean));
+        group['Số thành viên'] = distinctOwners.size;
+
+        // Tổng diện tích
+        group['Tổng diện tích'] = groupPlots.reduce((s, p) => s + safeFloat(p['Tổng diện tích']), 0).toFixed(2);
+
+        // Diện tích FSC
+        group['Diện tích FSC'] = groupPlots.reduce((s, p) => s + safeFloat(p['Diện tích FSC']), 0).toFixed(2);
+
+        // Bonus: cũng tính thêm các trường khác nếu cần cho aggregateManagementBoardData
+        group['Diện tích rừng tự nhiên'] = groupPlots.reduce((s, p) => s + safeFloat(p['Diện tích rừng tự nhiên']), 0).toFixed(2);
+        group['Diện tích vùng đệm'] = groupPlots.reduce((s, p) => s + safeFloat(p['Diện tích vùng đệm']), 0).toFixed(2);
+      });
+
+      console.log("Group stats computed:", groups.length, "groups updated");
+    }
+
     $(document).ready(function () {
       $("#sidebarToggle").click(function (e) {
         e.preventDefault();
@@ -3129,6 +3226,7 @@
         $('#user-display-name').text(currentUser['Họ và tên'] || currentUser['Email'] || 'User');
 
         if (APP_DATA && APP_DATA['Menu']) {
+          computeGroupStats(); // TÍNH TOÁN THỐNG KÊ NHÓM TỪ LÔ RỪNG
           aggregateManagementBoardData(); // TỔNG HỢP DỮ LIỆU
           renderSystemMenu(APP_DATA['Menu']);
         } else {
@@ -3312,7 +3410,7 @@
     // SETTINGS MODULE
     // ============================================================
     const DEFAULT_SETTINGS = {
-      projectName: 'HỆ THỐNG QUẢN LÝ RỪNG BỀN VỮNG FSC',
+      projectName: 'Nhóm hộ CCR Nam Phát - Định Hoá',
       fontFamily: 'Be Vietnam Pro',
       titleAlign: 'center',
       logoUrl: '',
@@ -3682,14 +3780,13 @@
       const dtHLVS = plots.reduce((s, p) => s + safeFloat(p['Diện tích HLVS']), 0);
       const tongDT = plots.reduce((s, p) => s + safeFloat(p['Tổng diện tích']), 0);
 
-      // 6 Main menu icon cards
+      // Main menu icon cards (Hệ thống moved to header bar)
       const mainMenus = [
         { icon: 'fa-users-between-lines', labelKey: 'menu_group_mgmt', color: '#1B5E20', group: 'Quản lý nhóm' },
         { icon: 'fa-tree', labelKey: 'menu_forest_mgmt', color: '#1B5E20', group: 'Quản lý rừng bền vững' },
         { icon: 'fa-binoculars', labelKey: 'menu_monitoring', color: '#0277BD', group: 'Giám sát' },
         { icon: 'fa-cart-shopping', labelKey: 'menu_trade', color: '#1B5E20', group: 'Mua bán sản phẩm' },
         { icon: 'fa-book-open', labelKey: 'menu_docs', color: '#1B5E20', group: 'Tài liệu tham khảo' },
-        { icon: 'fa-gears', labelKey: 'menu_system', color: '#1B5E20', group: 'Hệ thống' },
         { icon: 'fa-chart-pie', labelKey: 'menu_report', color: '#1B5E20', group: 'Báo cáo' }
       ];
 
@@ -3699,6 +3796,9 @@
           <div class="me-auto">
             <h5 class="fw-bold mb-0" style="color:var(--forest-primary)"><i class="fa-solid fa-gauge-high me-2"></i>${t('dashboard_title')}</h5>
           </div>
+          <button class="btn btn-sm btn-outline-secondary rounded-pill px-2 me-1" onclick="openMenuGroup('Hệ thống')" style="font-size:11px;font-weight:600">
+            <i class="fa-solid fa-gears me-1"></i>${t('menu_system')}
+          </button>
           <button class="btn btn-sm btn-outline-success rounded-pill px-2" onclick="toggleLang()" style="font-size:11px;font-weight:600" id="lang-toggle-dash">
             <i class="fa-solid fa-globe me-1"></i><span id="lang-label-dash">${nextLang}</span>
           </button>
@@ -3931,30 +4031,49 @@
       ];
       const parent = mainMenus.find(m => m.label === groupName) || { color: '#2E7D32', icon: 'fa-folder' };
 
-      // Build sub-menu cards
-      let cards = items.map(i => {
-        const v = (i['View'] || '').replace(/'/g, "\\'");
-        const m = (i['Module'] || '').replace(/'/g, "\\'");
+      // Sub-group definitions: items to separate into sub-sections
+      const SUB_GROUPS = {
+        'Quản lý rừng bền vững': [
+          { views: ['DS_BenLienQuan', 'ThucHien_ThamVan', 'BaoCao_ThamVan'], labelKey: 'grp_consultation', icon: 'fa-comments' }
+        ]
+      };
+
+      const buildCard = (v, m, color) => {
         const subIcon = getSubMenuIcon(m);
-        return `
-          <div class="col">
-            <div class="submenu-card" onclick="goHome();loadView('${v}','${m}')" style="border-top: 3px solid ${parent.color}">
-              <div class="submenu-icon" style="background: ${parent.color}"><i class="fa-solid ${subIcon}"></i></div>
-              <div class="submenu-label">${tm(i['Module'])}</div>
-            </div>
-          </div>`;
-      }).join('');
+        return `<div class="col">
+          <div class="submenu-card" onclick="goHome();loadView('${v.replace(/'/g, "\\'")}','${m.replace(/'/g, "\\'")}')" style="border-top: 3px solid ${color}">
+            <div class="submenu-icon" style="background: ${color}"><i class="fa-solid ${subIcon}"></i></div>
+            <div class="submenu-label">${tm(m)}</div>
+          </div>
+        </div>`;
+      };
+
+      // Separate items into main and sub-groups
+      const subGroupDef = SUB_GROUPS[groupName] || [];
+      const subGroupViews = new Set(subGroupDef.flatMap(sg => sg.views));
+      const mainItems = items.filter(i => !subGroupViews.has(i['View']));
+      const subGroupItems = subGroupDef.map(sg => ({
+        ...sg,
+        items: items.filter(i => sg.views.includes(i['View']))
+      }));
+
+      // Build main cards
+      let cards = mainItems.map(i => buildCard(i['View'] || '', i['Module'] || '', parent.color)).join('');
 
       // Inject "Cài đặt hệ thống" if group is Hệ thống
       if (groupName === 'Hệ thống') {
-        cards += `
-          <div class="col">
-            <div class="submenu-card" onclick="goHome();loadView('CaiDat_HeThong','Cài đặt hệ thống')" style="border-top: 3px solid ${parent.color}">
-              <div class="submenu-icon" style="background: ${parent.color}"><i class="fa-solid fa-sliders"></i></div>
-              <div class="submenu-label">${tm('Cài đặt hệ thống')}</div>
-            </div>
-          </div>`;
+        cards += buildCard('CaiDat_HeThong', 'Cài đặt hệ thống', parent.color);
       }
+
+      // Build sub-group sections
+      let subGroupHtml = '';
+      subGroupItems.forEach(sg => {
+        if (sg.items.length === 0) return;
+        const sgCards = sg.items.map(i => buildCard(i['View'] || '', i['Module'] || '', parent.color)).join('');
+        subGroupHtml += `
+          <h6 class="fw-bold mt-4 mb-2" style="color:${parent.color}"><i class="fa-solid ${sg.icon} me-2"></i>${t(sg.labelKey)}</h6>
+          <div class="row row-cols-2 row-cols-md-4 g-3">${sgCards}</div>`;
+      });
 
       // Translate group heading
       const GRP_I18N = {
@@ -3972,6 +4091,7 @@
             <h5 class="fw-bold mb-0" style="color:${parent.color}"><i class="fa-solid ${parent.icon} me-2"></i>${groupLabel}</h5>
           </div>
           <div class="row row-cols-2 row-cols-md-4 g-3">${cards}</div>
+          ${subGroupHtml}
         </div>`;
 
       $('#dashboard-view').html(html);
@@ -4149,6 +4269,12 @@
         return;
       }
 
+      // Xử lý View đặc biệt: Báo cáo tham vấn
+      if (current.viewName === 'BaoCao_ThamVan') {
+        renderConsultationReport();
+        return;
+      }
+
       // Xử lý View đặc biệt: Sổ tay QLRBV
       if (current.viewName === 'SoTay_QLRBV') {
         renderHandbookView();
@@ -4231,6 +4357,7 @@
     let mapDrawControl = null;
     let mapEditMode = false;
     let geoJsonNamedLayers = {}; // { layerName: L.FeatureGroup }
+    let mapPlotLabels = null; // L.LayerGroup for plot labels
 
     function renderMapView() {
       $('#page-content-dynamic').addClass('d-none');
@@ -4292,13 +4419,60 @@
         });
       });
 
+      mapPlotLabels = L.layerGroup().addTo(mapInstance);
+      mapLayers['Nhãn lô rừng'] = mapPlotLabels;
+
       loadLoRungMarkers();
       loadGeoJSONFromKho().then(() => {
         loadStoredGeoJSON().then(() => {
+          createPlotLabels();
           setTimeout(() => { zoomToAllData(); updateZoomLayerMenu(); }, 300);
         });
       });
       renderMapLayerPanel();
+    }
+
+    function createPlotLabels() {
+      if (!mapPlotLabels || !mapInstance) return;
+      mapPlotLabels.clearLayers();
+      const loRungData = APP_DATA['Lo_rung'] || [];
+      const churungData = APP_DATA['Churung'] || [];
+      // Build owner lookup: ID chủ rừng → Họ tên chủ rừng
+      const ownerMap = {};
+      churungData.forEach(cr => { ownerMap[cr['ID chủ rừng']] = cr['Họ tên chủ rừng'] || ''; });
+
+      mapDrawnItems.eachLayer(function(layer) {
+        if (!layer.getBounds && !layer.getLatLng) return;
+        const center = layer.getBounds ? layer.getBounds().getCenter() : layer.getLatLng();
+        let plotCode = '', ownerName = '', area = '';
+
+        // Try linked lo_rung data first
+        if (layer.loRungId) {
+          const lr = loRungData.find(r => String(r['ID lô rừng']) === String(layer.loRungId));
+          if (lr) {
+            plotCode = lr['Mã số lô 2024'] || '';
+            ownerName = ownerMap[lr['ID chủ rừng']] || '';
+            area = lr['Tổng diện tích'] || '';
+          }
+        }
+        // Fallback: try GeoJSON feature properties
+        if (!plotCode && layer.feature && layer.feature.properties) {
+          const p = layer.feature.properties;
+          plotCode = p['Mã số lô rừng'] || p['ma_so_lo'] || '';
+          ownerName = p['Tên chủ rừng'] || p['ten_chu_rung'] || '';
+          area = p['Diện tích'] || p['dien_tich'] || '';
+        }
+        if (!plotCode && !ownerName) return;
+
+        const labelText = [plotCode, ownerName, area ? area + ' ha' : ''].filter(Boolean).join('\n');
+        const tooltip = L.tooltip({
+          permanent: true,
+          direction: 'center',
+          className: 'plot-label',
+          offset: [0, 0]
+        }).setContent(labelText.replace(/\n/g, '<br>')).setLatLng(center);
+        mapPlotLabels.addLayer(tooltip);
+      });
     }
 
     function togglePolygonEdit() {
@@ -4443,6 +4617,7 @@
           }
           updateZoomLayerMenu();
           renderMapLayerPanel();
+          createPlotLabels();
 
           var msg = 'Tải GeoJSON thành công: "' + layerName + '" (v' + nextVersion + ')';
           if (linkedCount > 0) msg += '\nTự động liên kết ' + linkedCount + ' polygon với lô rừng.';
@@ -4783,7 +4958,7 @@
         html += `<label><input type="radio" name="map-basemap" ${checked} onchange="switchBasemap('${safeName}')" class="me-1"> ${name}</label>`;
       }
       html += '<hr class="my-2"><h6 class="fw-bold mb-2 small">Dữ liệu</h6>';
-      const dataLayers = ['Tâm lô rừng', 'Lô rừng (GeoJSON)', 'Ghi chú'];
+      const dataLayers = ['Tâm lô rừng', 'Lô rừng (GeoJSON)', 'Nhãn lô rừng', 'Ghi chú'];
       for (const name of dataLayers) {
         const layer = mapLayers[name];
         if (!layer) continue;
@@ -6523,7 +6698,7 @@
         });
       }
 
-      const projectName = 'HỆ THỐNG QUẢN LÝ RỪNG BỀN VỮNG FSC';
+      const projectName = getSettings().projectName;
 
       const printHTML = `<!DOCTYPE html>
 <html><head>
@@ -7163,6 +7338,299 @@ ${gsRecord['Đề xuất'] ? `<div class="proposal-box"><h4>${t('mon_proposal')}
 
       html += `</div></div>`;
       container.html(html);
+    }
+
+    // ============================================================
+    // === CONSULTATION REPORT (Báo cáo tham vấn) ===
+    // ============================================================
+
+    function renderConsultationReport() {
+      const container = $('#page-content-dynamic');
+      container.empty();
+      const sessions = APP_DATA['DotThamVan'] || [];
+
+      let html = `
+        <div class="card shadow border-0 rounded-4">
+          <div class="card-header bg-white border-0 pt-4 px-4">
+            <h5 class="fw-bold text-success mb-3"><i class="fas fa-chart-bar me-2"></i>${t('rpt_title')}</h5>
+            <div class="row align-items-end g-2 mb-2">
+              <div class="col-md-6">
+                <label class="form-label small fw-bold">${t('rpt_select_session')}</label>
+                <select class="form-select" id="rpt-session-select">
+                  <option value="">-- ${t('rpt_select_session')} --</option>
+                  ${sessions.map(s => `<option value="${s['ID']}">${s['Tên đợt']} (${s['Năm'] || ''})</option>`).join('')}
+                </select>
+              </div>
+              <div class="col-auto">
+                <button class="btn btn-success" onclick="generateConsultationReport()"><i class="fas fa-file-alt me-1"></i>${t('rpt_generate')}</button>
+              </div>
+              <div class="col-auto">
+                <button class="btn btn-outline-primary" onclick="exportConsultationReportPDF()" id="rpt-export-btn" disabled><i class="fas fa-file-pdf me-1"></i>${t('rpt_export_pdf')}</button>
+              </div>
+            </div>
+          </div>
+          <div class="card-body p-3" id="rpt-content">
+            <div class="text-center text-muted py-5"><i class="fas fa-chart-pie fa-3x mb-3 opacity-25"></i><p>${t('rpt_select_session')}</p></div>
+          </div>
+        </div>`;
+
+      container.html(html);
+    }
+
+    function generateConsultationReport() {
+      const idDot = $('#rpt-session-select').val();
+      if (!idDot) return;
+
+      const session = (APP_DATA['DotThamVan'] || []).find(s => s['ID'] === idDot);
+      const responses = (APP_DATA['PhanHoiThamVan'] || []).filter(r => r['ID đợt'] === idDot);
+      const stakeholders = APP_DATA['BenLienQuan'] || [];
+      const rptContainer = $('#rpt-content');
+
+      if (!session) return;
+
+      if (responses.length === 0) {
+        rptContainer.html(`<div class="alert alert-warning text-center"><i class="fas fa-exclamation-triangle me-2"></i>${t('rpt_no_data')}</div>`);
+        return;
+      }
+
+      const totalStakeholders = stakeholders.length;
+      const totalResponses = responses.length;
+      const responseRate = totalStakeholders > 0 ? ((totalResponses / totalStakeholders) * 100).toFixed(1) : 0;
+
+      // === Analyze rating questions ===
+      const ratingQs = CONSULTATION_DICTIONARY["B-I. Đánh giá hoạt động quản lý rừng"] || [];
+      const ratingStats = ratingQs.map(q => {
+        let good = 0, mod = 0, poor = 0;
+        responses.forEach(r => {
+          try {
+            const ans = r[q.id] ? (typeof r[q.id] === 'string' && r[q.id].startsWith('{') ? JSON.parse(r[q.id]) : { r: r[q.id] }) : null;
+            if (ans) {
+              if (ans.r === 'Tot') good++;
+              else if (ans.r === 'VuaPhai') mod++;
+              else if (ans.r === 'ChuaTot') poor++;
+            }
+          } catch(e) {}
+        });
+        const total = good + mod + poor;
+        return { ...q, good, mod, poor, total, goodPct: total > 0 ? (good / total * 100).toFixed(1) : 0, poorPct: total > 0 ? (poor / total * 100).toFixed(1) : 0 };
+      });
+
+      // Strengths: >60% Tốt
+      const strengths = ratingStats.filter(s => parseFloat(s.goodPct) >= 60);
+      // Weaknesses: >30% Chưa tốt or <40% Tốt
+      const weaknesses = ratingStats.filter(s => parseFloat(s.poorPct) >= 30 || parseFloat(s.goodPct) < 40);
+
+      // Overall positive/negative
+      const totalRatings = ratingStats.reduce((s, q) => s + q.total, 0);
+      const totalGood = ratingStats.reduce((s, q) => s + q.good, 0);
+      const totalPoor = ratingStats.reduce((s, q) => s + q.poor, 0);
+      const overallPositive = totalRatings > 0 ? (totalGood / totalRatings * 100).toFixed(1) : 0;
+      const overallNegative = totalRatings > 0 ? (totalPoor / totalRatings * 100).toFixed(1) : 0;
+
+      // === Analyze yes/no questions ===
+      const ynQs = CONSULTATION_DICTIONARY["C. Giá trị bảo tồn cao"] || [];
+      const ynStats = ynQs.map(q => {
+        let yes = 0, no = 0;
+        responses.forEach(r => {
+          try {
+            const ans = r[q.id] ? (typeof r[q.id] === 'string' && r[q.id].startsWith('{') ? JSON.parse(r[q.id]) : { r: r[q.id] }) : null;
+            if (ans) {
+              if (ans.r === 'Co') yes++;
+              else if (ans.r === 'Khong') no++;
+            }
+          } catch(e) {}
+        });
+        const total = yes + no;
+        return { ...q, yes, no, total, yesPct: total > 0 ? (yes / total * 100).toFixed(1) : 0 };
+      });
+
+      // === Collect text responses ===
+      const textQs = CONSULTATION_DICTIONARY["B-II. Vấn đề và kiến nghị"] || [];
+      const textResponses = textQs.map(q => {
+        const texts = [];
+        responses.forEach(r => {
+          try {
+            const ans = r[q.id] ? (typeof r[q.id] === 'string' && r[q.id].startsWith('{') ? JSON.parse(r[q.id]) : { r: r[q.id] }) : null;
+            if (ans && ans.r && ans.r !== '-') texts.push({ name: r['Người trả lời'] || 'Ẩn danh', text: ans.r });
+          } catch(e) {}
+        });
+        return { ...q, texts };
+      });
+
+      // === Build report HTML ===
+      let rpt = `<div id="rpt-printable">`;
+
+      // Header
+      rpt += `<div class="text-center mb-4 border-bottom pb-3">
+        <h4 class="fw-bold text-success">${t('rpt_title')}</h4>
+        <h5>${session['Tên đợt']} — ${session['Năm'] || ''}</h5>
+        <p class="text-muted small">${session['Nội dung giới thiệu'] || ''}</p>
+      </div>`;
+
+      // 1. Overview
+      rpt += `<h5 class="fw-bold text-success mb-3"><i class="fas fa-info-circle me-2"></i>1. ${t('rpt_overview')}</h5>`;
+      rpt += `<div class="row g-3 mb-4">
+        <div class="col-md-3"><div class="border rounded p-3 text-center"><div class="fs-2 fw-bold text-primary">${totalResponses}</div><div class="small text-muted">${t('rpt_respondents')}</div></div></div>
+        <div class="col-md-3"><div class="border rounded p-3 text-center"><div class="fs-2 fw-bold text-info">${totalStakeholders}</div><div class="small text-muted">${t('rpt_stakeholders')}</div></div></div>
+        <div class="col-md-3"><div class="border rounded p-3 text-center"><div class="fs-2 fw-bold text-success">${responseRate}%</div><div class="small text-muted">${t('rpt_response_rate')}</div></div></div>
+        <div class="col-md-3"><div class="border rounded p-3 text-center"><div class="fs-2 fw-bold text-warning">${overallPositive}%</div><div class="small text-muted">${t('rpt_positive_pct')}</div></div></div>
+      </div>`;
+
+      // 2. Rating analysis table
+      rpt += `<h5 class="fw-bold text-success mb-3"><i class="fas fa-poll me-2"></i>2. ${t('rpt_rating_analysis')}</h5>`;
+      rpt += `<div class="table-responsive mb-4"><table class="table table-sm table-bordered align-middle">
+        <thead class="table-success"><tr><th style="width:40px">#</th><th>${currentLang === 'vi' ? 'Tiêu chí đánh giá' : 'Evaluation Criteria'}</th>
+        <th class="text-center" style="width:80px">${t('con_good')}</th><th class="text-center" style="width:80px">${t('con_moderate')}</th><th class="text-center" style="width:80px">${t('con_poor')}</th>
+        <th class="text-center" style="width:100px">% ${t('con_good')}</th></tr></thead><tbody>`;
+      ratingStats.forEach((s, idx) => {
+        const barColor = parseFloat(s.goodPct) >= 60 ? '#4CAF50' : parseFloat(s.goodPct) >= 40 ? '#FF9800' : '#f44336';
+        rpt += `<tr>
+          <td>${idx + 1}</td><td class="small">${s.label}</td>
+          <td class="text-center fw-bold text-success">${s.good}</td>
+          <td class="text-center fw-bold text-warning">${s.mod}</td>
+          <td class="text-center fw-bold text-danger">${s.poor}</td>
+          <td><div class="d-flex align-items-center gap-1"><div class="progress flex-grow-1" style="height:16px"><div class="progress-bar" style="width:${s.goodPct}%;background:${barColor}">${s.goodPct}%</div></div></div></td>
+        </tr>`;
+      });
+      rpt += `</tbody></table></div>`;
+
+      // 3. Strengths
+      rpt += `<h5 class="fw-bold text-success mb-3"><i class="fas fa-thumbs-up me-2"></i>3. ${t('rpt_strengths')}</h5>`;
+      if (strengths.length > 0) {
+        rpt += `<div class="alert alert-success border-0 rounded-3"><ul class="mb-0">`;
+        strengths.forEach(s => {
+          rpt += `<li><strong>${s.label}</strong> — ${s.goodPct}% ${t('con_good')}</li>`;
+        });
+        rpt += `</ul></div>`;
+      } else {
+        rpt += `<p class="text-muted">${currentLang === 'vi' ? 'Chưa có tiêu chí nào đạt mức thuận lợi rõ ràng (>60% Tốt).' : 'No criteria clearly rated as favorable (>60% Good).'}</p>`;
+      }
+
+      // 4. Weaknesses
+      rpt += `<h5 class="fw-bold text-danger mb-3"><i class="fas fa-thumbs-down me-2"></i>4. ${t('rpt_weaknesses')}</h5>`;
+      if (weaknesses.length > 0) {
+        rpt += `<div class="alert alert-danger border-0 rounded-3"><ul class="mb-0">`;
+        weaknesses.forEach(s => {
+          rpt += `<li><strong>${s.label}</strong> — ${s.poorPct}% ${t('con_poor')}, ${s.goodPct}% ${t('con_good')}</li>`;
+        });
+        rpt += `</ul></div>`;
+      } else {
+        rpt += `<p class="text-muted">${currentLang === 'vi' ? 'Không có tiêu chí nào đánh giá tiêu cực đáng kể.' : 'No criteria with significant negative ratings.'}</p>`;
+      }
+
+      // 5. Objective/Subjective analysis
+      rpt += `<h5 class="fw-bold text-primary mb-3"><i class="fas fa-balance-scale me-2"></i>5. ${t('rpt_objective')} / ${t('rpt_subjective')}</h5>`;
+      rpt += `<div class="row g-3 mb-4">
+        <div class="col-md-6">
+          <div class="card border-info h-100">
+            <div class="card-header bg-info bg-opacity-10 fw-bold"><i class="fas fa-cloud-sun me-2"></i>${t('rpt_objective')}</div>
+            <div class="card-body small"><ul>
+              <li>${currentLang === 'vi' ? 'Điều kiện tự nhiên, khí hậu, địa hình ảnh hưởng đến hoạt động trồng rừng' : 'Natural conditions, climate, terrain affecting afforestation'}</li>
+              <li>${currentLang === 'vi' ? 'Chính sách pháp luật về lâm nghiệp và chứng chỉ rừng' : 'Forestry and forest certification legal policies'}</li>
+              <li>${currentLang === 'vi' ? 'Thị trường tiêu thụ sản phẩm gỗ rừng trồng' : 'Market conditions for planted forest timber products'}</li>
+              ${parseFloat(overallPositive) >= 60 ? `<li><strong class="text-success">${currentLang === 'vi' ? 'Kết quả đánh giá tích cực (' + overallPositive + '%) phản ánh môi trường quản lý thuận lợi' : 'Positive evaluation (' + overallPositive + '%) reflects favorable management environment'}</strong></li>` : ''}
+              ${parseFloat(overallNegative) >= 20 ? `<li><strong class="text-danger">${currentLang === 'vi' ? 'Tỉ lệ đánh giá tiêu cực (' + overallNegative + '%) cần xem xét các yếu tố ngoại cảnh' : 'Negative rate (' + overallNegative + '%) needs external factor review'}</strong></li>` : ''}
+            </ul></div>
+          </div>
+        </div>
+        <div class="col-md-6">
+          <div class="card border-warning h-100">
+            <div class="card-header bg-warning bg-opacity-10 fw-bold"><i class="fas fa-user-cog me-2"></i>${t('rpt_subjective')}</div>
+            <div class="card-body small"><ul>
+              <li>${currentLang === 'vi' ? 'Năng lực quản lý và điều hành của ban quản lý nhóm' : 'Management capacity of the group management board'}</li>
+              <li>${currentLang === 'vi' ? 'Nhận thức và cam kết của thành viên nhóm hộ' : 'Awareness and commitment of group members'}</li>
+              <li>${currentLang === 'vi' ? 'Hiệu quả của các hoạt động đào tạo, tập huấn' : 'Effectiveness of training activities'}</li>
+              ${strengths.length > 0 ? `<li><strong class="text-success">${currentLang === 'vi' ? strengths.length + ' tiêu chí đạt kết quả thuận lợi nhờ nỗ lực chủ quan' : strengths.length + ' criteria achieved favorable results through subjective efforts'}</strong></li>` : ''}
+              ${weaknesses.length > 0 ? `<li><strong class="text-warning">${currentLang === 'vi' ? weaknesses.length + ' tiêu chí cần cải thiện — cần tăng cường năng lực nội bộ' : weaknesses.length + ' criteria need improvement — internal capacity building needed'}</strong></li>` : ''}
+            </ul></div>
+          </div>
+        </div>
+      </div>`;
+
+      // 6. HCV Analysis
+      rpt += `<h5 class="fw-bold text-success mb-3"><i class="fas fa-shield-alt me-2"></i>6. ${t('rpt_hcv_analysis')}</h5>`;
+      rpt += `<div class="table-responsive mb-4"><table class="table table-sm table-bordered align-middle">
+        <thead class="table-success"><tr><th style="width:40px">#</th><th>${currentLang === 'vi' ? 'Tiêu chí' : 'Criteria'}</th>
+        <th class="text-center" style="width:80px">${t('con_yes')}</th><th class="text-center" style="width:80px">${t('con_no')}</th>
+        <th class="text-center" style="width:100px">% ${t('con_yes')}</th></tr></thead><tbody>`;
+      ynStats.forEach((s, idx) => {
+        rpt += `<tr><td>${idx + 1}</td><td class="small">${s.label}</td>
+          <td class="text-center fw-bold text-success">${s.yes}</td>
+          <td class="text-center fw-bold text-danger">${s.no}</td>
+          <td class="text-center"><span class="badge ${parseFloat(s.yesPct) >= 50 ? 'bg-success' : 'bg-secondary'}">${s.yesPct}%</span></td>
+        </tr>`;
+      });
+      rpt += `</tbody></table></div>`;
+
+      // 7. Text responses (opinions, recommendations)
+      rpt += `<h5 class="fw-bold text-success mb-3"><i class="fas fa-comment-dots me-2"></i>7. ${t('rpt_opinions')}</h5>`;
+      textResponses.forEach(q => {
+        if (q.texts.length === 0) return;
+        rpt += `<h6 class="fw-bold mt-3 mb-2">${q.label}</h6>`;
+        rpt += `<div class="list-group mb-3">`;
+        q.texts.forEach(tx => {
+          rpt += `<div class="list-group-item"><strong>${tx.name}:</strong> ${tx.text}</div>`;
+        });
+        rpt += `</div>`;
+      });
+
+      // 8. Conclusion
+      rpt += `<h5 class="fw-bold text-success mb-3"><i class="fas fa-flag-checkered me-2"></i>8. ${t('rpt_conclusion')}</h5>`;
+      rpt += `<div class="alert alert-light border rounded-3">`;
+      if (parseFloat(overallPositive) >= 70) {
+        rpt += `<p class="mb-2"><strong class="text-success"><i class="fas fa-check-circle me-1"></i>${currentLang === 'vi'
+          ? 'Kết quả tham vấn cho thấy hoạt động quản lý rừng bền vững được đánh giá TÍCH CỰC với tỉ lệ ' + overallPositive + '% đánh giá tốt.'
+          : 'Consultation results show forest management activities are rated POSITIVELY with ' + overallPositive + '% good ratings.'}</strong></p>`;
+      } else if (parseFloat(overallPositive) >= 50) {
+        rpt += `<p class="mb-2"><strong class="text-warning"><i class="fas fa-exclamation-circle me-1"></i>${currentLang === 'vi'
+          ? 'Kết quả tham vấn ở mức TRUNG BÌNH với ' + overallPositive + '% đánh giá tốt. Cần cải thiện một số tiêu chí.'
+          : 'Consultation results are MODERATE with ' + overallPositive + '% good ratings. Some criteria need improvement.'}</strong></p>`;
+      } else {
+        rpt += `<p class="mb-2"><strong class="text-danger"><i class="fas fa-times-circle me-1"></i>${currentLang === 'vi'
+          ? 'Kết quả tham vấn CẦN CẢI THIỆN ĐÁNG KỂ. Chỉ có ' + overallPositive + '% đánh giá tốt.'
+          : 'Consultation results NEED SIGNIFICANT IMPROVEMENT. Only ' + overallPositive + '% good ratings.'}</strong></p>`;
+      }
+
+      rpt += `<ul class="mb-0">
+        <li>${currentLang === 'vi' ? 'Tổng số phản hồi: ' + totalResponses + ' / ' + totalStakeholders + ' bên liên quan (' + responseRate + '%)' : 'Total responses: ' + totalResponses + ' / ' + totalStakeholders + ' stakeholders (' + responseRate + '%)'}</li>
+        <li>${currentLang === 'vi' ? 'Điểm mạnh: ' + strengths.length + ' tiêu chí' : 'Strengths: ' + strengths.length + ' criteria'}</li>
+        <li>${currentLang === 'vi' ? 'Cần cải thiện: ' + weaknesses.length + ' tiêu chí' : 'Needs improvement: ' + weaknesses.length + ' criteria'}</li>
+      </ul></div>`;
+
+      rpt += `</div>`; // close rpt-printable
+
+      rptContainer.html(rpt);
+      $('#rpt-export-btn').prop('disabled', false);
+    }
+
+    function exportConsultationReportPDF() {
+      const content = document.getElementById('rpt-printable');
+      if (!content) return;
+
+      const printWin = window.open('', '_blank');
+      printWin.document.write(`<!DOCTYPE html><html><head><meta charset="utf-8">
+        <title>${t('rpt_title')}</title>
+        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+        <style>
+          body { font-family: 'Segoe UI', sans-serif; padding: 20px; font-size: 12pt; color: #333; }
+          h4, h5 { color: #1B5E20; }
+          .table { font-size: 10pt; }
+          .badge { font-size: 9pt; }
+          .progress { print-color-adjust: exact; -webkit-print-color-adjust: exact; }
+          .progress-bar { print-color-adjust: exact; -webkit-print-color-adjust: exact; }
+          .alert { print-color-adjust: exact; -webkit-print-color-adjust: exact; }
+          .bg-success, .bg-danger, .bg-warning, .bg-info, .bg-secondary, .bg-light { print-color-adjust: exact; -webkit-print-color-adjust: exact; }
+          .text-success { color: #1B5E20 !important; }
+          .text-danger { color: #dc3545 !important; }
+          .text-warning { color: #ff9800 !important; }
+          @media print {
+            body { padding: 0; }
+            .page-break { page-break-before: always; }
+          }
+        </style>
+      </head><body>${content.innerHTML}</body></html>`);
+      printWin.document.close();
+      printWin.onload = () => { printWin.print(); };
     }
 
     // ============================================================
