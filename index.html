@@ -955,6 +955,23 @@
       }
     }
 
+    /* Map search */
+    .map-search-wrap { width: 220px; }
+    .map-search-wrap input { padding-left: 30px; font-size: 12px; height: 31px; border-color: #a5d6a7; }
+    .map-search-wrap input:focus { border-color: #2e7d32; box-shadow: 0 0 0 2px rgba(46,125,50,0.15); }
+    .map-search-icon { position: absolute; left: 9px; top: 50%; transform: translateY(-50%); color: #999; font-size: 12px; pointer-events: none; }
+    .map-search-dropdown { position: absolute; top: 100%; left: 0; right: 0; z-index: 1060; background: white; border: 1px solid #c8e6c9; border-top: none; border-radius: 0 0 8px 8px; max-height: 300px; overflow-y: auto; box-shadow: 0 4px 12px rgba(0,0,0,0.12); }
+    .map-search-item { padding: 8px 12px; cursor: pointer; border-bottom: 1px solid #f0f0f0; font-size: 12px; }
+    .map-search-item:last-child { border-bottom: none; }
+    .map-search-item:hover, .map-search-item.active { background: #e8f5e9; }
+    .map-search-item .plot-code { font-weight: 700; color: #2e7d32; }
+    .map-search-item .plot-info { color: #666; font-size: 11px; }
+    .map-search-item .search-match { background: #fff9c4; padding: 0 1px; border-radius: 2px; }
+    @media (max-width: 767px) {
+      .map-search-wrap { width: 160px; }
+      .map-search-wrap input { font-size: 11px; height: 28px; }
+    }
+
     /* Plot label tooltips on map (visible at high zoom only) */
     .plot-label {
       background: transparent !important;
@@ -1167,7 +1184,12 @@
               <div>
                 <span class="fw-bold text-success" data-i18n="map_title">Bản đồ quản lý lô rừng</span>
               </div>
-              <div class="d-flex gap-2 flex-wrap">
+              <div class="d-flex gap-2 flex-wrap align-items-center">
+                <div class="map-search-wrap position-relative">
+                  <input type="text" id="map-search-input" class="form-control form-control-sm" data-i18n-placeholder="map_search_placeholder" placeholder="Tìm lô rừng, chủ rừng..." autocomplete="off">
+                  <i class="fa-solid fa-search map-search-icon"></i>
+                  <div id="map-search-dropdown" class="map-search-dropdown d-none"></div>
+                </div>
                 <label class="btn btn-outline-success btn-sm mb-0">
                   <i class="fa-solid fa-upload me-1"></i> <span data-i18n="btn_upload_geojson">Tải GeoJSON</span>
                   <input type="file" accept=".geojson,.json" class="d-none" id="geojson-upload" onchange="handleGeoJSONUpload(event)">
@@ -1451,6 +1473,10 @@
 
         // Map toolbar
         map_notes: 'Ghi chú',
+        map_search_placeholder: 'Tìm lô rừng, chủ rừng...',
+        map_search_no_result: 'Không tìm thấy kết quả',
+        map_search_owner: 'Chủ rừng',
+        map_search_area: 'Diện tích',
 
         // Settings
         settings_title: 'Cài đặt hệ thống',
@@ -1798,6 +1824,10 @@
         detail_show_table: 'Show in table list',
 
         map_notes: 'Notes',
+        map_search_placeholder: 'Search plot, owner...',
+        map_search_no_result: 'No results found',
+        map_search_owner: 'Owner',
+        map_search_area: 'Area',
 
         settings_title: 'System Settings',
         settings_save: 'Save',
@@ -5077,6 +5107,7 @@
         setTimeout(() => { zoomToAllData(); updateZoomLayerMenu(); renderMapLayerPanel(); }, 300);
       });
       renderMapLayerPanel();
+      initMapSearch();
     }
 
     let _labelsEnabled = false; // Labels off by default for speed
@@ -5425,6 +5456,7 @@
 
     // Load all polygons from lo_rung_geojson (paginated)
     async function loadStoredGeoJSON() {
+      _mapSearchIndex = null; // Invalidate search index on reload
       try {
         const { data, error } = await fetchAll('lo_rung_geojson');
         if (error || !data) { console.error('Load lo_rung_geojson error:', error); return; }
@@ -5763,6 +5795,198 @@
       };
       setTimeout(tryFlyTo, 600);
     };
+    // ── Map Search ──────────────────────────────────────────────
+    let _mapSearchIndex = null;
+    let _mapSearchTimer = null;
+    let _mapSearchActiveIdx = -1;
+
+    function _buildMapSearchIndex() {
+      const loRungData = APP_DATA['Lo_rung'] || [];
+      const churungData = APP_DATA['Churung'] || [];
+      const nhomData = APP_DATA['NhomCCR'] || [];
+
+      const ownerMap = {};
+      churungData.forEach(cr => { ownerMap[cr['ID chủ rừng']] = cr['Họ tên chủ rừng'] || ''; });
+      const nhomMap = {};
+      nhomData.forEach(n => { nhomMap[n['ID nhóm CCR']] = n['Tên nhóm'] || ''; });
+
+      _mapSearchIndex = loRungData.map(lr => {
+        const plotCode = lr['Mã số lô rừng'] || '';
+        const plotName = lr['Tên lô rừng'] || '';
+        const diaDanh = lr['Địa danh'] || '';
+        const ownerName = ownerMap[lr['ID chủ rừng']] || '';
+        const nhomName = nhomMap[lr['ID nhóm CCR']] || '';
+        const loRungId = lr['ID lô rừng'];
+        const area = lr['Tổng diện tích'] || '';
+        const searchText = [plotCode, plotName, diaDanh, ownerName, nhomName].join(' ').toLowerCase();
+        return { loRungId, plotCode, plotName, diaDanh, ownerName, nhomName, area, searchText };
+      });
+    }
+
+    function mapSearch(query) {
+      const dropdown = document.getElementById('map-search-dropdown');
+      if (!dropdown) return;
+      const q = (query || '').trim().toLowerCase();
+      if (q.length < 1) { dropdown.classList.add('d-none'); _mapSearchActiveIdx = -1; return; }
+
+      if (!_mapSearchIndex) _buildMapSearchIndex();
+
+      const terms = q.split(/\s+/);
+      const results = _mapSearchIndex.filter(item =>
+        terms.every(t => item.searchText.includes(t))
+      ).slice(0, 15);
+
+      if (results.length === 0) {
+        dropdown.innerHTML = `<div class="map-search-item text-muted"><i class="fa-solid fa-circle-info me-1"></i>${t('map_search_no_result')}</div>`;
+        dropdown.classList.remove('d-none');
+        _mapSearchActiveIdx = -1;
+        return;
+      }
+
+      const esc = s => s.replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":"&#39;"}[c]));
+      const highlight = (text) => {
+        if (!text) return '';
+        let h = esc(text);
+        terms.forEach(t => {
+          if (t.length > 0) {
+            const re = new RegExp('(' + t.replace(/[.*+?^${}()|[\]\\]/g, '\\$&') + ')', 'gi');
+            h = h.replace(re, '<span class="search-match">$1</span>');
+          }
+        });
+        return h;
+      };
+
+      dropdown.innerHTML = results.map((r, i) => `
+        <div class="map-search-item${i === 0 ? ' active' : ''}" data-idx="${i}" data-lo-rung-id="${esc(String(r.loRungId))}">
+          <div class="plot-code"><i class="fa-solid fa-map-location-dot me-1"></i>${highlight(r.plotCode || r.plotName || r.loRungId)}</div>
+          <div class="plot-info">
+            ${r.ownerName ? '<i class="fa-solid fa-user me-1"></i>' + highlight(r.ownerName) + '  ' : ''}
+            ${r.diaDanh ? '<i class="fa-solid fa-location-dot me-1"></i>' + highlight(r.diaDanh) + '  ' : ''}
+            ${r.area ? '<i class="fa-solid fa-ruler-combined me-1"></i>' + esc(String(r.area)) + ' ha' : ''}
+          </div>
+        </div>
+      `).join('');
+
+      dropdown.classList.remove('d-none');
+      _mapSearchActiveIdx = 0;
+
+      // Click handlers
+      dropdown.querySelectorAll('.map-search-item[data-lo-rung-id]').forEach(el => {
+        el.addEventListener('click', () => {
+          const id = el.dataset.loRungId;
+          if (id) mapSearchJumpTo(id);
+        });
+      });
+    }
+
+    function mapSearchJumpTo(loRungId) {
+      const dropdown = document.getElementById('map-search-dropdown');
+      const input = document.getElementById('map-search-input');
+      if (dropdown) dropdown.classList.add('d-none');
+      if (input) input.blur();
+
+      if (!mapInstance || !mapDrawnItems) return;
+      const PLOT_ZOOM = 18;
+      let found = false;
+
+      mapDrawnItems.eachLayer(layer => {
+        if (found) return;
+        if (layer.eachLayer) {
+          layer.eachLayer(sub => {
+            if (found) return;
+            if (String(sub.loRungId) === String(loRungId)) {
+              found = true;
+              if (sub.getBounds) mapInstance.flyTo(sub.getBounds().getCenter(), PLOT_ZOOM, { duration: 0.8 });
+              setTimeout(() => { if (sub.openPopup) sub.openPopup(); }, 900);
+              // Flash polygon
+              if (sub.setStyle) {
+                const orig = { color: '#FFFF00', weight: 1.5, fillColor: '#2E7D32', fillOpacity: 0.12 };
+                sub.setStyle({ color: '#ff5722', weight: 3, fillColor: '#ff5722', fillOpacity: 0.3 });
+                setTimeout(() => sub.setStyle(orig), 2500);
+              }
+            }
+          });
+        }
+        if (!found && String(layer.loRungId) === String(loRungId)) {
+          found = true;
+          if (layer.getBounds) mapInstance.flyTo(layer.getBounds().getCenter(), PLOT_ZOOM, { duration: 0.8 });
+          else if (layer.getLatLng) mapInstance.flyTo(layer.getLatLng(), PLOT_ZOOM, { duration: 0.8 });
+          setTimeout(() => { if (layer.openPopup) layer.openPopup(); }, 900);
+          if (layer.setStyle) {
+            const orig = { color: '#FFFF00', weight: 1.5, fillColor: '#2E7D32', fillOpacity: 0.12 };
+            layer.setStyle({ color: '#ff5722', weight: 3, fillColor: '#ff5722', fillOpacity: 0.3 });
+            setTimeout(() => layer.setStyle(orig), 2500);
+          }
+        }
+      });
+
+      // Fallback: use coordinates
+      if (!found) {
+        const loRungData = APP_DATA['Lo_rung'] || [];
+        const lr = loRungData.find(r => String(r['ID lô rừng']) === String(loRungId));
+        if (lr) {
+          let lat, lng;
+          const kd = parseFloat(lr['Kinh độ']), vd = parseFloat(lr['Vĩ độ']);
+          if (!isNaN(vd) && !isNaN(kd)) { lat = vd; lng = kd; }
+          else {
+            const coords = lr['Tọa độ tâm lô'];
+            if (coords) { const p = String(coords).split(',').map(s => parseFloat(s.trim())); if (p.length === 2) { lat = p[0]; lng = p[1]; } }
+          }
+          if (lat && lng && !isNaN(lat) && !isNaN(lng)) mapInstance.flyTo([lat, lng], PLOT_ZOOM, { duration: 0.8 });
+        }
+      }
+    }
+
+    // Initialize map search events
+    function initMapSearch() {
+      const input = document.getElementById('map-search-input');
+      const dropdown = document.getElementById('map-search-dropdown');
+      if (!input) return;
+
+      input.addEventListener('input', function() {
+        clearTimeout(_mapSearchTimer);
+        _mapSearchTimer = setTimeout(() => mapSearch(this.value), 200);
+      });
+
+      input.addEventListener('keydown', function(e) {
+        if (!dropdown || dropdown.classList.contains('d-none')) return;
+        const items = dropdown.querySelectorAll('.map-search-item[data-lo-rung-id]');
+        if (!items.length) return;
+
+        if (e.key === 'ArrowDown') {
+          e.preventDefault();
+          _mapSearchActiveIdx = Math.min(_mapSearchActiveIdx + 1, items.length - 1);
+          items.forEach((el, i) => el.classList.toggle('active', i === _mapSearchActiveIdx));
+          items[_mapSearchActiveIdx]?.scrollIntoView({ block: 'nearest' });
+        } else if (e.key === 'ArrowUp') {
+          e.preventDefault();
+          _mapSearchActiveIdx = Math.max(_mapSearchActiveIdx - 1, 0);
+          items.forEach((el, i) => el.classList.toggle('active', i === _mapSearchActiveIdx));
+          items[_mapSearchActiveIdx]?.scrollIntoView({ block: 'nearest' });
+        } else if (e.key === 'Enter') {
+          e.preventDefault();
+          const active = items[_mapSearchActiveIdx];
+          if (active) mapSearchJumpTo(active.dataset.loRungId);
+        } else if (e.key === 'Escape') {
+          dropdown.classList.add('d-none');
+          _mapSearchActiveIdx = -1;
+        }
+      });
+
+      // Close dropdown when clicking outside
+      document.addEventListener('click', function(e) {
+        if (!input.contains(e.target) && !dropdown.contains(e.target)) {
+          dropdown.classList.add('d-none');
+          _mapSearchActiveIdx = -1;
+        }
+      });
+
+      // Reopen on focus if has query
+      input.addEventListener('focus', function() {
+        if (this.value.trim().length >= 1) mapSearch(this.value);
+      });
+    }
+
     // ============================================================
     // END MAP MODULE
     // ============================================================
