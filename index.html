@@ -5358,6 +5358,7 @@
 
     window.showOnMap = function(loRungId) {
       loadView('Bando_lorung', 'Bản đồ quản lý lô rừng');
+      const PLOT_ZOOM = 18; // ~1:1000 scale
 
       // Retry mechanism: GeoJSON loads async, so we try multiple times
       let attempts = 0;
@@ -5377,15 +5378,22 @@
                 if (found) return;
                 if (sub.loRungId === loRungId) {
                   found = true;
-                  if (sub.getBounds) mapInstance.fitBounds(sub.getBounds().pad(0.1));
+                  if (sub.getBounds) {
+                    const center = sub.getBounds().getCenter();
+                    mapInstance.setView(center, PLOT_ZOOM);
+                  }
                   if (sub.openPopup) sub.openPopup();
                 }
               });
             }
             if (!found && layer.loRungId === loRungId) {
               found = true;
-              if (layer.getBounds) mapInstance.fitBounds(layer.getBounds().pad(0.1));
-              else if (layer.getLatLng) mapInstance.setView(layer.getLatLng(), 16);
+              if (layer.getBounds) {
+                const center = layer.getBounds().getCenter();
+                mapInstance.setView(center, PLOT_ZOOM);
+              } else if (layer.getLatLng) {
+                mapInstance.setView(layer.getLatLng(), PLOT_ZOOM);
+              }
               if (layer.openPopup) layer.openPopup();
             }
           });
@@ -5405,7 +5413,7 @@
               if (coords) { const parts = String(coords).split(',').map(s => parseFloat(s.trim())); if (parts.length === 2) { lat = parts[0]; lng = parts[1]; } }
             }
             if (lat && lng && !isNaN(lat) && !isNaN(lng)) {
-              mapInstance.setView([lat, lng], 16);
+              mapInstance.setView([lat, lng], PLOT_ZOOM);
               found = true;
             }
           }
