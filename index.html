@@ -2,15 +2,20 @@
 <html lang="vi">
 
 <head>
-  <base target="_top">
   <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+  <meta name="theme-color" content="#1B5E20">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <link rel="manifest" href="manifest.json">
   <title>Hệ thống Quản lý Rừng FSC</title>
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@300;400;500;600;700&display=swap"
     rel="stylesheet">
   <link rel="stylesheet" href="https://cdn.datatables.net/1.13.4/css/dataTables.bootstrap5.min.css">
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet.draw/1.0.4/leaflet.draw.css" />
   <style>
     :root {
       --forest-primary: #1B5E20;
@@ -26,28 +31,88 @@
       background-color: var(--bg-light);
       color: var(--text-main);
       overflow: hidden;
-      font-size: 15px;
-      line-height: 1.5;
+      font-size: 13px;
+      line-height: normal;
     }
 
     #login-screen {
-      background: linear-gradient(rgba(20, 50, 20, 0.9), rgba(10, 30, 10, 0.95)), url('https://images.unsplash.com/photo-1448375240586-dfd8d395ea6c?ixlib=rb-4.0.3&auto=format&fit=crop&w=1920&q=80');
-      background-size: cover;
-      position: absolute;
-      top: 0;
-      left: 0;
-      right: 0;
-      bottom: 0;
+      background: linear-gradient(135deg, #1B5E20 0%, #2E7D32 40%, #43A047 100%);
+      position: fixed;
+      top: 0; left: 0; right: 0; bottom: 0;
       z-index: 9999;
+      overflow-y: auto;
+      -webkit-overflow-scrolling: touch;
     }
-
     .login-card {
-      background: rgba(255, 255, 255, 0.98);
-      border-radius: 16px;
-      box-shadow: 0 25px 60px rgba(0, 0, 0, 0.6);
-      border-top: 5px solid #2E7D32;
+      background: #fff;
+      border-radius: 20px;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.3);
       width: 100%;
-      max-width: 400px;
+      max-width: 380px;
+      margin: 0 16px;
+      overflow: hidden;
+    }
+    .login-header {
+      background: linear-gradient(135deg, #1B5E20, #2E7D32);
+      padding: 28px 24px 22px;
+      text-align: center;
+    }
+    .login-body { padding: 24px 24px 20px; }
+    .login-input-group {
+      position: relative;
+      margin-bottom: 14px;
+    }
+    .login-input-group i.input-icon {
+      position: absolute;
+      left: 14px; top: 50%; transform: translateY(-50%);
+      color: #999; font-size: 14px; z-index: 2;
+    }
+    .login-input-group .form-control {
+      padding: 12px 14px 12px 40px;
+      border-radius: 10px;
+      border: 1.5px solid #e0e0e0;
+      font-size: 14px;
+      transition: border-color 0.2s, box-shadow 0.2s;
+    }
+    .login-input-group .form-control:focus {
+      border-color: #2E7D32;
+      box-shadow: 0 0 0 3px rgba(46,125,50,0.12);
+    }
+    .login-input-group .toggle-pass {
+      position: absolute; right: 12px; top: 50%; transform: translateY(-50%);
+      background: none; border: none; color: #999; cursor: pointer; z-index: 2;
+    }
+    .btn-login-main {
+      background: linear-gradient(135deg, #2E7D32, #1B5E20);
+      color: #fff; border: none; border-radius: 10px;
+      padding: 12px; font-size: 15px; font-weight: 600;
+      width: 100%; transition: all 0.2s;
+      box-shadow: 0 4px 12px rgba(27,94,32,0.3);
+    }
+    .btn-login-main:hover { transform: translateY(-1px); box-shadow: 0 6px 20px rgba(27,94,32,0.4); background: linear-gradient(135deg, #388E3C, #2E7D32); color: #fff; }
+    .btn-login-main:active { transform: translateY(0); }
+    .btn-register-main {
+      background: linear-gradient(135deg, #1565C0, #0D47A1);
+      color: #fff; border: none; border-radius: 10px;
+      padding: 12px; font-size: 15px; font-weight: 600;
+      width: 100%; transition: all 0.2s;
+      box-shadow: 0 4px 12px rgba(13,71,161,0.3);
+    }
+    .btn-register-main:hover { transform: translateY(-1px); color: #fff; }
+    @media (max-width: 767px) {
+      .login-card { max-width: 100%; margin: 0 12px; border-radius: 16px; }
+      .login-header { padding: 22px 20px 18px; }
+      .login-header img { height: 56px !important; }
+      .login-header h5 { font-size: 15px !important; }
+      .login-body { padding: 20px 18px 16px; }
+      .login-input-group .form-control { padding: 11px 14px 11px 38px; font-size: 14px; }
+      .btn-login-main, .btn-register-main { padding: 11px; font-size: 14px; }
+    }
+    @media (max-width: 374px) {
+      .login-card { margin: 0 8px; }
+      .login-header { padding: 18px 14px 14px; }
+      .login-header img { height: 48px !important; }
+      .login-body { padding: 16px 14px 12px; }
     }
 
     #sidebar-wrapper {
@@ -64,17 +129,23 @@
       /* Default hidden on mobile */
     }
 
-    /* PC Mode: Sidebar Visible by default sidebar-wrapper */
+    /* PC Mode: Sidebar Visible by default */
     @media (min-width: 992px) {
       #sidebar-wrapper {
         transform: translateX(0);
-        /* Always show on PC */
         box-shadow: none;
+        transition: transform 0.3s ease;
       }
-
-      /* On PC, content pushed right */
       #page-content-wrapper {
         margin-left: 270px;
+        transition: margin-left 0.3s ease;
+      }
+      /* PC sidebar hidden */
+      #sidebar-wrapper.pc-hidden {
+        transform: translateX(-100%);
+      }
+      #page-content-wrapper.sidebar-collapsed {
+        margin-left: 0;
       }
     }
 
@@ -101,20 +172,36 @@
     }
 
     .sidebar-header {
-      padding: 20px;
+      padding: 10px;
       background: var(--forest-gradient);
       color: white;
       font-weight: 700;
       text-align: center;
       flex-shrink: 0;
-      font-size: 1.2rem;
-      letter-spacing: 1px;
+      font-size: 20px;
+      transition: all 0.3s ease;
+    }
+    .sidebar-header:hover {
+      background: linear-gradient(135deg, #388E3C 0%, #1B5E20 100%);
+    }
+    .sidebar-header .home-icon {
+      width: 36px; height: 36px;
+      border-radius: 10px;
+      background: rgba(255,255,255,0.15);
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.3s ease;
+    }
+    .sidebar-header:hover .home-icon {
+      background: rgba(255,255,255,0.25);
+      transform: scale(1.1);
     }
 
     .accordion-button {
-      font-size: 1rem;
+      font-size: 12px;
       font-weight: 700;
-      padding: 14px 15px;
+      padding: 8px 12px;
       color: #444;
     }
 
@@ -130,10 +217,10 @@
 
     .menu-sub-link {
       display: block;
-      padding: 12px 20px 12px 45px;
+      padding: 6px 14px 6px 20px;
       color: #555;
       text-decoration: none;
-      font-size: 0.95rem;
+      font-size: 12px;
       font-weight: 500;
       transition: all 0.2s;
       border-left: 4px solid transparent;
@@ -144,62 +231,120 @@
       color: var(--forest-primary);
       border-left: 4px solid var(--forest-primary);
     }
+    .menu-sub-link.active {
+      background-color: #E8F5E9;
+      color: var(--forest-primary);
+      border-left: 4px solid var(--forest-primary);
+      font-weight: 700;
+    }
+    .search-result-item:hover { background-color: #E8F5E9 !important; }
+
+    /* Detail action bar - drill-down buttons */
+    .detail-action-bar {
+      overflow-x: auto;
+      -webkit-overflow-scrolling: touch;
+    }
+    .detail-action-bar .btn {
+      white-space: nowrap;
+      font-size: 11px;
+      padding: 5px 10px;
+      border-radius: 20px;
+    }
+
+    /* Audit form: sticky header + compact file area */
+    .audit-sticky-header {
+      position: sticky;
+      top: 0;
+      z-index: 20;
+    }
+    .audit-sticky-context {
+      position: sticky;
+      top: 52px;
+      z-index: 19;
+    }
+    .audit-card .bg-light.p-2.rounded {
+      padding: 4px 6px !important;
+    }
+    .audit-card .audit-file {
+      font-size: 10px !important;
+      padding: 2px 4px !important;
+    }
+    .audit-card .input-group-sm .input-group-text {
+      padding: 2px 6px !important;
+    }
 
     .dashboard-card-3d {
-      background: white;
-      border-radius: 14px;
-      padding: 25px 20px;
+      background: #ffffff;
+      border-radius: 16px;
+      padding: 20px 12px 16px;
       text-align: center;
       cursor: pointer;
-      transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
-      border: 1px solid rgba(0, 0, 0, 0.03);
+      transition: all 0.35s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+      box-shadow: 0 2px 12px rgba(0, 0, 0, 0.06);
+      border: none;
       height: 100%;
+      position: relative;
+      overflow: hidden;
+    }
+    .dashboard-card-3d::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 3px;
+      background: var(--card-accent, var(--forest-gradient));
+      border-radius: 16px 16px 0 0;
     }
 
     .dashboard-card-3d:hover {
-      transform: translateY(-8px);
-      border-color: #4CAF50;
-      box-shadow: 0 15px 30px rgba(0, 0, 0, 0.12);
+      transform: translateY(-6px);
+      box-shadow: 0 12px 28px rgba(0, 0, 0, 0.12);
+    }
+    .dashboard-card-3d:active {
+      transform: translateY(-2px);
     }
 
     .icon-3d-wrapper {
-      width: 70px;
-      height: 70px;
-      margin: 0 auto 18px auto;
-      border-radius: 20px;
+      width: 48px;
+      height: 48px;
+      margin: 0 auto 10px auto;
+      border-radius: 14px;
       display: flex;
       align-items: center;
       justify-content: center;
       color: white;
-      font-size: 2.2rem;
+      font-size: 1.25rem;
       background: var(--forest-gradient);
-      box-shadow: 0 8px 15px rgba(0, 0, 0, 0.15);
+      box-shadow: 0 6px 16px rgba(0, 0, 0, 0.18);
+      transition: transform 0.3s ease;
+    }
+    .dashboard-card-3d:hover .icon-3d-wrapper {
+      transform: scale(1.1);
     }
 
     .card-title-3d {
       font-weight: 700;
       color: #333;
-      font-size: 1.1rem;
+      font-size: 12px;
+      letter-spacing: 0.2px;
+      line-height: 1.3;
     }
 
     .nav-pills {
-      gap: 12px;
-      padding-bottom: 15px;
+      gap: 8px;
+      padding-bottom: 8px;
       border-bottom: 1px solid #e0e0e0;
-      margin-bottom: 25px;
+      margin-bottom: 12px;
     }
 
     .nav-pills .nav-link {
       border-radius: 30px;
-      padding: 10px 25px;
+      padding: 6px 14px;
       font-weight: 600;
       color: var(--forest-primary);
       background: #fff;
       border: 2px solid #E8F5E9;
       transition: all 0.3s ease;
-      text-transform: uppercase;
-      font-size: 0.85rem;
+      font-size: 12px;
       letter-spacing: 0.5px;
     }
 
@@ -218,13 +363,13 @@
 
     .fsc-breadcrumb {
       background: white;
-      padding: 10px 20px;
+      padding: 6px 14px;
       border-radius: 8px;
       box-shadow: 0 2px 6px rgba(0, 0, 0, 0.04);
-      margin-bottom: 20px;
+      margin-bottom: 12px;
       display: flex;
       align-items: center;
-      font-size: 0.95rem;
+      font-size: 12px;
       border: 1px solid #eee;
     }
 
@@ -245,9 +390,9 @@
     }
 
     .breadcrumb-separator {
-      margin: 0 10px;
+      margin: 0 6px;
       color: #ccc;
-      font-size: 0.8rem;
+      font-size: 11px;
     }
 
     table.dataTable {
@@ -259,16 +404,23 @@
     table.dataTable thead th {
       background-color: #f1f3f5 !important;
       color: #333;
-      padding: 14px 10px !important;
-      font-size: 0.9rem;
-      text-transform: uppercase;
+      padding: 6px 10px !important;
+      font-size: 13px;
       border-bottom: 2px solid #ccc !important;
       font-weight: 700;
+      position: sticky;
+      top: 0;
+      z-index: 10;
+    }
+
+    .table-responsive {
+      max-height: calc(100vh - 280px);
+      overflow-y: auto;
     }
 
     table.dataTable tbody td {
-      padding: 10px 10px !important;
-      font-size: 0.95rem;
+      padding: 6px 10px !important;
+      font-size: 13px;
       vertical-align: middle;
       border-bottom: 1px solid #eee;
     }
@@ -285,8 +437,8 @@
 
     .form-control,
     .form-select {
-      font-size: 0.95rem;
-      padding: 10px 12px;
+      font-size: 13px;
+      padding: 6px 14px;
       border-radius: 8px;
       border: 1px solid #ddd;
     }
@@ -298,9 +450,9 @@
     }
 
     .btn {
-      font-size: 0.95rem;
-      font-weight: 600;
-      padding: 8px 20px;
+      font-size: 12px;
+      font-weight: 700;
+      padding: 6px 14px;
       border-radius: 30px;
     }
 
@@ -344,72 +496,558 @@
     ::-webkit-scrollbar-thumb:hover {
       background: #999;
     }
+
+    /* Mobile Responsive */
+    @media (max-width: 767px) {
+      body {
+        font-size: 11px !important;
+        -webkit-text-size-adjust: 100%;
+      }
+      /* Navbar mobile */
+      .navbar {
+        padding: 4px 8px !important;
+        min-height: 44px !important;
+      }
+      .navbar .position-absolute {
+        position: relative !important;
+        transform: none !important;
+        left: auto !important;
+        flex: 1;
+        min-width: 0;
+      }
+      .navbar > .d-flex:last-child {
+        flex-shrink: 0;
+      }
+      .navbar .fw-bold[style*="font-size: 25px"] {
+        font-size: 13px !important;
+        letter-spacing: 0 !important;
+      }
+      #navbar-project-name {
+        font-size: 13px !important;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        max-width: 140px;
+        display: inline-block !important;
+        vertical-align: middle;
+      }
+      .navbar img[height="42"] {
+        height: 28px !important;
+        margin-right: 6px !important;
+      }
+      /* Sidebar menu */
+      .sidebar-header {
+        font-size: 12px !important;
+        padding: 10px !important;
+      }
+      #sidebarAccordion .accordion-button {
+        font-size: 11px !important;
+        padding: 6px 10px !important;
+      }
+      .menu-sub-link {
+        font-size: 11px !important;
+        padding: 5px 10px 5px 28px !important;
+      }
+      .menu-sub-link i {
+        font-size: 10px !important;
+      }
+      /* Dashboard cards */
+      .dashboard-card-3d {
+        padding: 10px 6px 8px !important;
+        border-radius: 10px !important;
+      }
+      .icon-3d-wrapper {
+        width: 32px !important;
+        height: 32px !important;
+        font-size: 0.85rem !important;
+        border-radius: 8px !important;
+        margin-bottom: 4px !important;
+      }
+      .card-title-3d {
+        font-size: 9px !important;
+        line-height: 1.2 !important;
+      }
+      /* KPI cards mobile */
+      .kpi-card {
+        padding: 4px 6px !important;
+        border-radius: 8px !important;
+      }
+      .kpi-value {
+        font-size: 0.85rem !important;
+      }
+      .kpi-label {
+        font-size: 8px !important;
+      }
+      /* Charts mobile */
+      #dashboard-view .card {
+        margin-bottom: 6px;
+      }
+      #dashboard-view .card-body {
+        padding: 6px !important;
+      }
+      #dashboard-view .card-body h6 {
+        font-size: 10px !important;
+      }
+      #dashboard-view .form-select-sm {
+        font-size: 9px !important;
+        padding: 1px 16px 1px 4px !important;
+      }
+      /* Audit Form */
+      .audit-card {
+        font-size: 11px !important;
+      }
+      .audit-card .card-body {
+        padding: 6px !important;
+      }
+      .audit-card h6 {
+        font-size: 11px !important;
+        min-height: 30px !important;
+        margin-bottom: 4px !important;
+      }
+      .audit-card .badge {
+        font-size: 10px !important;
+      }
+      .audit-card .btn-group .btn {
+        font-size: 10px !important;
+        padding: 3px 5px !important;
+      }
+      .audit-card .form-control-sm {
+        font-size: 11px !important;
+        padding: 3px 5px !important;
+      }
+      .audit-card .input-group-text {
+        font-size: 11px !important;
+        padding: 3px 5px !important;
+      }
+      #auditAccordion .accordion-button {
+        font-size: 11px !important;
+        padding: 6px 10px !important;
+      }
+      /* Detail view mobile */
+      .detail-card .col-md-4 {
+        flex: 0 0 100% !important;
+        max-width: 100% !important;
+      }
+      .detail-card .col-md-4 label {
+        font-size: 10px !important;
+      }
+      .detail-card .col-md-4 .fw-medium {
+        font-size: 11px !important;
+      }
+      /* Header bar detail mobile */
+      .border-start.border-4 .d-flex {
+        flex-wrap: wrap;
+        gap: 4px;
+      }
+      .border-start.border-4 h6 {
+        font-size: 12px !important;
+      }
+      /* Lo_rung action buttons mobile */
+      .d-flex.gap-2.mb-2.flex-wrap .btn {
+        font-size: 10px !important;
+        padding: 4px 6px !important;
+        flex: 1 1 calc(50% - 4px) !important;
+        max-width: calc(50% - 4px);
+      }
+      /* Forms */
+      .form-control, .form-select {
+        font-size: 11px !important;
+        padding: 5px 8px !important;
+      }
+      /* Tables */
+      .table-responsive {
+        max-height: calc(100vh - 220px) !important;
+        overflow-x: auto !important;
+        -webkit-overflow-scrolling: touch;
+      }
+      table.dataTable {
+        white-space: nowrap;
+      }
+      table.dataTable thead th {
+        padding: 4px 6px !important;
+        font-size: 10px !important;
+        font-weight: 700 !important;
+      }
+      table.dataTable tbody td {
+        padding: 3px 6px !important;
+        font-size: 10px !important;
+      }
+      /* Card headers on mobile */
+      .card-header.bg-success {
+        padding: 8px 10px !important;
+      }
+      .card-header h5 {
+        font-size: 12px !important;
+      }
+      /* Buttons */
+      .btn {
+        font-size: 11px !important;
+        padding: 4px 10px !important;
+      }
+      /* Breadcrumb mobile */
+      .fsc-breadcrumb {
+        padding: 4px 8px !important;
+        font-size: 10px !important;
+        margin-bottom: 6px !important;
+      }
+      #data-view > .d-flex:first-child {
+        margin-bottom: 6px !important;
+      }
+      #data-view > .d-flex:first-child .btn {
+        font-size: 10px !important;
+        padding: 3px 8px !important;
+      }
+      /* Sub-menu cards mobile */
+      .submenu-card {
+        padding: 10px 6px !important;
+        border-radius: 8px !important;
+      }
+      .submenu-icon {
+        width: 36px !important;
+        height: 36px !important;
+        font-size: 1rem !important;
+        margin-bottom: 6px !important;
+      }
+      .submenu-label {
+        font-size: 10px !important;
+      }
+      /* Modal mobile */
+      .modal-dialog {
+        margin: 8px !important;
+      }
+      .modal-body {
+        padding: 10px !important;
+      }
+      .modal-header {
+        padding: 8px 12px !important;
+      }
+      .modal-title {
+        font-size: 13px !important;
+      }
+      /* Settings mobile */
+      .settings-col-pc, .settings-col-mobile {
+        flex: 0 0 100% !important;
+        max-width: 100% !important;
+      }
+      /* Page content */
+      #page-content-wrapper {
+        padding: 6px !important;
+        padding-bottom: 60px !important;
+      }
+      /* Map toolbar mobile */
+      .map-toolbar {
+        padding: 4px 6px !important;
+      }
+      .map-toolbar .btn {
+        font-size: 9px !important;
+        padding: 3px 6px !important;
+      }
+      .map-toolbar span.fw-bold {
+        font-size: 10px !important;
+      }
+      /* Logout button mobile - keep compact */
+      .btn-logout {
+        font-size: 10px !important;
+        padding: 3px 8px !important;
+      }
+    }
+
+    /* Mobile Bottom Navigation Bar */
+    #mobile-home-bar {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      z-index: 1060;
+      background: rgba(255,255,255,0.97);
+      border-top: 1px solid #e0e0e0;
+      box-shadow: 0 -2px 10px rgba(0,0,0,0.08);
+      padding: 6px 0 env(safe-area-inset-bottom, 6px) 0;
+      display: flex;
+      justify-content: space-around;
+      align-items: center;
+    }
+    #mobile-home-bar .mob-nav-btn {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      background: none;
+      border: none;
+      color: #666;
+      font-size: 10px;
+      padding: 4px 12px;
+      cursor: pointer;
+      transition: color 0.2s;
+    }
+    #mobile-home-bar .mob-nav-btn i {
+      font-size: 1.2rem;
+      margin-bottom: 2px;
+    }
+    #mobile-home-bar .mob-nav-btn.active,
+    #mobile-home-bar .mob-nav-btn:active {
+      color: #1B5E20;
+    }
+
+    /* Dashboard: fit one screen */
+    #dashboard-view {
+      display: flex;
+      flex-direction: column;
+      height: calc(100vh - 76px);
+      overflow: hidden;
+    }
+    #dashboard-view h5 { margin-bottom: 8px !important; font-size: 15px; }
+    #dashboard-view h6 { margin-bottom: 6px !important; font-size: 12px; }
+    #dashboard-view .kpi-card { padding: 8px 12px; }
+    #dashboard-view .kpi-value { font-size: 1.15rem; }
+    #dashboard-view .kpi-label { font-size: 11px; }
+    #dashboard-view .dashboard-card-3d { padding: 18px 10px 14px; }
+    #dashboard-view .icon-3d-wrapper { width: 44px; height: 44px; font-size: 1.15rem; margin-bottom: 8px; border-radius: 13px; }
+    #dashboard-view .card-title-3d { font-size: 12px; font-weight: 700; }
+    @media (max-width: 767px) {
+      #dashboard-view { height: auto; min-height: calc(100vh - 110px); overflow-y: auto; }
+      #dashboard-view h5 { font-size: 13px !important; margin-bottom: 6px !important; }
+      #dashboard-view h6 { font-size: 10px !important; margin-bottom: 4px !important; }
+      #dashboard-view .icon-3d-wrapper { width: 30px !important; height: 30px !important; font-size: 0.8rem !important; border-radius: 8px !important; margin-bottom: 3px !important; }
+      #dashboard-view .card-title-3d { font-size: 9px !important; }
+      #dashboard-view .kpi-value { font-size: 0.8rem !important; }
+      #dashboard-view .kpi-label { font-size: 7px !important; letter-spacing: 0; text-transform: none; }
+      #dashboard-view .kpi-card { padding: 4px 5px !important; border-radius: 6px !important; }
+      #dashboard-view .dashboard-card-3d { padding: 8px 4px 6px !important; border-radius: 8px !important; }
+      #dashboard-view .row.g-3 { --bs-gutter-x: 0.5rem; --bs-gutter-y: 0.5rem; }
+      #dashboard-view .d-flex.gap-2.mb-2 { gap: 3px !important; margin-bottom: 4px !important; }
+    }
+
+    /* Sub-menu Screen Cards */
+    .submenu-card {
+      background: #fff;
+      border-radius: 12px;
+      padding: 18px 12px;
+      text-align: center;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+      height: 100%;
+    }
+    .submenu-card:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 8px 20px rgba(0,0,0,0.12);
+    }
+    .submenu-icon {
+      width: 48px; height: 48px;
+      margin: 0 auto 10px auto;
+      border-radius: 14px;
+      display: flex; align-items: center; justify-content: center;
+      color: white; font-size: 1.2rem;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.15);
+    }
+    .submenu-label {
+      font-weight: 600; font-size: 12px; color: #333;
+    }
+
+    /* Dashboard Sub-menu Popup (legacy) */
+    .dash-submenu {
+      position: absolute;
+      top: 100%;
+      left: 50%;
+      transform: translateX(-50%);
+      z-index: 100;
+      background: #fff;
+      border-radius: 10px;
+      min-width: 220px;
+      padding: 6px 0;
+      border: 1px solid #e8e8e8;
+      animation: fadeInUp 0.15s ease;
+    }
+    .dash-submenu-link {
+      display: block;
+      padding: 6px 14px;
+      color: #333;
+      text-decoration: none;
+      font-size: 12px;
+      font-weight: 500;
+      white-space: nowrap;
+      transition: background 0.15s;
+    }
+    .dash-submenu-link:hover {
+      background: #E8F5E9;
+      color: #1B5E20;
+    }
+    @keyframes fadeInUp {
+      from { opacity: 0; transform: translateX(-50%) translateY(6px); }
+      to   { opacity: 1; transform: translateX(-50%) translateY(0); }
+    }
+
+    /* KPI Cards */
+    .kpi-card {
+      background: white;
+      border-radius: 12px;
+      padding: 10px 12px;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+      border-left: 4px solid #2E7D32;
+      transition: all 0.25s ease;
+    }
+    .kpi-card:hover { transform: translateY(-3px); box-shadow: 0 6px 16px rgba(0,0,0,0.1); }
+    .kpi-value { font-size: 1.3rem; font-weight: 800; color: #1B5E20; letter-spacing: -0.5px; }
+    .kpi-label { font-size: 11px; color: #777; font-weight: 600; text-transform: uppercase; letter-spacing: 0.3px; }
+    .kpi-card.blue { border-left-color: #1565C0; }
+    .kpi-card.blue .kpi-value { color: #1565C0; }
+    .kpi-card.orange { border-left-color: #E65100; }
+    .kpi-card.orange .kpi-value { color: #E65100; }
+    .kpi-card.purple { border-left-color: #6A1B9A; }
+    .kpi-card.purple .kpi-value { color: #6A1B9A; }
+
+    /* Map Styles */
+    #map-container {
+      width: 100%;
+      height: calc(100vh - 160px);
+      border-radius: 12px;
+      overflow: hidden;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+      position: relative;
+    }
+    .map-toolbar {
+      background: white;
+      border-radius: 8px;
+      padding: 6px 14px;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+      margin-bottom: 8px;
+    }
+    .map-layer-control {
+      position: absolute;
+      top: 70px;
+      right: 20px;
+      z-index: 1000;
+      background: white;
+      border-radius: 8px;
+      padding: 10px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+      max-height: 300px;
+      overflow-y: auto;
+      min-width: 180px;
+    }
+    .map-layer-control label {
+      display: block;
+      cursor: pointer;
+      padding: 3px 0;
+      font-size: 12px;
+    }
+    @media (max-width: 767px) {
+      #map-container {
+        height: calc(100vh - 200px);
+        border-radius: 8px;
+      }
+    }
   </style>
 </head>
 
 <body style="font-family: 'Be Vietnam Pro', sans-serif; background-color: #F8F9FA;">
 
-  <div id="login-screen" class="vh-100 d-flex align-items-center justify-content-center">
-    <div class="login-card p-5 text-center bg-white shadow rounded-4">
-      <img src="https://github.com/impactslowforest/Logo/blob/main/FSC%20logo%20-%20R.png?raw=true" height="80"
-        class="mb-4 logo-bounce">
-      <h5 class="fw-bold text-success mb-4">QUẢN LÝ RỪNG BỀN VỮNG</h5>
+  <div id="login-screen" class="d-flex align-items-center justify-content-center" style="min-height:100vh;min-height:100dvh">
+    <div class="login-card">
+      <div class="login-header">
+        <img src="https://github.com/impactslowforest/Logo/blob/main/FSC%20logo%20-%20R.png?raw=true" height="64" alt="FSC Logo" style="filter:brightness(10);margin-bottom:10px">
+        <h5 style="color:#fff;font-weight:700;font-size:16px;margin:0;letter-spacing:0.5px">HE THONG QUAN LY RUNG FSC</h5>
+        <div style="color:rgba(255,255,255,0.7);font-size:12px;margin-top:4px">Forest Stewardship Council</div>
+      </div>
 
-      <form id="form-login">
-        <input type="text" class="form-control mb-3" id="login-email" placeholder="Email hoặc Username" required>
-        <input type="password" class="form-control mb-2" id="login-pass" placeholder="Mật khẩu" required>
-        <div class="d-flex justify-content-between mb-4">
-          <a href="javascript:void(0)" class="text-decoration-none small text-success fw-bold"
-            onclick="toggleAuth('REGISTER')">Đăng ký mới</a>
-          <a href="javascript:void(0)" class="text-decoration-none small text-muted"
-            onclick="handleForgotPassword()">Quên mật khẩu?</a>
-        </div>
-        <button type="submit" class="btn btn-success w-100 fw-bold" id="btn-login">ĐĂNG NHẬP</button>
-      </form>
+      <div class="login-body">
+        <form id="form-login">
+          <div class="login-input-group">
+            <i class="fa-solid fa-user input-icon"></i>
+            <input type="text" class="form-control" id="login-email" placeholder="Email hoac Username" required autocomplete="username" autocapitalize="none" autocorrect="off" spellcheck="false" inputmode="email">
+          </div>
+          <div class="login-input-group">
+            <i class="fa-solid fa-lock input-icon"></i>
+            <input type="password" class="form-control" id="login-pass" placeholder="Mat khau" required autocomplete="current-password">
+            <button type="button" class="toggle-pass" onclick="togglePasswordVis(this)" tabindex="-1"><i class="fa-solid fa-eye"></i></button>
+          </div>
+          <div class="d-flex justify-content-between align-items-center mb-3" style="margin-top:-2px">
+            <a href="javascript:void(0)" class="text-decoration-none text-success fw-semibold" style="font-size:13px" onclick="toggleAuth('REGISTER')">Dang ky moi</a>
+            <a href="javascript:void(0)" class="text-decoration-none text-muted" style="font-size:12px" onclick="handleForgotPassword()">Quen mat khau?</a>
+          </div>
+          <button type="submit" class="btn btn-login-main" id="btn-login"><i class="fa-solid fa-right-to-bracket me-2"></i>Dang nhap</button>
+        </form>
 
-      <form id="form-register" class="d-none">
-        <input type="text" class="form-control mb-3" id="reg-name" placeholder="Họ tên đầy đủ" required>
-        <input type="email" class="form-control mb-3" id="reg-email" placeholder="Email đăng nhập" required>
-        <input type="text" class="form-control mb-3" id="reg-phone" placeholder="Số điện thoại" required>
-        <input type="password" class="form-control mb-3" id="reg-pass" placeholder="Mật khẩu" required>
-        <input type="password" class="form-control mb-4" id="reg-confirm-pass" placeholder="Nhập lại mật khẩu" required>
-        <button type="submit" class="btn btn-primary w-100 fw-bold mb-3" id="btn-register">ĐĂNG KÝ</button>
-        <div class="text-center">
-          <a href="javascript:void(0)" class="text-decoration-none small text-success fw-bold"
-            onclick="toggleAuth('LOGIN')">← Quay lại Đăng nhập</a>
-        </div>
-      </form>
+        <form id="form-register" class="d-none">
+          <div class="login-input-group">
+            <i class="fa-solid fa-user-pen input-icon"></i>
+            <input type="text" class="form-control" id="reg-name" placeholder="Ho ten day du" required>
+          </div>
+          <div class="login-input-group">
+            <i class="fa-solid fa-at input-icon"></i>
+            <input type="text" class="form-control" id="reg-username" placeholder="Username (viet lien, khong dau)" required autocapitalize="none" autocorrect="off" spellcheck="false" pattern="[a-zA-Z0-9_]+" title="Chi cho phep chu cai, so va dau gach duoi">
+          </div>
+          <div class="login-input-group">
+            <i class="fa-solid fa-envelope input-icon"></i>
+            <input type="email" class="form-control" id="reg-email" placeholder="Email" required autocapitalize="none">
+          </div>
+          <div class="login-input-group">
+            <i class="fa-solid fa-phone input-icon"></i>
+            <input type="tel" class="form-control" id="reg-phone" placeholder="So dien thoai">
+          </div>
+          <div class="login-input-group">
+            <i class="fa-solid fa-lock input-icon"></i>
+            <input type="password" class="form-control" id="reg-pass" placeholder="Mat khau" required autocomplete="new-password">
+            <button type="button" class="toggle-pass" onclick="togglePasswordVis(this)" tabindex="-1"><i class="fa-solid fa-eye"></i></button>
+          </div>
+          <div class="login-input-group">
+            <i class="fa-solid fa-check-double input-icon"></i>
+            <input type="password" class="form-control" id="reg-confirm-pass" placeholder="Nhap lai mat khau" required autocomplete="new-password">
+          </div>
+          <button type="submit" class="btn btn-register-main mb-3" id="btn-register"><i class="fa-solid fa-user-plus me-2"></i>Dang ky</button>
+          <div class="text-center">
+            <a href="javascript:void(0)" class="text-decoration-none text-success fw-semibold" style="font-size:13px" onclick="toggleAuth('LOGIN')"><i class="fa-solid fa-arrow-left me-1"></i>Quay lai Dang nhap</a>
+          </div>
+        </form>
 
-      <div id="login-error" class="text-danger mt-3 small fw-bold"></div>
-      <div class="mt-4 text-muted small">Hệ thống quản lý rừng bền vững xin chào bạn !</div>
+        <div id="login-error" class="text-danger mt-2 small fw-bold text-center" style="display:none"></div>
+      </div>
+
+      <div class="text-center py-3" style="background:#f8f9fa;border-top:1px solid #eee;font-size:11px;color:#999">
+        <i class="fa-solid fa-shield-halved me-1"></i> Bao mat boi Supabase Auth
+      </div>
     </div>
   </div>
 
   <div id="main-app" class="d-none d-flex flex-column vh-100">
-    <nav class="navbar navbar-dark bg-success shadow px-3"
-      style="background: linear-gradient(135deg, #2E7D32 0%, #1B5E20 100%) !important;">
-      <button class="btn text-white" id="sidebarToggle"><i class="fa-solid fa-bars"></i></button>
-      <span class="navbar-brand fw-bold ms-2 fs-6">FSC SYSTEM</span>
-      <div class="ms-auto text-white d-flex align-items-center">
-        <span class="me-2 small d-none d-md-block" id="user-display-name">User</span>
-        <button type="button" class="btn btn-sm btn-light text-success fw-bold rounded-pill px-3"
-          onclick="logout()">Thoát</button>
+    <nav class="navbar navbar-dark bg-success shadow px-2 px-md-3 d-flex align-items-center"
+      style="background: linear-gradient(135deg, #2E7D32 0%, #1B5E20 100%) !important; min-height: 56px;">
+      <button class="btn text-white flex-shrink-0 d-none d-lg-inline-block" id="sidebarToggle"><i class="fa-solid fa-bars"></i></button>
+      <div class="navbar-title-area position-absolute start-50 translate-middle-x text-center d-none d-md-flex align-items-center" style="gap:12px">
+        <img src="Logo Clever forestry.png" height="40" alt="Clever Forestry" style="border-radius:6px">
+        <span class="text-white fw-bold" style="font-size:20px;letter-spacing:0.5px;text-transform:uppercase" id="navbar-project-name">Quan ly rung ben vung FSC</span>
+        <img src="https://github.com/impactslowforest/Logo/blob/main/FSC%20logo%20-%20R.png?raw=true" height="40" alt="FSC" style="vertical-align:middle">
+      </div>
+      <div class="d-md-none d-flex align-items-center flex-grow-1 min-w-0 ms-1" style="gap:4px">
+        <img src="Logo Clever forestry.png" height="24" class="flex-shrink-0" alt="CF" style="border-radius:4px">
+        <span class="text-white fw-bold text-truncate" id="navbar-project-name-mobile" style="font-size:10px;line-height:1.15;letter-spacing:0;flex:1;min-width:0">FSC</span>
+        <img src="https://github.com/impactslowforest/Logo/blob/main/FSC%20logo%20-%20R.png?raw=true" height="24" class="flex-shrink-0" alt="FSC">
+      </div>
+      <div class="d-flex align-items-center gap-1 gap-md-2 ms-auto flex-shrink-0">
+        <div class="text-end d-none d-md-block" style="line-height:1.2">
+          <div class="fw-bold" id="navbar-clock" style="font-size:14px;color:#fff;letter-spacing:0.5px"></div>
+          <div style="font-size:11px;opacity:0.8;color:#fff" id="navbar-date"></div>
+        </div>
+        <span class="text-white me-1 small d-none d-md-block" id="user-display-name" style="opacity:0.85">User</span>
+        <span id="offline-badge" class="badge bg-warning text-dark d-none" style="font-size:10px"><i class="fa-solid fa-wifi-slash me-1"></i>Offline</span>
+        <button type="button" class="btn btn-sm btn-logout fw-bold rounded-pill px-2 px-md-3 shadow-sm"
+          style="background:#fff;color:#C62828;border:2px solid rgba(255,255,255,0.3);white-space:nowrap"
+          onmouseenter="this.style.background='#FFEBEE';this.style.color='#B71C1C'" onmouseleave="this.style.background='#fff';this.style.color='#C62828'"
+          onclick="logout()"><i class="fa-solid fa-right-from-bracket me-1"></i><span class="d-none d-sm-inline">Thoát</span></button>
       </div>
     </nav>
 
     <div class="d-flex flex-grow-1 overflow-hidden">
       <div id="sidebar-overlay" onclick="toggleSidebar()"></div>
       <div id="sidebar-wrapper" class="bg-white border-end shadow-sm">
-        <div class="sidebar-header">MENU</div>
+        <div class="sidebar-header d-flex align-items-center justify-content-center" style="cursor:pointer" onclick="goHome()" title="Trang chủ">
+          <span class="home-icon"><i class="fa-solid fa-house"></i></span>
+        </div>
         <div class="accordion accordion-flush overflow-auto h-100" id="sidebarAccordion"></div>
       </div>
 
-      <div id="page-content-wrapper" class="flex-grow-1 bg-light overflow-auto p-3 p-md-4">
-        <div id="dashboard-view">
-          <h5 class="fw-bold text-secondary mb-3"><i class="fa-solid fa-gauge-high me-2"></i>TỔNG QUAN</h5>
-          <ul class="nav nav-pills mb-3" id="dashboardTabs"></ul>
-          <div class="tab-content" id="dashboardTabContent"></div>
-        </div>
+      <div id="page-content-wrapper" class="flex-grow-1 bg-light overflow-auto p-2 p-md-3">
+        <div id="dashboard-view"></div>
         <div id="data-view" class="d-none">
           <div class="d-flex align-items-center mb-3">
             <button class="btn btn-outline-success btn-sm me-3 px-3 rounded-pill fw-bold" onclick="navigateBack()">
@@ -418,8 +1056,65 @@
             <div id="breadcrumb-container" class="flex-grow-1"></div>
           </div>
           <div id="page-content-dynamic"></div>
+          <div id="map-view" class="d-none">
+            <div class="map-toolbar d-flex align-items-center justify-content-between flex-wrap gap-2">
+              <div>
+                <button type="button" class="btn btn-outline-success btn-sm" onclick="navigateBack()">
+                  <i class="fa-solid fa-arrow-left me-1"></i> Quay lại
+                </button>
+                <span class="fw-bold text-success ms-2">Bản đồ quản lý lô rừng</span>
+              </div>
+              <div class="d-flex gap-2 flex-wrap">
+                <label class="btn btn-outline-primary btn-sm mb-0">
+                  <i class="fa-solid fa-upload me-1"></i> Tải GeoJSON
+                  <input type="file" accept=".geojson,.json" class="d-none" id="geojson-upload" onchange="handleGeoJSONUpload(event)">
+                </label>
+                <button type="button" class="btn btn-outline-warning btn-sm" id="btn-edit-polygon" onclick="togglePolygonEdit()">
+                  <i class="fa-solid fa-pen-to-square me-1"></i> Chỉnh sửa
+                </button>
+                <button type="button" class="btn btn-outline-secondary btn-sm" onclick="toggleMapLayers()">
+                  <i class="fa-solid fa-layer-group me-1"></i> Lớp
+                </button>
+                <button type="button" class="btn btn-outline-info btn-sm" onclick="addMapNote()">
+                  <i class="fa-solid fa-sticky-note me-1"></i> Ghi chú
+                </button>
+                <div class="btn-group">
+                  <button type="button" class="btn btn-outline-dark btn-sm" onclick="zoomToAllData()">
+                    <i class="fa-solid fa-expand me-1"></i> Toàn bộ
+                  </button>
+                  <button type="button" class="btn btn-outline-dark btn-sm dropdown-toggle dropdown-toggle-split" data-bs-toggle="dropdown"></button>
+                  <ul class="dropdown-menu dropdown-menu-end" id="zoom-layer-menu">
+                    <li><a class="dropdown-item small" href="#" onclick="zoomToAllData();return false"><i class="fa-solid fa-globe me-1"></i> Tất cả lớp</a></li>
+                  </ul>
+                </div>
+                <button type="button" class="btn btn-outline-purple btn-sm" onclick="openGeoJSONRepo()" style="border-color:#7B1FA2;color:#7B1FA2">
+                  <i class="fa-solid fa-database me-1"></i> Kho bản đồ
+                </button>
+                <button type="button" class="btn btn-success btn-sm" onclick="goHome()">
+                  <i class="fa-solid fa-house me-1"></i> Trang chủ
+                </button>
+              </div>
+            </div>
+            <div id="map-container"></div>
+            <div id="map-layer-panel" class="map-layer-control d-none"></div>
+          </div>
         </div>
       </div>
+    </div>
+
+    <div id="mobile-home-bar" class="d-md-none">
+      <button type="button" class="mob-nav-btn" onclick="toggleSidebar()">
+        <i class="fa-solid fa-bars"></i><span>Menu</span>
+      </button>
+      <button type="button" class="mob-nav-btn active" onclick="goHome()">
+        <i class="fa-solid fa-house"></i><span>Trang chủ</span>
+      </button>
+      <button type="button" class="mob-nav-btn" onclick="loadView('Bando_lorung','Bản đồ quản lý lô rừng')">
+        <i class="fa-solid fa-map"></i><span>Bản đồ</span>
+      </button>
+      <button type="button" class="mob-nav-btn" onclick="logout()">
+        <i class="fa-solid fa-right-from-bracket"></i><span>Thoát</span>
+      </button>
     </div>
   </div>
 
@@ -444,12 +1139,218 @@
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
   <script src="https://cdn.datatables.net/1.13.4/js/jquery.dataTables.min.js"></script>
   <script src="https://cdn.datatables.net/1.13.4/js/dataTables.bootstrap5.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet.draw/1.0.4/leaflet.draw.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
 
   <script>
-    const WEB_APP_URL = 'https://script.google.com/macros/s/AKfycbzv-UUSMqDi-bMl3rNkr1y_nUSvqXmU4CvNM7KLwialDqSa0zjtPaXeyY37JkTD9xk/exec';
+    // === SERVICE WORKER REGISTRATION (PWA Offline) ===
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('./sw.js').then(reg => {
+          console.log('SW registered:', reg.scope);
+          reg.addEventListener('updatefound', () => {
+            const newWorker = reg.installing;
+            newWorker.addEventListener('statechange', () => {
+              if (newWorker.state === 'activated') {
+                console.log('SW updated - new content available');
+              }
+            });
+          });
+        }).catch(err => console.warn('SW registration failed:', err));
+      });
+    }
+
+    // === OFFLINE/ONLINE STATUS ===
+    function updateOnlineStatus() {
+      const badge = document.getElementById('offline-badge');
+      if (badge) { navigator.onLine ? badge.classList.add('d-none') : badge.classList.remove('d-none'); }
+    }
+    window.addEventListener('online', () => { updateOnlineStatus(); console.log('Back online'); });
+    window.addEventListener('offline', () => { updateOnlineStatus(); console.log('Gone offline'); });
+
+    // === SUPABASE CONFIG ===
+    const SUPABASE_URL = 'https://rvvctklkxjhypgmzcaym.supabase.co';
+    const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJ2dmN0a2xreGpoeXBnbXpjYXltIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzA1NTQyOTEsImV4cCI6MjA4NjEzMDI5MX0.h_Y-_YRFlfKlmchIcz6h5nz6FusmVotwjXpPHUZvDvs';
+    const sb = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
     let currentUser = null;
     let APP_DATA = {};
     let navHistory = [];
+
+    // === DB TABLE MAPPING: oldSheetName → { table, cols: {dbCol: displayCol} } ===
+    const DB_MAP = {
+      'NhanSu': { table: 'profiles', cols: {
+        id_staff:'ID_staff', ho_va_ten:'Họ và tên', email:'Email', username:'Username', gioi_tinh:'Giới tính',
+        ngay_sinh:'Ngày sinh', chuc_vu:'Chức vụ', so_dien_thoai:'Số điện thoại',
+        trang_thai:'Trạng thái', thuoc_ban_quan_ly:'Thuộc Ban quản lý', thuoc_nhom:'Thuộc nhóm'
+      }},
+      'Menu': { table: 'menu', cols: {
+        id:'ID', nhom:'Nhom', module:'Module', view_name:'View',
+        xem:'Xem', them:'Thêm', sua:'Sửa', xoa:'Xóa', phan_quyen:'PhanQuyen'
+      }},
+      'Admin': { table: 'admin_province', cols: {
+        id:'ID', province_code:'Province code', province:'Province',
+        district:'District', commune:'Commune', type:'TYPE'
+      }},
+      'Ban_Quanlynhom': { table: 'ban_quan_ly_nhom', cols: {
+        id:'ID ban quản lý', ten:'Tên ban quản lý', loai_to_chuc:'Loại tổ chức',
+        dia_chi:'Địa chỉ', tinh:'Tỉnh', huyen:'Huyện', nguoi_dai_dien:'Người đại diện',
+        chuc_vu:'Chức vụ', dien_thoai:'Điện thoại', email:'Email', website:'Website',
+        loai_cay_trong_chinh:'Loài cây trồng chính'
+      }},
+      'NhomCCR': { table: 'nhom_ccr', cols: {
+        id:'ID nhóm', id_ban_quan_ly:'ID ban quản lý', ma_nhom:'Mã nhóm', ten_nhom:'Tên nhóm',
+        nguoi_dai_dien:'Người đại diện', so_dien_thoai:'Số điện thoại', dia_chi:'Địa chỉ',
+        tinh:'Tỉnh', huyen:'Huyện', xa:'Xã', xom:'Xóm', vi_tri:'Vị trí',
+        dien_tich_fsc:'Diện tích FSC', dien_tich_ngoai_fsc:'Diện tích ngoài FSC',
+        dien_tich_rung_tu_nhien:'Diện tích rừng tự nhiên', dien_tich_vung_dem:'Diện tích vùng đệm',
+        tong_dien_tich:'Tổng diện tích', san_luong_du_kien_nam:'Sản lượng dự kiến năm',
+        dien_tich_trong_rung_nam:'Diện tích trồng rừng năm', so_thanh_vien:'Số thành viên',
+        ngay_cap_nhat:'Ngày cập nhật', nguoi_cap_nhat:'Người cập nhật', duong_dan_file:'Đường dẫn file'
+      }},
+      'Churung': { table: 'chu_rung', cols: {
+        id:'ID chủ rừng', id_nhom:'ID nhóm', ho_ten:'Họ tên chủ rừng', gioi_tinh:'Giới tính',
+        ngay_sinh:'Ngày sinh', dan_toc:'Dân tộc', cccd:'CCCD',
+        ho_ten_vo:'Họ tên vợ', ho_ten_chong:'Họ tên chồng',
+        so_dien_thoai:'Số điện thoại', tinh:'Tỉnh', huyen:'Huyện', xa:'Xã', thon:'Thôn', dia_chi:'Địa chỉ',
+        ngay_tham_gia:'Ngày tham gia', ngay_roi_nhom:'Ngày rời nhóm',
+        so_lo_rung:'Số lô rừng', tong_dien_tich:'Tổng diện tích', dien_tich_fsc:'Diện tích FSC',
+        dien_tich_rung_tu_nhien:'Diện tích rừng tự nhiên', dien_tich_vung_dem:'Diện tích vùng đệm',
+        san_luong_du_kien_nam:'Sản lượng dự kiến năm', dien_tich_trong_rung_nam:'Diện tích trồng rừng năm',
+        nguoi_nhap:'Người nhập dữ liệu', duong_dan_file:'Đường dẫn file'
+      }},
+      'Lo_rung': { table: 'lo_rung', cols: {
+        id:'ID lô rừng', id_nhom:'ID nhóm', id_chu_rung:'ID chủ rừng',
+        ma_so_lo_2024:'Mã số lô 2024', ma_so_lo_2023:'Mã số lô 2023', qr_code:'QR code', ten_lo_rung:'Tên lô rừng',
+        so_so_do:'Số sổ đỏ', to_ban_do:'Tờ bản đồ', thua_dat:'Thửa đất', tieu_khu:'Tiểu khu', khoanh:'Khoảnh',
+        toa_do_tam_lo:'Tọa độ tâm lô', khoang_cach_toi_nha:'Khoảng cách tới nhà', dia_chi_lo:'Địa chỉ lô',
+        tinh_trang_so_do:'Tình trạng sổ đỏ', ngay_tham_gia_fsc:'Ngày tham gia FSC',
+        tinh_trang_xoi_mon:'Tình trạng xói mòn', nguyen_nhan_xoi_mon:'Nguyên nhân xói mòn',
+        moc_ranh_gioi:'Mốc ranh giới', do_ben_vung_moc_ranh:'Độ bền vững mốc ranh', trang_thai:'Trạng thái',
+        do_doc_binh_quan:'Độ dốc bình quân', giap_ranh_rung_tu_nhien:'Giáp ranh rừng tự nhiên',
+        co_loai_cay_ban_dia:'Có loài cây bản địa', ten_dong_vat_thuc_vat_quy:'Tên động vật thực vật quý',
+        loai_cay_trong_chinh:'Loài cây trồng chính', loai_cay_trong_xen_ghep:'Loài cây trồng xen ghép',
+        loai_cay_trong_fsc:'Loài cây trồng FSC', nguon_goc_giong:'Nguồn gốc giống',
+        mo_ta_nguon_goc_giong:'Mô tả nguồn gốc giống', co_hoa_don_giong:'Có hóa đơn giống',
+        mat_do_ban_dau:'Mật độ ban đầu', mat_do_sau_tia_thua:'Mật độ sau khi tỉa thưa',
+        so_cay_trong_chinh:'Số cây trồng chính', so_cay_trong_dam:'Số cây trồng dặm',
+        tong_dien_tich:'Tổng diện tích', dien_tich_gcn_qsdd:'Diện tích GCN QSDĐ',
+        dien_tich_trong_rung:'Diện tích trồng rừng', dien_tich_fsc:'Diện tích FSC',
+        dien_tich_ngoai_fsc:'Diện tích ngoài FSC', dien_tich_vung_dem:'Diện tích vùng đệm',
+        dien_tich_rung_tu_nhien:'Diện tích rừng tự nhiên', dien_tich_hlvs:'Diện tích HLVS', co_ao_ho:'Có ao hồ',
+        thoi_diem_trong:'Thời điểm trồng', nam_trong:'Năm trồng', so_nam_khai_thac:'Số năm khai thác',
+        nam_khai_thac:'Năm khai thác', san_luong_khai_thac_xe:'Sản lượng khai thác xe',
+        san_luong_khai_thac_dam:'Sản lượng khai thác đăm',
+        co_thue_lao_dong:'Có thuê lao động', phuong_tien_bao_ho:'Phương tiện bảo hộ lao động',
+        loai_phuong_tien_bhld:'Loại phương tiện BHLD',
+        ky_thuat_truoc_trong:'Kỹ thuật trước trồng', ky_thuat_cham_soc:'Kỹ thuật chăm sóc',
+        cuoc_ho_bang_may:'Cuốc hố bằng máy', bon_phan:'Bón phân', loai_phan_bon:'Loại phân bón',
+        dinh_luong_phan_bon:'Định lượng phân bón', kiem_soat_dich_benh:'Kiểm soát dịch bệnh',
+        tinh_hinh_sau_benh:'Tình hình sâu bệnh', thuoc_su_dung:'Thuốc sử dụng',
+        phong_chay_chua_chay:'Phòng cháy chữa cháy'
+      }},
+      'Taphuan': { table: 'tap_huan', cols: {
+        id:'ID tập huấn', id_chu_rung:'ID chủ rừng', loai_tap_huan:'Loại tập huấn',
+        ngay_tap_huan:'Ngày tập huấn', dia_diem:'Địa điểm', giang_vien:'Giảng viên',
+        so_luong_tham_du:'Số lượng tham dự'
+      }},
+      'Noidung_taphuan': { table: 'noi_dung_tap_huan', cols: {
+        id:'ID tập huấn', ten_lop:'Tên lớp tập huấn', loai_tap_huan:'Loại tập huấn', ghi_chu:'Ghi chú'
+      }},
+      'Loai_hoatdong_rung': { table: 'loai_hoat_dong_rung', cols: {
+        id:'ID hoạt động', ten_hoat_dong:'Tên hoạt động', mo_ta_chi_tiet:'Mô tả chi tiết'
+      }},
+      'KH_QL_Lorung': { table: 'kh_ql_lo_rung', cols: {
+        id:'ID kế hoạch', id_lo_rung:'ID lô rừng', hoat_dong:'Hoạt động',
+        ngay_thuc_hien:'Ngày thực hiện', noi_dung:'Nội dung', trang_thai:'Trạng thái',
+        nguoi_nhap:'Người nhập', ghi_chu:'Ghi chú'
+      }},
+      'Biendong_lorung': { table: 'bien_dong_lo_rung', cols: {
+        id:'ID', id_lo_rung:'ID lô rừng', loai_bien_dong:'Loại biến động',
+        ngay_bien_dong:'Ngày biến động', noi_dung:'Nội dung', nguoi_nhap:'Người nhập', ghi_chu:'Ghi chú'
+      }},
+      'KH_HD_nhom': { table: 'kh_hd_nhom', cols: {
+        id:'ID', id_nhom:'ID nhóm', hoat_dong:'Hoạt động', ngay_thuc_hien:'Ngày thực hiện',
+        noi_dung:'Nội dung', trang_thai:'Trạng thái', nguoi_nhap:'Người nhập', ghi_chu:'Ghi chú'
+      }},
+      'KH_HD_Churung': { table: 'kh_hd_chu_rung', cols: {
+        id:'ID', id_chu_rung:'ID chủ rừng', hoat_dong:'Hoạt động', ngay_thuc_hien:'Ngày thực hiện',
+        noi_dung:'Nội dung', trang_thai:'Trạng thái', nguoi_nhap:'Người nhập', ghi_chu:'Ghi chú'
+      }},
+      'HD_Lorung': { table: 'hd_lo_rung', cols: {
+        id:'ID hoạt động lô', id_lo_rung:'ID lô rừng', id_hoat_dong:'ID hoạt động',
+        ten_hoat_dong:'Tên hoạt động', ngay_trien_khai:'Ngày triển khai', ngay_ket_thuc:'Ngày kết thúc',
+        ngay_bao_cao:'Ngày báo cáo', dia_diem_kiem_tra:'Địa điểm kiểm tra', nguoi_kiem_tra:'Người kiểm tra',
+        ket_qua_hoat_dong:'Kết quả hoạt động', dien_tich_thuc_hien:'Diện tích thực hiện',
+        so_lao_dong:'Số lao động', tuoi_lao_dong:'Tuổi lao động'
+      }},
+      'DS_HDong': { table: 'ds_hdong', cols: {
+        id:'ID DS hoat dong', hoat_dong_chi_tiet:'Hoạt động chi tiết', nhom_hoat_dong:'Nhóm hoạt động'
+      }},
+      'CauHoi_DanhGia': { table: 'cau_hoi_danh_gia', cols: {
+        id:'ID câu hỏi', nhom_tieu_chi:'Nhóm tiêu chí', noi_dung:'Nội dung câu hỏi',
+        phuong_phap:'Phương pháp kiểm tra', goi_y_bang_chung:'Gợi ý bằng chứng'
+      }},
+      'KetQua_DanhGia': { table: 'ket_qua_danh_gia', cols: {
+        id:'ID', id_cau_hoi:'ID câu hỏi', id_dg:'ID đánh giá', ket_qua:'Kết quả', ghi_chu:'Ghi chú'
+      }},
+      'DG_noibo': { table: 'dg_noi_bo', cols: {
+        id:'ID', id_nhom:'ID nhóm', audit_date:'Date', staff:'Staff', updated_at:'Update'
+      }},
+      'Banghoi_DG_noibo': { table: 'bang_hoi_dg_noi_bo', cols: {
+        id:'ID_hoi', id_dg:'ID_DG', answers:'answers'
+      }}
+    };
+
+    // === HELPER: Convert Supabase row (snake_case) → Display (Vietnamese) ===
+    function fromDB(sheetName, rows) {
+      const map = DB_MAP[sheetName];
+      if (!map || !rows) return rows || [];
+      const colMap = map.cols;
+      return rows.map(row => {
+        const obj = {};
+        for (const [dbCol, displayCol] of Object.entries(colMap)) {
+          if (row[dbCol] !== undefined && row[dbCol] !== null) {
+            let val = row[dbCol];
+            if (val instanceof Object && !(val instanceof Date)) val = JSON.stringify(val);
+            obj[displayCol] = val;
+          } else {
+            obj[displayCol] = '';
+          }
+        }
+        return obj;
+      });
+    }
+
+    // === HELPER: Convert Display (Vietnamese) → Supabase (snake_case) ===
+    function toDB(sheetName, obj) {
+      const map = DB_MAP[sheetName];
+      if (!map) return obj;
+      const reverseMap = {};
+      for (const [dbCol, displayCol] of Object.entries(map.cols)) {
+        reverseMap[displayCol] = dbCol;
+      }
+      const dbObj = {};
+      for (const [key, val] of Object.entries(obj)) {
+        const dbCol = reverseMap[key];
+        if (dbCol && val !== undefined) {
+          dbObj[dbCol] = val === '' ? null : val;
+        }
+      }
+      return dbObj;
+    }
+
+    function getDBTable(sheetName) {
+      return DB_MAP[sheetName] ? DB_MAP[sheetName].table : sheetName;
+    }
+
+    function getIdColumn(sheetName) {
+      const map = DB_MAP[sheetName];
+      if (!map) return 'id';
+      return 'id';
+    }
 
     const TABLE_CONFIG = {
       'Menu': { columns: ['ID', 'Nhom', 'Module', 'View', 'Xem', 'Thêm', 'Sửa', 'Xóa'] },
@@ -532,7 +1433,7 @@
     };
 
     const AUDIT_DICTIONARY = {
-      "TUÂN THỦ PHÁP LUẬT": [
+      "Tuân thủ pháp luật": [
         { id: "RanhGioiRoRang", label: "Ranh giới của tất cả các Đơn vị Quản lý trong phạm vi chứng chỉ có được xác định hoặc tài liệu hóa rõ ràng và thể hiện rõ trên bản đồ không?", index: "1.2.3" },
         { id: "NopThuePhiDayDu", label: "Việc chi trả các loại thuế và phí liên quan đến quản lý rừng có được thực hiện kịp thời theo đúng quy định hiện hành không?", index: "1.3.2" },
         { id: "GiamSatNoiBo", label: "Công tác giám sát nội bộ hoạt động nhóm có được thực hiện không?", index: "1.4.2" },
@@ -541,7 +1442,7 @@
         { id: "HoSoTranhChap", label: "Hồ sơ tranh chấp có được cập nhật đầy đủ các bước giải quyết, kết quả, hoặc lý do chưa giải quyết xong không?", index: "1.6.3" },
         { id: "NgungHoatDongKhiTranhChap", label: "Chủ rừng có ngừng hoạt động ở các nơi có tranh chấp nghiêm trọng, kéo dài hoặc liên quan đến nhiều bên không?", index: "1.6.4" }
       ],
-      "QUYỀN NGƯỜI LAO ĐỘNG": [
+      "Quyền người lao động": [
         { id: "TuDoThamGiaToChuc", label: "Người lao động có được tự do tham gia tổ chức lao động mà họ lựa chọn không?", index: "2.1.2" },
         { id: "KhongLaoDongCuongBuc", label: "Có tồn tại bất cứ hình thức lao động cưỡng bức nào đối với người lao động của chủ rừng và nhà thầu không?", index: "2.1.4" },
         { id: "TraLuongCongBang", label: "Phụ nữ và nam giới có được trả lương công bằng khi làm cùng một công việc không?", index: "2.2.4" },
@@ -558,14 +1459,14 @@
         { id: "GiaiQuyetKhieuNai", label: "Các khiếu nại, tố cáo của người lao động có được xác định, phản hồi và giải quyết thỏa đáng không?", index: "2.6.2" },
         { id: "BoiThuongThietHai", label: "Người lao động có được bồi thường công bằng cho các thiệt hại liên quan đến công việc (tai nạn, bệnh nghề nghiệp...) không?", index: "2.6.4" }
       ],
-      "QUYỀN NGƯỜI BẢN ĐỊA": [
+      "Quyền người bản địa": [
         { id: "NhanDienNguoiBanDia", label: "Có xác định được Người dân tộc (nếu có) bị ảnh hưởng bởi hoạt động quản lý rừng không?", index: "3.1.1" },
         { id: "TaiLieuHoaQuyenLoi", label: "Các quyền lợi hợp pháp, truyền thống và nguyện vọng của người dân tộc có được tài liệu hóa và đưa vào bản đồ không?", index: "3.1.2" },
         { id: "ThamVanNguoiBanDia", label: "Người dân tộc có được thông báo và tham vấn về các hoạt động quản lý rừng để bảo vệ quyền lợi của họ không?", index: "3.2.1" },
         { id: "HoSoThoaThuan", label: "Hồ sơ về các thỏa thuận ràng buộc với người dân tộc có được lưu giữ không?", index: "3.3.2" },
         { id: "BaoVeDiaDiemVanHoa", label: "Các địa điểm có ý nghĩa văn hóa, tâm linh đặc biệt của người dân tộc có được xác định và bảo vệ không?", index: "3.5.1" }
       ],
-      "QUAN HỆ CỘNG ĐỒNG": [
+      "Quan hệ cộng đồng": [
         { id: "NhanDienCongDong", label: "Có xác định được cộng đồng địa phương bên trong và xung quanh Đơn vị Quản lý không?", index: "4.1.1" },
         { id: "ThamVanCongDong", label: "Cộng đồng địa phương có được thông báo và tham vấn về các hoạt động quản lý rừng không?", index: "4.2.1" },
         { id: "BaoVeQuyenLoiCongDong", label: "Các quyền hợp pháp và truyền thống của cộng đồng địa phương có được tôn trọng và không bị vi phạm không?", index: "4.2.2" },
@@ -573,11 +1474,11 @@
         { id: "QuyTrinhGiaiQuyetTranhChap", label: "Có quy trình giải quyết tranh chấp công khai, được xây dựng với sự tham gia của cộng đồng không?", index: "4.6.1" },
         { id: "XuLyTranhChapCongDong", label: "Các tranh chấp liên quan đến hoạt động quản lý rừng có được phản hồi và giải quyết kịp thời không?", index: "4.6.2" }
       ],
-      "LỢI ÍCH TỪ RỪNG": [
+      "Lợi ích từ rừng": [
         { id: "CanCuKhaiThac", label: "Lượng khai thác gỗ có dựa trên các tài liệu chứng minh về tăng trưởng, sản lượng và bảo vệ hệ sinh thái không?", index: "5.2.1" },
         { id: "GioiHanKhaiThac", label: "Lượng gỗ khai thác hàng năm có đảm bảo không vượt quá lượng tăng trưởng của rừng không?", index: "5.2.2" }
       ],
-      "MÔI TRƯỜNG": [
+      "Môi trường": [
         { id: "NganNguaTacDongXau", label: "Các hoạt động quản lý có ngăn ngừa tác động tiêu cực tới môi trường không?", index: "6.3.1" },
         { id: "GiamThieuTacDong", label: "Tại nơi xảy ra tác động tiêu cực, có áp dụng biện pháp ngăn chặn, giảm nhẹ hoặc sửa chữa không?", index: "6.3.2" },
         { id: "BaoVeLoaiQuyHiem", label: "Có xác định và bảo vệ các loài quý hiếm, bị đe dọa và sinh cảnh sống của chúng không?", index: "6.4.1" },
@@ -591,15 +1492,15 @@
         { id: "KhongChuyenDoiRungTuNhien", label: "Có đảm bảo không chuyển đổi rừng tự nhiên sang rừng trồng hoặc đất khác (trừ trường hợp đặc biệt cho phép) không?", index: "6.9.1" },
         { id: "ChungChiKhuVucChuyenDoi", label: "Các khu vực chuyển đổi từ rừng tự nhiên sau 1994 có đáp ứng đủ điều kiện để được cấp chứng chỉ không?", index: "6.10.1" }
       ],
-      "KẾ HOẠCH QUẢN LÝ": [
+      "Kế hoạch quản lý": [
         { id: "CongKhaiKeHoach", label: "Bản tóm tắt Kế hoạch Quản lý rừng (trừ thông tin mật) có được công khai miễn phí cho các bên liên quan không?", index: "7.5.1" }
       ],
-      "GIÁM SÁT & ĐÁNH GIÁ": [
+      "Giám sát & Đánh giá": [
         { id: "HeThongTruyXuat", label: "Có hệ thống theo dõi và truy xuất nguồn gốc tất cả sản phẩm FSC không?", index: "8.5.1" },
         { id: "TaiLieuHoaSanPham", label: "Thông tin chi tiết về các sản phẩm đã bán (tên loài, khối lượng, ngày khai thác...) có được ghi chép đầy đủ không?", index: "8.5.2" },
         { id: "LuuTruHoaDon", label: "Các hóa đơn bán hàng và tài liệu liên quan có được lưu giữ ít nhất 5 năm không?", index: "8.5.3" }
       ],
-      "THỰC HIỆN QUẢN LÝ": [
+      "Thực hiện quản lý": [
         { id: "TrongRungSauKhaiThac", label: "Hiện trường khai thác có được trồng lại ngay trong 1 mùa vụ không?", index: "10.1.1" },
         { id: "LoaiCayPhuHop", label: "Việc lựa chọn loài cây trồng có phù hợp với điều kiện lập địa không?", index: "10.2.1" },
         { id: "KiemSoatLoaiXamLan", label: "Danh sách các loài xâm lấn ngoại lai có được cập nhật thường xuyên không?", index: "10.3.3" },
@@ -632,45 +1533,59 @@
       'Biendong': 'Biendong_lorung'
     };
 
-    /**
-     * Gửi yêu cầu tới Google Apps Script. 
-     * Sử dụng 'application/x-www-form-urlencoded' để tránh lỗi CORS Preflight (OPTIONS).
-     */
-    function callGAS(action, data) {
-      return new Promise((resolve, reject) => {
-        // Xây dựng body dưới dạng chuỗi JSON
-        const payload = JSON.stringify({ action, data });
+    // === SUPABASE DATA LOADING ===
+    async function loadAllData() {
+      const sheetsToLoad = [
+        'Menu', 'NhanSu', 'Ban_Quanlynhom', 'NhomCCR', 'Churung',
+        'Taphuan', 'Noidung_taphuan', 'Lo_rung', 'KH_QL_Lorung',
+        'Loai_hoatdong_rung', 'Biendong_lorung', 'KH_HD_nhom',
+        'KH_HD_Churung', 'HD_Lorung', 'DS_HDong', 'CauHoi_DanhGia', 'KetQua_DanhGia',
+        'DG_noibo', 'Banghoi_DG_noibo'
+      ];
 
-        console.log(`Calling GAS: ${action}`, data); // Debug Log
+      // Offline mode: load from localStorage cache
+      if (!navigator.onLine) {
+        console.log('OFFLINE MODE - Loading cached data from localStorage');
+        const cached = localStorage.getItem('fscfm_app_data');
+        if (cached) {
+          try { APP_DATA = JSON.parse(cached); console.log('Loaded offline data:', Object.keys(APP_DATA)); return; }
+          catch(e) { console.warn('Cache parse error:', e); }
+        }
+        console.warn('No cached data available offline');
+        return;
+      }
 
-        fetch(WEB_APP_URL, {
-          method: "POST",
-          mode: "cors",
-          body: payload
-        })
-          .then(async res => {
-            if (!res.ok) throw new Error(`Server Error: ${res.status} ${res.statusText}`);
-
-            const text = await res.text(); // Lấy raw text trước
-            console.log("Raw Response:", text); // Debug Log (Check if it's HTML)
-
-            try {
-              return JSON.parse(text); // Thử parse JSON
-            } catch (e) {
-              console.error("JSON Parse Error:", e, "Data:", text);
-              // Nếu là HTML (lỗi từ Google), throw lỗi rõ ràng
-              if (text.includes("<!DOCTYPE html>") || text.includes("<html")) {
-                throw new Error("Server returned HTML instead of JSON. Check Script URL or permissions.");
-              }
-              throw new Error("Invalid JSON response from server.");
-            }
-          })
-          .then(res => resolve(res))
-          .catch(err => {
-            console.error("GAS Call Error:", err);
-            reject(err);
-          });
+      const promises = sheetsToLoad.map(sheetName => {
+        const dbTable = getDBTable(sheetName);
+        return sb.from(dbTable).select('*').then(res => ({ sheetName, data: res.data, error: res.error }));
       });
+
+      const results = await Promise.all(promises);
+      results.forEach(r => {
+        if (r.error) {
+          console.warn(`Error loading ${r.sheetName}:`, r.error.message);
+          APP_DATA[r.sheetName] = [];
+        } else {
+          // Special handling for Banghoi_DG_noibo: flatten answers JSONB into individual fields
+          if (r.sheetName === 'Banghoi_DG_noibo') {
+            APP_DATA[r.sheetName] = (r.data || []).map(row => {
+              const obj = { 'ID_hoi': row.id, 'ID_DG': row.id_dg };
+              if (row.answers && typeof row.answers === 'object') {
+                Object.assign(obj, row.answers);
+              }
+              return obj;
+            });
+          } else {
+            APP_DATA[r.sheetName] = fromDB(r.sheetName, r.data || []);
+          }
+        }
+      });
+
+      // Cache data to localStorage for offline use
+      try { localStorage.setItem('fscfm_app_data', JSON.stringify(APP_DATA)); }
+      catch(e) { console.warn('Cannot cache data to localStorage:', e); }
+
+      console.log("All data loaded:", Object.keys(APP_DATA));
     }
 
     /**
@@ -705,23 +1620,64 @@
         toggleSidebar();
       });
 
-      // Kiểm tra phiên đăng nhập cũ
-      const savedUser = localStorage.getItem('fsc_user');
-      const savedData = localStorage.getItem('fsc_app_data');
-      if (savedUser && savedData) {
-        try {
-          currentUser = JSON.parse(savedUser);
-          APP_DATA = JSON.parse(savedData);
-          if (currentUser && APP_DATA) {
-            showAppMain();
-          }
-        } catch (e) {
-          console.error("Error loading session:", e);
-          localStorage.removeItem('fsc_user');
-          localStorage.removeItem('fsc_app_data');
+      // Kiểm tra session Supabase
+      sb.auth.getSession().then(async ({ data: { session } }) => {
+        if (session) {
+          console.log("Existing session found:", session.user.email);
+          await initUserSession(session.user);
         }
-      }
+      });
+
+      // Lắng nghe thay đổi auth state
+      sb.auth.onAuthStateChange(async (event, session) => {
+        console.log("Auth state changed:", event);
+        if (event === 'SIGNED_OUT') {
+          currentUser = null;
+          APP_DATA = {};
+          location.reload();
+        }
+      });
     });
+
+    async function initUserSession(authUser) {
+      try {
+        let profileDisplay;
+
+        if (!navigator.onLine) {
+          // Offline: load cached profile
+          const cached = localStorage.getItem('fscfm_user_profile');
+          if (cached) {
+            profileDisplay = JSON.parse(cached);
+            console.log('Offline mode - using cached profile');
+          } else {
+            alert('Không có kết nối mạng và không có dữ liệu được lưu trước đó.');
+            return;
+          }
+        } else {
+          // Online: load profile from Supabase
+          const { data: profile, error } = await sb.from('profiles').select('*').eq('id', authUser.id).single();
+          if (error || !profile) {
+            console.error("Profile not found:", error);
+            return;
+          }
+          if (profile.trang_thai !== 'Act') {
+            alert('Tài khoản chưa kích hoạt hoặc đã bị khóa!');
+            await sb.auth.signOut();
+            return;
+          }
+          profileDisplay = fromDB('NhanSu', [profile])[0];
+          // Cache profile for offline use
+          try { localStorage.setItem('fscfm_user_profile', JSON.stringify(profileDisplay)); } catch(e) {}
+        }
+
+        currentUser = profileDisplay;
+        await loadAllData();
+        showAppMain();
+        updateOnlineStatus();
+      } catch (err) {
+        console.error("Error initializing session:", err);
+      }
+    }
 
     function showAppMain() {
       console.log("Entering showAppMain...", { currentUser, APP_DATA });
@@ -742,6 +1698,7 @@
         }
 
         showDashboard();
+        loadSettings();
         console.log("Transition to main-app complete.");
       } catch (err) {
         console.error("Error in showAppMain:", err);
@@ -752,13 +1709,25 @@
     }
 
     function toggleAuth(mode) {
-      $('#login-error').text('').fadeOut();
+      $('#login-error').text('').hide();
       if (mode === 'REGISTER') {
         $('#form-login').addClass('d-none');
-        $('#form-register').removeClass('d-none').hide().fadeIn();
+        $('#form-register').removeClass('d-none').hide().fadeIn(200);
       } else {
         $('#form-register').addClass('d-none');
-        $('#form-login').removeClass('d-none').hide().fadeIn();
+        $('#form-login').removeClass('d-none').hide().fadeIn(200);
+      }
+    }
+
+    function togglePasswordVis(btn) {
+      const input = $(btn).siblings('input');
+      const icon = $(btn).find('i');
+      if (input.attr('type') === 'password') {
+        input.attr('type', 'text');
+        icon.removeClass('fa-eye').addClass('fa-eye-slash');
+      } else {
+        input.attr('type', 'password');
+        icon.removeClass('fa-eye-slash').addClass('fa-eye');
       }
     }
 
@@ -766,33 +1735,45 @@
       e.preventDefault();
       const btn = $('#btn-login');
       const err = $('#login-error');
-      btn.prop('disabled', true).html('<i class="fas fa-spinner fa-spin me-2"></i>ĐANG XỬ LÝ...');
-      err.fadeOut();
+      btn.prop('disabled', true).html('<i class="fas fa-spinner fa-spin me-2"></i>Dang xu ly...');
+      err.hide();
 
       try {
-        const res = await callGAS('apiLoginAndLoadData', {
-          email: $('#login-email').val().trim(),
-          password: $('#login-pass').val().trim()
-        });
+        const input = $('#login-email').val().trim();
+        const password = $('#login-pass').val().trim();
+        let loginEmail = input;
 
-        console.log("Login Response:", res); // Debug log
-
-        if (res && res.success) {
-          currentUser = res.user;
-          APP_DATA = res.data;
-          localStorage.setItem('fsc_user', JSON.stringify(currentUser));
-          localStorage.setItem('fsc_app_data', JSON.stringify(APP_DATA));
-          showAppMain();
-        } else {
-          const msg = res ? res.message : "Phản hồi không hợp lệ từ máy chủ!";
-          err.html(`<i class="fas fa-exclamation-circle me-1"></i> ${msg}`).fadeIn();
+        // If input is not an email, look up username in profiles
+        if (!input.includes('@')) {
+          const { data: profile, error: lookupErr } = await sb.from('profiles')
+            .select('email').eq('username', input.toLowerCase()).single();
+          if (lookupErr || !profile || !profile.email) {
+            err.html('<i class="fas fa-exclamation-circle me-1"></i> Khong tim thay username nay').show();
+            return;
+          }
+          loginEmail = profile.email;
         }
+
+        const { data, error } = await sb.auth.signInWithPassword({ email: loginEmail, password });
+
+        if (error) {
+          err.html(`<i class="fas fa-exclamation-circle me-1"></i> ${error.message}`).show();
+          return;
+        }
+
+        await initUserSession(data.user);
+
       } catch (error) {
         console.error("Login Error:", error);
-        err.html(`<i class="fas fa-wifi me-1"></i> Lỗi kết nối: ${error.message}`).fadeIn();
+        err.html(`<i class="fas fa-wifi me-1"></i> Loi ket noi: ${error.message}`).show();
       } finally {
-        btn.prop('disabled', false).text('ĐĂNG NHẬP');
+        btn.prop('disabled', false).html('<i class="fa-solid fa-right-to-bracket me-2"></i>Dang nhap');
       }
+    });
+
+    // Username validation on input
+    $(document).on('input', '#reg-username', function() {
+      this.value = this.value.toLowerCase().replace(/[^a-z0-9_]/g, '');
     });
 
     $('#form-register').on('submit', async function (e) {
@@ -800,33 +1781,75 @@
       const btn = $('#btn-register');
       const err = $('#login-error');
 
-      if ($('#reg-pass').val() !== $('#reg-confirm-pass').val()) {
-        err.text("Mật khẩu nhập lại không khớp!").fadeIn();
+      const password = $('#reg-pass').val();
+      if (password !== $('#reg-confirm-pass').val()) {
+        err.text("Mat khau nhap lai khong khop!").show();
+        return;
+      }
+      if (password.length < 6) {
+        err.text("Mat khau phai co it nhat 6 ky tu!").show();
         return;
       }
 
-      btn.prop('disabled', true).html('<i class="fas fa-spinner fa-spin me-2"></i>ĐANG ĐĂNG KÝ...');
-      err.fadeOut();
+      const username = $('#reg-username').val().trim().toLowerCase();
+      if (!username || !/^[a-z0-9_]+$/.test(username)) {
+        err.text("Username chi duoc chua chu cai thuong, so va dau _").show();
+        return;
+      }
+
+      btn.prop('disabled', true).html('<i class="fas fa-spinner fa-spin me-2"></i>Dang ky...');
+      err.hide();
 
       try {
-        const res = await callGAS('apiRegister', {
-          fullName: $('#reg-name').val().trim(),
-          email: $('#reg-email').val().trim(),
-          password: $('#reg-pass').val().trim(),
-          phone: $('#reg-phone').val().trim()
+        const email = $('#reg-email').val().trim();
+        const fullName = $('#reg-name').val().trim();
+        const phone = $('#reg-phone').val().trim();
+
+        // Check if username already taken
+        const { data: existing } = await sb.from('profiles').select('id').eq('username', username).single();
+        if (existing) {
+          err.text("Username '" + username + "' da duoc su dung!").show();
+          return;
+        }
+
+        const { data, error } = await sb.auth.signUp({
+          email,
+          password,
+          options: {
+            data: { ho_va_ten: fullName, so_dien_thoai: phone, username: username },
+            emailRedirectTo: window.location.origin + window.location.pathname
+          }
         });
 
-        if (res && res.success) {
-          alert(res.message);
-          toggleAuth('LOGIN');
-          $('#login-email').val($('#reg-email').val());
-        } else {
-          err.text(res ? res.message : "Đăng ký không thành công!").fadeIn();
+        if (error) {
+          err.text(error.message).show();
+          return;
         }
+
+        // Update profile with extra fields (trigger creates profile with Act status)
+        if (data.user) {
+          await sb.from('profiles').update({
+            ho_va_ten: fullName,
+            so_dien_thoai: phone,
+            username: username,
+            chuc_vu: 'Thanh vien',
+            trang_thai: 'Act'
+          }).eq('id', data.user.id);
+        }
+
+        // Auto-login after registration
+        if (data.session) {
+          await initUserSession(data.user);
+        } else {
+          alert('Dang ky thanh cong! Vui long xac thuc email roi dang nhap.');
+          toggleAuth('LOGIN');
+          $('#login-email').val(username);
+        }
+
       } catch (error) {
-        err.text("Lỗi đăng ký!").fadeIn();
+        err.text("Loi dang ky: " + error.message).show();
       } finally {
-        btn.prop('disabled', false).text('ĐĂNG KÝ');
+        btn.prop('disabled', false).html('<i class="fa-solid fa-user-plus me-2"></i>Dang ky');
       }
     });
 
@@ -835,29 +1858,677 @@
       if (!email) return;
 
       try {
-        const res = await callGAS('apiResetPassword', { email: email.trim() });
-        alert(res.message);
+        const { error } = await sb.auth.resetPasswordForEmail(email.trim(), {
+          redirectTo: window.location.origin + window.location.pathname
+        });
+        if (error) alert("Lỗi: " + error.message);
+        else alert("Link đặt lại mật khẩu đã được gửi về Email!");
       } catch (error) {
         alert("Lỗi khi gửi yêu cầu!");
       }
     }
 
-    function logout() {
-      localStorage.removeItem('fsc_user');
-      localStorage.removeItem('fsc_app_data');
+    async function logout() {
+      await sb.auth.signOut();
+      currentUser = null;
+      APP_DATA = {};
       location.reload();
     }
+
+    // ============================================================
+    // SETTINGS MODULE
+    // ============================================================
+    const DEFAULT_SETTINGS = {
+      projectName: 'HỆ THỐNG QUẢN LÝ RỪNG BỀN VỮNG FSC',
+      fontFamily: 'Be Vietnam Pro',
+      titleAlign: 'center',
+      logoUrl: '',
+      // Màu sắc chung
+      colorPrimary: '#1B5E20',
+      colorAccent: '#2E7D32',
+      colorText: '#1a1a1a',
+      colorBg: '#F5F7F5',
+      // Navbar
+      colorNavbarText: '#FFFFFF',
+      fontSizeTitle: 25,
+      // Sidebar
+      colorSidebarText: '#FFFFFF',
+      fontSizeSidebarGroup: 12,
+      fontSizeSidebarItem: 12,
+      // Dashboard
+      colorCardText: '#1a1a1a',
+      iconMenuSize: 44,
+      fontSizeKPI: 14,
+      iconKPISize: 16,
+      // PC
+      fontSizePC: 13,
+      fontSizeTable: 13,
+      fontSizeDetail: 13,
+      fontSizeInput: 13,
+      fontSizeButton: 12,
+      fontSizeChart: 12,
+      tableLineHeight: 1.4,
+      // Mobile
+      fontSizeMobile: 11,
+      fontSizeMobileTable: 11,
+      fontSizeMobileInput: 11,
+      fontSizeMobileButton: 11,
+      // Bố cục
+      sidebarWidth: 270,
+      borderRadius: 8
+    };
+
+    function getSettings() {
+      try {
+        const saved = localStorage.getItem('fscfm_settings');
+        if (saved) return { ...DEFAULT_SETTINGS, ...JSON.parse(saved) };
+      } catch(e) {}
+      return { ...DEFAULT_SETTINGS };
+    }
+
+    function applySettings(s) {
+      if (!s) s = getSettings();
+      const root = document.documentElement.style;
+      root.setProperty('--forest-primary', s.colorPrimary);
+      root.setProperty('--forest-gradient', `linear-gradient(135deg, ${s.colorAccent} 0%, ${s.colorPrimary} 100%)`);
+      root.setProperty('--text-main', s.colorText);
+      root.setProperty('--bg-light', s.colorBg);
+
+      document.body.style.fontFamily = `'${s.fontFamily}', sans-serif`;
+      $('#navbar-project-name').text(s.projectName);
+      $('#navbar-project-name-mobile').text(s.projectName);
+
+      // Title alignment
+      const titleAlign = s.titleAlign || 'center';
+      const titleContainer = $('#navbar-project-name').closest('.position-absolute');
+      if (titleAlign === 'left') {
+        titleContainer.removeClass('start-50 translate-middle-x').addClass('start-0').css({'left':'60px','transform':'none'});
+      } else if (titleAlign === 'right') {
+        titleContainer.removeClass('start-50 translate-middle-x start-0').css({'left':'auto','right':'180px','transform':'none'});
+      } else {
+        titleContainer.addClass('start-50 translate-middle-x').removeClass('start-0').css({'left':'','right':'','transform':''});
+      }
+
+      // Secondary logo
+      if (s.logoUrl) {
+        if (!$('#navbar-logo-2').length) {
+          $('<img id="navbar-logo-2" class="ms-2 d-none d-md-inline" style="vertical-align:middle">').insertAfter('#navbar-project-name');
+        }
+        $('#navbar-logo-2').attr('src', s.logoUrl).attr('height', '38');
+      } else {
+        $('#navbar-logo-2').remove();
+      }
+
+      const navTxt = s.colorNavbarText || '#FFFFFF';
+      const sidebarTxt = s.colorSidebarText || '#FFFFFF';
+      const cardTxt = s.colorCardText || '#1a1a1a';
+      const mTbl = s.fontSizeMobileTable || s.fontSizeMobile;
+      const mInp = s.fontSizeMobileInput || s.fontSizeMobile;
+      const mBtn = s.fontSizeMobileButton || s.fontSizeMobile;
+      const sGrp = s.fontSizeSidebarGroup || 12;
+      const sItm = s.fontSizeSidebarItem || 12;
+
+      let css = `
+        body { font-size: ${s.fontSizePC}px !important; color: ${s.colorText} !important; }
+        table.dataTable thead th { font-size: ${s.fontSizeTable}px !important; line-height: ${s.tableLineHeight} !important; }
+        table.dataTable tbody td { font-size: ${s.fontSizeTable}px !important; line-height: ${s.tableLineHeight} !important; }
+        .form-control, .form-select { font-size: ${s.fontSizeInput}px !important; }
+        .btn { font-size: ${s.fontSizeButton}px !important; }
+        #navbar-project-name { font-size: ${s.fontSizeTitle}px !important; color: ${navTxt} !important; }
+        .navbar .text-white, .navbar .btn:not(.btn-logout) { color: ${navTxt} !important; }
+        .sidebar-header, .sidebar-header span, .sidebar-header i { color: ${sidebarTxt} !important; }
+        .accordion-button { font-size: ${sGrp}px !important; }
+        .menu-sub-link { font-size: ${sItm}px !important; }
+        .card-title-3d { color: ${cardTxt} !important; }
+        .detail-table td, .detail-table th, .detail-card .form-label, .detail-card td { font-size: ${s.fontSizeDetail}px !important; }
+        #dashboard-view .icon-3d-wrapper { width: ${s.iconMenuSize}px !important; height: ${s.iconMenuSize}px !important; font-size: ${Math.round(s.iconMenuSize * 0.45)}px !important; }
+        #dashboard-view .kpi-value { font-size: ${s.fontSizeKPI}px !important; }
+        .kpi-card i { font-size: ${s.iconKPISize}px !important; }
+        #sidebar-wrapper { width: ${s.sidebarWidth}px; }
+        @media (min-width: 992px) {
+          #page-content-wrapper { margin-left: ${s.sidebarWidth}px; }
+          #sidebar-wrapper.pc-hidden ~ #page-content-wrapper { margin-left: 0; }
+        }
+        @media (max-width: 767px) {
+          body { font-size: ${s.fontSizeMobile}px !important; }
+          table.dataTable thead th { font-size: ${mTbl}px !important; }
+          table.dataTable tbody td { font-size: ${mTbl}px !important; }
+          .form-control, .form-select { font-size: ${mInp}px !important; }
+          .btn { font-size: ${mBtn}px !important; }
+        }
+      `;
+      let el = document.getElementById('settings-override');
+      if (!el) { el = document.createElement('style'); el.id = 'settings-override'; document.head.appendChild(el); }
+      el.textContent = css;
+    }
+
+    function loadSettings() { applySettings(getSettings()); startNavbarClock(); }
+
+    function startNavbarClock() {
+      function tick() {
+        const now = new Date();
+        const time = now.toLocaleTimeString('vi-VN', { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+        const date = now.toLocaleDateString('vi-VN', { weekday: 'long', day: '2-digit', month: '2-digit', year: 'numeric' });
+        const el = document.getElementById('navbar-clock');
+        const el2 = document.getElementById('navbar-date');
+        if (el) el.textContent = time;
+        if (el2) el2.textContent = date;
+      }
+      tick();
+      setInterval(tick, 1000);
+    }
+
+    function readSettingsForm() {
+      return {
+        projectName: $('#set-project-name').val() || DEFAULT_SETTINGS.projectName,
+        fontFamily: $('#set-font-family').val() || DEFAULT_SETTINGS.fontFamily,
+        titleAlign: $('#set-title-align').val() || DEFAULT_SETTINGS.titleAlign,
+        logoUrl: $('#set-logo-url').val() || '',
+        colorPrimary: $('#set-color-primary').val() || DEFAULT_SETTINGS.colorPrimary,
+        colorAccent: $('#set-color-accent').val() || DEFAULT_SETTINGS.colorAccent,
+        colorText: $('#set-color-text').val() || DEFAULT_SETTINGS.colorText,
+        colorBg: $('#set-color-bg').val() || DEFAULT_SETTINGS.colorBg,
+        colorNavbarText: $('#set-color-navbar-text').val() || DEFAULT_SETTINGS.colorNavbarText,
+        fontSizeTitle: parseInt($('#set-fontsize-title').val()) || DEFAULT_SETTINGS.fontSizeTitle,
+        colorSidebarText: $('#set-color-sidebar-text').val() || DEFAULT_SETTINGS.colorSidebarText,
+        fontSizeSidebarGroup: parseInt($('#set-fontsize-sidebar-group').val()) || DEFAULT_SETTINGS.fontSizeSidebarGroup,
+        fontSizeSidebarItem: parseInt($('#set-fontsize-sidebar-item').val()) || DEFAULT_SETTINGS.fontSizeSidebarItem,
+        colorCardText: $('#set-color-card-text').val() || DEFAULT_SETTINGS.colorCardText,
+        iconMenuSize: parseInt($('#set-icon-menu-size').val()) || DEFAULT_SETTINGS.iconMenuSize,
+        fontSizeKPI: parseInt($('#set-fontsize-kpi').val()) || DEFAULT_SETTINGS.fontSizeKPI,
+        iconKPISize: parseInt($('#set-icon-kpi-size').val()) || DEFAULT_SETTINGS.iconKPISize,
+        fontSizePC: parseInt($('#set-fontsize-pc').val()) || DEFAULT_SETTINGS.fontSizePC,
+        fontSizeTable: parseInt($('#set-fontsize-table').val()) || DEFAULT_SETTINGS.fontSizeTable,
+        fontSizeDetail: parseInt($('#set-fontsize-detail').val()) || DEFAULT_SETTINGS.fontSizeDetail,
+        fontSizeInput: parseInt($('#set-fontsize-input').val()) || DEFAULT_SETTINGS.fontSizeInput,
+        fontSizeButton: parseInt($('#set-fontsize-button').val()) || DEFAULT_SETTINGS.fontSizeButton,
+        fontSizeChart: parseInt($('#set-fontsize-chart').val()) || DEFAULT_SETTINGS.fontSizeChart,
+        tableLineHeight: parseFloat($('#set-table-lineheight').val()) || DEFAULT_SETTINGS.tableLineHeight,
+        fontSizeMobile: parseInt($('#set-fontsize-mobile').val()) || DEFAULT_SETTINGS.fontSizeMobile,
+        fontSizeMobileTable: parseInt($('#set-fontsize-mobile-table').val()) || DEFAULT_SETTINGS.fontSizeMobileTable,
+        fontSizeMobileInput: parseInt($('#set-fontsize-mobile-input').val()) || DEFAULT_SETTINGS.fontSizeMobileInput,
+        fontSizeMobileButton: parseInt($('#set-fontsize-mobile-button').val()) || DEFAULT_SETTINGS.fontSizeMobileButton,
+        sidebarWidth: parseInt($('#set-sidebar-width').val()) || DEFAULT_SETTINGS.sidebarWidth,
+        borderRadius: parseInt($('#set-border-radius').val()) || DEFAULT_SETTINGS.borderRadius
+      };
+    }
+
+    function saveSettingsFromForm() {
+      const s = readSettingsForm();
+      localStorage.setItem('fscfm_settings', JSON.stringify(s));
+      applySettings(s);
+      alert('Đã lưu cài đặt thành công!');
+    }
+
+    function resetSettingsToDefault() {
+      if (!confirm('Xác nhận khôi phục tất cả cài đặt về mặc định?')) return;
+      localStorage.removeItem('fscfm_settings');
+      applySettings(DEFAULT_SETTINGS);
+      renderSettingsView(); // Re-render form with defaults
+      alert('Đã khôi phục cài đặt mặc định.');
+    }
+
+    function colorInput(id, val, label) {
+      return `<div class="mb-2"><label class="form-label small fw-bold mb-1">${label}</label><div class="d-flex align-items-center gap-1"><input type="color" class="form-control form-control-color" id="${id}" value="${val}" style="width:36px;height:28px;padding:2px"><input type="text" class="form-control" value="${val}" onchange="$('#${id}').val(this.value)" style="font-size:10px;padding:3px 6px"></div></div>`;
+    }
+    function numInput(id, val, label, min, max, step) {
+      return `<div class="mb-2"><label class="form-label small fw-bold mb-1">${label}</label><input type="number" class="form-control form-control-sm" id="${id}" value="${val}" min="${min}" max="${max}" ${step ? 'step="'+step+'"' : ''}></div>`;
+    }
+
+    function renderSettingsView() {
+      const s = getSettings();
+      const fonts = ['Be Vietnam Pro', 'Roboto', 'Inter', 'Arial', 'Montserrat', 'Nunito', 'Open Sans', 'Lato'];
+      const fontOpts = fonts.map(f => `<option value="${f}" ${s.fontFamily === f ? 'selected' : ''}>${f}</option>`).join('');
+      const alignOpts = ['left','center','right'].map(a => `<option value="${a}" ${(s.titleAlign||'center')===a ? 'selected' : ''}>${a==='left'?'Trái':a==='center'?'Giữa':'Phải'}</option>`).join('');
+
+      const html = `
+        <div class="card border-0 shadow-sm">
+          <div class="card-body p-3">
+            <div class="d-flex justify-content-between align-items-center mb-3">
+              <h6 class="fw-bold text-success mb-0"><i class="fa-solid fa-sliders me-2"></i>Cài đặt hệ thống</h6>
+              <div class="d-flex gap-2">
+                <button class="btn btn-success btn-sm fw-bold" onclick="saveSettingsFromForm()"><i class="fa-solid fa-check me-1"></i>Lưu</button>
+                <button class="btn btn-outline-secondary btn-sm" onclick="resetSettingsToDefault()"><i class="fa-solid fa-rotate-left me-1"></i>Mặc định</button>
+                <button class="btn btn-outline-primary btn-sm" onclick="previewSettings()"><i class="fa-solid fa-eye me-1"></i>Xem trước</button>
+              </div>
+            </div>
+
+            <!-- ===== THANH HỆ THỐNG & LOGO ===== -->
+            <div class="card bg-light border-0 mb-2">
+              <div class="card-body p-2">
+                <h6 class="fw-bold mb-2 small"><i class="fa-solid fa-desktop me-1 text-success"></i> Thanh hệ thống & Logo</h6>
+                <div class="row g-2">
+                  <div class="col-md-8"><label class="form-label small fw-bold mb-1">Tên dự án</label><input type="text" class="form-control form-control-sm" id="set-project-name" value="${s.projectName}"></div>
+                  <div class="col-md-2 col-6"><label class="form-label small fw-bold mb-1">Canh lề</label><select class="form-select form-select-sm" id="set-title-align">${alignOpts}</select></div>
+                  <div class="col-md-2 col-6">${numInput('set-fontsize-title', s.fontSizeTitle, 'Cỡ chữ tiêu đề', 12, 36)}</div>
+                  <div class="col-md-6"><label class="form-label small fw-bold mb-1">Font chữ</label><select class="form-select form-select-sm" id="set-font-family">${fontOpts}</select></div>
+                  <div class="col-md-3 col-6">${colorInput('set-color-navbar-text', s.colorNavbarText||'#FFFFFF', 'Màu chữ Navbar')}</div>
+                  <div class="col-md-3 col-6">${colorInput('set-color-primary', s.colorPrimary, 'Màu chính')}</div>
+                  <div class="col-md-6"><label class="form-label small fw-bold mb-1">Logo phụ (URL)</label><input type="text" class="form-control form-control-sm" id="set-logo-url" value="${s.logoUrl||''}" placeholder="Dán URL logo hoặc để trống"></div>
+                  <div class="col-md-3 col-6">${colorInput('set-color-accent', s.colorAccent, 'Màu gradient phụ')}</div>
+                  <div class="col-md-3 col-6">${colorInput('set-color-bg', s.colorBg, 'Màu nền chung')}</div>
+                </div>
+              </div>
+            </div>
+
+            <!-- ===== MENU BAR (Sidebar) ===== -->
+            <div class="card bg-light border-0 mb-2">
+              <div class="card-body p-2">
+                <h6 class="fw-bold mb-2 small"><i class="fa-solid fa-bars me-1 text-primary"></i> Menu Bar (Sidebar)</h6>
+                <div class="row g-2">
+                  <div class="col-md-3 col-6">${numInput('set-fontsize-sidebar-group', s.fontSizeSidebarGroup||12, 'Cỡ chữ nhóm chính', 9, 18)}</div>
+                  <div class="col-md-3 col-6">${numInput('set-fontsize-sidebar-item', s.fontSizeSidebarItem||12, 'Cỡ chữ menu con', 9, 18)}</div>
+                  <div class="col-md-3 col-6">${colorInput('set-color-sidebar-text', s.colorSidebarText||'#FFFFFF', 'Màu chữ Header')}</div>
+                  <div class="col-md-3 col-6">
+                    <label class="form-label small fw-bold mb-1">Sidebar width (px)</label>
+                    <input type="range" class="form-range" id="set-sidebar-width" min="200" max="350" value="${s.sidebarWidth}" oninput="$('#sw-val').text(this.value+'px')">
+                    <span class="small text-muted" id="sw-val">${s.sidebarWidth}px</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- ===== MÀN HÌNH CHÍNH (Dashboard) ===== -->
+            <div class="card bg-light border-0 mb-2">
+              <div class="card-body p-2">
+                <h6 class="fw-bold mb-2 small"><i class="fa-solid fa-gauge-high me-1 text-warning"></i> Màn hình chính (Dashboard)</h6>
+                <div class="row g-2">
+                  <div class="col-md-3 col-6">${numInput('set-icon-menu-size', s.iconMenuSize, 'Icon menu (px)', 24, 64)}</div>
+                  <div class="col-md-3 col-6">${numInput('set-fontsize-kpi', s.fontSizeKPI, 'Cỡ chữ KPI', 10, 24)}</div>
+                  <div class="col-md-3 col-6">${numInput('set-icon-kpi-size', s.iconKPISize, 'Icon KPI (px)', 10, 30)}</div>
+                  <div class="col-md-3 col-6">${colorInput('set-color-card-text', s.colorCardText||'#1a1a1a', 'Màu chữ thẻ menu')}</div>
+                </div>
+              </div>
+            </div>
+
+            <!-- ===== 2 CỘT: PC / MOBILE ===== -->
+            <div class="row g-2">
+              <!-- CỘT TRÁI: PC -->
+              <div class="col-md-6">
+                <div class="card border-0 mb-2" style="background:#e8f5e9">
+                  <div class="card-body p-2">
+                    <h6 class="fw-bold mb-2 small"><i class="fa-solid fa-display me-1 text-success"></i> PC / Màn hình lớn</h6>
+                    <div class="row g-2">
+                      <div class="col-6">${numInput('set-fontsize-pc', s.fontSizePC, 'Cỡ chữ chung', 9, 18)}</div>
+                      <div class="col-6">${numInput('set-fontsize-table', s.fontSizeTable, 'Cỡ chữ bảng', 9, 18)}</div>
+                      <div class="col-6">${numInput('set-fontsize-detail', s.fontSizeDetail, 'Cỡ chữ chi tiết', 9, 18)}</div>
+                      <div class="col-6">${numInput('set-fontsize-input', s.fontSizeInput, 'Cỡ chữ input', 9, 18)}</div>
+                      <div class="col-6">${numInput('set-fontsize-button', s.fontSizeButton, 'Cỡ chữ nút', 9, 18)}</div>
+                      <div class="col-6">${numInput('set-fontsize-chart', s.fontSizeChart, 'Cỡ chữ biểu đồ', 8, 18)}</div>
+                      <div class="col-6">${numInput('set-table-lineheight', s.tableLineHeight, 'Giãn dòng bảng', 1, 2.5, 0.1)}</div>
+                      <div class="col-6">${colorInput('set-color-text', s.colorText, 'Màu chữ chung')}</div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <!-- CỘT PHẢI: MOBILE -->
+              <div class="col-md-6">
+                <div class="card border-0 mb-2" style="background:#e3f2fd">
+                  <div class="card-body p-2">
+                    <h6 class="fw-bold mb-2 small"><i class="fa-solid fa-mobile-screen me-1 text-primary"></i> Mobile / Màn hình nhỏ</h6>
+                    <div class="row g-2">
+                      <div class="col-6">${numInput('set-fontsize-mobile', s.fontSizeMobile, 'Cỡ chữ chung', 8, 16)}</div>
+                      <div class="col-6">${numInput('set-fontsize-mobile-table', s.fontSizeMobileTable||s.fontSizeMobile, 'Cỡ chữ bảng', 8, 16)}</div>
+                      <div class="col-6">${numInput('set-fontsize-mobile-input', s.fontSizeMobileInput||s.fontSizeMobile, 'Cỡ chữ input', 8, 16)}</div>
+                      <div class="col-6">${numInput('set-fontsize-mobile-button', s.fontSizeMobileButton||s.fontSizeMobile, 'Cỡ chữ nút', 8, 16)}</div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- ===== BỐ CỤC ===== -->
+            <div class="card bg-light border-0 mb-2">
+              <div class="card-body p-2">
+                <h6 class="fw-bold mb-2 small"><i class="fa-solid fa-table-columns me-1 text-secondary"></i> Bố cục</h6>
+                <div class="row g-2">
+                  <div class="col-md-6">
+                    <label class="form-label small fw-bold mb-1">Bo góc (px)</label>
+                    <input type="range" class="form-range" id="set-border-radius" min="0" max="20" value="${s.borderRadius}" oninput="$('#br-val').text(this.value+'px')">
+                    <span class="small text-muted" id="br-val">${s.borderRadius}px</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Preview -->
+            <div class="p-2 rounded mb-2" id="color-preview" style="background:${s.colorBg};color:${s.colorText};border:1px solid #ddd;font-size:12px">
+              <span style="color:${s.colorPrimary};font-weight:700">Chính</span> |
+              <span style="color:${s.colorAccent};font-weight:700">Phụ</span> |
+              <span>Chữ</span> |
+              <span class="px-2 rounded" style="background:${s.colorPrimary};color:${s.colorNavbarText||'#fff'}">Navbar</span> |
+              <span class="px-2 rounded" style="background:${s.colorPrimary};color:${s.colorSidebarText||'#fff'}">Sidebar</span>
+            </div>
+
+            <!-- Actions (bottom) -->
+            <div class="d-flex gap-2">
+              <button class="btn btn-success fw-bold" onclick="saveSettingsFromForm()"><i class="fa-solid fa-check me-1"></i> Lưu cài đặt</button>
+              <button class="btn btn-outline-secondary" onclick="resetSettingsToDefault()"><i class="fa-solid fa-rotate-left me-1"></i> Khôi phục mặc định</button>
+              <button class="btn btn-outline-primary" onclick="previewSettings()"><i class="fa-solid fa-eye me-1"></i> Xem trước</button>
+            </div>
+          </div>
+        </div>
+      `;
+      $('#page-content-dynamic').html(html);
+
+      // Live preview for all color pickers
+      $('[id^="set-color-"]').on('input', function() {
+        $(this).closest('.d-flex').find('input[type=text]').val($(this).val());
+      });
+    }
+
+    function previewSettings() {
+      applySettings(readSettingsForm());
+    }
+    // ============================================================
+    // END SETTINGS MODULE
+    // ============================================================
 
     function showDashboard() {
       $('#data-view').addClass('d-none');
       $('#dashboard-view').removeClass('d-none');
       navHistory = [];
+      // Lock scroll on dashboard
+      $('#page-content-wrapper').css('overflow', 'hidden');
+      renderDashboardContent();
+    }
 
-      // Cập nhật các con số tổng quan (ví dụ)
-      if (APP_DATA['Ban_Quanlynhom']) {
-        // Ta có thể thêm các card tổng quan ở đây nếu cần, 
-        // hiện tại dashboard đang render Menu Tabs.
+    function renderDashboardContent() {
+      const safeFloat = v => { if (!v) return 0; return parseFloat(String(v).replace(/,/g, '')) || 0; };
+
+      // Compute KPIs from data
+      const groups = APP_DATA['NhomCCR'] || [];
+      const owners = APP_DATA['Churung'] || [];
+      const plots = APP_DATA['Lo_rung'] || [];
+
+      const soHo = owners.length;
+      const soFarm = plots.length;
+      const tongDTFSC = plots.reduce((s, p) => s + safeFloat(p['Diện tích FSC']), 0);
+      const haPerHo = soHo > 0 ? (tongDTFSC / soHo).toFixed(2) : 0;
+      const haPerFarm = soFarm > 0 ? (tongDTFSC / soFarm).toFixed(2) : 0;
+      const dtKhaiThac = plots.reduce((s, p) => s + safeFloat(p['Sản lượng khai thác xe']), 0);
+      const dtTrongRung = plots.reduce((s, p) => s + safeFloat(p['Diện tích trồng rừng']), 0);
+      const dtHLVS = plots.reduce((s, p) => s + safeFloat(p['Diện tích HLVS']), 0);
+      const tongDT = plots.reduce((s, p) => s + safeFloat(p['Tổng diện tích']), 0);
+
+      // 6 Main menu icon cards
+      const mainMenus = [
+        { icon: 'fa-users-between-lines', label: 'Quản lý nhóm', color: '#2E7D32', group: 'Quản lý nhóm' },
+        { icon: 'fa-tree', label: 'Quản lý rừng bền vững', color: '#1565C0', group: 'Quản lý rừng bền vững' },
+        { icon: 'fa-cart-shopping', label: 'Mua bán sản phẩm', color: '#E65100', group: 'Mua bán sản phẩm' },
+        { icon: 'fa-book-open', label: 'Tài liệu tham khảo', color: '#6A1B9A', group: 'Tài liệu tham khảo' },
+        { icon: 'fa-gears', label: 'Hệ thống', color: '#455A64', group: 'Hệ thống' },
+        { icon: 'fa-chart-pie', label: 'Báo cáo', color: '#C62828', group: 'Báo cáo' }
+      ];
+
+      let html = `
+        <div class="d-flex align-items-center mb-2">
+          <div class="me-auto">
+            <h5 class="fw-bold mb-0" style="color:var(--forest-primary)"><i class="fa-solid fa-gauge-high me-2"></i>Tổng quan hệ thống</h5>
+          </div>
+        </div>
+
+        <!-- Smart Search -->
+        <div class="position-relative mb-3">
+          <div class="input-group input-group-sm shadow-sm" style="max-width:100%">
+            <span class="input-group-text bg-white border-end-0"><i class="fa-solid fa-magnifying-glass text-muted"></i></span>
+            <input type="text" class="form-control border-start-0" id="smart-search-input" placeholder="Tìm kiếm dữ liệu, menu, chức năng..." autocomplete="off" oninput="smartSearch(this.value)">
+            <button class="btn btn-outline-secondary border-start-0" type="button" onclick="$('#smart-search-input').val('');$('#smart-search-results').addClass('d-none')"><i class="fa-solid fa-xmark"></i></button>
+          </div>
+          <div id="smart-search-results" class="d-none position-absolute w-100 bg-white border rounded shadow mt-1" style="z-index:1050;max-height:350px;overflow-y:auto"></div>
+        </div>
+
+        <!-- 6 Main Menu Cards -->
+        <div class="row row-cols-3 row-cols-md-6 g-2 mb-3">
+          ${mainMenus.map(m => `
+            <div class="col">
+              <div class="dashboard-card-3d" style="--card-accent:${m.color}" onclick="openMenuGroup('${m.group}')">
+                <div class="icon-3d-wrapper" style="background:${m.color}"><i class="fa-solid ${m.icon}"></i></div>
+                <div class="card-title-3d">${m.label}</div>
+              </div>
+            </div>
+          `).join('')}
+        </div>
+
+        <!-- KPIs - 1 hàng duy nhất -->
+        <h6 class="fw-bold text-secondary mb-2"><i class="fa-solid fa-chart-line me-2"></i>Chỉ số KPI</h6>
+        <div class="d-flex gap-2 mb-2 flex-nowrap" style="overflow-x:auto">
+          <div class="kpi-card flex-fill" style="min-width:0"><div class="kpi-value">${soHo}</div><div class="kpi-label">Số hộ dân</div></div>
+          <div class="kpi-card blue flex-fill" style="min-width:0"><div class="kpi-value">${soFarm}</div><div class="kpi-label">Số lô rừng</div></div>
+          <div class="kpi-card flex-fill" style="min-width:0"><div class="kpi-value">${tongDTFSC.toFixed(1)}</div><div class="kpi-label">Tổng DT FSC (ha)</div></div>
+          <div class="kpi-card orange flex-fill" style="min-width:0"><div class="kpi-value">${haPerHo}</div><div class="kpi-label">ha/hộ</div></div>
+          <div class="kpi-card blue flex-fill" style="min-width:0"><div class="kpi-value">${haPerFarm}</div><div class="kpi-label">TB ha/lô rừng</div></div>
+          <div class="kpi-card orange flex-fill" style="min-width:0"><div class="kpi-value">${dtKhaiThac.toFixed(1)}</div><div class="kpi-label">SL khai thác (xe)</div></div>
+          <div class="kpi-card purple flex-fill" style="min-width:0"><div class="kpi-value">${dtTrongRung.toFixed(1)}</div><div class="kpi-label">DT trồng rừng (ha)</div></div>
+          <div class="kpi-card flex-fill" style="min-width:0"><div class="kpi-value">${dtHLVS.toFixed(1)}</div><div class="kpi-label">DT HLVS (ha)</div></div>
+        </div>
+
+        <!-- Charts (flex-grow to fill remaining space) -->
+        <div class="row g-3 flex-grow-1" style="min-height:0">
+          <div class="col-md-6 d-flex">
+            <div class="card border-0 shadow-sm flex-grow-1">
+              <div class="card-body p-2 p-md-3 d-flex flex-column">
+                <div class="d-flex justify-content-between align-items-center mb-2">
+                  <h6 class="fw-bold text-success mb-0" style="font-size:12px"><i class="fa-solid fa-chart-pie me-1"></i>Phân bổ diện tích</h6>
+                  <select class="form-select form-select-sm" style="width:auto;font-size:11px;padding:2px 24px 2px 8px" onchange="switchChartType('area', this.value)">
+                    <option value="doughnut" selected>Doughnut</option>
+                    <option value="pie">Pie</option>
+                    <option value="bar">Bar</option>
+                    <option value="polarArea">Polar Area</option>
+                    <option value="radar">Radar</option>
+                  </select>
+                </div>
+                <div class="flex-grow-1" style="position:relative;min-height:0"><canvas id="chart-area"></canvas></div>
+              </div>
+            </div>
+          </div>
+          <div class="col-md-6 d-flex">
+            <div class="card border-0 shadow-sm flex-grow-1">
+              <div class="card-body p-2 p-md-3 d-flex flex-column">
+                <div class="d-flex justify-content-between align-items-center mb-2">
+                  <h6 class="fw-bold text-success mb-0" style="font-size:12px"><i class="fa-solid fa-chart-bar me-1"></i>Thống kê theo nhóm</h6>
+                  <select class="form-select form-select-sm" style="width:auto;font-size:11px;padding:2px 24px 2px 8px" onchange="switchChartType('groups', this.value)">
+                    <option value="bar" selected>Bar</option>
+                    <option value="line">Line</option>
+                    <option value="radar">Radar</option>
+                    <option value="pie">Pie</option>
+                    <option value="doughnut">Doughnut</option>
+                    <option value="polarArea">Polar Area</option>
+                  </select>
+                </div>
+                <div class="flex-grow-1" style="position:relative;min-height:0"><canvas id="chart-groups"></canvas></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      `;
+
+      $('#dashboard-view').html(html);
+
+      // Render charts after DOM is ready
+      setTimeout(() => renderDashboardCharts(groups, plots, tongDT, tongDTFSC, dtTrongRung, dtHLVS), 200);
+    }
+
+    let chartInstances = {};
+    let chartDataStore = {};
+
+    function renderDashboardCharts(groups, plots, tongDT, tongDTFSC, dtTrongRung, dtHLVS) {
+      const safeFloat = v => parseFloat(String(v || 0).replace(/,/g, '')) || 0;
+
+      // Store chart data for later type switching
+      const dtNgoaiFSC = Math.max(0, tongDT - tongDTFSC - dtHLVS);
+      chartDataStore.area = {
+        labels: ['Diện tích FSC', 'DT ngoài FSC', 'Hành lang ven suối', 'DT trồng rừng'],
+        values: [tongDTFSC.toFixed(1), dtNgoaiFSC.toFixed(1), dtHLVS.toFixed(1), dtTrongRung.toFixed(1)],
+        colors: ['#2E7D32', '#42A5F5', '#FFA726', '#AB47BC']
+      };
+
+      const labels = groups.map(g => g['Tên nhóm'] || g['Mã nhóm'] || g['ID nhóm']);
+      const members = groups.map(g => safeFloat(g['Số thành viên']));
+      const areas = groups.map(g => safeFloat(g['Tổng diện tích']));
+      chartDataStore.groups = { labels, members, areas };
+
+      buildChart('area', 'doughnut');
+      buildChart('groups', 'bar');
+    }
+
+    function buildChart(chartKey, chartType) {
+      if (chartInstances[chartKey]) { chartInstances[chartKey].destroy(); chartInstances[chartKey] = null; }
+
+      const canvasId = chartKey === 'area' ? 'chart-area' : 'chart-groups';
+      const ctx = document.getElementById(canvasId);
+      if (!ctx) return;
+
+      const s = getSettings();
+      const legendFont = { size: s.fontSizeChart || 11, family: `'${s.fontFamily}'` };
+
+      if (chartKey === 'area') {
+        const d = chartDataStore.area;
+        if (!d) return;
+        const isCartesian = ['bar', 'line'].includes(chartType);
+        chartInstances.area = new Chart(ctx.getContext('2d'), {
+          type: chartType,
+          data: {
+            labels: d.labels,
+            datasets: [{
+              data: d.values,
+              backgroundColor: d.colors,
+              borderWidth: 2,
+              borderColor: '#fff',
+              ...(isCartesian ? { label: 'Diện tích (ha)', borderRadius: 4 } : {})
+            }]
+          },
+          options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: { legend: { position: 'bottom', labels: { font: legendFont, padding: 12 } } },
+            ...(isCartesian ? { scales: { y: { beginAtZero: true } } } : {})
+          }
+        });
+      } else {
+        const d = chartDataStore.groups;
+        if (!d || !d.labels.length) return;
+        const isCartesian = ['bar', 'line'].includes(chartType);
+        const isPieType = ['pie', 'doughnut', 'polarArea'].includes(chartType);
+
+        if (isPieType) {
+          // For pie-like charts, combine datasets into one
+          chartInstances.groups = new Chart(ctx.getContext('2d'), {
+            type: chartType,
+            data: {
+              labels: d.labels,
+              datasets: [{
+                data: d.areas,
+                backgroundColor: d.labels.map((_, i) => ['#42A5F5', '#66BB6A', '#FFA726', '#AB47BC', '#EF5350', '#26C6DA', '#8D6E63'][i % 7]),
+                borderWidth: 2, borderColor: '#fff',
+                label: 'Diện tích (ha)'
+              }]
+            },
+            options: {
+              responsive: true, maintainAspectRatio: false,
+              plugins: { legend: { position: 'bottom', labels: { font: legendFont, padding: 12 } } }
+            }
+          });
+        } else {
+          chartInstances.groups = new Chart(ctx.getContext('2d'), {
+            type: chartType,
+            data: {
+              labels: d.labels,
+              datasets: [
+                { label: 'Số hộ', data: d.members, backgroundColor: '#42A5F5', borderColor: '#42A5F5', borderRadius: 4, fill: false },
+                { label: 'Diện tích (ha)', data: d.areas, backgroundColor: '#66BB6A', borderColor: '#66BB6A', borderRadius: 4, fill: false }
+              ]
+            },
+            options: {
+              responsive: true, maintainAspectRatio: false,
+              plugins: { legend: { position: 'bottom', labels: { font: legendFont, padding: 12 } } },
+              ...(isCartesian ? { scales: { x: { ticks: { font: { size: 10 }, maxRotation: 45 } }, y: { beginAtZero: true } } } : {})
+            }
+          });
+        }
       }
+    }
+
+    function switchChartType(chartKey, newType) {
+      buildChart(chartKey, newType);
+    }
+
+    // Icon mapping for sub-menu items based on keywords
+    const SUB_MENU_ICONS = {
+      'nhóm ccr': 'fa-people-group', 'chủ rừng': 'fa-user-tie', 'lô rừng': 'fa-map',
+      'quản lý nhóm': 'fa-users-gear', 'ban quản lý': 'fa-building-columns',
+      'kế hoạch': 'fa-calendar-check', 'hoạt động': 'fa-list-check', 'tập huấn': 'fa-chalkboard-teacher',
+      'biến động': 'fa-arrows-rotate', 'đánh giá': 'fa-clipboard-check', 'nội bộ': 'fa-magnifying-glass',
+      'bản đồ': 'fa-map-location-dot', 'bán': 'fa-receipt', 'mua': 'fa-truck',
+      'sản phẩm': 'fa-boxes-stacked', 'tài liệu': 'fa-file-lines', 'hệ thống': 'fa-gears',
+      'menu': 'fa-bars', 'người dùng': 'fa-user-shield', 'profile': 'fa-id-card',
+      'báo cáo': 'fa-chart-column', 'thống kê': 'fa-chart-bar', 'cài đặt': 'fa-sliders',
+      'loại': 'fa-tags', 'danh sách': 'fa-clipboard-list'
+    };
+
+    function getSubMenuIcon(moduleName) {
+      const lower = (moduleName || '').toLowerCase();
+      for (const [key, icon] of Object.entries(SUB_MENU_ICONS)) {
+        if (lower.includes(key)) return icon;
+      }
+      return 'fa-circle-dot';
+    }
+
+    function openMenuGroup(groupName) {
+      if (!APP_DATA['Menu']) return;
+      const GROUP_DISPLAY = { 'BAO_CAO_FSC': 'Báo cáo' };
+      const toSentence = s => s ? s.charAt(0).toUpperCase() + s.slice(1).toLowerCase() : '';
+      const clean = (n) => { if (!n) return 'Khác'; let c = n.replace(/^\d+\.\s*/, '').trim(); return GROUP_DISPLAY[c] || toSentence(c); };
+
+      const items = APP_DATA['Menu'].filter(m => clean(m['Nhom']) === groupName);
+      if (!items.length) return;
+
+      // Find the parent menu color and icon
+      const mainMenus = [
+        { label: 'Quản lý nhóm', color: '#2E7D32', icon: 'fa-users-between-lines' },
+        { label: 'Quản lý rừng bền vững', color: '#1565C0', icon: 'fa-tree' },
+        { label: 'Mua bán sản phẩm', color: '#E65100', icon: 'fa-cart-shopping' },
+        { label: 'Tài liệu tham khảo', color: '#6A1B9A', icon: 'fa-book-open' },
+        { label: 'Hệ thống', color: '#455A64', icon: 'fa-gears' },
+        { label: 'Báo cáo', color: '#C62828', icon: 'fa-chart-pie' }
+      ];
+      const parent = mainMenus.find(m => m.label === groupName) || { color: '#2E7D32', icon: 'fa-folder' };
+
+      // Build sub-menu cards
+      let cards = items.map(i => {
+        const v = (i['View'] || '').replace(/'/g, "\\'");
+        const m = (i['Module'] || '').replace(/'/g, "\\'");
+        const subIcon = getSubMenuIcon(m);
+        return `
+          <div class="col">
+            <div class="submenu-card" onclick="goHome();loadView('${v}','${m}')" style="border-top: 3px solid ${parent.color}">
+              <div class="submenu-icon" style="background: ${parent.color}"><i class="fa-solid ${subIcon}"></i></div>
+              <div class="submenu-label">${i['Module']}</div>
+            </div>
+          </div>`;
+      }).join('');
+
+      // Inject "Cài đặt hệ thống" if group is Hệ thống
+      if (groupName === 'Hệ thống') {
+        cards += `
+          <div class="col">
+            <div class="submenu-card" onclick="goHome();loadView('CaiDat_HeThong','Cài đặt hệ thống')" style="border-top: 3px solid ${parent.color}">
+              <div class="submenu-icon" style="background: ${parent.color}"><i class="fa-solid fa-sliders"></i></div>
+              <div class="submenu-label">Cài đặt hệ thống</div>
+            </div>
+          </div>`;
+      }
+
+      const html = `
+        <div style="padding: 10px">
+          <div class="d-flex align-items-center mb-3">
+            <button class="btn btn-outline-success btn-sm me-2" onclick="goHome()"><i class="fa-solid fa-arrow-left me-1"></i>Quay lại</button>
+            <h5 class="fw-bold mb-0" style="color:${parent.color}"><i class="fa-solid ${parent.icon} me-2"></i>${groupName}</h5>
+          </div>
+          <div class="row row-cols-2 row-cols-md-4 g-3">${cards}</div>
+        </div>`;
+
+      $('#dashboard-view').html(html);
     }
 
     function getVisibleColumns(sheetName) {
@@ -894,7 +2565,13 @@
         if (!menuData) return;
         const grouped = {};
         const userRole = currentUser && currentUser['Chức vụ'] ? String(currentUser['Chức vụ']).toLowerCase().trim() : '';
-        const clean = (n) => n ? n.replace(/^\d+\.\s*/, '').trim() : 'KHÁC';
+        const GROUP_DISPLAY = { 'BAO_CAO_FSC': 'Báo cáo' };
+        const toSentence = s => s ? s.charAt(0).toUpperCase() + s.slice(1).toLowerCase() : '';
+        const clean = (n) => {
+          if (!n) return 'Khác';
+          let c = n.replace(/^\d+\.\s*/, '').trim();
+          return GROUP_DISPLAY[c] || toSentence(c);
+        };
 
         menuData.forEach(item => {
           const rawRole = item['PhanQuyen'] ? String(item['PhanQuyen']).toLowerCase() : '';
@@ -906,61 +2583,100 @@
           }
         });
 
+        // Group icons for accordion headers
+        const GROUP_ICONS = {
+          'Quản lý nhóm': 'fa-users-between-lines', 'Quản lý rừng bền vững': 'fa-tree',
+          'Mua bán sản phẩm': 'fa-cart-shopping', 'Tài liệu tham khảo': 'fa-book-open',
+          'Hệ thống': 'fa-gears', 'Báo cáo': 'fa-chart-pie', 'Khác': 'fa-folder'
+        };
+
         let accordionHtml = ''; let idx = 0;
         for (const [group, items] of Object.entries(grouped)) {
           idx++; const cId = `collapseSidebar${idx}`;
-          // Sử dụng escape simple để tránh lỗi khi dữ liệu có dấu nháy
+          const groupIcon = GROUP_ICONS[group] || 'fa-folder';
           let sub = items.map(i => {
             const v = (i['View'] || '').replace(/'/g, "\\'");
             const m = (i['Module'] || '').replace(/'/g, "\\'");
-            return `<a href="#" class="menu-sub-link" onclick="loadView('${v}', '${m}')"><i class="fa-solid fa-angle-right me-2"></i>${i['Module']}</a>`;
+            const mIcon = getSubMenuIcon(m);
+            return `<a href="#" class="menu-sub-link" onclick="loadView('${v}', '${m}')"><i class="fa-solid ${mIcon} me-2" style="width:16px;text-align:center;opacity:0.7"></i>${i['Module']}</a>`;
           }).join('');
-          accordionHtml += `<div class="accordion-item"><h2 class="accordion-header"><button class="accordion-button ${idx === 1 ? '' : 'collapsed'}" type="button" data-bs-toggle="collapse" data-bs-target="#${cId}"><span class="text-uppercase fw-bold">${group}</span></button></h2><div id="${cId}" class="accordion-collapse collapse ${idx === 1 ? 'show' : ''}" data-bs-parent="#sidebarAccordion"><div class="accordion-body p-0">${sub}</div></div></div>`;
+          accordionHtml += `<div class="accordion-item"><h2 class="accordion-header"><button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#${cId}"><i class="fa-solid ${groupIcon} me-2" style="opacity:0.6"></i><span class="fw-bold">${group}</span></button></h2><div id="${cId}" class="accordion-collapse collapse show"><div class="accordion-body p-0">${sub}</div></div></div>`;
         }
         $('#sidebarAccordion').html(accordionHtml);
 
-        let tabs = ''; let content = ''; let i = 0;
-        for (const [group, items] of Object.entries(grouped)) {
-          const act = i === 0 ? 'active' : ''; const show = i === 0 ? 'show active' : ''; const tId = `dash-tab-${i}`;
-          tabs += `<li class="nav-item"><button class="nav-link ${act}" data-bs-toggle="pill" data-bs-target="#${tId}">${group}</button></li>`;
-          let cards = items.map(item => {
-            const v = (item['View'] || '').replace(/'/g, "\\'");
-            const m = (item['Module'] || '').replace(/'/g, "\\'");
-            return `
-              <div class="col">
-                <div class="dashboard-card-3d" onclick="loadView('${v}', '${m}')">
-                  <div class="icon-3d-wrapper icon-theme-forest"><i class="fa-solid fa-folder-open"></i></div>
-                  <div class="card-title-3d">${item['Module']}</div>
-                </div>
-              </div>`;
-          }).join('');
-          content += `<div class="tab-pane fade ${show}" id="${tId}"><div class="row row-cols-2 row-cols-lg-4 g-4 py-4">${cards}</div></div>`;
-          i++;
-        }
-        $('#dashboardTabs').html(tabs); $('#dashboardTabContent').html(content);
+        // Inject "Cài đặt hệ thống" vào group Hệ thống
+        $('#sidebarAccordion .accordion-body').each(function() {
+          const btn = $(this).closest('.accordion-item').find('.accordion-button span').text();
+          if (btn.trim().toLowerCase() === 'hệ thống') {
+            $(this).append('<a href="#" class="menu-sub-link" onclick="loadView(\'CaiDat_HeThong\', \'Cài đặt hệ thống\')"><i class="fa-solid fa-sliders me-2"></i>Cài đặt hệ thống</a>');
+          }
+        });
+
         console.log("Menu rendering complete.");
       } catch (err) {
         console.error("Error in renderSystemMenu:", err);
       }
     }
 
+    function highlightActiveMenu(viewName, title) {
+      // Remove all active states
+      $('.menu-sub-link.active').removeClass('active');
+      // Find matching menu link by viewName in onclick, or by title text
+      $('#sidebarAccordion .menu-sub-link').each(function() {
+        const onclick = $(this).attr('onclick') || '';
+        const text = $(this).text().trim();
+        if (onclick.includes("'" + viewName + "'") || text === title) {
+          $(this).addClass('active');
+          // Expand the parent accordion if collapsed
+          const collapse = $(this).closest('.accordion-collapse');
+          if (collapse.length && !collapse.hasClass('show')) {
+            collapse.addClass('show');
+            collapse.closest('.accordion-item').find('.accordion-button').removeClass('collapsed');
+          }
+        }
+      });
+    }
+
     function loadView(viewName, title) {
-      if ($(window).width() < 768) $("#sidebar-wrapper").addClass("toggled");
+      if ($(window).width() < 768) {
+        $('#sidebar-wrapper').removeClass('show-sidebar');
+        $('#sidebar-overlay').removeClass('active');
+      }
+      // Unlock scroll when leaving dashboard
+      $('#page-content-wrapper').css('overflow', 'auto');
       $('#dashboard-view').addClass('d-none');
       $('#data-view').removeClass('d-none');
       navHistory = [{ mode: 'LIST', viewName, title, filter: null }];
       renderBreadcrumb();
       renderContent();
+      highlightActiveMenu(viewName, title);
     }
 
     function renderContent() {
       const current = navHistory[navHistory.length - 1];
 
+      // Reset map view visibility
+      $('#map-view').addClass('d-none');
+      $('#page-content-dynamic').removeClass('d-none');
+
       // Update Sidebar Context (PC Only)
       updateSidebarContext();
+
       // Xử lý View đặc biệt: Audit (DG_noibo)
       if (current.viewName === 'InternalAudit' || current.viewName === 'DG_noibo' || current.title === 'Đánh giá nội bộ') {
         renderAuditModule();
+        return;
+      }
+
+      // Xử lý View đặc biệt: Cài đặt hệ thống
+      if (current.viewName === 'CaiDat_HeThong') {
+        renderSettingsView();
+        return;
+      }
+
+      // Xử lý View đặc biệt: Bản đồ
+      if (current.viewName === 'Bando_lorung') {
+        renderMapView();
         return;
       }
 
@@ -972,9 +2688,736 @@
     }
 
     function toggleSidebar() {
-      $('#sidebar-wrapper').toggleClass('show-sidebar');
-      $('#sidebar-overlay').toggleClass('active');
+      if ($(window).width() >= 992) {
+        // PC: toggle pc-hidden class
+        $('#sidebar-wrapper').toggleClass('pc-hidden');
+        $('#page-content-wrapper').toggleClass('sidebar-collapsed');
+      } else {
+        // Mobile: overlay sidebar
+        $('#sidebar-wrapper').toggleClass('show-sidebar');
+        $('#sidebar-overlay').toggleClass('active');
+      }
     }
+
+    function goHome() {
+      navHistory = [];
+      $('#data-view').addClass('d-none');
+      $('#map-view').addClass('d-none');
+      $('#dashboard-view').removeClass('d-none');
+      renderDashboardContent();
+      // Re-render full system menu in sidebar
+      if (APP_DATA['Menu']) {
+        $('#sidebarAccordion').empty();
+        renderSystemMenu(APP_DATA['Menu']);
+      }
+      // sidebar home icon (no text)
+      // Close sidebar on mobile
+      if ($(window).width() < 768) {
+        $('#sidebar-wrapper').removeClass('show-sidebar');
+        $('#sidebar-overlay').removeClass('active');
+      }
+    }
+
+    // Swipe gesture for sidebar on mobile
+    let touchStartX = 0;
+    document.addEventListener('touchstart', function(e) {
+      touchStartX = e.touches[0].clientX;
+    }, { passive: true });
+    document.addEventListener('touchend', function(e) {
+      const diff = e.changedTouches[0].clientX - touchStartX;
+      if (diff > 80 && touchStartX < 40) {
+        $('#sidebar-wrapper').addClass('show-sidebar');
+        $('#sidebar-overlay').addClass('active');
+      } else if (diff < -80 && $('#sidebar-wrapper').hasClass('show-sidebar')) {
+        $('#sidebar-wrapper').removeClass('show-sidebar');
+        $('#sidebar-overlay').removeClass('active');
+      }
+    }, { passive: true });
+
+    // ============================================================
+    // MAP MODULE - Bản đồ quản lý lô rừng
+    // ============================================================
+    let mapInstance = null;
+    let mapLayers = {};
+    let mapDrawnItems = null;
+    let mapAnnotations = [];
+    let mapDrawControl = null;
+    let mapEditMode = false;
+    let geoJsonNamedLayers = {}; // { layerName: L.FeatureGroup }
+
+    function renderMapView() {
+      $('#page-content-dynamic').addClass('d-none');
+      $('#map-view').removeClass('d-none');
+
+      if (mapInstance) {
+        setTimeout(() => {
+          mapInstance.invalidateSize();
+          zoomToAllData();
+        }, 100);
+        return;
+      }
+
+      mapInstance = L.map('map-container').setView([21.6, 105.8], 10);
+
+      const osmLayer = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        attribution: '&copy; OpenStreetMap',
+        maxZoom: 19
+      }).addTo(mapInstance);
+
+      const satelliteLayer = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
+        attribution: 'Tiles &copy; Esri',
+        maxZoom: 19
+      });
+
+      // Google Satellite
+      const googleSatLayer = L.tileLayer('https://mt1.google.com/vt/lyrs=s&x={x}&y={y}&z={z}', {
+        attribution: '&copy; Google',
+        maxZoom: 20
+      });
+
+      mapLayers['OpenStreetMap'] = osmLayer;
+      mapLayers['Vệ tinh (Esri)'] = satelliteLayer;
+      mapLayers['Google Satellite'] = googleSatLayer;
+
+      mapDrawnItems = new L.FeatureGroup().addTo(mapInstance);
+      mapLayers['Lô rừng (GeoJSON)'] = mapDrawnItems;
+
+      // Draw control - initially not added (edit mode off)
+      mapDrawControl = new L.Control.Draw({
+        edit: { featureGroup: mapDrawnItems },
+        draw: {
+          polygon: { allowIntersection: false, shapeOptions: { color: '#2E7D32', weight: 2 } },
+          polyline: false, rectangle: false, circle: false, circlemarker: false,
+          marker: { icon: L.icon({ iconUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon.png', iconSize: [25, 41], iconAnchor: [12, 41] }) }
+        }
+      });
+
+      mapInstance.on(L.Draw.Event.CREATED, function(e) {
+        mapDrawnItems.addLayer(e.layer);
+        if (e.layerType === 'polygon') {
+          promptLinkPolygonToLoRung(e.layer);
+        }
+      });
+
+      mapInstance.on(L.Draw.Event.EDITED, function(e) {
+        e.layers.eachLayer(function(layer) {
+          if (layer.loRungId) savePolygonGeometry(layer);
+        });
+      });
+
+      loadLoRungMarkers();
+      loadGeoJSONFromKho().then(() => {
+        loadStoredGeoJSON().then(() => {
+          setTimeout(() => { zoomToAllData(); updateZoomLayerMenu(); }, 300);
+        });
+      });
+      renderMapLayerPanel();
+    }
+
+    function togglePolygonEdit() {
+      mapEditMode = !mapEditMode;
+      const btn = document.getElementById('btn-edit-polygon');
+      if (mapEditMode) {
+        mapInstance.addControl(mapDrawControl);
+        btn.classList.remove('btn-outline-warning');
+        btn.classList.add('btn-warning', 'text-dark');
+        btn.innerHTML = '<i class="fa-solid fa-pen-to-square me-1"></i> Tắt chỉnh sửa';
+      } else {
+        mapInstance.removeControl(mapDrawControl);
+        btn.classList.remove('btn-warning', 'text-dark');
+        btn.classList.add('btn-outline-warning');
+        btn.innerHTML = '<i class="fa-solid fa-pen-to-square me-1"></i> Chỉnh sửa';
+      }
+    }
+
+    function zoomToAllData() {
+      if (!mapInstance) return;
+      const allBounds = [];
+      if (mapDrawnItems && mapDrawnItems.getLayers().length > 0) {
+        allBounds.push(mapDrawnItems.getBounds());
+      }
+      if (mapLayers['Tâm lô rừng'] && mapLayers['Tâm lô rừng'].getLayers().length > 0) {
+        allBounds.push(mapLayers['Tâm lô rừng'].getBounds());
+      }
+      if (allBounds.length > 0) {
+        let combined = allBounds[0];
+        for (let i = 1; i < allBounds.length; i++) combined.extend(allBounds[i]);
+        mapInstance.fitBounds(combined.pad(0.1));
+      }
+    }
+
+    function loadLoRungMarkers() {
+      const loRungData = APP_DATA['Lo_rung'] || [];
+      const markerLayer = L.layerGroup();
+
+      loRungData.forEach(lr => {
+        const coords = lr['Tọa độ tâm lô'];
+        if (!coords) return;
+        const parts = String(coords).split(',').map(s => parseFloat(s.trim()));
+        if (parts.length === 2 && !isNaN(parts[0]) && !isNaN(parts[1])) {
+          const marker = L.marker([parts[0], parts[1]])
+            .bindPopup(`
+              <strong>${lr['Tên lô rừng'] || lr['Mã số lô 2024'] || 'Lô rừng'}</strong><br>
+              ID: ${lr['ID lô rừng']}<br>
+              Diện tích: ${lr['Tổng diện tích'] || '?'} ha
+              <br><button class="btn btn-sm btn-outline-success mt-1" onclick="viewLoRungFromMap('${lr['ID lô rừng']}')">Xem chi tiết</button>
+            `);
+          markerLayer.addLayer(marker);
+        }
+      });
+
+      markerLayer.addTo(mapInstance);
+      mapLayers['Tâm lô rừng'] = markerLayer;
+    }
+
+    function handleGeoJSONUpload(event) {
+      const file = event.target.files[0];
+      if (!file) return;
+
+      // Prompt for layer name
+      const defaultName = file.name.replace(/\.(geojson|json)$/i, '');
+      const layerName = prompt('Đặt tên cho lớp bản đồ:', defaultName);
+      if (!layerName) { event.target.value = ''; return; }
+
+      const reader = new FileReader();
+      reader.onload = async function(ev) {
+        try {
+          const rawText = ev.target.result;
+          const geojson = JSON.parse(rawText);
+
+          // Inline add GeoJSON to map (avoid scope issues)
+          const loRungData = APP_DATA['Lo_rung'] || [];
+          let linkedCount = 0;
+          const layerGroup = new L.FeatureGroup();
+
+          L.geoJSON(geojson, {
+            style: { color: '#FFFF00', weight: 2.5, fillColor: '#2E7D32', fillOpacity: 0.15 },
+            onEachFeature: function(feature, layer) {
+              let linkedId = null;
+              if (feature.properties) {
+                for (const [k, v] of Object.entries(feature.properties)) {
+                  if (!v) continue;
+                  const vStr = String(v).trim();
+                  const match = loRungData.find(lr =>
+                    String(lr['ID lô rừng']).trim() === vStr ||
+                    String(lr['Mã số lô 2024']).trim() === vStr ||
+                    String(lr['Mã số lô 2023']).trim() === vStr ||
+                    String(lr['Tên lô rừng']).trim() === vStr
+                  );
+                  if (match) { linkedId = match['ID lô rừng']; break; }
+                }
+                let popup = `<div class="small"><strong class="text-success">${layerName}</strong><hr class="my-1">`;
+                for (const [k, v] of Object.entries(feature.properties)) popup += `<strong>${k}:</strong> ${v}<br>`;
+                if (linkedId) {
+                  const lr = loRungData.find(r => String(r['ID lô rừng']) === String(linkedId));
+                  popup += `<span class="badge bg-success mt-1">Liên kết: ${lr ? (lr['Mã số lô 2024'] || linkedId) : linkedId}</span>`;
+                  popup += `<br><button class="btn btn-sm btn-outline-success mt-1" onclick="viewLoRungFromMap('${linkedId}')">Xem chi tiết</button>`;
+                }
+                popup += '</div>';
+                layer.bindPopup(popup);
+              }
+              if (linkedId) {
+                layer.loRungId = linkedId;
+                layer.setStyle({ color: '#2E7D32', weight: 2, fillColor: '#4CAF50', fillOpacity: 0.2 });
+                linkedCount++;
+              }
+              layerGroup.addLayer(layer);
+              mapDrawnItems.addLayer(layer);
+            }
+          });
+
+          geoJsonNamedLayers[layerName] = layerGroup;
+          mapLayers[layerName] = layerGroup;
+
+          // Save linked polygons to lo_rung_geojson
+          const layersToSave = [];
+          mapDrawnItems.eachLayer(function(l) {
+            if (l.loRungId && l.toGeoJSON) layersToSave.push(l);
+          });
+          for (const l of layersToSave) {
+            await savePolygonGeometry(l);
+          }
+
+          // Save full GeoJSON to geojson_kho
+          const existingVersions = await sb.from('geojson_kho').select('version').eq('ten_lop', layerName).order('version', { ascending: false }).limit(1);
+          const nextVersion = (existingVersions.data && existingVersions.data.length > 0) ? existingVersions.data[0].version + 1 : 1;
+          const { error: saveErr } = await sb.from('geojson_kho').insert({
+            ten_lop: layerName,
+            geojson_data: geojson,
+            ghi_chu: 'Tải lên từ file: ' + file.name,
+            version: nextVersion
+          });
+          if (saveErr) console.error('Save to geojson_kho error:', saveErr);
+          else console.log('GeoJSON saved to kho: "' + layerName + '" v' + nextVersion);
+
+          // Zoom to uploaded data
+          if (layerGroup.getLayers().length > 0) {
+            mapInstance.fitBounds(layerGroup.getBounds().pad(0.05));
+          }
+          updateZoomLayerMenu();
+          renderMapLayerPanel();
+
+          var msg = 'Tải GeoJSON thành công: "' + layerName + '" (v' + nextVersion + ')';
+          if (linkedCount > 0) msg += '\nTự động liên kết ' + linkedCount + ' polygon với lô rừng.';
+          alert(msg);
+        } catch (err) {
+          alert('Lỗi đọc file GeoJSON: ' + err.message);
+        }
+      };
+      reader.readAsText(file);
+      event.target.value = '';
+    }
+
+    function promptLinkPolygonToLoRung(layer) {
+      const loRungData = APP_DATA['Lo_rung'] || [];
+      let options = loRungData.map(lr =>
+        `<option value="${lr['ID lô rừng']}">${lr['Mã số lô 2024'] || lr['Tên lô rừng'] || lr['ID lô rừng']}</option>`
+      ).join('');
+
+      const popup = L.popup()
+        .setLatLng(layer.getBounds().getCenter())
+        .setContent(`
+          <div style="min-width:220px">
+            <label class="fw-bold small mb-1">Liên kết với lô rừng:</label>
+            <select class="form-select form-select-sm mb-2" id="map-link-select">
+              <option value="">-- Chọn lô rừng --</option>
+              ${options}
+            </select>
+            <button class="btn btn-success btn-sm w-100" onclick="linkPolygonConfirm()">
+              <i class="fa-solid fa-link me-1"></i>Liên kết & Lưu
+            </button>
+          </div>
+        `)
+        .openOn(mapInstance);
+      popup._linkedLayer = layer;
+    }
+
+    window.linkPolygonConfirm = async function() {
+      const select = document.getElementById('map-link-select');
+      const loRungId = select ? select.value : '';
+      if (!loRungId) return;
+      const popup = mapInstance._popup;
+      if (popup && popup._linkedLayer) {
+        popup._linkedLayer.loRungId = loRungId;
+        await savePolygonGeometry(popup._linkedLayer);
+        // Update popup to show linked info
+        const lr = (APP_DATA['Lo_rung'] || []).find(r => String(r['ID lô rừng']) === String(loRungId));
+        if (lr) {
+          popup._linkedLayer.bindPopup(`
+            <strong>${lr['Mã số lô 2024'] || lr['Tên lô rừng']}</strong><br>
+            <span class="badge bg-success">Đã liên kết</span><br>
+            <button class="btn btn-sm btn-outline-success mt-1" onclick="viewLoRungFromMap('${loRungId}')">Xem chi tiết</button>
+            <button class="btn btn-sm btn-outline-danger mt-1" onclick="unlinkPolygon('${loRungId}')">Hủy liên kết</button>
+          `);
+        }
+      }
+      mapInstance.closePopup();
+      alert('Đã liên kết và lưu thành công!');
+    };
+
+    window.unlinkPolygon = async function(loRungId) {
+      if (!confirm('Xác nhận hủy liên kết polygon này với lô rừng?')) return;
+      try {
+        const { error } = await sb.from('lo_rung_geojson').delete().eq('id_lo_rung', loRungId);
+        if (error) { alert('Lỗi: ' + error.message); return; }
+        // Remove layer from map
+        mapDrawnItems.eachLayer(l => {
+          if (l.loRungId === loRungId) {
+            mapDrawnItems.removeLayer(l);
+          }
+        });
+        mapInstance.closePopup();
+        alert('Đã hủy liên kết thành công.');
+      } catch (e) {
+        alert('Lỗi: ' + e.message);
+      }
+    };
+
+    async function savePolygonGeometry(layer) {
+      const geojson = layer.toGeoJSON();
+      const loRungId = layer.loRungId;
+      if (!loRungId) return;
+      try {
+        const { error } = await sb.from('lo_rung_geojson')
+          .upsert({ id_lo_rung: loRungId, geojson: geojson, updated_at: new Date().toISOString() }, { onConflict: 'id_lo_rung' });
+        if (error) console.error('Save GeoJSON error:', error);
+        else console.log('GeoJSON saved for', loRungId);
+      } catch (e) {
+        console.error('Save polygon error:', e);
+      }
+    }
+
+    // Add GeoJSON data to map with a named layer group
+    function addGeoJSONToMap(geojson, layerName) {
+      const loRungData = APP_DATA['Lo_rung'] || [];
+      let linkedCount = 0;
+      const layerGroup = new L.FeatureGroup();
+
+      L.geoJSON(geojson, {
+        style: { color: '#FFFF00', weight: 2.5, fillColor: '#2E7D32', fillOpacity: 0.15 },
+        onEachFeature: function(feature, layer) {
+          let linkedId = null;
+          if (feature.properties) {
+            for (const [k, v] of Object.entries(feature.properties)) {
+              if (!v) continue;
+              const vStr = String(v).trim();
+              const match = loRungData.find(lr =>
+                String(lr['ID lô rừng']).trim() === vStr ||
+                String(lr['Mã số lô 2024']).trim() === vStr ||
+                String(lr['Mã số lô 2023']).trim() === vStr ||
+                String(lr['Tên lô rừng']).trim() === vStr
+              );
+              if (match) { linkedId = match['ID lô rừng']; break; }
+            }
+            let popup = `<div class="small"><strong class="text-success">${layerName}</strong><hr class="my-1">`;
+            for (const [k, v] of Object.entries(feature.properties)) popup += `<strong>${k}:</strong> ${v}<br>`;
+            if (linkedId) {
+              const lr = loRungData.find(r => String(r['ID lô rừng']) === String(linkedId));
+              popup += `<span class="badge bg-success mt-1">Liên kết: ${lr ? (lr['Mã số lô 2024'] || linkedId) : linkedId}</span>`;
+              popup += `<br><button class="btn btn-sm btn-outline-success mt-1" onclick="viewLoRungFromMap('${linkedId}')">Xem chi tiết</button>`;
+              popup += `<button class="btn btn-sm btn-outline-danger mt-1 ms-1" onclick="unlinkPolygon('${linkedId}')">Hủy liên kết</button>`;
+            }
+            popup += '</div>';
+            layer.bindPopup(popup);
+          }
+          if (linkedId) {
+            layer.loRungId = linkedId;
+            layer.setStyle({ color: '#2E7D32', weight: 2, fillColor: '#4CAF50', fillOpacity: 0.2 });
+            linkedCount++;
+          }
+          layerGroup.addLayer(layer);
+          mapDrawnItems.addLayer(layer);
+        }
+      });
+
+      geoJsonNamedLayers[layerName] = layerGroup;
+      mapLayers[layerName] = layerGroup;
+      return { linkedCount, layerGroup };
+    }
+
+    // Load all GeoJSON layers from geojson_kho (Supabase)
+    async function loadGeoJSONFromKho() {
+      try {
+        // Get latest version of each layer name
+        const { data, error } = await sb.from('geojson_kho')
+          .select('*')
+          .order('ten_lop', { ascending: true })
+          .order('version', { ascending: false });
+        if (error || !data || data.length === 0) return;
+
+        // Group by name, take latest version only
+        const latest = {};
+        data.forEach(row => {
+          if (!latest[row.ten_lop]) latest[row.ten_lop] = row;
+        });
+
+        for (const row of Object.values(latest)) {
+          if (row.geojson_data) {
+            addGeoJSONToMap(row.geojson_data, row.ten_lop);
+            console.log(`Loaded from kho: "${row.ten_lop}" v${row.version}`);
+          }
+        }
+        updateZoomLayerMenu();
+      } catch (e) {
+        console.error('Load GeoJSON from kho error:', e);
+      }
+    }
+
+    // Load individually linked polygons from lo_rung_geojson
+    async function loadStoredGeoJSON() {
+      try {
+        const { data, error } = await sb.from('lo_rung_geojson').select('*');
+        if (error || !data) return;
+        data.forEach(row => {
+          if (row.geojson) {
+            const layer = L.geoJSON(row.geojson, {
+              style: { color: '#2E7D32', weight: 2, fillColor: '#4CAF50', fillOpacity: 0.2 }
+            });
+            layer.eachLayer(l => { l.loRungId = row.id_lo_rung; });
+            const lr = (APP_DATA['Lo_rung'] || []).find(r => String(r['ID lô rừng']) === String(row.id_lo_rung));
+            if (lr) {
+              layer.bindPopup(`<div class="small">
+                <strong>${lr['Mã số lô 2024'] || lr['Tên lô rừng']}</strong><br>
+                Chủ rừng: ${lr['Họ tên chủ rừng'] || '?'}<br>
+                Diện tích: ${lr['Tổng diện tích'] || '?'} ha<br>
+                <span class="badge bg-success mt-1">Đã liên kết</span><br>
+                <button class="btn btn-sm btn-outline-success mt-1" onclick="viewLoRungFromMap('${row.id_lo_rung}')">Xem chi tiết</button>
+                <button class="btn btn-sm btn-outline-danger mt-1 ms-1" onclick="unlinkPolygon('${row.id_lo_rung}')">Hủy liên kết</button>
+              </div>`);
+            }
+            mapDrawnItems.addLayer(layer);
+          }
+        });
+      } catch (e) {
+        console.error('Load stored GeoJSON error:', e);
+      }
+    }
+
+    // Update zoom dropdown menu with available layers
+    window.updateZoomLayerMenu = updateZoomLayerMenu;
+    function updateZoomLayerMenu() {
+      const menu = document.getElementById('zoom-layer-menu');
+      if (!menu) return;
+      let html = '<li><a class="dropdown-item small" href="#" onclick="zoomToAllData();return false"><i class="fa-solid fa-globe me-2"></i>Tất cả lớp</a></li>';
+      if (mapLayers['Tâm lô rừng']) {
+        html += '<li><a class="dropdown-item small" href="#" onclick="zoomToLayer(\'Tâm lô rừng\');return false"><i class="fa-solid fa-location-dot me-2"></i>Tâm lô rừng</a></li>';
+      }
+      for (const name of Object.keys(geoJsonNamedLayers)) {
+        html += `<li><a class="dropdown-item small" href="#" onclick="zoomToLayer('${name.replace(/'/g,"\\'")}');return false"><i class="fa-solid fa-map me-2"></i>${name}</a></li>`;
+      }
+      menu.innerHTML = html;
+    }
+
+    // Zoom to a specific named layer
+    window.zoomToLayer = zoomToLayer;
+    function zoomToLayer(name) {
+      const layer = mapLayers[name] || geoJsonNamedLayers[name];
+      if (layer && layer.getLayers && layer.getLayers().length > 0) {
+        mapInstance.fitBounds(layer.getBounds().pad(0.05));
+      } else {
+        alert('Lớp "' + name + '" không có dữ liệu.');
+      }
+    }
+
+    // GeoJSON Repository Panel
+    window.openGeoJSONRepo = openGeoJSONRepo;
+    async function openGeoJSONRepo() {
+      const { data, error } = await sb.from('geojson_kho')
+        .select('id, ten_lop, ghi_chu, version, created_at')
+        .order('created_at', { ascending: false });
+
+      if (error) { alert('Lỗi tải kho bản đồ: ' + error.message); return; }
+
+      let html = `<div class="card shadow border-0" style="position:absolute;top:10px;right:10px;z-index:1100;width:380px;max-height:80vh;overflow-y:auto">
+        <div class="card-header bg-white border-bottom d-flex justify-content-between align-items-center py-2">
+          <strong class="small"><i class="fa-solid fa-database me-1" style="color:#7B1FA2"></i>Kho bản đồ GeoJSON</strong>
+          <button type="button" class="btn-close btn-close-sm" onclick="closeGeoJSONRepo()"></button>
+        </div>
+        <div class="card-body p-2">`;
+
+      if (!data || data.length === 0) {
+        html += '<div class="text-center text-muted py-3 small">Chưa có bản đồ nào được lưu.</div>';
+      } else {
+        data.forEach(row => {
+          const date = new Date(row.created_at).toLocaleDateString('vi-VN', { day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit' });
+          html += `
+            <div class="border rounded p-2 mb-2 bg-light d-flex justify-content-between align-items-start">
+              <div class="flex-grow-1">
+                <div class="fw-bold small text-dark">${row.ten_lop} <span class="badge bg-secondary">v${row.version}</span></div>
+                <div class="text-muted" style="font-size:10px"><i class="fa-solid fa-clock me-1"></i>${date}</div>
+                ${row.ghi_chu ? `<div class="text-muted" style="font-size:10px">${row.ghi_chu}</div>` : ''}
+              </div>
+              <div class="d-flex gap-1 flex-shrink-0 ms-2">
+                <button class="btn btn-outline-success btn-sm" style="font-size:10px;padding:2px 6px" onclick="loadKhoLayer(${row.id})" title="Hiển thị"><i class="fa-solid fa-eye"></i></button>
+                <button class="btn btn-outline-primary btn-sm" style="font-size:10px;padding:2px 6px" onclick="zoomKhoLayer('${row.ten_lop.replace(/'/g,"\\'")}')" title="Zoom"><i class="fa-solid fa-expand"></i></button>
+                <button class="btn btn-outline-danger btn-sm" style="font-size:10px;padding:2px 6px" onclick="deleteKhoLayer(${row.id}, '${row.ten_lop.replace(/'/g,"\\'")}')" title="Xóa"><i class="fa-solid fa-trash"></i></button>
+              </div>
+            </div>`;
+        });
+      }
+      html += '</div></div>';
+
+      // Remove existing panel if any
+      closeGeoJSONRepo();
+      const panel = document.createElement('div');
+      panel.id = 'geojson-repo-panel';
+      document.getElementById('map-view').appendChild(panel);
+      panel.innerHTML = html;
+    }
+
+    function closeGeoJSONRepo() {
+      const el = document.getElementById('geojson-repo-panel');
+      if (el) el.remove();
+    }
+
+    window.loadKhoLayer = async function(id) {
+      const { data, error } = await sb.from('geojson_kho').select('*').eq('id', id).single();
+      if (error || !data) { alert('Lỗi tải dữ liệu'); return; }
+      // Remove old layer if exists
+      if (geoJsonNamedLayers[data.ten_lop]) {
+        geoJsonNamedLayers[data.ten_lop].eachLayer(l => mapDrawnItems.removeLayer(l));
+        delete geoJsonNamedLayers[data.ten_lop];
+        delete mapLayers[data.ten_lop];
+      }
+      addGeoJSONToMap(data.geojson_data, data.ten_lop);
+      updateZoomLayerMenu();
+      renderMapLayerPanel();
+      mapInstance.fitBounds(geoJsonNamedLayers[data.ten_lop].getBounds().pad(0.05));
+      closeGeoJSONRepo();
+    };
+
+    window.zoomKhoLayer = function(name) {
+      if (geoJsonNamedLayers[name]) {
+        mapInstance.fitBounds(geoJsonNamedLayers[name].getBounds().pad(0.05));
+      } else {
+        alert('Lớp "' + name + '" chưa được hiển thị trên bản đồ.');
+      }
+    };
+
+    window.deleteKhoLayer = async function(id, name) {
+      if (!confirm(`Xác nhận xóa bản đồ "${name}" khỏi kho?`)) return;
+      const { error } = await sb.from('geojson_kho').delete().eq('id', id);
+      if (error) { alert('Lỗi: ' + error.message); return; }
+      // Remove from map if displayed
+      if (geoJsonNamedLayers[name]) {
+        geoJsonNamedLayers[name].eachLayer(l => mapDrawnItems.removeLayer(l));
+        delete geoJsonNamedLayers[name];
+        delete mapLayers[name];
+        updateZoomLayerMenu();
+        renderMapLayerPanel();
+      }
+      openGeoJSONRepo(); // Refresh panel
+    };
+
+    function toggleMapLayers() {
+      const panel = $('#map-layer-panel');
+      panel.toggleClass('d-none');
+      if (!panel.hasClass('d-none')) {
+        setTimeout(() => {
+          $(document).one('click', function closeLayerPanel(e) {
+            if (!$(e.target).closest('#map-layer-panel, [onclick*="toggleMapLayers"]').length) {
+              panel.addClass('d-none');
+            } else if (!panel.hasClass('d-none')) {
+              $(document).one('click', closeLayerPanel);
+            }
+          });
+        }, 10);
+      }
+    }
+
+    function renderMapLayerPanel() {
+      let html = '<h6 class="fw-bold mb-2 small">Lớp bản đồ nền</h6>';
+      const baseLayers = ['OpenStreetMap', 'Vệ tinh (Esri)', 'Google Satellite'];
+      for (const name of baseLayers) {
+        const layer = mapLayers[name];
+        if (!layer) continue;
+        const checked = mapInstance.hasLayer(layer) ? 'checked' : '';
+        const safeName = name.replace(/'/g, "\\'");
+        html += `<label><input type="radio" name="map-basemap" ${checked} onchange="switchBasemap('${safeName}')" class="me-1"> ${name}</label>`;
+      }
+      html += '<hr class="my-2"><h6 class="fw-bold mb-2 small">Dữ liệu</h6>';
+      const dataLayers = ['Tâm lô rừng', 'Lô rừng (GeoJSON)', 'Ghi chú'];
+      for (const name of dataLayers) {
+        const layer = mapLayers[name];
+        if (!layer) continue;
+        const checked = mapInstance.hasLayer(layer) ? 'checked' : '';
+        const safeName = name.replace(/'/g, "\\'");
+        html += `<label><input type="checkbox" ${checked} onchange="toggleLayer('${safeName}', this.checked)" class="me-1"> ${name}</label>`;
+      }
+      $('#map-layer-panel').html(html);
+    }
+
+    window.switchBasemap = function(name) {
+      const baseLayers = ['OpenStreetMap', 'Vệ tinh (Esri)', 'Google Satellite'];
+      baseLayers.forEach(bl => {
+        if (mapLayers[bl] && mapInstance.hasLayer(mapLayers[bl])) {
+          mapInstance.removeLayer(mapLayers[bl]);
+        }
+      });
+      if (mapLayers[name]) mapInstance.addLayer(mapLayers[name]);
+    };
+
+    window.toggleLayer = function(name, show) {
+      if (mapLayers[name]) {
+        if (show) mapInstance.addLayer(mapLayers[name]);
+        else mapInstance.removeLayer(mapLayers[name]);
+      }
+    };
+
+
+    function addMapNote() {
+      alert('Nhấn vào bản đồ để đặt ghi chú');
+      mapInstance.once('click', function(e) {
+        const note = prompt('Nhập nội dung ghi chú:');
+        if (note) {
+          L.marker(e.latlng, {
+            icon: L.divIcon({ className: '', html: '<i class="fas fa-sticky-note text-warning fa-lg"></i>', iconSize: [20, 20] })
+          }).bindPopup(`<div class="small fw-bold">${note}</div>`).addTo(mapInstance).openPopup();
+          mapAnnotations.push({ latlng: e.latlng, note });
+        }
+      });
+    }
+
+    window.viewLoRungFromMap = function(loRungId) {
+      const data = APP_DATA['Lo_rung'] || [];
+      const row = data.find(r => String(r['ID lô rừng']) === String(loRungId));
+      if (row) {
+        $('#map-view').addClass('d-none');
+        $('#page-content-dynamic').removeClass('d-none');
+        navHistory.push({ mode: 'DETAIL', viewName: 'Lo_rung', title: row['Mã số lô 2024'] || 'Lô rừng', rowData: row });
+        renderBreadcrumb();
+        renderDetailMaster('Lo_rung', row);
+      }
+    };
+
+    window.showOnMap = function(loRungId) {
+      loadView('Bando_lorung', 'Bản đồ quản lý lô rừng');
+
+      // Retry mechanism: GeoJSON loads async, so we try multiple times
+      let attempts = 0;
+      const maxAttempts = 10;
+      const tryFlyTo = () => {
+        attempts++;
+        if (!mapInstance) { if (attempts < maxAttempts) setTimeout(tryFlyTo, 500); return; }
+
+        // 1. Try to find polygon in drawn items (stored GeoJSON)
+        let found = false;
+        if (mapDrawnItems) {
+          mapDrawnItems.eachLayer(layer => {
+            if (found) return;
+            // Check nested layers (L.geoJSON creates layer groups)
+            if (layer.eachLayer) {
+              layer.eachLayer(sub => {
+                if (found) return;
+                if (sub.loRungId === loRungId) {
+                  found = true;
+                  if (sub.getBounds) mapInstance.fitBounds(sub.getBounds().pad(0.1));
+                  if (sub.openPopup) sub.openPopup();
+                }
+              });
+            }
+            if (!found && layer.loRungId === loRungId) {
+              found = true;
+              if (layer.getBounds) mapInstance.fitBounds(layer.getBounds().pad(0.1));
+              else if (layer.getLatLng) mapInstance.setView(layer.getLatLng(), 16);
+              if (layer.openPopup) layer.openPopup();
+            }
+          });
+        }
+
+        // 2. Fallback: use marker coordinates from Lo_rung data
+        if (!found) {
+          const loRungData = APP_DATA['Lo_rung'] || [];
+          const lr = loRungData.find(r => String(r['ID lô rừng']) === String(loRungId));
+          if (lr) {
+            const coords = lr['Tọa độ tâm lô'];
+            if (coords) {
+              const parts = String(coords).split(',').map(s => parseFloat(s.trim()));
+              if (parts.length === 2 && !isNaN(parts[0]) && !isNaN(parts[1])) {
+                mapInstance.setView([parts[0], parts[1]], 16);
+                // Open marker popup if exists
+                if (mapLayers['Tâm lô rừng']) {
+                  mapLayers['Tâm lô rừng'].eachLayer(marker => {
+                    const ll = marker.getLatLng();
+                    if (Math.abs(ll.lat - parts[0]) < 0.001 && Math.abs(ll.lng - parts[1]) < 0.001) {
+                      marker.openPopup();
+                    }
+                  });
+                }
+                found = true;
+              }
+            }
+          }
+        }
+
+        // 3. If still not found and GeoJSON might still be loading, retry
+        if (!found && attempts < maxAttempts) setTimeout(tryFlyTo, 500);
+      };
+      setTimeout(tryFlyTo, 600);
+    };
+    // ============================================================
+    // END MAP MODULE
+    // ============================================================
 
     function updateSidebarContext() {
       // Logic: Nếu là PC (>992px) VÀ đang Drill-down (navHistory > 1) -> Hiển thị "Sơ đồ làm việc"
@@ -990,7 +3433,7 @@
 
       // Nếu ở trang chủ (navHistory items = 1) -> Hiển thị Menu Gốc
       if (navHistory.length <= 1) {
-        $('.sidebar-header').text("MENU HỆ THỐNG");
+        // sidebar home icon (no text)
         if (APP_DATA['Menu']) {
           // FIX: Only render if empty to preserve accordion state
           if (container.children().length === 0) renderSystemMenu(APP_DATA['Menu']);
@@ -1000,7 +3443,7 @@
 
 
       // Nếu đang Drill-down -> Hiển thị Context Map
-      $('.sidebar-header').text("SƠ ĐỒ LÀM VIỆC");
+      // sidebar home icon (no text)
       let html = '<div class="list-group list-group-flush">';
 
       navHistory.forEach((item, index) => {
@@ -1049,7 +3492,7 @@
 
       let html = `
         <div class="card shadow-sm mb-4">
-          <div class="card-header bg-success text-white fw-bold">THÔNG TIN ĐÁNH GIÁ</div>
+          <div class="card-header bg-success text-white fw-bold">Thông tin đánh giá</div>
           <div class="card-body">
             <div class="row g-3">
                <div class="col-md-4">
@@ -1115,7 +3558,7 @@
       html += `</div>`;
 
       html += `<div class="mt-4 text-center">
-        <button class="btn btn-primary btn-lg px-5 fw-bold" onclick="submitAudit()"><i class="fas fa-save me-2"></i>LƯU KẾT QUẢ ĐÁNH GIÁ</button>
+        <button class="btn btn-primary btn-lg px-5 fw-bold" onclick="submitAudit()"><i class="fas fa-save me-2"></i>Lưu kết quả đánh giá</button>
       </div>`;
 
       container.html(html);
@@ -1151,8 +3594,7 @@
 
       if (!targetId || targetId === "") { return alert("Vui lòng chọn đối tượng đánh giá!"); }
 
-      const btn = $('button[onclick="submitAuditWithUpload()"]');
-      // Format: [ID nhóm]-yy[Sequence] (e.g. G001-2601)
+      // Format: [ID nhóm]-yy[Sequence]
       const today = new Date();
       const yy = today.getFullYear().toString().slice(-2);
       const idPrefix = `${targetId}-${yy}`;
@@ -1162,53 +3604,23 @@
       existingAudits.forEach(row => {
         const rID = String(row['ID'] || '');
         if (rID.startsWith(idPrefix)) {
-          // Extract suffix (expected 2 digits)
           const suffix = parseInt(rID.replace(idPrefix, ''), 10);
-          if (!isNaN(suffix) && suffix >= nextSeq) {
-            nextSeq = suffix + 1;
-          }
+          if (!isNaN(suffix) && suffix >= nextSeq) nextSeq = suffix + 1;
         }
       });
       const seqStr = String(nextSeq).padStart(2, '0');
       const idDG = `${idPrefix}${seqStr}`;
 
-      const dgData = {
-        'ID': idDG,
-        'ID nhóm': targetId,
-        'Date': date,
-        'Staff': currentUser['Email'],
-        'Update': new Date().toLocaleString()
-      };
-
-      // 2. Prepare Banghoi_DG_noibo data using idDG
-      // Format: idDG-ddmmyyhhmmss
-      const pad = (n) => String(n).padStart(2, '0');
-      const ts = pad(today.getDate()) + pad(today.getMonth() + 1) + yy +
-        pad(today.getHours()) + pad(today.getMinutes()) + pad(today.getSeconds());
-      const idHoi = `${idDG}-${ts}`;
-
-      const hoiData = {
-        'ID_hoi': idHoi, // Explicit ID for Banghoi
-        'ID_DG': idDG
-      };
-
-      let passCount = 0;
-      let total = 0;
+      // Prepare answers JSONB
+      const answers = {};
+      let passCount = 0, total = 0;
 
       $('.audit-result').each(function () {
         const qid = $(this).data('qid');
         const val = $(this).val();
         const note = $(`.audit-note[data-qid="${qid}"]`).val() || '';
-
-        if (val !== 'NA') {
-          total++;
-          if (val === 'TT') passCount++;
-        }
-
-        // Store as simple text or JSON. Request implies "result" and "note".
-        // Using concise JSON format: {"r":"TT","n":"Ghi chu"}
-        const cellVal = JSON.stringify({ r: val, n: note });
-        hoiData[qid] = cellVal;
+        if (val !== 'NA') { total++; if (val === 'TT') passCount++; }
+        answers[qid] = JSON.stringify({ r: val, n: note });
       });
 
       const score = total === 0 ? 100 : Math.round((passCount / total) * 100);
@@ -1219,14 +3631,28 @@
 
         try {
           // Step 1: Save DG_noibo
-          console.log("Saving DG_noibo...", dgData);
-          const res1 = await callGAS('apiCRUD', { action: 'CREATE', sheetName: 'DG_noibo', jsonData: dgData });
-          if (!res1 || !res1.success) throw new Error("Lỗi lưu DG_noibo: " + (res1 ? res1.message : 'Unknown'));
+          const { error: err1 } = await sb.from('dg_noi_bo').insert({
+            id: idDG, id_nhom: targetId, audit_date: date,
+            staff: currentUser['Email']
+          });
+          if (err1) throw new Error("Lỗi lưu DG_noibo: " + err1.message);
 
-          // Step 2: Save Banghoi_DG_noibo
-          console.log("Saving Banghoi_DG_noibo...", hoiData);
-          const res2 = await callGAS('apiCRUD', { action: 'CREATE', sheetName: 'Banghoi_DG_noibo', jsonData: hoiData });
-          if (!res2 || !res2.success) throw new Error("Lỗi lưu Banghoi_DG_noibo: " + (res2 ? res2.message : 'Unknown'));
+          // Step 2: Save Banghoi_DG_noibo with answers JSONB
+          const pad = (n) => String(n).padStart(2, '0');
+          const ts = pad(today.getDate()) + pad(today.getMonth() + 1) + yy +
+            pad(today.getHours()) + pad(today.getMinutes()) + pad(today.getSeconds());
+          const idHoi = `${idDG}-${ts}`;
+
+          const { error: err2 } = await sb.from('bang_hoi_dg_noi_bo').insert({
+            id: idHoi, id_dg: idDG, answers: answers
+          });
+          if (err2) throw new Error("Lỗi lưu Banghoi_DG_noibo: " + err2.message);
+
+          // Update local data
+          APP_DATA['DG_noibo'].push({ 'ID': idDG, 'ID nhóm': targetId, 'Date': date, 'Staff': currentUser['Email'], 'Update': new Date().toLocaleString() });
+          const hoiLocal = { 'ID_hoi': idHoi, 'ID_DG': idDG, ...answers };
+          if (!APP_DATA['Banghoi_DG_noibo']) APP_DATA['Banghoi_DG_noibo'] = [];
+          APP_DATA['Banghoi_DG_noibo'].push(hoiLocal);
 
           alert("Lưu thành công!");
           navigateBack();
@@ -1235,7 +3661,7 @@
           alert("Lỗi: " + e.message);
           console.error(e);
         } finally {
-          btn.prop('disabled', false).html('<i class="fas fa-save me-2"></i>LƯU KẾT QUẢ ĐÁNH GIÁ');
+          btn.prop('disabled', false).html('<i class="fas fa-save me-2"></i>Lưu kết quả đánh giá');
         }
       }
     };
@@ -1249,14 +3675,14 @@
           <div class="card-header bg-white border-0 pt-4 px-4">
             <ul class="nav nav-tabs card-header-tabs" id="auditTabs" role="tablist">
               <li class="nav-item" role="presentation">
-                <button class="nav-link active fw-bold text-success" id="history-tab" data-bs-toggle="tab" data-bs-target="#history-pane" type="button" role="tab"><i class="fas fa-history me-2"></i>LỊCH SỬ ĐÁNH GIÁ</button>
+                <button class="nav-link active fw-bold text-success" id="history-tab" data-bs-toggle="tab" data-bs-target="#history-pane" type="button" role="tab"><i class="fas fa-history me-2"></i>Lịch sử đánh giá</button>
               </li>
               <li class="nav-item" role="presentation">
-                <button class="nav-link fw-bold text-success" id="new-audit-tab" data-bs-toggle="tab" data-bs-target="#new-audit-pane" type="button" role="tab"><i class="fas fa-plus-circle me-2"></i>THỰC HIỆN ĐÁNH GIÁ</button>
+                <button class="nav-link fw-bold text-success" id="new-audit-tab" data-bs-toggle="tab" data-bs-target="#new-audit-pane" type="button" role="tab"><i class="fas fa-plus-circle me-2"></i>Thực hiện đánh giá</button>
               </li>
             </ul>
           </div>
-          <div class="card-body p-4">
+          <div class="card-body p-2">
             <div class="tab-content" id="auditTabsContent">
               <div class="tab-pane fade show active" id="history-pane" role="tabpanel" aria-labelledby="history-tab">
                 <!-- HISTORY TABLE -->
@@ -1457,7 +3883,7 @@
         <div class="card shadow-sm border-0 mb-4">
            <div class="card-header bg-success text-white py-3">
               <div class="d-flex justify-content-between align-items-center">
-                 <h5 class="mb-0 fw-bold"><i class="fas fa-clipboard-list me-2"></i>HỒ SƠ ĐÁNH GIÁ: ${nameVal}</h5>
+                 <h5 class="mb-0 fw-bold"><i class="fas fa-clipboard-list me-2"></i>Hồ sơ đánh giá: ${nameVal}</h5>
                  <button class="btn btn-light btn-sm fw-bold text-success" onclick="renderAuditModule()"><i class="fas fa-arrow-left me-1"></i>Quay lại DS</button>
               </div>
            </div>
@@ -1470,7 +3896,7 @@
                  </div>
                  <div class="col-md-4 text-end">
                     <button class="btn btn-success fw-bold w-100 shadow py-2" onclick="renderAuditFormUI(${safeItem}, '${type}')">
-                       <i class="fas fa-plus-circle me-2"></i>THỰC HIỆN ĐÁNH GIÁ MỚI
+                       <i class="fas fa-plus-circle me-2"></i>Thực hiện đánh giá mới
                     </button>
                  </div>
               </div>
@@ -1518,19 +3944,19 @@
 
       let html = `
         <div class="card shadow-sm mb-4 border-0">
-          <div class="card-header bg-success text-white fw-bold py-3">
+          <div class="card-header bg-success text-white fw-bold py-2 audit-sticky-header">
             <div class="d-flex justify-content-between align-items-center">
                <span><i class="fas fa-edit me-2"></i>PHIẾU ĐÁNH GIÁ: ${nameVal}</span>
                <button class="btn btn-sm btn-light text-success fw-bold" onclick="showTargetHistory(${safeItem}, '${type}')"><i class="fas fa-arrow-left me-1"></i>Hủy / Quay lại</button>
             </div>
           </div>
-          <div class="card-body bg-light">
+          <div class="card-body bg-light" style="padding-top:0">
              <!-- Hidden Context -->
              <input type="hidden" id="audit-target-id" value="${idVal}">
              <input type="hidden" id="audit-target-type" value="${type}">
-             
-             <div class="row g-3 align-items-center bg-white p-3 rounded shadow-sm mb-4">
-               <div class="col-md-6"><h6 class="m-0 text-muted">Đối tượng: <strong class="text-dark">${nameVal}</strong> (${idVal})</h6></div>
+
+             <div class="row g-2 align-items-center bg-white p-2 rounded shadow-sm mb-3 audit-sticky-context">
+               <div class="col-md-6"><h6 class="m-0 text-muted small">Đối tượng: <strong class="text-dark">${nameVal}</strong> (${idVal})</h6></div>
                <div class="col-md-6 text-md-end">
                   <div class="input-group input-group-sm w-auto d-inline-flex">
                      <span class="input-group-text fw-bold">Ngày:</span>
@@ -1546,7 +3972,7 @@
         html += `
           <div class="accordion-item mb-3 border rounded shadow-sm overflow-hidden">
             <h2 class="accordion-header" id="heading${idx}">
-              <button class="accordion-button ${idx > 0 ? 'collapsed' : ''} fw-bold text-uppercase bg-white text-success" type="button" data-bs-toggle="collapse" data-bs-target="#collapse${idx}">
+              <button class="accordion-button ${idx > 0 ? 'collapsed' : ''} fw-bold bg-white text-success" type="button" data-bs-toggle="collapse" data-bs-target="#collapse${idx}">
                 ${cat} <span class="badge bg-light text-dark ms-2 border">${questions.length}</span>
               </button>
             </h2>
@@ -1561,7 +3987,7 @@
                            <div class="d-flex justify-content-between mb-2">
                               <span class="badge bg-success bg-opacity-10 text-success">${q.index}</span>
                            </div>
-                           <h6 class="fw-bold mb-3" style="font-size: 0.95rem; min-height: 45px;">${q.label}</h6>
+                           <h6 class="fw-bold mb-3" style="font-size: 12px; min-height: 36px;">${q.label}</h6>
                            
                            <!-- Answer Buttons -->
                            <input type="hidden" class="audit-result" data-qid="${q.id}" value="NA">
@@ -1596,6 +4022,14 @@
         idx++;
       }
       html += `</div>`;
+
+      html += `
+             <div class="mt-4 text-center">
+               <button class="btn btn-success btn-lg px-5 fw-bold shadow" onclick="submitAuditWithUpload()">
+                 <i class="fas fa-save me-2"></i>Lưu kết quả đánh giá
+               </button>
+             </div>
+      `;
 
       html += `</div></div>`;
       container.html(html);
@@ -1633,7 +4067,7 @@
         <div class="card shadow-sm mb-4 border-0">
           <div class="card-header bg-primary text-white fw-bold py-3">
              <div class="d-flex justify-content-between align-items-center">
-                <span><i class="fas fa-eye me-2"></i>CHI TIẾT ĐÁNH GIÁ: ${targetName}</span>
+                <span><i class="fas fa-eye me-2"></i>Chi tiết đánh giá: ${targetName}</span>
                 <button class="btn btn-sm btn-light text-primary fw-bold" onclick="renderAuditModule()"><i class="fas fa-arrow-left me-1"></i>Quay lại</button>
              </div>
           </div>
@@ -1654,7 +4088,7 @@
         html += `
           <div class="accordion-item mb-3 border rounded shadow-sm overflow-hidden">
             <h2 class="accordion-header" id="headingD${idx}">
-              <button class="accordion-button ${idx > 0 ? 'collapsed' : ''} fw-bold text-uppercase bg-white text-primary" type="button" data-bs-toggle="collapse" data-bs-target="#collapseD${idx}">
+              <button class="accordion-button ${idx > 0 ? 'collapsed' : ''} fw-bold bg-white text-primary" type="button" data-bs-toggle="collapse" data-bs-target="#collapseD${idx}">
                 ${cat}
               </button>
             </h2>
@@ -1780,13 +4214,15 @@
     }
 
     function loadViewWithFilter(viewName, filterKey, filterValue, title) {
-      if ($(window).width() < 768) $("#sidebar-wrapper").addClass("toggled");
+      if ($(window).width() < 768) { $('#sidebar-wrapper').removeClass('show-sidebar'); $('#sidebar-overlay').removeClass('active'); }
       $('#dashboard-view').addClass('d-none');
       $('#data-view').removeClass('d-none');
       const realSheetName = VIEW_MAP[viewName] || viewName;
-      navHistory = [{ mode: 'LIST', viewName: realSheetName, title: title, filter: { key: filterKey, value: filterValue } }];
+      // Push onto navHistory to preserve drill-down path (back = 1 level)
+      navHistory.push({ mode: 'LIST', viewName: realSheetName, title: title, filter: { key: filterKey, value: filterValue } });
       renderBreadcrumb();
       renderContent();
+      highlightActiveMenu(viewName, title);
     }
 
     function renderDetailMaster(sheetName, d) {
@@ -1796,15 +4232,48 @@
       const vcols = getVisibleColumns(sheetName);
 
       let html = `
-          <div class="d-flex justify-content-between align-items-center mb-3 p-3 bg-white rounded-3 shadow-sm border-start border-4 border-success">
-            <div><h5 class="fw-bold text-success m-0 text-uppercase">${d['Tên nhóm'] || d['Họ tên chủ rừng'] || d['Mã số lô 2024'] || d['Họ và tên'] || 'CHI TIẾT'}</h5><div class="text-muted small">ID: ${d[Object.keys(d)[0]]}</div></div>
+          <div class="d-flex justify-content-between align-items-center mb-2 p-2 bg-white rounded-3 shadow-sm border-start border-4 border-success">
+            <div><h6 class="fw-bold text-success m-0">${d['Tên nhóm'] || d['Họ tên chủ rừng'] || d['Mã số lô 2024'] || d['Họ và tên'] || 'Chi tiết'}</h6><div class="text-muted small">ID: ${d[Object.keys(d)[0]]}</div></div>
             <div>
               ${canEdit ? `<button class="btn btn-outline-primary btn-sm me-1" onclick="openModal('UPDATE', '${sheetName}', '${rowJson}')"><i class="fa-solid fa-pen"></i></button>` : ''}
               ${canDelete ? `<button class="btn btn-outline-danger btn-sm" onclick="deleteRow('${sheetName}', '${rowJson}')"><i class="fa-solid fa-trash"></i></button>` : ''}
             </div>
           </div>`;
 
-      html += `<div class="card p-3 shadow border-0 overflow-hidden"><div class="row g-3">`;
+      // ACTION BUTTONS AT TOP (before data) - Ông-Cha-Con-Cháu hierarchy
+      if (sheetName === 'Ban_Quanlynhom') {
+        html += `<div class="d-flex gap-1 mb-2 flex-nowrap detail-action-bar">
+          <button class="btn btn-success btn-sm fw-bold shadow-sm flex-fill" onclick="loadViewWithFilter('NhomCCR', 'ID ban quản lý', '${d['ID ban quản lý']}', 'Nhóm thuộc ${d['Tên ban quản lý']}')"><i class="fa-solid fa-layer-group me-1"></i> Nhóm</button>
+        </div>`;
+      } else if (sheetName === 'NhomCCR') {
+        const safeItem = JSON.stringify(d).replace(/"/g, '&quot;');
+        html += `<div class="d-flex gap-1 mb-2 flex-nowrap detail-action-bar">
+          <button class="btn btn-success btn-sm fw-bold shadow-sm flex-fill" onclick="loadViewWithFilter('Churung', 'ID nhóm', '${d['ID nhóm']}', 'Hộ dân thuộc ${d['Tên nhóm']}')"><i class="fa-solid fa-users me-1"></i> Hộ dân</button>
+          <button class="btn btn-primary btn-sm fw-bold shadow-sm flex-fill" onclick="showTargetHistory(${safeItem}, 'NhomCCR')"><i class="fa-solid fa-clipboard-check me-1"></i> Đánh giá</button>
+        </div>`;
+      } else if (sheetName === 'Churung') {
+        html += `<div class="d-flex gap-1 mb-2 flex-nowrap detail-action-bar">
+          <button class="btn btn-success btn-sm fw-bold shadow-sm flex-fill" onclick="loadViewWithFilter('Lo_rung', 'ID chủ rừng', '${d['ID chủ rừng']}', 'Lô rừng của ${d['Họ tên chủ rừng']}')"><i class="fa-solid fa-map-location-dot me-1"></i> Lô rừng</button>
+          <button class="btn btn-primary btn-sm fw-bold shadow-sm flex-fill" onclick="loadViewWithFilter('Taphuan', 'ID chủ rừng', '${d['ID chủ rừng']}', 'Tập huấn của ${d['Họ tên chủ rừng']}')"><i class="fa-solid fa-graduation-cap me-1"></i> Tập huấn</button>
+        </div>`;
+      } else if (sheetName === 'Lo_rung') {
+        html += `<div class="d-flex gap-1 mb-2 flex-nowrap detail-action-bar">
+          <button class="btn btn-success btn-sm fw-bold shadow-sm flex-fill" onclick="showOnMap('${d['ID lô rừng']}')"><i class="fa-solid fa-map me-1"></i> Bản đồ</button>
+          <button class="btn btn-warning btn-sm fw-bold shadow-sm flex-fill" onclick="loadViewWithFilter('HD_Lorung', 'ID lô rừng', '${d['ID lô rừng']}', 'Hoạt động lô ${d['Mã số lô 2024']}')"><i class="fa-solid fa-clipboard-list me-1"></i> Báo cáo</button>
+          <button class="btn btn-danger btn-sm fw-bold shadow-sm flex-fill" onclick="loadViewWithFilter('KH_QL_Lorung', 'ID lô rừng', '${d['ID lô rừng']}', 'Kế hoạch lô ${d['Mã số lô 2024']}')"><i class="fa-solid fa-calendar-check me-1"></i> Kế hoạch</button>
+          <button class="btn btn-primary btn-sm fw-bold shadow-sm flex-fill" onclick="loadViewWithFilter('Biendong_lorung', 'ID lô rừng', '${d['ID lô rừng']}', 'Giám sát lô ${d['Mã số lô 2024']}')"><i class="fa-solid fa-chart-line me-1"></i> Giám sát</button>
+        </div>`;
+      } else if (sheetName === 'NhanSu') {
+        const isAdmin = currentUser && (String(currentUser['Chức vụ']).toLowerCase().includes('admin'));
+        const isPending = d['Trạng thái'] === 'Pending';
+        if (isAdmin && isPending) {
+          html += `<div class="d-flex gap-1 mb-2 detail-action-bar">
+            <button class="btn btn-success btn-sm fw-bold shadow-sm flex-fill" onclick="approveMember('${d['ID_staff']}')"><i class="fa-solid fa-check-circle me-1"></i> Phê duyệt</button>
+          </div>`;
+        }
+      }
+
+      html += `<div class="card p-2 shadow border-0 overflow-hidden"><div class="row g-2">`;
 
       // Lấy tất cả các cột khả dụng cho bảng này
       const allCols = TABLE_CONFIG[sheetName] ? TABLE_CONFIG[sheetName].columns : Object.keys(d);
@@ -1824,43 +4293,6 @@
           </div>`;
       });
       html += `</div></div>`;
-
-      // DRILL-DOWN BUTTONS & SPECIAL LOGIC
-      if (sheetName === 'Ban_Quanlynhom') {
-        html += `<div class="mt-3"><button class="btn btn-success w-100 fw-bold shadow-sm" onclick="loadViewWithFilter('NhomCCR', 'ID ban quản lý', '${d['ID ban quản lý']}', 'Nhóm thuộc ${d['Tên ban quản lý']}')"><i class="fa-solid fa-layer-group me-2"></i> XEM CÁC NHÓM THUỘC BAN</button></div>`;
-      } else if (sheetName === 'NhomCCR') {
-        const safeItem = JSON.stringify(d).replace(/"/g, '&quot;');
-        html += `<div class="mt-3 card p-3 border-0 shadow-sm">
-                   <div class="row g-2">
-                     <div class="col-6"><button class="btn btn-outline-success w-100 btn-sm fw-bold" onclick="loadViewWithFilter('Churung', 'ID nhóm', '${d['ID nhóm']}', 'Hộ dân thuộc ${d['Tên nhóm']}')"><i class="fa-solid fa-users me-2"></i> HỘ DÂN</button></div>
-                     <div class="col-6"><button class="btn btn-outline-primary w-100 btn-sm fw-bold" onclick="showTargetHistory(${safeItem}, 'NhomCCR')"><i class="fa-solid fa-clipboard-check me-2"></i> ĐÁNH GIÁ NỘI BỘ</button></div>
-                   </div>
-                 </div>`;
-      } else if (sheetName === 'Churung') {
-        html += `
-          <div class="mt-4 card p-3 border-0 shadow-sm bg-light">
-            <h6 class="fw-bold text-success mb-3"><i class="fa-solid fa-link me-2"></i>LIÊN KẾT HỘ DÂN</h6>
-            <div class="row g-2">
-              <div class="col-6"><button class="btn btn-success w-100 btn-sm fw-bold shadow-sm" onclick="loadViewWithFilter('Lo_rung', 'ID chủ rừng', '${d['ID chủ rừng']}', 'Lô rừng của ${d['Họ tên chủ rừng']}')"><i class="fa-solid fa-map-location-dot me-2"></i> XEM LÔ RỪNG</button></div>
-              <div class="col-6"><button class="btn btn-primary w-100 btn-sm fw-bold shadow-sm" onclick="loadViewWithFilter('Taphuan', 'ID chủ rừng', '${d['ID chủ rừng']}', 'Tập huấn của ${d['Họ tên chủ rừng']}')"><i class="fa-solid fa-graduation-cap me-2"></i> TẬP HUẤN</button></div>
-            </div>
-          </div>`;
-      } else if (sheetName === 'Lo_rung') {
-        html += `
-          <div class="mt-4 card p-3 border-0 shadow-sm bg-light">
-            <h6 class="fw-bold text-success mb-3"><i class="fa-solid fa-gears me-2"></i>HOẠT ĐỘNG LÂM SINH</h6>
-            <div class="row g-2">
-              <div class="col-6"><button class="btn btn-danger w-100 btn-sm fw-bold shadow-sm" onclick="loadViewWithFilter('KH_QL_Lorung', 'ID lô rừng', '${d['ID lô rừng']}', 'Kế hoạch lô ${d['Mã số lô 2024']}')"><i class="fa-solid fa-calendar-check me-2"></i> KẾ HOẠCH</button></div>
-              <div class="col-6"><button class="btn btn-warning w-100 btn-sm fw-bold shadow-sm" onclick="loadViewWithFilter('HD_Lorung', 'ID lô rừng', '${d['ID lô rừng']}', 'Hoạt động lô ${d['Mã số lô 2024']}')"><i class="fa-solid fa-clipboard-list me-2"></i> BIÊN BẢN/BÁO CÁO</button></div>
-            </div>
-          </div>`;
-      } else if (sheetName === 'NhanSu') {
-        const isAdmin = currentUser && (String(currentUser['Chức vụ']).toLowerCase().includes('admin'));
-        const isPending = d['Trạng thái'] === 'Pending';
-        if (isAdmin && isPending) {
-          html += `<button class="btn btn-success w-100 fw-bold mt-3 shadow" onclick="approveMember('${d['ID_staff']}')"><i class="fa-solid fa-check-circle me-2"></i> PHÊ DUYỆT THÀNH VIÊN</button>`;
-        }
-      }
 
       $('#page-content-dynamic').html(html);
     }
@@ -1996,31 +4428,52 @@
       btn.prop('disabled', true).html('<i class="fas fa-spinner fa-spin me-2"></i>ĐANG LƯU...');
 
       try {
-        const res = await callGAS('apiCRUD', { action: currentAction, sheetName: currentSheetTarget, jsonData: dataObj });
-        if (res && res.success) {
-          bootstrap.Modal.getInstance(document.getElementById('dataModal')).hide();
-          // Cập nhật local data để phản hồi ngay lập tức
-          if (currentAction === 'CREATE') {
-            if (!APP_DATA[currentSheetTarget]) APP_DATA[currentSheetTarget] = [];
-            const newRecord = res.newID ? { ...dataObj, [Object.keys(dataObj)[0]]: res.newID } : dataObj;
-            APP_DATA[currentSheetTarget].push(newRecord);
-          } else {
+        const dbTable = getDBTable(currentSheetTarget);
+        const dbData = toDB(currentSheetTarget, dataObj);
+
+        let result;
+        if (currentAction === 'CREATE') {
+          // Auto-generate ID if empty
+          if (!dbData.id || dbData.id === '') {
+            const prefix = currentSheetTarget.substring(0, 3).toUpperCase();
+            dbData.id = `${prefix}-${new Date().getFullYear().toString().substr(-2)}-${Math.floor(1000 + Math.random() * 9000)}`;
+          }
+          result = await sb.from(dbTable).insert(dbData).select();
+        } else {
+          const idVal = dbData.id;
+          delete dbData.id; // Don't update the PK
+          delete dbData.created_at;
+          result = await sb.from(dbTable).update(dbData).eq('id', idVal).select();
+        }
+
+        if (result.error) {
+          alert("Lỗi: " + result.error.message);
+          return;
+        }
+
+        bootstrap.Modal.getInstance(document.getElementById('dataModal')).hide();
+
+        // Update local data
+        if (currentAction === 'CREATE') {
+          if (!APP_DATA[currentSheetTarget]) APP_DATA[currentSheetTarget] = [];
+          const newRows = fromDB(currentSheetTarget, result.data);
+          if (newRows.length > 0) APP_DATA[currentSheetTarget].push(newRows[0]);
+        } else {
+          const updated = fromDB(currentSheetTarget, result.data);
+          if (updated.length > 0) {
             const idCol = Object.keys(dataObj)[0];
             const idx = APP_DATA[currentSheetTarget].findIndex(r => String(r[idCol]) === String(dataObj[idCol]));
-            if (idx !== -1) APP_DATA[currentSheetTarget][idx] = dataObj;
+            if (idx !== -1) APP_DATA[currentSheetTarget][idx] = updated[0];
           }
-
-          // Trigger Aggregation after save
-          performAggregation();
-
-          localStorage.setItem('fsc_app_data', JSON.stringify(APP_DATA));
-          renderContent();
-          alert('Thành công!');
-        } else {
-          alert(res ? res.message : "Thất bại!");
         }
+
+        performAggregation();
+        renderContent();
+        alert('Thành công!');
+
       } catch (err) {
-        alert("Lỗi kết nối máy chủ!");
+        console.error("Save error:", err);
+        alert("Lỗi: " + err.message);
       } finally {
         btn.prop('disabled', false).text('Lưu');
       }
@@ -2030,38 +4483,55 @@
       if (!confirm('Chắc chắn muốn xóa dòng này?')) return;
       const rowData = JSON.parse(decodeURIComponent(rowJson));
       const idCol = Object.keys(rowData)[0];
+      const idVal = rowData[idCol];
 
       try {
-        const res = await callGAS('apiCRUD', { action: 'DELETE', sheetName, jsonData: rowData });
-        if (res && res.success) {
-          APP_DATA[sheetName] = APP_DATA[sheetName].filter(r => String(r[idCol]) !== String(rowData[idCol]));
+        const dbTable = getDBTable(sheetName);
+        const dbData = toDB(sheetName, rowData);
+        const dbId = dbData.id;
 
-          // Trigger Aggregation after delete
-          performAggregation();
-
-          localStorage.setItem('fsc_app_data', JSON.stringify(APP_DATA));
-          navigateBack(navHistory.length - 2);
-          alert('Đã xóa thành công.');
-        } else {
-          alert(res ? res.message : "Lỗi khi xóa!");
+        const { error } = await sb.from(dbTable).delete().eq('id', dbId);
+        if (error) {
+          alert("Lỗi khi xóa: " + error.message);
+          return;
         }
-      } catch (err) { alert("Lỗi kết nối máy chủ!"); }
+
+        APP_DATA[sheetName] = APP_DATA[sheetName].filter(r => String(r[idCol]) !== String(idVal));
+        performAggregation();
+        navigateBack(navHistory.length - 2);
+        alert('Đã xóa thành công.');
+
+      } catch (err) { alert("Lỗi: " + err.message); }
     }
 
     async function approveMember(targetID) {
       if (!confirm("Xác nhận duyệt thành viên này?")) return;
       try {
-        const res = await callGAS('apiApproveUser', { adminEmail: currentUser['Email'], targetID: targetID });
-        if (res && res.success) {
-          alert(res.message);
-          const idx = APP_DATA['NhanSu'].findIndex(u => String(u['ID_staff']) === String(targetID));
-          if (idx !== -1) {
-            APP_DATA['NhanSu'][idx]['Trạng thái'] = 'Act';
-            localStorage.setItem('fsc_app_data', JSON.stringify(APP_DATA));
-            renderDetailMaster('NhanSu', APP_DATA['NhanSu'][idx]);
-          }
-        } else alert(res ? res.message : "Lỗi phê duyệt!");
-      } catch (err) { alert("Lỗi kết nối máy chủ!"); }
+        // Find the profile by id_staff
+        const { data: profiles, error: findErr } = await sb.from('profiles')
+          .select('id').eq('id_staff', targetID).single();
+
+        if (findErr || !profiles) {
+          alert("Không tìm thấy nhân sự.");
+          return;
+        }
+
+        const { error } = await sb.from('profiles')
+          .update({ trang_thai: 'Act' }).eq('id', profiles.id);
+
+        if (error) {
+          alert("Lỗi: " + error.message);
+          return;
+        }
+
+        alert("Đã duyệt thành công!");
+        const idx = APP_DATA['NhanSu'].findIndex(u => String(u['ID_staff']) === String(targetID));
+        if (idx !== -1) {
+          APP_DATA['NhanSu'][idx]['Trạng thái'] = 'Act';
+          renderDetailMaster('NhanSu', APP_DATA['NhanSu'][idx]);
+        }
+
+      } catch (err) { alert("Lỗi: " + err.message); }
     }
 
     function renderTable(data, context, sheetName) {
@@ -2156,6 +4626,120 @@
             <span class="fw-bold text-dark text-end small">${d[f] || '-'}</span>
           </div>`).join('');
     }
+
+    // === SMART SEARCH ===
+    const SEARCH_TABLES = {
+      'Ban_Quanlynhom': { title: 'Ban quản lý nhóm', icon: 'fa-building', viewName: 'Ban_Quanly', displayCols: ['Tên ban quản lý','Địa chỉ','Người đại diện'] },
+      'NhomCCR': { title: 'Nhóm CCR', icon: 'fa-users', viewName: 'DS_NhomCCR', displayCols: ['Tên nhóm','Mã nhóm','Người đại diện','Địa chỉ'] },
+      'Churung': { title: 'Chủ rừng', icon: 'fa-user', viewName: 'Churung', displayCols: ['Họ tên chủ rừng','Số điện thoại','Xã','Thôn'] },
+      'Lo_rung': { title: 'Lô rừng', icon: 'fa-tree', viewName: 'Lo_rung', displayCols: ['Tên lô rừng','ID lô rừng','Loài cây trồng chính','Trạng thái'] },
+      'NhanSu': { title: 'Nhân sự', icon: 'fa-id-badge', viewName: 'Nhan_Su', displayCols: ['Họ và tên','Email','Chức vụ'] },
+      'Taphuan': { title: 'Tập huấn', icon: 'fa-chalkboard-teacher', viewName: 'Taphuan', displayCols: ['Loại tập huấn','Ngày tập huấn','Giảng viên'] },
+      'DG_noibo': { title: 'Đánh giá nội bộ', icon: 'fa-clipboard-check', viewName: 'DG_noibo', displayCols: ['ID','ID nhóm','Date','Staff'] }
+    };
+
+    const APP_FUNCTIONS = [
+      { label: 'Bản đồ GIS', icon: 'fa-map-location-dot', action: "loadView('BanDo','Bản đồ')" },
+      { label: 'Đánh giá nội bộ', icon: 'fa-clipboard-check', action: "loadView('DG_noibo','Đánh giá nội bộ')" },
+      { label: 'Cài đặt hệ thống', icon: 'fa-sliders', action: "loadView('CaiDat_HeThong','Cài đặt hệ thống')" },
+      { label: 'Quản lý nhân sự', icon: 'fa-id-badge', action: "loadView('Nhan_Su','Nhân sự')" },
+      { label: 'Tập huấn', icon: 'fa-chalkboard-teacher', action: "loadView('Taphuan','Tập huấn')" },
+      { label: 'Kho bản đồ GeoJSON', icon: 'fa-database', action: "loadView('BanDo','Bản đồ');setTimeout(()=>openGeoJSONRepo&&openGeoJSONRepo(),500)" },
+      { label: 'Báo cáo', icon: 'fa-chart-pie', action: "openMenuGroup('Báo cáo')" },
+      { label: 'Quản lý lô rừng', icon: 'fa-tree', action: "loadView('Lo_rung','Lô rừng')" },
+      { label: 'Quản lý chủ rừng', icon: 'fa-user', action: "loadView('Churung','Chủ rừng')" },
+      { label: 'Danh sách nhóm CCR', icon: 'fa-users', action: "loadView('DS_NhomCCR','Nhóm CCR')" },
+      { label: 'Ban quản lý nhóm', icon: 'fa-building', action: "loadView('Ban_Quanly','Ban quản lý nhóm')" }
+    ];
+
+    let searchDebounce = null;
+    function smartSearch(query) {
+      clearTimeout(searchDebounce);
+      const $r = $('#smart-search-results');
+      if (!query || query.trim().length < 2) { $r.addClass('d-none').html(''); return; }
+      searchDebounce = setTimeout(() => doSmartSearch(query.trim().toLowerCase()), 200);
+    }
+
+    function doSmartSearch(q) {
+      const $r = $('#smart-search-results');
+      let html = '';
+      let totalResults = 0;
+      const MAX = 30;
+
+      // 1. Search menu items
+      const menuData = APP_DATA['Menu'] || [];
+      const menuMatches = menuData.filter(m => {
+        const txt = [m['Module'], m['Nhom'], m['View']].filter(Boolean).join(' ').toLowerCase();
+        return txt.includes(q);
+      });
+      if (menuMatches.length) {
+        html += `<div class="px-3 py-1 bg-light border-bottom"><small class="fw-bold text-muted"><i class="fa-solid fa-bars me-1"></i>Menu</small></div>`;
+        menuMatches.slice(0, 5).forEach(m => {
+          const v = (m['View'] || '').replace(/'/g, "\\'");
+          const mod = m['Module'] || '';
+          const grp = m['Nhom'] || '';
+          html += `<a href="#" class="d-block px-3 py-2 text-decoration-none border-bottom search-result-item" onclick="$('#smart-search-results').addClass('d-none');$('#smart-search-input').val('');loadView('${v}','${mod.replace(/'/g,"\\'")}');return false">
+            <div class="fw-semibold text-dark" style="font-size:13px">${highlightMatch(mod, q)}</div>
+            <small class="text-muted">${grp}</small></a>`;
+          totalResults++;
+        });
+      }
+
+      // 2. Search app functions
+      const funcMatches = APP_FUNCTIONS.filter(f => f.label.toLowerCase().includes(q));
+      if (funcMatches.length) {
+        html += `<div class="px-3 py-1 bg-light border-bottom"><small class="fw-bold text-muted"><i class="fa-solid fa-bolt me-1"></i>Chức năng</small></div>`;
+        funcMatches.slice(0, 5).forEach(f => {
+          html += `<a href="#" class="d-block px-3 py-2 text-decoration-none border-bottom search-result-item" onclick="$('#smart-search-results').addClass('d-none');$('#smart-search-input').val('');${f.action};return false">
+            <div class="fw-semibold text-dark" style="font-size:13px"><i class="fa-solid ${f.icon} me-2 text-success"></i>${highlightMatch(f.label, q)}</div></a>`;
+          totalResults++;
+        });
+      }
+
+      // 3. Search data tables
+      for (const [sheetName, cfg] of Object.entries(SEARCH_TABLES)) {
+        if (totalResults >= MAX) break;
+        const rows = APP_DATA[sheetName] || [];
+        if (!rows.length) continue;
+        const matches = [];
+        for (const row of rows) {
+          if (matches.length >= 5) break;
+          const allVals = Object.values(row).filter(v => v != null).map(v => String(v).toLowerCase());
+          if (allVals.some(v => v.includes(q))) matches.push(row);
+        }
+        if (matches.length) {
+          html += `<div class="px-3 py-1 bg-light border-bottom"><small class="fw-bold text-muted"><i class="fa-solid ${cfg.icon} me-1"></i>${cfg.title}</small></div>`;
+          matches.forEach(row => {
+            const mainVal = cfg.displayCols.map(c => row[c]).filter(Boolean).join(' - ');
+            const realView = cfg.viewName;
+            html += `<a href="#" class="d-block px-3 py-2 text-decoration-none border-bottom search-result-item" onclick="$('#smart-search-results').addClass('d-none');$('#smart-search-input').val('');loadView('${realView}','${cfg.title.replace(/'/g,"\\'")}');return false">
+              <div class="fw-semibold text-dark" style="font-size:13px">${highlightMatch(mainVal, q)}</div>
+              <small class="text-muted">${cfg.title}</small></a>`;
+            totalResults++;
+          });
+        }
+      }
+
+      if (!totalResults) {
+        html = `<div class="px-3 py-3 text-center text-muted"><i class="fa-solid fa-search me-2"></i>Không tìm thấy kết quả cho "<b>${q}</b>"</div>`;
+      }
+
+      $r.html(html).removeClass('d-none');
+    }
+
+    function highlightMatch(text, query) {
+      if (!text || !query) return text || '';
+      const idx = text.toLowerCase().indexOf(query.toLowerCase());
+      if (idx === -1) return text;
+      return text.substring(0, idx) + '<mark class="bg-warning bg-opacity-50 px-0">' + text.substring(idx, idx + query.length) + '</mark>' + text.substring(idx + query.length);
+    }
+
+    // Close search results when clicking outside
+    $(document).on('click', function(e) {
+      if (!$(e.target).closest('#smart-search-input, #smart-search-results').length) {
+        $('#smart-search-results').addClass('d-none');
+      }
+    });
   </script>
 </body>
 
