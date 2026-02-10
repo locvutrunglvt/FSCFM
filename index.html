@@ -8876,26 +8876,51 @@ ${gsRecord['Đề xuất'] ? `<div class="proposal-box"><h4>${t('mon_proposal')}
 
     function _buildFSCSearchIndex() {
       const items = [];
-      // Vietnam standard
+      // Vietnam standard — Principles + Criteria
       const vn = FSC_STANDARDS.vietnam;
       vn.principles.forEach(p => {
         const pLabel = currentLang === 'vi' ? p.title_vi : p.title;
+        const pDesc = currentLang === 'vi' ? (p.description_vi || p.description) : p.description;
+        // Index the Principle itself
+        items.push({
+          stdKey: 'vietnam',
+          id: p.id,
+          label: `${t('fsc_std_principle')} ${p.id}: ${pLabel}`,
+          parentLabel: t('fsc_std_vietnam'),
+          text: (p.id + ' ' + p.title + ' ' + p.title_vi + ' ' + p.description + ' ' + (p.description_vi || '')).toLowerCase(),
+          elId: null, // jump to accordion header
+          accordionId: `fscVn_p${p.id}`,
+          isPrinciple: true
+        });
+        // Index each Criterion
         p.criteria.forEach(c => {
           items.push({
             stdKey: 'vietnam',
             id: c.id,
             label: `${t('fsc_std_criterion')} ${c.id}`,
             parentLabel: `${t('fsc_std_principle')} ${p.id}: ${pLabel}`,
-            text: (c.text + ' ' + (c.text_vi || '')).toLowerCase(),
+            text: (c.id + ' ' + c.text + ' ' + (c.text_vi || '')).toLowerCase(),
             elId: `fsc-crit-vietnam-${c.id.replace(/\./g, '-')}`,
             accordionId: `fscVn_p${p.id}`
           });
         });
       });
-      // Group standard
+      // Group standard — Parts + Clauses
       const grp = FSC_STANDARDS.group;
       grp.parts.forEach(part => {
         const partLabel = currentLang === 'vi' ? part.title_vi : part.title_en;
+        // Index the Part itself
+        items.push({
+          stdKey: 'group',
+          id: part.id,
+          label: `${t('fsc_std_part')} ${part.id}: ${partLabel}`,
+          parentLabel: t('fsc_std_group'),
+          text: (part.id + ' ' + part.title_en + ' ' + part.title_vi).toLowerCase(),
+          elId: null,
+          accordionId: `fscGrp_part${part.id}`,
+          isPrinciple: true
+        });
+        // Index each Clause
         part.clauses.forEach(c => {
           const cLabel = currentLang === 'vi' ? c.title_vi : c.title;
           items.push({
@@ -8945,8 +8970,9 @@ ${gsRecord['Đề xuất'] ? `<div class="proposal-box"><h4>${t('mon_proposal')}
       dd.innerHTML = shown.map((r, i) => {
         const snippet = _fscSnippet(r.text, q, 60);
         const stdBadge = r.stdKey === 'vietnam' ? t('fsc_std_vietnam') : t('fsc_std_group');
-        return `<div class="fsc-std-dropdown-item ${i === 0 ? 'active' : ''}" data-std="${r.stdKey}" data-el-id="${r.elId}" data-acc-id="${r.accordionId}">
-          <div><span class="dd-id">${r.label}</span><span class="badge bg-secondary fsc-std-badge ms-1">${stdBadge}</span></div>
+        const icon = r.isPrinciple ? '<i class="fas fa-bookmark me-1 text-success"></i>' : '';
+        return `<div class="fsc-std-dropdown-item ${i === 0 ? 'active' : ''}" data-std="${r.stdKey}" data-el-id="${r.elId || ''}" data-acc-id="${r.accordionId}">
+          <div>${icon}<span class="dd-id">${r.label}</span><span class="badge bg-secondary fsc-std-badge ms-1">${stdBadge}</span></div>
           <div class="dd-snippet">${snippet}</div>
         </div>`;
       }).join('');
@@ -8958,10 +8984,10 @@ ${gsRecord['Đề xuất'] ? `<div class="proposal-box"><h4>${t('mon_proposal')}
       dd.classList.add('show');
 
       // Click handler on dropdown items
-      dd.querySelectorAll('.fsc-std-dropdown-item[data-el-id]').forEach(item => {
+      dd.querySelectorAll('.fsc-std-dropdown-item[data-acc-id]').forEach(item => {
         item.addEventListener('click', function() {
           const stdKey = this.dataset.std;
-          const elId = this.dataset.elId;
+          const elId = this.dataset.elId || null;
           const accId = this.dataset.accId;
           dd.classList.remove('show');
           fscJumpTo(stdKey, elId, accId);
@@ -9012,7 +9038,14 @@ ${gsRecord['Đề xuất'] ? `<div class="proposal-box"><h4>${t('mon_proposal')}
 
       // Scroll to and highlight the target element
       setTimeout(() => {
-        const el = document.getElementById(elId);
+        let el;
+        if (elId) {
+          el = document.getElementById(elId);
+        } else {
+          // Jump to accordion header (Principle/Part)
+          const accEl = document.getElementById(accordionId);
+          el = accEl?.previousElementSibling; // the accordion-header h2
+        }
         if (el) {
           el.scrollIntoView({ behavior: 'smooth', block: 'center' });
           el.classList.remove('fsc-std-highlight');
