@@ -1412,7 +1412,56 @@
         audit_update: 'Cập nhật',
         audit_compliant_badge: 'TUÂN THỦ',
         audit_non_compliant_badge: 'KHÔNG TT',
-        audit_not_found: 'Không tìm thấy bản ghi đánh giá!'
+        audit_not_found: 'Không tìm thấy bản ghi đánh giá!',
+
+        // Monitoring module
+        mon_title: 'Giám sát lô rừng',
+        mon_tab_history: 'Lịch sử giám sát',
+        mon_tab_new: 'Thực hiện giám sát',
+        mon_no_history: 'Chưa có dữ liệu lịch sử giám sát.',
+        mon_list_title: 'Danh sách đã giám sát',
+        mon_code: 'Mã GS',
+        mon_type: 'Loại giám sát',
+        mon_date: 'Ngày GS',
+        mon_staff: 'Người GS',
+        mon_detail: 'Chi tiết',
+        mon_select_type: 'Chọn loại giám sát:',
+        mon_select_target: 'Chọn đối tượng giám sát:',
+        mon_target_plot: 'Lô rừng',
+        mon_target_group: 'Nhóm CCR',
+        mon_select_hint: 'Chọn loại giám sát và đối tượng để thực hiện',
+        mon_no_data: 'Chưa có dữ liệu.',
+        mon_plot_code: 'Mã lô',
+        mon_plot_name: 'Tên lô',
+        mon_owner: 'Chủ rừng',
+        mon_area: 'Diện tích',
+        mon_action: 'Hành động',
+        mon_start_btn: 'Giám sát',
+        mon_form_title: 'PHIẾU GIÁM SÁT',
+        mon_cancel_back: 'Hủy / Quay lại',
+        mon_subject: 'Đối tượng',
+        mon_date_label: 'Ngày',
+        mon_weather: 'Thời tiết',
+        mon_area_label: 'Diện tích GS (ha)',
+        mon_representative: 'Đại diện tổ thành viên',
+        mon_note_ph: 'Ghi chú chi tiết...',
+        mon_proposal: 'Đề xuất hoạt động / Nhận xét',
+        mon_save_btn: 'Lưu kết quả giám sát',
+        mon_detail_title: 'Chi tiết giám sát',
+        mon_back: 'Quay lại',
+        mon_yes: 'Có',
+        mon_no: 'Không',
+        mon_good: 'Tốt',
+        mon_average: 'TB',
+        mon_poor: 'Kém',
+        mon_not_found: 'Không tìm thấy bản ghi giám sát!',
+        mon_confirm_save: 'Xác nhận lưu kết quả giám sát?',
+        mon_save_ok: 'Lưu giám sát thành công!',
+        mon_history_btn: 'Lịch sử',
+        mon_weather_sunny: 'Nắng',
+        mon_weather_cloudy: 'Mây',
+        mon_weather_light_rain: 'Mưa nhẹ',
+        mon_weather_heavy_rain: 'Mưa to'
       },
       en: {
         login_title: 'FSC Forest Management System',
@@ -1609,7 +1658,56 @@
         audit_update: 'Updated',
         audit_compliant_badge: 'COMPLIANT',
         audit_non_compliant_badge: 'NON-COMPLIANT',
-        audit_not_found: 'Audit record not found!'
+        audit_not_found: 'Audit record not found!',
+
+        // Monitoring module
+        mon_title: 'Forest Plot Monitoring',
+        mon_tab_history: 'Monitoring History',
+        mon_tab_new: 'Perform Monitoring',
+        mon_no_history: 'No monitoring history data available.',
+        mon_list_title: 'Monitoring Records',
+        mon_code: 'Mon. ID',
+        mon_type: 'Type',
+        mon_date: 'Date',
+        mon_staff: 'Monitor',
+        mon_detail: 'Details',
+        mon_select_type: 'Select monitoring type:',
+        mon_select_target: 'Select monitoring target:',
+        mon_target_plot: 'Forest Plot',
+        mon_target_group: 'CCR Group',
+        mon_select_hint: 'Select monitoring type and target to proceed',
+        mon_no_data: 'No data available.',
+        mon_plot_code: 'Plot Code',
+        mon_plot_name: 'Plot Name',
+        mon_owner: 'Forest Owner',
+        mon_area: 'Area',
+        mon_action: 'Actions',
+        mon_start_btn: 'Monitor',
+        mon_form_title: 'MONITORING FORM',
+        mon_cancel_back: 'Cancel / Back',
+        mon_subject: 'Subject',
+        mon_date_label: 'Date',
+        mon_weather: 'Weather',
+        mon_area_label: 'Monitored Area (ha)',
+        mon_representative: 'Team Representative',
+        mon_note_ph: 'Detailed notes...',
+        mon_proposal: 'Proposed Actions / Comments',
+        mon_save_btn: 'Save Monitoring Results',
+        mon_detail_title: 'Monitoring Details',
+        mon_back: 'Back',
+        mon_yes: 'Yes',
+        mon_no: 'No',
+        mon_good: 'Good',
+        mon_average: 'Avg',
+        mon_poor: 'Poor',
+        mon_not_found: 'Monitoring record not found!',
+        mon_confirm_save: 'Confirm saving monitoring results?',
+        mon_save_ok: 'Monitoring saved successfully!',
+        mon_history_btn: 'History',
+        mon_weather_sunny: 'Sunny',
+        mon_weather_cloudy: 'Cloudy',
+        mon_weather_light_rain: 'Light Rain',
+        mon_weather_heavy_rain: 'Heavy Rain'
       }
     };
 
@@ -1816,6 +1914,119 @@
       return viLabel;
     }
 
+    // Monitoring type & section translations
+    const MON_TYPE_EN = {
+      'giam_sat_nhom':'Group Internal Monitoring',
+      'trong_rung':'Planting Monitoring',
+      'trong_khai_thac':'Harvesting Monitoring',
+      'truoc_khai_thac':'Pre-Harvest Assessment',
+      'sau_khai_thac':'Post-Harvest Assessment',
+      'bao_ve_rung':'Forest Protection Monitoring',
+      'hanh_lang_ven_suoi':'Riparian Corridor Monitoring'
+    };
+    const MON_SEC_EN = {
+      'Nội dung giám sát':'Monitoring Content',
+      'I. Xử lý thực bì':'I. Vegetation Clearance','II. Múc hố':'II. Planting Pits',
+      'III. Bón phân':'III. Fertilizing','IV. Trồng rừng':'IV. Planting',
+      'V. Lao động':'V. Labor','VI. Môi trường':'VI. Environment',
+      'VII. Hành lang ven suối, vùng đệm':'VII. Riparian Corridor & Buffer',
+      'I. Kỹ thuật khai thác':'I. Harvesting Technique','II. Đường vận chuyển':'II. Transport Roads',
+      'III. Lao động':'III. Labor','IV. Máy cưa':'IV. Chainsaws',
+      'V. Môi trường':'V. Environment','VI. Vận chuyển':'VI. Transport',
+      'VII. Nhà thầu':'VII. Contractors','VIII. Đai xanh, vùng đệm':'VIII. Buffer Zone',
+      '1. Suối':'1. Streams','2. Rừng chừa lại, đai xanh':'2. Retained Forest & Buffer',
+      '3. Đường dây điện cắt ngang':'3. Power Lines','4. Xói mòn':'4. Erosion',
+      '5. Lửa rừng':'5. Forest Fire','6. Vệ sinh':'6. Sanitation',
+      '7. Mồ mả, ụ mối':'7. Graves & Termite Mounds',
+      'Đánh giá tác động môi trường':'Environmental Impact Assessment',
+      'I. Tình trạng rừng':'I. Forest Condition','II. Nhân công và cộng đồng':'II. Labor & Community',
+      'III. Môi trường':'III. Environment',
+      'I. Hành lang ven suối, vùng đệm':'I. Riparian Corridor & Buffer',
+      'II. Khe suối':'II. Streams','III. Ngôi mộ, miếu thờ':'III. Graves & Temples'
+    };
+    const MON_LABEL_EN = {
+      'GS_N_01':'Compliance level with forest management standards','GS_N_02':'Is the management organization suitable for the group',
+      'GS_N_03':'Compliance with FSC Sustainable Forest Management standards','GS_N_04':'Understanding of monitoring forms and plans',
+      'GS_N_05':'Implementation of internal monitoring activities','GS_N_06':'Submitting monitoring reports on time',
+      'GS_N_07':'Understanding the management area','GS_N_08':'Ensuring compliance with forest management plans',
+      'GS_N_09':'Ensuring group meeting schedules','GS_N_10':'Compliance with group rules and management procedures',
+      'GS_N_11':'Compliance with company & group policies (gender equality, environment, labor, anti-discrimination, OHS...)',
+      'GS_N_12':'Participation in company/group training courses','GS_N_13':'Compliance with commitments and corrective action plans',
+      'GS_N_14':'Completing error corrections on time','GS_N_15':'Implementing plans as scheduled',
+      'GS_N_16':'General forest management information',
+      'TR_01':'Vegetation clearance method (Mechanical/Manual)','TR_02':'Vegetation clearance area',
+      'TR_03':'Technical specifications for clearance','TR_04':'Pit location','TR_05':'Pit dimensions',
+      'TR_06':'Pit area','TR_07':'Pit density','TR_08':'Fertilizing applied?','TR_09':'Fertilized area',
+      'TR_10':'Fertilizing technical specifications','TR_11':'Environmental impact of fertilizer use',
+      'TR_12':'Planted area','TR_13':'Tree species','TR_14':'Planting technique','TR_15':'Tree condition',
+      'TR_16':'Number of workers','TR_17':'Ethnic minority workers?','TR_18':'Workers trained?',
+      'TR_19':'Adequate work tools?','TR_20':'Adequate PPE?','TR_21':'First aid kit?',
+      'TR_22':'Work accidents?','TR_23':'Regular health checks?','TR_24':'Working hours/day',
+      'TR_25':'Pesticide use? What type?','TR_26':'Invasive alien species detected?',
+      'TR_27':'GM seedlings used?','TR_28':'Waste?','TR_29':'Stream water affected?','TR_30':'Erosion?',
+      'TR_31':'Buffer zone area','TR_32':'Buffer condition (stable/deteriorating)','TR_33':'Vegetation falling into streams?',
+      'TR_34':'Natural regeneration present?','TR_35':'Stream flow blocked?','TR_36':'Buffer zone affected?',
+      'KT_01':'Proper debarking and felling direction?','KT_02':'Stump height and cut quality adequate?',
+      'KT_03':'Road condition','KT_04':'Road maintenance done?','KT_05':'New road opened?',
+      'KT_06':'Maintenance length','KT_07':'Close to streams/buffer?','KT_08':'Close to power lines/graves?',
+      'KT_09':'Number of workers/ethnic workers','KT_10':'Workers trained?','KT_11':'Sawyer PPE?',
+      'KT_12':'Work accidents?','KT_13':'Harvesting worker PPE?','KT_14':'Working hours/day',
+      'KT_15':'First aid kit?','KT_16':'Technical condition adequate?','KT_17':'Adequate work tools?',
+      'KT_18':'Number of chainsaws','KT_19':'Chain brake and front guard functional?',
+      'KT_20':'Chain catcher functional?','KT_21':'Stream water (present/dirty)?',
+      'KT_22':'Erosion (present/severe)?','KT_23':'Waste (workers/oil)?','KT_24':'Road condition in rain (muddy)?',
+      'KT_25':'Vehicles per day','KT_26':'Timber volume per day','KT_27':'Vehicle status (shortage/excess/adequate)',
+      'KT_28':'Delivery slips issued?','KT_29':'Number of contractor workers','KT_30':'Workers trained?',
+      'KT_31':'Workers insured?','KT_32':'PPE provided?','KT_33':'Workers paid adequately?',
+      'KT_34':'Buffer zone area','KT_35':'Buffer condition (stable/deteriorating)',
+      'KT_36':'Graves or power lines found?','KT_37':'Stream flow blocked?',
+      'KT_38':'Harvest debris falling into buffer/streams?',
+      'TKT_01':'Stream location in plot','TKT_02':'Water level (Width/Depth)',
+      'TKT_03':'Water quality (Clean/Dirty/Drinkable/Fish)','TKT_04':'Vegetation along stream banks',
+      'TKT_05':'Retained forest area (ha)','TKT_06':'Retained forest condition','TKT_07':'Encroachment detected?',
+      'TKT_08':'Power line length','TKT_09':'Affected area','TKT_10':'Contact point location',
+      'TKT_11':'Erosion condition','TKT_12':'Erosion season','TKT_13':'Fire-affected area (ha)',
+      'TKT_14':'Forest fire condition','TKT_15':'Sanitation area (ha)','TKT_16':'Sanitation condition',
+      'TKT_17':'Graves or termite mounds present?','TKT_18':'Location, coordinates (lat/lng)',
+      'SKT_01':'Vegetation condition (Tall/Dense)?','SKT_02':'Stream water (Present/Dirty)?',
+      'SKT_03':'Soil condition (Dry/Muddy/Moist)','SKT_04':'Erosion (Present/Severe)?',
+      'SKT_05':'Waste in streams?','SKT_06':'Worker waste?','SKT_07':'Road muddy in rain?',
+      'SKT_08':'Environmentally friendly sanitation?','SKT_09':'Buffer zone/graves affected?',
+      'SKT_10':'Impact on surrounding residential area?','SKT_11':'Stream flow blocked?',
+      'BVR_01':'Land encroachment (Much/Little/None)','BVR_02':'Forest fire?','BVR_03':'Livestock damage?',
+      'BVR_04':'Fire prevention measures?','BVR_05':'Human destruction?','BVR_06':'Fungi/Pest damage?',
+      'BVR_07':'Storm/tornado damage?','BVR_08':'Buffer zone protected?',
+      'BVR_09':'Number of workers','BVR_10':'Workers trained?','BVR_11':'PPE provided?',
+      'BVR_12':'PPE being used?','BVR_13':'First aid kit?','BVR_14':'Medicine adequate?',
+      'BVR_15':'Work accidents?','BVR_16':'Locals collecting firewood?',
+      'BVR_17':'Community coordination in fire prevention, dispute resolution?',
+      'BVR_18':'Locals cutting timber?','BVR_19':'Livestock grazing in forest?',
+      'BVR_20':'Other activities (honey/mushroom/hunting)?',
+      'BVR_21':'Vegetation condition?','BVR_22':'Waste (Much/Little/None)','BVR_23':'Number of streams',
+      'BVR_24':'Water quality (Clear/Turbid)','BVR_25':'Streams have water?',
+      'BVR_26':'Soil erosion (Much/Little/None)','BVR_27':'Fish or aquatic life observed?',
+      'BVR_28':'Fish/aquatic quantity (Much/Little)','BVR_29':'Soil condition (Dry/Moist/Other)',
+      'BVR_30':'Waste collected?','BVR_31':'Rare species detected?','BVR_32':'Vegetation/waste in streams cleared?',
+      'BVR_33':'Invasive alien species present?',
+      'HLVS_01':'Location','HLVS_02':'Area','HLVS_03':'Tree species present',
+      'HLVS_04':'Condition (stable/deteriorating)','HLVS_05':'Stream present?',
+      'HLVS_06':'Stream flow flowing?','HLVS_07':'Stream flow blocked?','HLVS_08':'Turbid water?',
+      'HLVS_09':'Waste at stream?','HLVS_10':'Graves/temples present?','HLVS_11':'Quantity',
+      'HLVS_12':'Tree species present','HLVS_13':'Condition'
+    };
+    function tms(secName) {
+      if (currentLang === 'en' && MON_SEC_EN[secName]) return MON_SEC_EN[secName];
+      return secName;
+    }
+    function tmq(qId, viLabel) {
+      if (currentLang === 'en' && MON_LABEL_EN[qId]) return MON_LABEL_EN[qId];
+      return viLabel;
+    }
+    function tmt(typeKey) {
+      if (currentLang === 'en' && MON_TYPE_EN[typeKey]) return MON_TYPE_EN[typeKey];
+      return MONITORING_TYPES[typeKey] ? MONITORING_TYPES[typeKey].title : typeKey;
+    }
+
     // Module name translations (sidebar & sub-menu)
     const MODULE_EN = {
       'Danh sách nhóm':'Group List','Tập huấn':'Training','Khiếu nại':'Complaints',
@@ -1835,6 +2046,7 @@
       'Báo cáo sản lượng':'Production Report','Báo cáo FSC các năm':'Annual FSC Report',
       'Báo cáo đánh giá rủi ro':'Risk Assessment Report','Báo cáo các chuyên đề':'Thematic Reports',
       'Cài đặt hệ thống':'System Settings',
+      'Giám sát lô rừng':'Forest Plot Monitoring',
       'Ban Quản lý nhóm':'Group Management Board','Nhóm CCR':'CCR Groups',
       'Chủ rừng':'Forest Owners','Lô rừng':'Forest Plots',
       'Biến động lô rừng':'Plot Changes','Nội dung tập huấn':'Training Content',
@@ -2021,6 +2233,21 @@
       }},
       'Banghoi_DG_noibo': { table: 'bang_hoi_dg_noi_bo', cols: {
         id:'ID_hoi', id_dg:'ID_DG', answers:'answers'
+      }},
+      'GiamSat_LoRung': { table: 'giam_sat_lo_rung', cols: {
+        id:'ID', id_lo_rung:'ID lô rừng', id_nhom:'ID nhóm', id_chu_rung:'ID chủ rừng',
+        loai_giam_sat:'Loại giám sát', ngay_giam_sat:'Ngày giám sát', nguoi_giam_sat:'Người giám sát',
+        dai_dien_to:'Đại diện tổ', dien_tich_giam_sat:'Diện tích GS', thoi_tiet:'Thời tiết',
+        ghi_chu:'Ghi chú', de_xuat:'Đề xuất', updated_at:'Cập nhật'
+      }},
+      'Banghoi_GiamSat': { table: 'bang_hoi_giam_sat', cols: {
+        id:'ID_hoi', id_giam_sat:'ID_GS', answers:'answers'
+      }},
+      'KH_GiamSat_Nhom': { table: 'kh_giam_sat_nhom', cols: {
+        id:'ID', id_nhom:'ID nhóm', nam:'Năm', loai_giam_sat:'Loại giám sát',
+        thang_1:'T1', thang_2:'T2', thang_3:'T3', thang_4:'T4',
+        thang_5:'T5', thang_6:'T6', thang_7:'T7', thang_8:'T8',
+        thang_9:'T9', thang_10:'T10', thang_11:'T11', thang_12:'T12', ghi_chu:'Ghi chú'
       }}
     };
 
@@ -2242,6 +2469,259 @@
       ]
     };
 
+    // === MONITORING MODULE: Types & Dictionary ===
+    const MONITORING_TYPES = {
+      giam_sat_nhom: { title: 'Giám sát nội bộ thành viên nhóm', icon: 'fa-users', target: 'nhom', color: '#6A1B9A' },
+      trong_rung: { title: 'Giám sát trồng rừng', icon: 'fa-seedling', target: 'lo_rung', color: '#2E7D32' },
+      trong_khai_thac: { title: 'Giám sát khai thác', icon: 'fa-tree', target: 'lo_rung', color: '#E65100' },
+      truoc_khai_thac: { title: 'Đánh giá trước khai thác', icon: 'fa-clipboard-check', target: 'lo_rung', color: '#0277BD' },
+      sau_khai_thac: { title: 'Đánh giá sau khai thác', icon: 'fa-leaf', target: 'lo_rung', color: '#00695C' },
+      bao_ve_rung: { title: 'Giám sát bảo vệ rừng', icon: 'fa-shield-alt', target: 'lo_rung', color: '#AD1457' },
+      hanh_lang_ven_suoi: { title: 'Giám sát hành lang ven suối', icon: 'fa-water', target: 'lo_rung', color: '#1565C0' }
+    };
+
+    const MONITORING_DICTIONARY = {
+      "giam_sat_nhom": {
+        "Nội dung giám sát": [
+          { id: "GS_N_01", label: "Mức độ tuân thủ các tiêu chuẩn quản lý rừng", type: "rating3" },
+          { id: "GS_N_02", label: "Cách tổ chức quản lý có phù hợp với nhóm", type: "rating3" },
+          { id: "GS_N_03", label: "Mức độ tuân thủ các tiêu chuẩn Quản lý rừng bền vững FSC", type: "rating3" },
+          { id: "GS_N_04", label: "Sự am hiểu các biểu mẫu và kế hoạch giám sát", type: "rating3" },
+          { id: "GS_N_05", label: "Thực hiện các hoạt động giám sát nội bộ", type: "rating3" },
+          { id: "GS_N_06", label: "Nộp báo cáo giám sát đúng hẹn", type: "rating3" },
+          { id: "GS_N_07", label: "Nắm bắt được khu vực quản lý", type: "rating3" },
+          { id: "GS_N_08", label: "Đảm bảo tuân thủ kế hoạch quản lý rừng", type: "rating3" },
+          { id: "GS_N_09", label: "Đảm bảo kế hoạch họp nhóm", type: "rating3" },
+          { id: "GS_N_10", label: "Tuân thủ quy chế nhóm và các quy trình liên quan tới việc quản lý nhóm", type: "rating3" },
+          { id: "GS_N_11", label: "Tuân thủ các chính sách của công ty & nhóm hộ (bình đẳng giới, môi trường, lao động, chống phân biệt đối xử, an toàn sức khỏe nghề nghiệp...)", type: "rating3" },
+          { id: "GS_N_12", label: "Tham gia các khóa tập huấn do công ty, nhóm tổ chức", type: "rating3" },
+          { id: "GS_N_13", label: "Tuân thủ cam kết và kế hoạch sửa lỗi", type: "rating3" },
+          { id: "GS_N_14", label: "Hoàn thiện khắc phục lỗi đúng hẹn/tiến độ", type: "rating3" },
+          { id: "GS_N_15", label: "Thực hiện đúng kế hoạch đã lập ra", type: "rating3" },
+          { id: "GS_N_16", label: "Thông tin chung về quản lý rừng", type: "rating3" }
+        ]
+      },
+      "trong_rung": {
+        "I. Xử lý thực bì": [
+          { id: "TR_01", label: "Phương thức xử lý thực bì (Cơ giới / Thủ công)", type: "text" },
+          { id: "TR_02", label: "Diện tích xử lý thực bì", type: "text" },
+          { id: "TR_03", label: "Quy cách kỹ thuật xử lý thực bì", type: "text" }
+        ],
+        "II. Múc hố": [
+          { id: "TR_04", label: "Địa điểm múc hố", type: "text" },
+          { id: "TR_05", label: "Kích thước hố", type: "text" },
+          { id: "TR_06", label: "Diện tích múc hố", type: "text" },
+          { id: "TR_07", label: "Mật độ hố", type: "text" }
+        ],
+        "III. Bón phân": [
+          { id: "TR_08", label: "Có bón phân không?", type: "check" },
+          { id: "TR_09", label: "Diện tích bón phân", type: "text" },
+          { id: "TR_10", label: "Quy cách kỹ thuật bón phân", type: "text" },
+          { id: "TR_11", label: "Đánh giá tình trạng sử dụng phân đến môi trường", type: "text" }
+        ],
+        "IV. Trồng rừng": [
+          { id: "TR_12", label: "Diện tích trồng", type: "text" },
+          { id: "TR_13", label: "Loài cây", type: "text" },
+          { id: "TR_14", label: "Kỹ thuật trồng", type: "text" },
+          { id: "TR_15", label: "Tình trạng cây", type: "text" }
+        ],
+        "V. Lao động": [
+          { id: "TR_16", label: "Số lượng lao động", type: "text" },
+          { id: "TR_17", label: "Có người dân tộc?", type: "check" },
+          { id: "TR_18", label: "Được tập huấn?", type: "check" },
+          { id: "TR_19", label: "Dụng cụ lao động đầy đủ?", type: "check" },
+          { id: "TR_20", label: "Bảo hộ lao động đầy đủ?", type: "check" },
+          { id: "TR_21", label: "Hộp thuốc y tế?", type: "check" },
+          { id: "TR_22", label: "Tai nạn lao động?", type: "check" },
+          { id: "TR_23", label: "Khám sức khỏe định kỳ?", type: "check" },
+          { id: "TR_24", label: "Thời gian làm việc/ngày", type: "text" }
+        ],
+        "VI. Môi trường": [
+          { id: "TR_25", label: "Sử dụng thuốc BVTV? Loại gì?", type: "check" },
+          { id: "TR_26", label: "Phát hiện các loài ngoại lai xâm hại?", type: "check" },
+          { id: "TR_27", label: "Sử dụng giống cây biến đổi gen?", type: "check" },
+          { id: "TR_28", label: "Rác thải?", type: "check" },
+          { id: "TR_29", label: "Nước khe suối bị ảnh hưởng?", type: "check" },
+          { id: "TR_30", label: "Xói mòn?", type: "check" }
+        ],
+        "VII. Hành lang ven suối, vùng đệm": [
+          { id: "TR_31", label: "Diện tích vùng đệm", type: "text" },
+          { id: "TR_32", label: "Tình trạng (ổn định/xấu đi)", type: "text" },
+          { id: "TR_33", label: "Thực bì rơi xuống khe suối?", type: "check" },
+          { id: "TR_34", label: "Có cây tái sinh tự nhiên?", type: "check" },
+          { id: "TR_35", label: "Dòng chảy bị tắc nghẽn?", type: "check" },
+          { id: "TR_36", label: "Vùng đệm bị ảnh hưởng?", type: "check" }
+        ]
+      },
+      "trong_khai_thac": {
+        "I. Kỹ thuật khai thác": [
+          { id: "KT_01", label: "Bóc vỏ, hướng đổ đúng kỹ thuật?", type: "check" },
+          { id: "KT_02", label: "Gốc chừa lại, mặt cắt đạt yêu cầu?", type: "check" }
+        ],
+        "II. Đường vận chuyển": [
+          { id: "KT_03", label: "Tình trạng đường", type: "text" },
+          { id: "KT_04", label: "Tu sửa đường?", type: "check" },
+          { id: "KT_05", label: "Mở tuyến mới?", type: "check" },
+          { id: "KT_06", label: "Chiều dài tu sửa", type: "text" },
+          { id: "KT_07", label: "Sát khe suối, vùng đệm?", type: "check" },
+          { id: "KT_08", label: "Sát đường điện, khu mộ?", type: "check" }
+        ],
+        "III. Lao động": [
+          { id: "KT_09", label: "Số lượng lao động / Người dân tộc?", type: "text" },
+          { id: "KT_10", label: "Được tập huấn?", type: "check" },
+          { id: "KT_11", label: "Bảo hộ lao động thợ cưa?", type: "check" },
+          { id: "KT_12", label: "Tai nạn lao động?", type: "check" },
+          { id: "KT_13", label: "Bảo hộ lao động CN khai thác?", type: "check" },
+          { id: "KT_14", label: "Thời gian làm việc/ngày", type: "text" },
+          { id: "KT_15", label: "Hộp thuốc y tế?", type: "check" },
+          { id: "KT_16", label: "Tình trạng kỹ thuật đạt yêu cầu?", type: "check" },
+          { id: "KT_17", label: "Dụng cụ lao động đầy đủ?", type: "check" },
+          { id: "KT_18", label: "Số lượng cưa máy", type: "text" }
+        ],
+        "IV. Máy cưa": [
+          { id: "KT_19", label: "Bộ phanh xích và bảo vệ tay trước hoạt động tốt?", type: "check" },
+          { id: "KT_20", label: "Móc hãm xích hoạt động tốt?", type: "check" }
+        ],
+        "V. Môi trường": [
+          { id: "KT_21", label: "Nước tại các con suối (hiện diện/bẩn)?", type: "check" },
+          { id: "KT_22", label: "Xói mòn (xuất hiện/nghiêm trọng)?", type: "check" },
+          { id: "KT_23", label: "Rác thải (công nhân/dầu nhớt)?", type: "check" },
+          { id: "KT_24", label: "Điều kiện đường khi mưa (lầy lội)?", type: "check" }
+        ],
+        "VI. Vận chuyển": [
+          { id: "KT_25", label: "Số lượng xe/ngày", type: "text" },
+          { id: "KT_26", label: "Khối lượng gỗ/ngày", type: "text" },
+          { id: "KT_27", label: "Tình trạng xe (thiếu/thừa/đủ)", type: "text" },
+          { id: "KT_28", label: "Xuất phiếu đầy đủ?", type: "check" }
+        ],
+        "VII. Nhà thầu": [
+          { id: "KT_29", label: "Số lượng công nhân", type: "text" },
+          { id: "KT_30", label: "Được tập huấn?", type: "check" },
+          { id: "KT_31", label: "Đóng bảo hiểm cho công nhân?", type: "check" },
+          { id: "KT_32", label: "Trang bị bảo hộ lao động?", type: "check" },
+          { id: "KT_33", label: "Trả lương cho công nhân đầy đủ?", type: "check" }
+        ],
+        "VIII. Đai xanh, vùng đệm": [
+          { id: "KT_34", label: "Diện tích đai xanh, vùng đệm", type: "text" },
+          { id: "KT_35", label: "Tình trạng (ổn định/xấu đi)", type: "text" },
+          { id: "KT_36", label: "Phát hiện mồ mả, đường điện?", type: "check" },
+          { id: "KT_37", label: "Dòng chảy tại suối bị tắc nghẽn?", type: "check" },
+          { id: "KT_38", label: "Cành nhánh cây khai thác đổ xuống đai xanh, khe suối?", type: "check" }
+        ]
+      },
+      "truoc_khai_thac": {
+        "1. Suối": [
+          { id: "TKT_01", label: "Vị trí suối thuộc lô", type: "text" },
+          { id: "TKT_02", label: "Lượng nước hiện có (Rộng/Sâu)", type: "text" },
+          { id: "TKT_03", label: "Chất lượng nước (Sạch/Bẩn/Có thể uống/Có cá)", type: "text" },
+          { id: "TKT_04", label: "Tình trạng thực bì dọc theo 2 bên bờ suối", type: "text" }
+        ],
+        "2. Rừng chừa lại, đai xanh": [
+          { id: "TKT_05", label: "Diện tích rừng chừa lại (ha)", type: "text" },
+          { id: "TKT_06", label: "Tình trạng rừng chừa lại", type: "text" },
+          { id: "TKT_07", label: "Có bị lấn chiếm?", type: "check" }
+        ],
+        "3. Đường dây điện cắt ngang": [
+          { id: "TKT_08", label: "Chiều dài đường điện", type: "text" },
+          { id: "TKT_09", label: "Diện tích ảnh hưởng", type: "text" },
+          { id: "TKT_10", label: "Vị trí tiếp xúc", type: "text" }
+        ],
+        "4. Xói mòn": [
+          { id: "TKT_11", label: "Tình trạng xói mòn", type: "text" },
+          { id: "TKT_12", label: "Mùa xói mòn", type: "text" }
+        ],
+        "5. Lửa rừng": [
+          { id: "TKT_13", label: "Diện tích cháy (ha)", type: "text" },
+          { id: "TKT_14", label: "Tình trạng lửa rừng", type: "text" }
+        ],
+        "6. Vệ sinh": [
+          { id: "TKT_15", label: "Diện tích vệ sinh (ha)", type: "text" },
+          { id: "TKT_16", label: "Tình trạng vệ sinh", type: "text" }
+        ],
+        "7. Mồ mả, ụ mối": [
+          { id: "TKT_17", label: "Sự xuất hiện ngôi mộ hoặc ụ mối?", type: "check" },
+          { id: "TKT_18", label: "Địa điểm, tọa độ (kinh độ/vĩ độ)", type: "text" }
+        ]
+      },
+      "sau_khai_thac": {
+        "Đánh giá tác động môi trường": [
+          { id: "SKT_01", label: "Tình trạng thực bì (Cao/Dày đặc)?", type: "check" },
+          { id: "SKT_02", label: "Nước tại các con suối (Hiện diện/Bẩn)?", type: "check" },
+          { id: "SKT_03", label: "Điều kiện đất đai (Khô/Lầy lội/Ẩm)", type: "text" },
+          { id: "SKT_04", label: "Xói mòn (Xuất hiện/Nghiêm trọng)?", type: "check" },
+          { id: "SKT_05", label: "Rác thải tại các con suối?", type: "check" },
+          { id: "SKT_06", label: "Rác thải do công nhân?", type: "check" },
+          { id: "SKT_07", label: "Điều kiện đường khi mưa lầy lội?", type: "check" },
+          { id: "SKT_08", label: "Vệ sinh thân thiện với môi trường?", type: "check" },
+          { id: "SKT_09", label: "Đai xanh, vùng đệm, ngôi mộ bị ảnh hưởng?", type: "check" },
+          { id: "SKT_10", label: "Tác động đến khu dân cư sống chung quanh?", type: "check" },
+          { id: "SKT_11", label: "Dòng chảy bị tắc nghẽn?", type: "check" }
+        ]
+      },
+      "bao_ve_rung": {
+        "I. Tình trạng rừng": [
+          { id: "BVR_01", label: "Lấn chiếm đất đai (Nhiều/Ít/Không)", type: "text" },
+          { id: "BVR_02", label: "Cháy rừng?", type: "check" },
+          { id: "BVR_03", label: "Gia súc phá hại?", type: "check" },
+          { id: "BVR_04", label: "Công tác phòng cháy?", type: "check" },
+          { id: "BVR_05", label: "Phá hoại do con người?", type: "check" },
+          { id: "BVR_06", label: "Nấm/Sâu bệnh hại?", type: "check" },
+          { id: "BVR_07", label: "Gẫy đổ do bão/lốc?", type: "check" },
+          { id: "BVR_08", label: "Vùng đệm được bảo vệ?", type: "check" }
+        ],
+        "II. Nhân công và cộng đồng": [
+          { id: "BVR_09", label: "Số lượng người làm việc", type: "text" },
+          { id: "BVR_10", label: "Được tập huấn?", type: "check" },
+          { id: "BVR_11", label: "Trang bị bảo hộ lao động?", type: "check" },
+          { id: "BVR_12", label: "Sử dụng bảo hộ lao động?", type: "check" },
+          { id: "BVR_13", label: "Hộp cứu thương?", type: "check" },
+          { id: "BVR_14", label: "Đầy đủ thuốc trong hộp cứu thương?", type: "check" },
+          { id: "BVR_15", label: "Tai nạn lao động?", type: "check" },
+          { id: "BVR_16", label: "Người dân vào rừng lấy củi?", type: "check" },
+          { id: "BVR_17", label: "Phối hợp cộng đồng trong PCCC, giải quyết tranh chấp?", type: "check" },
+          { id: "BVR_18", label: "Người dân vào rừng chặt gỗ?", type: "check" },
+          { id: "BVR_19", label: "Chăn thả gia súc vào rừng?", type: "check" },
+          { id: "BVR_20", label: "Các hoạt động khác (lấy mật ong/hái nấm/săn bắt)?", type: "check" }
+        ],
+        "III. Môi trường": [
+          { id: "BVR_21", label: "Tình trạng thực bì?", type: "check" },
+          { id: "BVR_22", label: "Rác thải (Nhiều/Ít/Không)", type: "text" },
+          { id: "BVR_23", label: "Số lượng khe suối", type: "text" },
+          { id: "BVR_24", label: "Chất lượng nước (Trong/Đục)", type: "text" },
+          { id: "BVR_25", label: "Khe suối có nước?", type: "check" },
+          { id: "BVR_26", label: "Tình trạng xói mòn đất (Nhiều/Ít/Không)", type: "text" },
+          { id: "BVR_27", label: "Quan sát thấy cá hoặc thủy sản?", type: "check" },
+          { id: "BVR_28", label: "Số lượng cá hoặc thủy sản (Nhiều/Ít)", type: "text" },
+          { id: "BVR_29", label: "Tình trạng đất (Khô/Ẩm/Khác)", type: "text" },
+          { id: "BVR_30", label: "Thu gom rác thải?", type: "check" },
+          { id: "BVR_31", label: "Phát hiện loài quý hiếm?", type: "check" },
+          { id: "BVR_32", label: "Xử lý thực bì/rác đổ vào suối?", type: "check" },
+          { id: "BVR_33", label: "Có sự xuất hiện của sinh vật ngoại lai xâm hại?", type: "check" }
+        ]
+      },
+      "hanh_lang_ven_suoi": {
+        "I. Hành lang ven suối, vùng đệm": [
+          { id: "HLVS_01", label: "Địa điểm", type: "text" },
+          { id: "HLVS_02", label: "Diện tích", type: "text" },
+          { id: "HLVS_03", label: "Loài cây xuất hiện", type: "text" },
+          { id: "HLVS_04", label: "Tình trạng (ổn định/xấu đi)", type: "text" }
+        ],
+        "II. Khe suối": [
+          { id: "HLVS_05", label: "Khe suối hiện diện?", type: "check" },
+          { id: "HLVS_06", label: "Dòng chảy lưu thông?", type: "check" },
+          { id: "HLVS_07", label: "Dòng chảy bị tắc nghẽn?", type: "check" },
+          { id: "HLVS_08", label: "Nước đục?", type: "check" },
+          { id: "HLVS_09", label: "Rác thải tại khe suối?", type: "check" }
+        ],
+        "III. Ngôi mộ, miếu thờ": [
+          { id: "HLVS_10", label: "Hiện diện ngôi mộ, miếu thờ?", type: "check" },
+          { id: "HLVS_11", label: "Số lượng", type: "text" },
+          { id: "HLVS_12", label: "Loài cây xuất hiện", type: "text" },
+          { id: "HLVS_13", label: "Tình trạng", type: "text" }
+        ]
+      }
+    };
+
     const VIEW_MAP = {
       'Ban_Quanly': 'Ban_Quanlynhom',
       'DS_NhomCCR': 'NhomCCR',
@@ -2260,7 +2740,8 @@
         'Taphuan', 'Noidung_taphuan', 'Lo_rung', 'KH_QL_Lorung',
         'Loai_hoatdong_rung', 'Biendong_lorung', 'KH_HD_nhom',
         'KH_HD_Churung', 'HD_Lorung', 'DS_HDong', 'CauHoi_DanhGia', 'KetQua_DanhGia',
-        'DG_noibo', 'Banghoi_DG_noibo'
+        'DG_noibo', 'Banghoi_DG_noibo',
+        'GiamSat_LoRung', 'Banghoi_GiamSat', 'KH_GiamSat_Nhom'
       ];
 
       // Offline mode: load from localStorage cache
@@ -2286,10 +2767,18 @@
           console.warn(`Error loading ${r.sheetName}:`, r.error.message);
           APP_DATA[r.sheetName] = [];
         } else {
-          // Special handling for Banghoi_DG_noibo: flatten answers JSONB into individual fields
+          // Special handling for JSONB answer tables
           if (r.sheetName === 'Banghoi_DG_noibo') {
             APP_DATA[r.sheetName] = (r.data || []).map(row => {
               const obj = { 'ID_hoi': row.id, 'ID_DG': row.id_dg };
+              if (row.answers && typeof row.answers === 'object') {
+                Object.assign(obj, row.answers);
+              }
+              return obj;
+            });
+          } else if (r.sheetName === 'Banghoi_GiamSat') {
+            APP_DATA[r.sheetName] = (r.data || []).map(row => {
+              const obj = { 'ID_hoi': row.id, 'ID_GS': row.id_giam_sat };
               if (row.answers && typeof row.answers === 'object') {
                 Object.assign(obj, row.answers);
               }
@@ -3392,6 +3881,12 @@
       // Xử lý View đặc biệt: Audit (DG_noibo)
       if (current.viewName === 'InternalAudit' || current.viewName === 'DG_noibo' || current.title === 'Đánh giá nội bộ') {
         renderAuditModule();
+        return;
+      }
+
+      // Xử lý View đặc biệt: Giám sát lô rừng
+      if (current.viewName === 'GiamSat_LoRung' || current.title === 'Giám sát lô rừng') {
+        renderMonitoringModule();
         return;
       }
 
@@ -4889,6 +5384,563 @@
     function clearFileInput(btn, qid) {
       const input = $(`.audit-file[data-qid="${qid}"]`);
       input.val(''); // Clear value
+    }
+
+    // ============================================================
+    // MONITORING MODULE
+    // ============================================================
+
+    function renderMonitoringModule() {
+      const container = $('#page-content-dynamic');
+      container.empty();
+
+      const html = `
+        <div class="card shadow border-0 rounded-4">
+          <div class="card-header bg-white border-0 pt-4 px-4">
+            <ul class="nav nav-tabs card-header-tabs" id="monTabs" role="tablist">
+              <li class="nav-item" role="presentation">
+                <button class="nav-link active fw-bold text-success" id="mon-history-tab" data-bs-toggle="tab" data-bs-target="#mon-history-pane" type="button" role="tab"><i class="fas fa-history me-2"></i>${t('mon_tab_history')}</button>
+              </li>
+              <li class="nav-item" role="presentation">
+                <button class="nav-link fw-bold text-success" id="mon-new-tab" data-bs-toggle="tab" data-bs-target="#mon-new-pane" type="button" role="tab"><i class="fas fa-plus-circle me-2"></i>${t('mon_tab_new')}</button>
+              </li>
+            </ul>
+          </div>
+          <div class="card-body p-2">
+            <div class="tab-content" id="monTabsContent">
+              <div class="tab-pane fade show active" id="mon-history-pane" role="tabpanel">
+                <div id="mon-history-container"></div>
+              </div>
+              <div class="tab-pane fade" id="mon-new-pane" role="tabpanel">
+                <div id="mon-new-container"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      `;
+      container.html(html);
+      renderMonHistoryTable();
+      renderMonNewPanel();
+    }
+
+    function renderMonHistoryTable() {
+      const data = APP_DATA['GiamSat_LoRung'] || [];
+      const container = $('#mon-history-container');
+
+      if (data.length === 0) {
+        container.html(`<div class="text-center text-muted py-5"><i class="fas fa-folder-open fa-3x mb-3 opacity-50"></i><br>${t('mon_no_history')}</div>`);
+        return;
+      }
+
+      const sortedData = [...data].sort((a, b) => new Date(b['Ngày giám sát']) - new Date(a['Ngày giám sát']));
+
+      let html = `
+        <div class="d-flex justify-content-between align-items-center mb-3">
+          <h5 class="text-success fw-bold m-0"><i class="fas fa-list me-2"></i>${t('mon_list_title')}</h5>
+          <button class="btn btn-success btn-sm rounded-pill px-3 fw-bold shadow-sm" onclick="$('#mon-new-tab').tab('show')">
+            <i class="fas fa-plus me-1"></i>${t('btn_add')}
+          </button>
+        </div>
+        <div class="table-responsive">
+          <table class="table table-hover table-striped align-middle" id="mon-history-table">
+            <thead class="table-light text-success">
+              <tr>
+                <th>${t('mon_code')}</th>
+                <th>${t('mon_type')}</th>
+                <th>${t('mon_date')}</th>
+                <th>${t('mon_staff')}</th>
+                <th class="text-center">${t('mon_detail')}</th>
+              </tr>
+            </thead>
+            <tbody>
+      `;
+
+      sortedData.forEach(row => {
+        const typeKey = row['Loại giám sát'] || '';
+        const typeName = tmt(typeKey);
+        html += `
+          <tr>
+            <td class="fw-bold">${row['ID']}</td>
+            <td><span class="badge" style="background:${(MONITORING_TYPES[typeKey]||{}).color||'#666'}">${typeName}</span></td>
+            <td>${row['Ngày giám sát'] || ''}</td>
+            <td>${row['Người giám sát'] || ''}</td>
+            <td class="text-center">
+              <button class="btn btn-sm btn-outline-primary" onclick="viewMonitoringDetail('${row['ID']}')"><i class="fas fa-eye"></i></button>
+            </td>
+          </tr>
+        `;
+      });
+      html += `</tbody></table></div>`;
+      container.html(html);
+
+      if ($.fn.DataTable) {
+        $('#mon-history-table').DataTable({
+          language: currentLang === 'en' ? {} : { url: "//cdn.datatables.net/plug-ins/1.13.4/i18n/vi.json" },
+          pageLength: 10, dom: 'ftp', ordering: false
+        });
+      }
+    }
+
+    function renderMonNewPanel() {
+      const container = $('#mon-new-container');
+
+      let typeOptions = '';
+      for (const [key, info] of Object.entries(MONITORING_TYPES)) {
+        typeOptions += `<option value="${key}">${tmt(key)}</option>`;
+      }
+
+      const html = `
+        <div class="card bg-light border-0 mb-3">
+          <div class="card-body py-3">
+            <div class="row g-2 align-items-end">
+              <div class="col-md-4">
+                <label class="fw-bold text-success mb-1">${t('mon_select_type')}</label>
+                <select class="form-select border-success" id="mon-type-select" onchange="onMonTypeChange()">
+                  ${typeOptions}
+                </select>
+              </div>
+              <div class="col-md-4">
+                <label class="fw-bold text-success mb-1">${t('mon_select_target')}</label>
+                <select class="form-select border-success" id="mon-target-select">
+                  <option value="">-- ${t('mon_select_hint')} --</option>
+                </select>
+              </div>
+              <div class="col-md-4 text-end">
+                <button class="btn btn-success fw-bold px-4 rounded-pill shadow-sm" onclick="startMonitoringForm()">
+                  <i class="fas fa-clipboard-check me-1"></i>${t('mon_start_btn')}
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div id="mon-target-info"></div>
+      `;
+      container.html(html);
+      onMonTypeChange();
+    }
+
+    function onMonTypeChange() {
+      const typeKey = $('#mon-type-select').val();
+      const info = MONITORING_TYPES[typeKey];
+      const select = $('#mon-target-select');
+      select.empty().append(`<option value="">-- ${t('mon_select_hint')} --</option>`);
+
+      if (info.target === 'nhom') {
+        const groups = APP_DATA['NhomCCR'] || [];
+        groups.forEach(g => {
+          select.append(`<option value="${g['ID nhóm']}" data-type="nhom">${g['Tên nhóm']} (${g['ID nhóm']})</option>`);
+        });
+      } else {
+        const plots = APP_DATA['Lo_rung'] || [];
+        plots.forEach(p => {
+          const ownerName = findOwnerName(p['ID chủ rừng']);
+          select.append(`<option value="${p['ID lô rừng']}" data-type="lo_rung">${p['Mã số lô 2024'] || p['ID lô rừng']} - ${ownerName}</option>`);
+        });
+      }
+    }
+
+    function findOwnerName(idChuRung) {
+      if (!idChuRung) return '';
+      const owners = APP_DATA['Churung'] || [];
+      const o = owners.find(x => String(x['ID chủ rừng']) === String(idChuRung));
+      return o ? o['Họ tên chủ rừng'] : '';
+    }
+
+    function findGroupName(idNhom) {
+      if (!idNhom) return idNhom;
+      const groups = APP_DATA['NhomCCR'] || [];
+      const g = groups.find(x => String(x['ID nhóm']) === String(idNhom));
+      return g ? g['Tên nhóm'] : idNhom;
+    }
+
+    function startMonitoringForm() {
+      const typeKey = $('#mon-type-select').val();
+      const targetId = $('#mon-target-select').val();
+      if (!targetId) return alert(t('mon_select_hint'));
+
+      const info = MONITORING_TYPES[typeKey];
+      let targetName = '';
+      if (info.target === 'nhom') {
+        targetName = findGroupName(targetId);
+      } else {
+        const plots = APP_DATA['Lo_rung'] || [];
+        const p = plots.find(x => String(x['ID lô rừng']) === String(targetId));
+        targetName = p ? (p['Mã số lô 2024'] || p['Tên lô rừng'] || targetId) : targetId;
+      }
+
+      renderMonitoringFormUI(typeKey, targetId, targetName);
+    }
+
+    function renderMonitoringFormUI(typeKey, targetId, targetName) {
+      const container = $('#page-content-dynamic');
+      container.empty();
+      const info = MONITORING_TYPES[typeKey];
+      const sections = MONITORING_DICTIONARY[typeKey];
+      if (!sections) return;
+
+      let html = `
+        <div class="card shadow-sm mb-4 border-0">
+          <div class="card-header text-white fw-bold py-2" style="background:${info.color}">
+            <div class="d-flex justify-content-between align-items-center">
+              <span><i class="fas ${info.icon} me-2"></i>${t('mon_form_title')}: ${tmt(typeKey)}</span>
+              <button class="btn btn-sm btn-light fw-bold" onclick="renderMonitoringModule()"><i class="fas fa-arrow-left me-1"></i>${t('mon_cancel_back')}</button>
+            </div>
+          </div>
+          <div class="card-body bg-light" style="padding-top:0">
+            <input type="hidden" id="mon-target-id" value="${targetId}">
+            <input type="hidden" id="mon-type-key" value="${typeKey}">
+
+            <div class="row g-2 align-items-center bg-white p-2 rounded shadow-sm mb-3 mt-2">
+              <div class="col-md-3"><h6 class="m-0 text-muted small">${t('mon_subject')}: <strong class="text-dark">${targetName}</strong></h6></div>
+              <div class="col-md-3">
+                <div class="input-group input-group-sm">
+                  <span class="input-group-text fw-bold">${t('mon_date_label')}:</span>
+                  <input type="date" class="form-control" id="mon-date" value="${new Date().toISOString().split('T')[0]}">
+                </div>
+              </div>
+              <div class="col-md-3">
+                <div class="input-group input-group-sm">
+                  <span class="input-group-text fw-bold">${t('mon_weather')}:</span>
+                  <select class="form-control" id="mon-weather">
+                    <option value="Nắng">${t('mon_weather_sunny')}</option>
+                    <option value="Mây">${t('mon_weather_cloudy')}</option>
+                    <option value="Mưa nhẹ">${t('mon_weather_light_rain')}</option>
+                    <option value="Mưa to">${t('mon_weather_heavy_rain')}</option>
+                  </select>
+                </div>
+              </div>
+              <div class="col-md-3">
+                <div class="input-group input-group-sm">
+                  <span class="input-group-text fw-bold">${t('mon_area_label')}:</span>
+                  <input type="number" class="form-control" id="mon-area" step="0.01" placeholder="ha">
+                </div>
+              </div>
+            </div>
+
+            <div class="mb-3">
+              <div class="input-group input-group-sm">
+                <span class="input-group-text fw-bold">${t('mon_representative')}:</span>
+                <input type="text" class="form-control" id="mon-representative" placeholder="">
+              </div>
+            </div>
+      `;
+
+      html += `<div class="accordion" id="monAccordion">`;
+      let idx = 0;
+      for (const [secName, questions] of Object.entries(sections)) {
+        html += `
+          <div class="accordion-item mb-3 border rounded shadow-sm overflow-hidden">
+            <h2 class="accordion-header">
+              <button class="accordion-button ${idx > 0 ? 'collapsed' : ''} fw-bold bg-white" style="color:${info.color}" type="button" data-bs-toggle="collapse" data-bs-target="#monCol${idx}">
+                ${tms(secName)} <span class="badge bg-light text-dark ms-2 border">${questions.length}</span>
+              </button>
+            </h2>
+            <div id="monCol${idx}" class="accordion-collapse collapse ${idx === 0 ? 'show' : ''}" data-bs-parent="#monAccordion">
+              <div class="accordion-body bg-light p-3">
+                <div class="row row-cols-1 row-cols-md-2 g-3">
+                  ${questions.map(q => renderMonQuestionCard(q, info.color)).join('')}
+                </div>
+              </div>
+            </div>
+          </div>
+        `;
+        idx++;
+      }
+      html += `</div>`;
+
+      html += `
+        <div class="mb-3 mt-3">
+          <label class="fw-bold small mb-1">${t('mon_proposal')}</label>
+          <textarea class="form-control" id="mon-proposal" rows="3" placeholder="${t('mon_note_ph')}"></textarea>
+        </div>
+        <div class="mt-4 text-center">
+          <button class="btn btn-lg px-5 fw-bold shadow text-white" style="background:${info.color}" onclick="submitMonitoring()">
+            <i class="fas fa-save me-2"></i>${t('mon_save_btn')}
+          </button>
+        </div>
+      `;
+
+      html += `</div></div>`;
+      container.html(html);
+    }
+
+    function renderMonQuestionCard(q, color) {
+      let answerUI = '';
+      if (q.type === 'rating3') {
+        answerUI = `
+          <input type="hidden" class="mon-result" data-qid="${q.id}" value="NA">
+          <div class="btn-group w-100 mb-2" role="group">
+            <button type="button" class="btn btn-outline-success btn-sm" onclick="toggleMonBtn(this,'${q.id}','Tot')">${t('mon_good')}</button>
+            <button type="button" class="btn btn-outline-warning btn-sm" onclick="toggleMonBtn(this,'${q.id}','TB')">${t('mon_average')}</button>
+            <button type="button" class="btn btn-outline-danger btn-sm" onclick="toggleMonBtn(this,'${q.id}','Kem')">${t('mon_poor')}</button>
+            <button type="button" class="btn btn-secondary btn-sm active" onclick="toggleMonBtn(this,'${q.id}','NA')">N/A</button>
+          </div>`;
+      } else if (q.type === 'check') {
+        answerUI = `
+          <input type="hidden" class="mon-result" data-qid="${q.id}" value="NA">
+          <div class="btn-group w-100 mb-2" role="group">
+            <button type="button" class="btn btn-outline-success btn-sm" onclick="toggleMonBtn(this,'${q.id}','Co')">${t('mon_yes')}</button>
+            <button type="button" class="btn btn-outline-danger btn-sm" onclick="toggleMonBtn(this,'${q.id}','Khong')">${t('mon_no')}</button>
+            <button type="button" class="btn btn-secondary btn-sm active" onclick="toggleMonBtn(this,'${q.id}','NA')">N/A</button>
+          </div>`;
+      } else {
+        answerUI = `
+          <input type="hidden" class="mon-result" data-qid="${q.id}" value="">
+          <input type="text" class="form-control form-control-sm mb-2 mon-text-input" data-qid="${q.id}" placeholder="${tmq(q.id, q.label)}">`;
+      }
+
+      return `
+        <div class="col">
+          <div class="card h-100 border-0 shadow-sm">
+            <div class="card-body p-3">
+              <h6 class="fw-bold mb-3" style="font-size: 12px; min-height: 36px; color:${color}">${tmq(q.id, q.label)}</h6>
+              ${answerUI}
+              <div class="bg-light p-2 rounded">
+                <textarea class="form-control form-control-sm mon-note border-0 bg-white" rows="1" placeholder="${t('mon_note_ph')}" data-qid="${q.id}" style="resize:none;"></textarea>
+              </div>
+            </div>
+          </div>
+        </div>`;
+    }
+
+    function toggleMonBtn(btn, qid, val) {
+      const wrapper = $(btn).parent();
+      wrapper.find('.btn').removeClass('active btn-success btn-warning btn-danger text-white')
+        .each(function() {
+          const cl = this.className;
+          if (!cl.includes('btn-outline-') && !cl.includes('btn-secondary')) {
+            $(this).addClass('btn-outline-' + (cl.includes('success') ? 'success' : cl.includes('warning') ? 'warning' : 'danger'));
+          }
+        });
+
+      // Reset all buttons
+      wrapper.find('.btn').removeClass('active btn-success btn-warning btn-danger text-white');
+      wrapper.find('.btn-outline-success').removeClass('btn-success text-white');
+      wrapper.find('.btn-outline-warning').removeClass('btn-warning text-white');
+      wrapper.find('.btn-outline-danger').removeClass('btn-danger text-white');
+
+      // Apply active
+      $(btn).addClass('active');
+      if (val === 'Tot' || val === 'Co') $(btn).addClass('btn-success text-white').removeClass('btn-outline-success');
+      else if (val === 'TB') $(btn).addClass('btn-warning text-white').removeClass('btn-outline-warning');
+      else if (val === 'Kem' || val === 'Khong') $(btn).addClass('btn-danger text-white').removeClass('btn-outline-danger');
+
+      $(`.mon-result[data-qid="${qid}"]`).val(val);
+    }
+
+    window.submitMonitoring = async function() {
+      const targetId = $('#mon-target-id').val();
+      const typeKey = $('#mon-type-key').val();
+      const date = $('#mon-date').val();
+      const weather = $('#mon-weather').val();
+      const area = $('#mon-area').val();
+      const representative = $('#mon-representative').val();
+      const proposal = $('#mon-proposal').val();
+
+      if (!targetId) return alert(t('mon_select_hint'));
+
+      const today = new Date();
+      const yy = today.getFullYear().toString().slice(-2);
+      const typeShort = typeKey.substring(0, 3).toUpperCase();
+      const idPrefix = `GS_${typeShort}_${targetId}-${yy}`;
+
+      let nextSeq = 1;
+      const existing = APP_DATA['GiamSat_LoRung'] || [];
+      existing.forEach(row => {
+        const rID = String(row['ID'] || '');
+        if (rID.startsWith(idPrefix)) {
+          const suffix = parseInt(rID.replace(idPrefix, ''), 10);
+          if (!isNaN(suffix) && suffix >= nextSeq) nextSeq = suffix + 1;
+        }
+      });
+      const idGS = `${idPrefix}${String(nextSeq).padStart(2, '0')}`;
+
+      // Prepare answers
+      const answers = {};
+      $('.mon-result').each(function() {
+        const qid = $(this).data('qid');
+        let val = $(this).val();
+        const note = $(`.mon-note[data-qid="${qid}"]`).val() || '';
+        // For text type, read from text input
+        const textInput = $(`.mon-text-input[data-qid="${qid}"]`);
+        if (textInput.length) val = textInput.val() || '';
+        answers[qid] = JSON.stringify({ r: val, n: note });
+      });
+
+      if (!confirm(t('mon_confirm_save'))) return;
+
+      const btn = $('button[onclick="submitMonitoring()"]');
+      btn.prop('disabled', true).html('<i class="fas fa-spinner fa-spin me-2"></i>...');
+
+      try {
+        const info = MONITORING_TYPES[typeKey];
+        const gsData = {
+          id: idGS,
+          loai_giam_sat: typeKey,
+          ngay_giam_sat: date,
+          nguoi_giam_sat: currentUser['Email'],
+          dai_dien_to: representative,
+          dien_tich_giam_sat: area ? parseFloat(area) : null,
+          thoi_tiet: weather,
+          ghi_chu: '',
+          de_xuat: proposal
+        };
+
+        if (info.target === 'nhom') {
+          gsData.id_nhom = targetId;
+        } else {
+          gsData.id_lo_rung = targetId;
+          // Also set nhom from lo_rung
+          const plot = (APP_DATA['Lo_rung'] || []).find(p => String(p['ID lô rừng']) === String(targetId));
+          if (plot) {
+            gsData.id_nhom = plot['ID nhóm'] || null;
+            gsData.id_chu_rung = plot['ID chủ rừng'] || null;
+          }
+        }
+
+        const { error: err1 } = await sb.from('giam_sat_lo_rung').insert(gsData);
+        if (err1) throw new Error("Error saving monitoring: " + err1.message);
+
+        // Save answers
+        const pad = (n) => String(n).padStart(2, '0');
+        const ts = pad(today.getDate()) + pad(today.getMonth() + 1) + yy +
+          pad(today.getHours()) + pad(today.getMinutes()) + pad(today.getSeconds());
+        const idHoi = `${idGS}-${ts}`;
+
+        const { error: err2 } = await sb.from('bang_hoi_giam_sat').insert({
+          id: idHoi, id_giam_sat: idGS, answers: answers
+        });
+        if (err2) throw new Error("Error saving answers: " + err2.message);
+
+        // Update local data
+        if (!APP_DATA['GiamSat_LoRung']) APP_DATA['GiamSat_LoRung'] = [];
+        APP_DATA['GiamSat_LoRung'].push({
+          'ID': idGS, 'ID lô rừng': gsData.id_lo_rung || '', 'ID nhóm': gsData.id_nhom || '',
+          'Loại giám sát': typeKey, 'Ngày giám sát': date, 'Người giám sát': currentUser['Email'],
+          'Đại diện tổ': representative, 'Diện tích GS': area, 'Thời tiết': weather,
+          'Đề xuất': proposal, 'Cập nhật': new Date().toLocaleString()
+        });
+
+        if (!APP_DATA['Banghoi_GiamSat']) APP_DATA['Banghoi_GiamSat'] = [];
+        APP_DATA['Banghoi_GiamSat'].push({ 'ID_hoi': idHoi, 'ID_GS': idGS, ...answers });
+
+        alert(t('mon_save_ok'));
+        renderMonitoringModule();
+
+      } catch (e) {
+        alert("Error: " + e.message);
+        console.error(e);
+      } finally {
+        btn.prop('disabled', false).html(`<i class="fas fa-save me-2"></i>${t('mon_save_btn')}`);
+      }
+    };
+
+    function viewMonitoringDetail(idGS) {
+      const gsList = APP_DATA['GiamSat_LoRung'] || [];
+      const hoiList = APP_DATA['Banghoi_GiamSat'] || [];
+
+      const gsRecord = gsList.find(r => String(r['ID']) === String(idGS));
+      if (!gsRecord) return alert(t('mon_not_found'));
+
+      const hoiRecord = hoiList.find(r => String(r['ID_GS']) === String(idGS));
+      const typeKey = gsRecord['Loại giám sát'];
+      const info = MONITORING_TYPES[typeKey] || { color: '#666', icon: 'fa-clipboard' };
+      const sections = MONITORING_DICTIONARY[typeKey];
+      if (!sections) return;
+
+      let targetName = gsRecord['ID lô rừng'] || gsRecord['ID nhóm'] || '';
+      if (gsRecord['ID lô rừng']) {
+        const p = (APP_DATA['Lo_rung'] || []).find(x => String(x['ID lô rừng']) === String(gsRecord['ID lô rừng']));
+        if (p) targetName = p['Mã số lô 2024'] || p['Tên lô rừng'] || targetName;
+      } else if (gsRecord['ID nhóm']) {
+        targetName = findGroupName(gsRecord['ID nhóm']);
+      }
+
+      const container = $('#page-content-dynamic');
+      container.empty();
+
+      let html = `
+        <div class="card shadow-sm mb-4 border-0">
+          <div class="card-header text-white fw-bold py-3" style="background:${info.color}">
+            <div class="d-flex justify-content-between align-items-center">
+              <span><i class="fas fa-eye me-2"></i>${t('mon_detail_title')}: ${tmt(typeKey)}</span>
+              <button class="btn btn-sm btn-light fw-bold" onclick="renderMonitoringModule()"><i class="fas fa-arrow-left me-1"></i>${t('mon_back')}</button>
+            </div>
+          </div>
+          <div class="card-body bg-light">
+            <div class="alert alert-light border shadow-sm mb-4">
+              <div class="row">
+                <div class="col-md-2"><strong>${t('mon_code')}:</strong> ${gsRecord['ID']}</div>
+                <div class="col-md-2"><strong>${t('mon_subject')}:</strong> ${targetName}</div>
+                <div class="col-md-2"><strong>${t('mon_date_label')}:</strong> ${gsRecord['Ngày giám sát']}</div>
+                <div class="col-md-2"><strong>${t('mon_staff')}:</strong> ${gsRecord['Người giám sát']}</div>
+                <div class="col-md-2"><strong>${t('mon_weather')}:</strong> ${gsRecord['Thời tiết'] || ''}</div>
+                <div class="col-md-2"><strong>${t('mon_area_label')}:</strong> ${gsRecord['Diện tích GS'] || ''} ha</div>
+              </div>
+            </div>
+            <div class="accordion" id="monDetailAccordion">`;
+
+      let idx = 0;
+      for (const [secName, questions] of Object.entries(sections)) {
+        html += `
+          <div class="accordion-item mb-3 border rounded shadow-sm overflow-hidden">
+            <h2 class="accordion-header">
+              <button class="accordion-button ${idx > 0 ? 'collapsed' : ''} fw-bold bg-white" style="color:${info.color}" type="button" data-bs-toggle="collapse" data-bs-target="#monDCol${idx}">
+                ${tms(secName)}
+              </button>
+            </h2>
+            <div id="monDCol${idx}" class="accordion-collapse collapse ${idx === 0 ? 'show' : ''}" data-bs-parent="#monDetailAccordion">
+              <div class="accordion-body bg-light p-3">
+                <div class="row row-cols-1 row-cols-md-2 g-3">`;
+
+        questions.forEach(q => {
+          let ans = { r: 'NA', n: '' };
+          if (hoiRecord && hoiRecord[q.id]) {
+            try {
+              if (typeof hoiRecord[q.id] === 'string' && hoiRecord[q.id].startsWith('{')) {
+                ans = JSON.parse(hoiRecord[q.id]);
+              } else {
+                ans = { r: hoiRecord[q.id], n: '' };
+              }
+            } catch (e) { ans = { r: hoiRecord[q.id], n: '' }; }
+          }
+
+          let badge = '<span class="badge bg-secondary">N/A</span>';
+          if (q.type === 'rating3') {
+            if (ans.r === 'Tot') badge = `<span class="badge bg-success">${t('mon_good')}</span>`;
+            else if (ans.r === 'TB') badge = `<span class="badge bg-warning text-dark">${t('mon_average')}</span>`;
+            else if (ans.r === 'Kem') badge = `<span class="badge bg-danger">${t('mon_poor')}</span>`;
+          } else if (q.type === 'check') {
+            if (ans.r === 'Co') badge = `<span class="badge bg-success">${t('mon_yes')}</span>`;
+            else if (ans.r === 'Khong') badge = `<span class="badge bg-danger">${t('mon_no')}</span>`;
+          } else {
+            if (ans.r && ans.r !== 'NA' && ans.r !== '') badge = `<span class="badge bg-info text-dark">${ans.r}</span>`;
+          }
+
+          html += `
+            <div class="col">
+              <div class="card h-100 border-0 shadow-sm">
+                <div class="card-body p-3">
+                  <h6 class="fw-bold mb-3 small" style="min-height:36px; color:${info.color}">${tmq(q.id, q.label)}</h6>
+                  <div class="mb-2">${badge}</div>
+                  ${ans.n ? `<div class="bg-light p-2 rounded small text-dark mt-2 border"><i class="fas fa-comment-alt me-1 text-muted"></i> ${ans.n}</div>` : ''}
+                </div>
+              </div>
+            </div>`;
+        });
+
+        html += `</div></div></div></div>`;
+        idx++;
+      }
+
+      html += `</div>`;
+
+      if (gsRecord['Đề xuất']) {
+        html += `<div class="card border-0 shadow-sm mt-3"><div class="card-body"><strong>${t('mon_proposal')}:</strong><p class="mt-2 mb-0">${gsRecord['Đề xuất']}</p></div></div>`;
+      }
+
+      html += `</div></div>`;
+      container.html(html);
     }
 
     function renderBreadcrumb() {
