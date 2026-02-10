@@ -1,0 +1,9 @@
+node_modules/
+.claude/
+.vscode/
+nul
+*.bak
+handbook_data.js
+handbook_review/
+temp_*.js
+temp_*.txt

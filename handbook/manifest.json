@@ -1,0 +1,30 @@
+{
+  "process": {
+    "title": "Sơ đồ tiến trình FSC",
+    "sizeKB": 1.4
+  },
+  "m1": {
+    "title": "M1 - TỔNG QUAN VỀ QUẢN LÝ RỪNG BỀN VỮNG VÀ CHỨNG CHỈ RỪNG FSC",
+    "sizeKB": 184.1
+  },
+  "m2": {
+    "title": "M2 - SỰ CẦN THIẾT CỦA HƯỚNG DẪN VÀ ĐỐI TƯỢNG ÁP DỤNG",
+    "sizeKB": 35.3
+  },
+  "m3": {
+    "title": "M3 - Hướng dẫn thực hiện",
+    "sizeKB": 36.9
+  },
+  "m4": {
+    "title": "M4 - CÁC YÊU CẦU CƠ BẢN KHI THỰC HIỆN",
+    "sizeKB": 383.1
+  },
+  "m5": {
+    "title": "M5 - HƯỚNG DẪN THỰC HIỆN CHỨNG CHỈ NHÓM",
+    "sizeKB": 1116.9
+  },
+  "m6": {
+    "title": "M6 - CÁC ĐIỂM KHÔNG TUÂN THỦ",
+    "sizeKB": 52.6
+  }
+}

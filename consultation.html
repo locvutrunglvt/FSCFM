@@ -1,0 +1,358 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Phiếu tham vấn các bên liên quan</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" rel="stylesheet">
+  <style>
+    :root { --fsc-green: #2e7d32; --fsc-light: #e8f5e9; }
+    body { background: linear-gradient(135deg, #e8f5e9 0%, #c8e6c9 50%, #a5d6a7 100%); min-height: 100vh; }
+    .form-card { max-width: 800px; margin: 20px auto; border-radius: 16px; box-shadow: 0 8px 32px rgba(0,0,0,.12); }
+    .section-header { background: var(--fsc-green); color: #fff; padding: 12px 20px; border-radius: 10px; margin-bottom: 16px; font-weight: 700; }
+    .q-card { background: #f8faf8; border-radius: 10px; padding: 14px 16px; margin-bottom: 12px; border-left: 4px solid var(--fsc-green); }
+    .q-label { font-weight: 600; font-size: .92rem; margin-bottom: 8px; }
+    .btn-opt { border-radius: 20px; min-width: 100px; font-weight: 600; transition: all .2s; }
+    .btn-opt:not(.active) { background: #fff; border: 2px solid #ccc; color: #555; }
+    .btn-opt:hover:not(.active) { border-color: var(--fsc-green); color: var(--fsc-green); }
+    .btn-opt.active.btn-success { background: var(--fsc-green) !important; border-color: var(--fsc-green) !important; }
+    .btn-opt.active.btn-warning { background: #f9a825 !important; border-color: #f9a825 !important; color: #fff !important; }
+    .btn-opt.active.btn-danger { background: #c62828 !important; border-color: #c62828 !important; }
+    .btn-opt.active.btn-outline-danger { background: #c62828 !important; border-color: #c62828 !important; color: #fff !important; }
+    .logo-header { background: var(--fsc-green); color: #fff; border-radius: 16px 16px 0 0; padding: 24px 20px; text-align: center; }
+    .logo-header h4 { margin: 0; font-weight: 800; letter-spacing: 1px; }
+    .logo-header p { margin: 8px 0 0; opacity: .9; font-size: .95rem; }
+    .note-input { font-size: .85rem; border-radius: 8px; }
+    @media (max-width: 576px) {
+      .btn-opt { min-width: 70px; font-size: .8rem; padding: 5px 10px; }
+      .q-label { font-size: .85rem; }
+    }
+  </style>
+</head>
+<body>
+
+<div id="app-loading" class="text-center py-5">
+  <div class="spinner-border text-success" role="status"><span class="visually-hidden">Loading...</span></div>
+  <p class="mt-3 text-muted">Đang tải phiếu tham vấn...</p>
+</div>
+
+<div id="app-error" class="d-none">
+  <div class="form-card card border-0">
+    <div class="logo-header">
+      <h4>PHIẾU THAM VẤN</h4>
+    </div>
+    <div class="card-body text-center py-5">
+      <i class="fas fa-exclamation-triangle fa-3x text-warning mb-3"></i>
+      <h5 id="error-msg" class="text-muted">Không tìm thấy đợt tham vấn.</h5>
+    </div>
+  </div>
+</div>
+
+<div id="app-form" class="d-none pb-4">
+  <div class="form-card card border-0">
+    <div class="logo-header">
+      <h4>PHIẾU THAM VẤN CÁC BÊN LIÊN QUAN</h4>
+    </div>
+    <div class="card-body p-3 p-md-4">
+
+      <!-- Intro text from session -->
+      <div id="session-intro" class="alert alert-success border-0 rounded-3 mb-4 d-none">
+        <i class="fas fa-info-circle me-2"></i><span id="intro-text"></span>
+      </div>
+
+      <!-- Section A: Respondent info -->
+      <div class="section-header"><i class="fas fa-user me-2"></i>A. Thông tin người trả lời</div>
+      <div class="row g-3 mb-4">
+        <div class="col-12">
+          <label class="form-label fw-bold">Họ và tên <span class="text-danger">*</span></label>
+          <input type="text" class="form-control" id="resp-name" required>
+        </div>
+        <div class="col-md-6">
+          <label class="form-label fw-bold">Địa chỉ / Tổ chức</label>
+          <input type="text" class="form-control" id="resp-address">
+        </div>
+        <div class="col-md-6">
+          <label class="form-label fw-bold">Số điện thoại</label>
+          <input type="tel" class="form-control" id="resp-phone">
+        </div>
+      </div>
+
+      <!-- Section B-I: Rating questions -->
+      <div class="section-header"><i class="fas fa-clipboard-check me-2"></i>B-I. Đánh giá hoạt động quản lý rừng</div>
+      <div id="section-b1" class="mb-4"></div>
+
+      <!-- Section B-II: Open questions -->
+      <div class="section-header"><i class="fas fa-pen-fancy me-2"></i>B-II. Vấn đề và kiến nghị</div>
+      <div id="section-b2" class="mb-4"></div>
+
+      <!-- Section C: Yes/No questions -->
+      <div class="section-header"><i class="fas fa-shield-alt me-2"></i>C. Giá trị bảo tồn cao</div>
+      <div id="section-c" class="mb-4"></div>
+
+      <!-- Submit -->
+      <div class="text-center mt-4">
+        <button id="btn-submit" class="btn btn-lg px-5 py-2 text-white fw-bold" style="background:var(--fsc-green);border-radius:30px;" onclick="submitForm()">
+          <i class="fas fa-paper-plane me-2"></i>Gửi phản hồi
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div id="app-thanks" class="d-none">
+  <div class="form-card card border-0">
+    <div class="logo-header">
+      <h4>PHIẾU THAM VẤN</h4>
+    </div>
+    <div class="card-body text-center py-5">
+      <i class="fas fa-check-circle fa-4x text-success mb-3"></i>
+      <h4 class="text-success fw-bold">Cảm ơn bạn đã tham gia tham vấn!</h4>
+      <p class="text-muted mt-2">Phản hồi của bạn đã được ghi nhận thành công.</p>
+    </div>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+(function() {
+  const SUPABASE_URL = 'https://rvvctklkxjhypgmzcaym.supabase.co';
+  const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJ2dmN0a2xreGpoeXBnbXpjYXltIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzA1NTQyOTEsImV4cCI6MjA4NjEzMDI5MX0.h_Y-_YRFlfKlmchIcz6h5nz6FusmVotwjXpPHUZvDvs';
+  const sb = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+  // Consultation questions dictionary
+  const QUESTIONS = {
+    "B-I": [
+      { id: "TV_01", label: "Nội dung của bản phương án QLRBV có mức độ phù hợp với tình hình địa phương?", type: "rating" },
+      { id: "TV_02", label: "Đóng góp vào sự phát triển kinh tế xã hội của địa phương/tỉnh nhà?", type: "rating" },
+      { id: "TV_03", label: "Tạo ra công ăn việc làm cho người dân địa phương? Mức lương thỏa mãn?", type: "rating" },
+      { id: "TV_04", label: "Nguồn gốc đất trồng rừng của các hộ tham gia FSC được phát triển trên đất trống, đồi núi trọc sau chiến tranh và không có chuyển đổi từ rừng tự nhiên sau 01/11/1994?", type: "rating" },
+      { id: "TV_05", label: "Cải thiện môi trường bằng việc trồng rừng các loại cây phù hợp với đất đai, tiểu khí hậu và có hiệu quả kinh tế?", type: "rating" },
+      { id: "TV_06", label: "Diện tích rừng trồng các hộ tham gia đều ổn định bền vững lâu dài, không có tranh chấp đất đai?", type: "rating" },
+      { id: "TV_07", label: "Nhóm hộ gây dựng phong trào trồng rừng - Quản lý rừng bền vững cho cộng đồng địa phương?", type: "rating" },
+      { id: "TV_08", label: "Tác động môi trường của hoạt động khai thác gỗ? Hoạt động trồng rừng?", type: "rating" },
+      { id: "TV_09", label: "Hoạt động trồng rừng bảo vệ được môi trường - Hành lang ven suối?", type: "rating" },
+      { id: "TV_10", label: "Tham gia hoạt động trồng rừng người dân giải quyết công ăn việc làm? Nâng cao đời sống?", type: "rating" },
+      { id: "TV_11", label: "Người tham gia được tuyên truyền, tập huấn và thông tin liên quan đến quản lý rừng bền vững có chứng chỉ rừng FSC?", type: "rating" },
+      { id: "TV_12", label: "Quyền của người lao động: Lương, chế độ, trang cấp, bình đẳng giới được đảm bảo?", type: "rating" }
+    ],
+    "B-II": [
+      { id: "TV_13", label: "Nêu ra những tồn tại, khuyết điểm của bản phương án QLRBV và những đề nghị:", type: "textarea" },
+      { id: "TV_14", label: "Nêu quan điểm khác của quý cơ quan/cá nhân:", type: "textarea" }
+    ],
+    "C": [
+      { id: "TV_15", label: "Rừng của các hộ dân có sự xuất hiện của các loài động, thực vật quý hiếm?", type: "yesno" },
+      { id: "TV_16", label: "Rừng có tồn tại những dạng sinh cảnh đặc biệt? Có giá trị bảo tồn cao?", type: "yesno" },
+      { id: "TV_17", label: "Rừng có vai trò quan trọng vào việc nhận diện văn hóa truyền thống của cộng đồng địa phương?", type: "yesno" },
+      { id: "TV_18", label: "Rừng có được coi là rừng lưu trữ nguồn gen quý? Đa dạng sinh học cao?", type: "yesno" },
+      { id: "TV_19", label: "Rừng có hiện hữu những nhu cầu cơ bản là nền tảng đối với cộng đồng địa phương?", type: "yesno" }
+    ]
+  };
+
+  // Answer state
+  const answers = {};
+
+  let currentSessionId = null;
+
+  // Show/hide screens
+  function showScreen(id) {
+    ['app-loading', 'app-error', 'app-form', 'app-thanks'].forEach(s => {
+      document.getElementById(s).classList.toggle('d-none', s !== id);
+    });
+  }
+
+  function showError(msg) {
+    document.getElementById('error-msg').textContent = msg;
+    showScreen('app-error');
+  }
+
+  // Render rating question
+  function renderRating(q, idx) {
+    return `
+      <div class="q-card">
+        <div class="q-label">${idx + 1}. ${q.label}</div>
+        <div class="d-flex flex-wrap gap-2 mb-2">
+          <button type="button" class="btn btn-opt btn-success" onclick="window._setAnswer('${q.id}','Tot',this)">
+            <i class="fas fa-smile me-1"></i>Tốt
+          </button>
+          <button type="button" class="btn btn-opt btn-warning" onclick="window._setAnswer('${q.id}','VuaPhai',this)">
+            <i class="fas fa-meh me-1"></i>Vừa phải
+          </button>
+          <button type="button" class="btn btn-opt btn-danger" onclick="window._setAnswer('${q.id}','ChuaTot',this)">
+            <i class="fas fa-frown me-1"></i>Chưa tốt
+          </button>
+        </div>
+        <input type="text" class="form-control note-input" placeholder="Ghi chú (không bắt buộc)" onchange="window._setNote('${q.id}',this.value)">
+      </div>`;
+  }
+
+  // Render textarea question
+  function renderTextarea(q, idx) {
+    return `
+      <div class="q-card">
+        <div class="q-label">${idx + 1}. ${q.label}</div>
+        <textarea class="form-control" rows="3" placeholder="Nhập nội dung..." onchange="window._setAnswer('${q.id}',this.value,null)"></textarea>
+      </div>`;
+  }
+
+  // Render yes/no question
+  function renderYesNo(q, idx) {
+    return `
+      <div class="q-card">
+        <div class="q-label">${idx + 1}. ${q.label}</div>
+        <div class="d-flex flex-wrap gap-2 mb-2">
+          <button type="button" class="btn btn-opt btn-success" onclick="window._setAnswer('${q.id}','Co',this)">
+            <i class="fas fa-check me-1"></i>Có
+          </button>
+          <button type="button" class="btn btn-opt btn-outline-danger" onclick="window._setAnswer('${q.id}','Khong',this)">
+            <i class="fas fa-times me-1"></i>Không
+          </button>
+        </div>
+        <input type="text" class="form-control note-input" placeholder="Ghi chú (không bắt buộc)" onchange="window._setNote('${q.id}',this.value)">
+      </div>`;
+  }
+
+  // Set answer for button-type questions
+  window._setAnswer = function(qId, value, btnEl) {
+    if (btnEl) {
+      // Toggle active state on buttons
+      const card = btnEl.closest('.q-card');
+      card.querySelectorAll('.btn-opt').forEach(b => b.classList.remove('active'));
+      btnEl.classList.add('active');
+    }
+
+    // For textarea type, value is raw text
+    const q = [...QUESTIONS["B-I"], ...QUESTIONS["B-II"], ...QUESTIONS["C"]].find(x => x.id === qId);
+    if (q && q.type === 'textarea') {
+      answers[qId] = JSON.stringify({ r: value, n: '' });
+    } else {
+      const existing = answers[qId] ? JSON.parse(answers[qId]) : { r: '', n: '' };
+      existing.r = value;
+      answers[qId] = JSON.stringify(existing);
+    }
+  };
+
+  // Set note for a question
+  window._setNote = function(qId, note) {
+    const existing = answers[qId] ? JSON.parse(answers[qId]) : { r: '', n: '' };
+    existing.n = note;
+    answers[qId] = JSON.stringify(existing);
+  };
+
+  // Build form UI
+  function buildForm() {
+    // Section B-I: Ratings
+    const b1 = document.getElementById('section-b1');
+    b1.innerHTML = QUESTIONS["B-I"].map((q, i) => renderRating(q, i)).join('');
+
+    // Section B-II: Textareas
+    const b2 = document.getElementById('section-b2');
+    b2.innerHTML = QUESTIONS["B-II"].map((q, i) => renderTextarea(q, i)).join('');
+
+    // Section C: Yes/No
+    const c = document.getElementById('section-c');
+    c.innerHTML = QUESTIONS["C"].map((q, i) => renderYesNo(q, i)).join('');
+  }
+
+  // Submit form
+  window.submitForm = async function() {
+    const name = document.getElementById('resp-name').value.trim();
+    if (!name) {
+      alert('Vui lòng nhập họ và tên.');
+      document.getElementById('resp-name').focus();
+      return;
+    }
+
+    const btn = document.getElementById('btn-submit');
+    btn.disabled = true;
+    btn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>Đang gửi...';
+
+    try {
+      const { error } = await sb.from('phan_hoi_tham_van').insert({
+        id_dot: currentSessionId,
+        nguoi_tra_loi: name,
+        dia_chi: document.getElementById('resp-address').value.trim(),
+        dien_thoai: document.getElementById('resp-phone').value.trim(),
+        ngay_phan_hoi: new Date().toISOString().split('T')[0],
+        answers: answers
+      });
+
+      if (error) throw error;
+      showScreen('app-thanks');
+    } catch (err) {
+      console.error('Submit error:', err);
+      alert('Lỗi khi gửi phản hồi: ' + (err.message || 'Vui lòng thử lại.'));
+      btn.disabled = false;
+      btn.innerHTML = '<i class="fas fa-paper-plane me-2"></i>Gửi phản hồi';
+    }
+  };
+
+  // Initialize
+  async function init() {
+    console.log('consultation.html init - Full URL:', window.location.href);
+    console.log('search:', window.location.search, 'hash:', window.location.hash);
+
+    // Parse dot param from multiple possible URL formats
+    let dotId = null;
+    const fullUrl = window.location.href;
+
+    // Method 1: Standard query string ?dot=...
+    dotId = new URLSearchParams(window.location.search).get('dot');
+
+    // Method 2: Hash-based #...?dot=...
+    if (!dotId && window.location.hash) {
+      const hashPart = window.location.hash;
+      const qIdx = hashPart.indexOf('?');
+      if (qIdx >= 0) dotId = new URLSearchParams(hashPart.substring(qIdx)).get('dot');
+    }
+
+    // Method 3: Regex fallback - extract dot= from anywhere in URL
+    if (!dotId) {
+      const match = fullUrl.match(/[?&]dot=([^&#]+)/);
+      if (match) dotId = decodeURIComponent(match[1]);
+    }
+
+    console.log('Resolved dotId:', dotId);
+
+    if (!dotId) {
+      showError('Thiếu mã đợt tham vấn trong đường dẫn. URL: ' + fullUrl);
+      return;
+    }
+
+    currentSessionId = dotId;
+
+    try {
+      const { data, error } = await sb.from('dot_tham_van').select('*').eq('id', dotId).single();
+
+      if (error || !data) {
+        showError('Không tìm thấy đợt tham vấn: ' + dotId);
+        return;
+      }
+
+      if (data.trang_thai === 'Đã đóng') {
+        showError('Đợt tham vấn này đã đóng. Không thể gửi phản hồi.');
+        return;
+      }
+
+      // Show intro text if available
+      if (data.noi_dung_gioi_thieu) {
+        document.getElementById('intro-text').textContent = data.noi_dung_gioi_thieu;
+        document.getElementById('session-intro').classList.remove('d-none');
+      }
+
+      // Build and show form
+      buildForm();
+      showScreen('app-form');
+
+    } catch (err) {
+      console.error('Init error:', err);
+      showError('Lỗi kết nối: ' + (err.message || 'Vui lòng thử lại sau.'));
+    }
+  }
+
+  init();
+})();
+</script>
+</body>
+</html>

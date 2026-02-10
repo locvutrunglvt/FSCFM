@@ -954,6 +954,33 @@
         border-radius: 8px;
       }
     }
+
+    /* Handbook content styles */
+    .handbook-content { font-size: 15px; line-height: 1.7; color: #333; padding: 10px 0; }
+    .handbook-content h1 { color: #1b5e20; font-size: 1.5rem; font-weight: 800; border-bottom: 3px solid #a5d6a7; padding-bottom: 8px; margin: 28px 0 14px; }
+    .handbook-content h2 { color: #2e7d32; font-size: 1.3rem; font-weight: 700; border-bottom: 2px solid #c8e6c9; padding-bottom: 6px; margin: 24px 0 12px; }
+    .handbook-content h3 { color: #388e3c; font-size: 1.15rem; font-weight: 700; margin: 20px 0 10px; }
+    .handbook-content h4, .handbook-content h5 { color: #43a047; font-weight: 700; margin: 16px 0 8px; }
+    .handbook-content p { margin-bottom: 10px; text-align: justify; }
+    .handbook-content table { width: 100%; border-collapse: collapse; margin: 14px 0; font-size: 14px; }
+    .handbook-content table th { background: #e8f5e9; color: #1b5e20; font-weight: 700; border: 1px solid #a5d6a7; padding: 8px 10px; }
+    .handbook-content table td { border: 1px solid #c8e6c9; padding: 7px 10px; vertical-align: top; }
+    .handbook-content table tr:nth-child(even) { background: #f1f8e9; }
+    .handbook-content img { max-width: 100%; height: auto; border-radius: 6px; margin: 10px 0; box-shadow: 0 2px 8px rgba(0,0,0,.1); }
+    .handbook-content ul, .handbook-content ol { padding-left: 24px; margin-bottom: 12px; }
+    .handbook-content li { margin-bottom: 4px; }
+    .handbook-content a { color: #2e7d32; }
+    .handbook-loading { text-align: center; padding: 60px 20px; color: #888; }
+    @media print {
+      .no-print, .navbar, .sidebar, .fsc-breadcrumb, #handbookTabs { display: none !important; }
+      .handbook-content { font-size: 12pt; line-height: 1.5; padding: 0; }
+      .handbook-content h1 { font-size: 16pt; }
+      .handbook-content h2 { font-size: 14pt; }
+      .handbook-content table { page-break-inside: auto; }
+      .handbook-content tr { page-break-inside: avoid; }
+      .handbook-content img { max-width: 80%; page-break-inside: avoid; }
+      .card { box-shadow: none !important; border: none !important; }
+    }
   </style>
 </head>
 
@@ -1253,6 +1280,7 @@
         menu_docs: 'Tài liệu tham khảo',
         menu_system: 'Hệ thống',
         menu_report: 'Báo cáo',
+        menu_monitoring: 'Giám sát',
         menu_settings: 'Cài đặt hệ thống',
 
         // Chart labels
@@ -1324,6 +1352,7 @@
         // Sidebar group names
         grp_group_mgmt: 'Quản lý nhóm',
         grp_forest_mgmt: 'Quản lý rừng bền vững',
+        grp_monitoring: 'Giám sát',
         grp_trade: 'Mua bán sản phẩm',
         grp_docs: 'Tài liệu tham khảo',
         grp_system: 'Hệ thống',
@@ -1431,6 +1460,20 @@
         mon_target_group: 'Nhóm CCR',
         mon_select_hint: 'Chọn loại giám sát và đối tượng để thực hiện',
         mon_no_data: 'Chưa có dữ liệu.',
+        mon_start_new: 'Bắt đầu giám sát mới',
+        mon_records: 'lần',
+        mon_export_pdf: 'Xuất PDF',
+        mon_pdf_title: 'BÁO CÁO GIÁM SÁT',
+        mon_pdf_info: 'Thông tin phiên giám sát',
+        mon_pdf_result: 'Kết quả đánh giá',
+        mon_pdf_note: 'Ghi chú',
+        mon_plan_title: 'Kế hoạch giám sát',
+        mon_plan_group: 'Nhóm',
+        mon_plan_add: 'Thêm kế hoạch',
+        mon_photo: 'Ảnh minh chứng',
+        mon_pdf_owner_rep: 'Đại diện chủ rừng',
+        mon_pdf_staff_rep: 'Nhân viên giám sát',
+        mon_pdf_sign: 'Ký tên',
         mon_plot_code: 'Mã lô',
         mon_plot_name: 'Tên lô',
         mon_owner: 'Chủ rừng',
@@ -1461,7 +1504,51 @@
         mon_weather_sunny: 'Nắng',
         mon_weather_cloudy: 'Mây',
         mon_weather_light_rain: 'Mưa nhẹ',
-        mon_weather_heavy_rain: 'Mưa to'
+        mon_weather_heavy_rain: 'Mưa to',
+        // Consultation module
+        con_sessions: 'Đợt tham vấn',
+        con_new_session: 'Tạo đợt mới',
+        con_session_name: 'Tên đợt tham vấn',
+        con_year: 'Năm',
+        con_intro: 'Nội dung giới thiệu',
+        con_status: 'Trạng thái',
+        con_status_open: 'Đang mở',
+        con_status_closed: 'Đã đóng',
+        con_creator: 'Người tạo',
+        con_create_btn: 'Tạo đợt tham vấn',
+        con_copy_link: 'Sao chép link',
+        con_send_email: 'Gửi email',
+        con_send_all: 'Gửi tất cả',
+        con_view_responses: 'Xem phản hồi',
+        con_responses: 'phản hồi',
+        con_link_copied: 'Đã sao chép link tham vấn!',
+        con_close_session: 'Đóng đợt',
+        con_form_title: 'PHIẾU THAM VẤN CÁC BÊN LIÊN QUAN',
+        con_respondent: 'Người trả lời',
+        con_date: 'Ngày',
+        con_address: 'Địa chỉ',
+        con_phone: 'Điện thoại',
+        con_good: 'Tốt',
+        con_moderate: 'Vừa phải',
+        con_poor: 'Chưa tốt',
+        con_yes: 'Có',
+        con_no: 'Không',
+        con_submit: 'Gửi phản hồi',
+        con_thank_you: 'Cảm ơn bạn đã tham gia tham vấn!',
+        con_session_closed: 'Đợt tham vấn này đã đóng.',
+        con_session_not_found: 'Không tìm thấy đợt tham vấn.',
+        con_summary: 'Tổng hợp kết quả',
+        con_no_sessions: 'Chưa có đợt tham vấn nào.',
+        con_no_responses: 'Chưa có phản hồi nào.',
+        con_section_b1: 'Đánh giá hoạt động quản lý rừng',
+        con_section_b2: 'Vấn đề và kiến nghị',
+        con_section_c: 'Giá trị bảo tồn cao',
+        // Handbook
+        hb_title: 'Sổ tay quản lý rừng bền vững',
+        hb_process: 'Sơ đồ tiến trình',
+        hb_part: 'Phần',
+        hb_print: 'In nội dung',
+        hb_loading: 'Đang tải nội dung...'
       },
       en: {
         login_title: 'FSC Forest Management System',
@@ -1513,6 +1600,7 @@
         menu_docs: 'Reference Documents',
         menu_system: 'System',
         menu_report: 'Reports',
+        menu_monitoring: 'Monitoring',
         menu_settings: 'System Settings',
 
         chart_fsc_area: 'FSC Area',
@@ -1576,6 +1664,7 @@
 
         grp_group_mgmt: 'Group Management',
         grp_forest_mgmt: 'Sustainable Forest Management',
+        grp_monitoring: 'Monitoring',
         grp_trade: 'Product Trading',
         grp_docs: 'Reference Documents',
         grp_system: 'System',
@@ -1677,6 +1766,20 @@
         mon_target_group: 'CCR Group',
         mon_select_hint: 'Select monitoring type and target to proceed',
         mon_no_data: 'No data available.',
+        mon_start_new: 'Start new monitoring',
+        mon_records: 'records',
+        mon_export_pdf: 'Export PDF',
+        mon_pdf_title: 'MONITORING REPORT',
+        mon_pdf_info: 'Monitoring Session Info',
+        mon_pdf_result: 'Assessment Results',
+        mon_pdf_note: 'Notes',
+        mon_plan_title: 'Monitoring Plan',
+        mon_plan_group: 'Group',
+        mon_plan_add: 'Add plan',
+        mon_photo: 'Evidence photo',
+        mon_pdf_owner_rep: 'Forest owner representative',
+        mon_pdf_staff_rep: 'Monitoring staff',
+        mon_pdf_sign: 'Signature',
         mon_plot_code: 'Plot Code',
         mon_plot_name: 'Plot Name',
         mon_owner: 'Forest Owner',
@@ -1707,7 +1810,51 @@
         mon_weather_sunny: 'Sunny',
         mon_weather_cloudy: 'Cloudy',
         mon_weather_light_rain: 'Light Rain',
-        mon_weather_heavy_rain: 'Heavy Rain'
+        mon_weather_heavy_rain: 'Heavy Rain',
+        // Consultation module
+        con_sessions: 'Consultation Sessions',
+        con_new_session: 'Create New Session',
+        con_session_name: 'Session Name',
+        con_year: 'Year',
+        con_intro: 'Introduction',
+        con_status: 'Status',
+        con_status_open: 'Open',
+        con_status_closed: 'Closed',
+        con_creator: 'Created by',
+        con_create_btn: 'Create Consultation Session',
+        con_copy_link: 'Copy Link',
+        con_send_email: 'Send Email',
+        con_send_all: 'Send All',
+        con_view_responses: 'View Responses',
+        con_responses: 'responses',
+        con_link_copied: 'Consultation link copied!',
+        con_close_session: 'Close Session',
+        con_form_title: 'STAKEHOLDER CONSULTATION FORM',
+        con_respondent: 'Respondent',
+        con_date: 'Date',
+        con_address: 'Address',
+        con_phone: 'Phone',
+        con_good: 'Good',
+        con_moderate: 'Moderate',
+        con_poor: 'Poor',
+        con_yes: 'Yes',
+        con_no: 'No',
+        con_submit: 'Submit Response',
+        con_thank_you: 'Thank you for your participation!',
+        con_session_closed: 'This consultation session is closed.',
+        con_session_not_found: 'Consultation session not found.',
+        con_summary: 'Results Summary',
+        con_no_sessions: 'No consultation sessions found.',
+        con_no_responses: 'No responses yet.',
+        con_section_b1: 'Forest Management Evaluation',
+        con_section_b2: 'Issues and Recommendations',
+        con_section_c: 'High Conservation Values',
+        // Handbook
+        hb_title: 'Forest Management Handbook',
+        hb_process: 'Process Diagram',
+        hb_part: 'Part',
+        hb_print: 'Print content',
+        hb_loading: 'Loading content...'
       }
     };
 
@@ -2032,7 +2179,7 @@
       'Danh sách nhóm':'Group List','Tập huấn':'Training','Khiếu nại':'Complaints',
       'Tài sản':'Assets','Dụng cụ lao động':'Work Tools',
       'Kế hoạch hoạt động':'Activity Plan','Đánh giá nội bộ':'Internal Audit',
-      'Hoạt động giám sát':'Monitoring Activities','Quản lý hồ sơ':'Records Management',
+      'Hoạt động giám sát':'Monitoring Activities','Thực hiện giám sát':'Execute Monitoring','Kế hoạch giám sát':'Monitoring Plan','Quản lý hồ sơ':'Records Management',
       'Bộ tiêu chuẩn FSC':'FSC Standards','Tham vấn các bên liên quan':'Stakeholder Consultation',
       'Tổng hợp báo cáo':'Report Summary','Bản đồ quản lý lô rừng':'Forest Plot Map',
       'Kế hoạch quản lý lô rừng':'Plot Management Plan','Kế hoạch khai thác':'Harvesting Plan',
@@ -2052,7 +2199,14 @@
       'Biến động lô rừng':'Plot Changes','Nội dung tập huấn':'Training Content',
       'Loại hoạt động rừng':'Forest Activity Types','Nhân sự':'Staff',
       'Quản lý Menu':'Menu Management','Dữ liệu Tỉnh/Huyện':'Province/District Data',
-      'Quản lý nhóm':'Group Management'
+      'Quản lý nhóm':'Group Management',
+      'Giám sát nhóm':'Group Monitoring',
+      'Giám sát trồng rừng':'Planting Monitoring',
+      'Giám sát khai thác':'Harvesting Monitoring',
+      'Giám sát môi trường':'Environmental Monitoring',
+      'Danh sách bên liên quan':'Stakeholder List',
+      'Thực hiện tham vấn':'Execute Consultation',
+      'Sổ tay quản lý rừng bền vững':'Forest Management Handbook'
     };
     function tm(moduleName) {
       if (currentLang === 'en' && MODULE_EN[moduleName]) return MODULE_EN[moduleName];
@@ -2248,6 +2402,20 @@
         thang_1:'T1', thang_2:'T2', thang_3:'T3', thang_4:'T4',
         thang_5:'T5', thang_6:'T6', thang_7:'T7', thang_8:'T8',
         thang_9:'T9', thang_10:'T10', thang_11:'T11', thang_12:'T12', ghi_chu:'Ghi chú'
+      }},
+      'BenLienQuan': { table: 'ben_lien_quan', cols: {
+        id:'ID', ten_to_chuc:'Tên tổ chức', email:'Email', dia_chi:'Địa chỉ',
+        dien_thoai:'Điện thoại', nguoi_dai_dien:'Người đại diện', website:'Website',
+        nhom_blq:'Nhóm BLQ'
+      }},
+      'DotThamVan': { table: 'dot_tham_van', cols: {
+        id:'ID', ten_dot:'Tên đợt', nam:'Năm', noi_dung_gioi_thieu:'Nội dung giới thiệu',
+        trang_thai:'Trạng thái', nguoi_tao:'Người tạo'
+      }},
+      'PhanHoiThamVan': { table: 'phan_hoi_tham_van', cols: {
+        id:'ID', id_dot:'ID đợt', id_ben_lien_quan:'ID BLQ', nguoi_tra_loi:'Người trả lời',
+        dia_chi:'Địa chỉ', dien_thoai:'Điện thoại', ngay_phan_hoi:'Ngày phản hồi',
+        answers:'answers'
       }}
     };
 
@@ -2373,6 +2541,18 @@
       'DG_noibo': {
         columns: ['ID', 'ID nhóm', 'Date', 'Staff', 'Update'],
         main: ['ID', 'ID nhóm', 'Date', 'Staff']
+      },
+      'KH_GiamSat_Nhom': {
+        columns: ['ID', 'ID nhóm', 'Năm', 'Loại giám sát', 'T1', 'T2', 'T3', 'T4', 'T5', 'T6', 'T7', 'T8', 'T9', 'T10', 'T11', 'T12', 'Ghi chú'],
+        main: ['ID nhóm', 'Năm', 'Loại giám sát', 'T1', 'T2', 'T3', 'T4', 'T5', 'T6', 'T7', 'T8', 'T9', 'T10', 'T11', 'T12']
+      },
+      'BenLienQuan': {
+        columns: ['ID', 'Tên tổ chức', 'Email', 'Địa chỉ', 'Điện thoại', 'Người đại diện', 'Website', 'Nhóm BLQ'],
+        main: ['Tên tổ chức', 'Email', 'Điện thoại', 'Người đại diện']
+      },
+      'DotThamVan': {
+        columns: ['ID', 'Tên đợt', 'Năm', 'Trạng thái', 'Người tạo', 'Nội dung giới thiệu'],
+        main: ['ID', 'Tên đợt', 'Năm', 'Trạng thái']
       },
       'Banghoi_DG_noibo': {
         columns: ['ID_hoi', 'ID_DG', 'RanhGioiRoRang', 'NopThuePhiDayDu', 'GiamSatNoiBo', 'XuLyViPham', 'GiaiQuyetTranhChapNgoaiToa', 'HoSoTranhChap', 'NgungHoatDongKhiTranhChap', 'TuDoThamGiaToChuc', 'KhongLaoDongCuongBuc', 'TraLuongCongBang', 'PhuongThucTraLuongNu', 'NghiThaiSan', 'TrangBiBaoHo', 'BatBuocDungBaoHo', 'HoSoAnToanLaoDong', 'CaiThienAnToanSauSuCo', 'MucLuongToiThieu', 'TraLuongDungHan', 'DaoTaoNguoiLaoDong', 'HoSoDaoTao', 'GiaiQuyetKhieuNai', 'BoiThuongThietHai', 'NhanDienNguoiBanDia', 'TaiLieuHoaQuyenLoi', 'ThamVanNguoiBanDia', 'HoSoThoaThuan', 'BaoVeDiaDiemVanHoa', 'NhanDienCongDong', 'ThamVanCongDong', 'BaoVeQuyenLoiCongDong', 'GiaiQuyetXamPhamQuyenLoi', 'QuyTrinhGiaiQuyetTranhChap', 'XuLyTranhChapCongDong', 'CanCuKhaiThac', 'GioiHanKhaiThac', 'NganNguaTacDongXau', 'GiamThieuTacDong', 'BaoVeLoaiQuyHiem', 'NganChanSanBat', 'TuanThuBaoVeDongVat', 'NganNguoiLaoDongSanBat', 'BaoVeNguonNuoc', 'PhucHoiNguonNuoc', 'KhacPhucHauQuaCu', 'NganChanSuyThoaiTiepDien', 'KhongChuyenDoiRungTuNhien', 'ChungChiKhuVucChuyenDoi', 'CongKhaiKeHoach', 'HeThongTruyXuat', 'TaiLieuHoaSanPham', 'LuuTruHoaDon', 'TrongRungSauKhaiThac', 'LoaiCayPhuHop', 'KiemSoatLoaiXamLan', 'KhongGMO', 'BienPhapLamSinh', 'HanChePhanBonHoaHoc', 'GiamThieuTacHaiPhanBon', 'KhongSuDungThuocCam', 'GhiChepSuDungThuoc', 'AnToanSuDungThuoc', 'GiamThieuLuongThuoc', 'HanCheAnhHuongSucKhoe', 'DanhMucThuocDuocPhep', 'KiemSoatSinhHoc', 'CanhBaoChayRung', 'CapNhatVuChay', 'QuanLyRacThai', 'XuLyRacThai']
@@ -2722,6 +2902,35 @@
       }
     };
 
+    // === CONSULTATION DICTIONARY (Stakeholder Consultation Form Questions) ===
+    const CONSULTATION_DICTIONARY = {
+      "B-I. Đánh giá hoạt động quản lý rừng": [
+        { id: "TV_01", label: "Nội dung của bản phương án QLRBV có mức độ phù hợp với tình hình địa phương?", type: "rating" },
+        { id: "TV_02", label: "Đóng góp vào sự phát triển kinh tế xã hội của địa phương/tỉnh nhà?", type: "rating" },
+        { id: "TV_03", label: "Tạo ra công ăn việc làm cho người dân địa phương? Mức lương thỏa mãn?", type: "rating" },
+        { id: "TV_04", label: "Nguồn gốc đất trồng rừng của các hộ tham gia FSC được phát triển trên đất trống, đồi núi trọc sau chiến tranh và không có chuyển đổi từ rừng tự nhiên sau 01/11/1994?", type: "rating" },
+        { id: "TV_05", label: "Cải thiện môi trường bằng việc trồng rừng các loại cây phù hợp với đất đai, tiểu khí hậu và có hiệu quả kinh tế?", type: "rating" },
+        { id: "TV_06", label: "Diện tích rừng trồng các hộ tham gia đều ổn định bền vững lâu dài, không có tranh chấp đất đai?", type: "rating" },
+        { id: "TV_07", label: "Nhóm hộ gây dựng phong trào trồng rừng - Quản lý rừng bền vững cho cộng đồng địa phương?", type: "rating" },
+        { id: "TV_08", label: "Tác động môi trường của hoạt động khai thác gỗ? Hoạt động trồng rừng?", type: "rating" },
+        { id: "TV_09", label: "Hoạt động trồng rừng bảo vệ được môi trường - Hành lang ven suối?", type: "rating" },
+        { id: "TV_10", label: "Tham gia hoạt động trồng rừng người dân giải quyết công ăn việc làm? Nâng cao đời sống?", type: "rating" },
+        { id: "TV_11", label: "Người tham gia được tuyên truyền, tập huấn và thông tin liên quan đến quản lý rừng bền vững có chứng chỉ rừng FSC?", type: "rating" },
+        { id: "TV_12", label: "Quyền của người lao động: Lương, chế độ, trang cấp, bình đẳng giới được đảm bảo?", type: "rating" }
+      ],
+      "B-II. Vấn đề và kiến nghị": [
+        { id: "TV_13", label: "Nêu ra những tồn tại, khuyết điểm của bản phương án QLRBV và những đề nghị:", type: "textarea" },
+        { id: "TV_14", label: "Nêu quan điểm khác của quý cơ quan/cá nhân:", type: "textarea" }
+      ],
+      "C. Giá trị bảo tồn cao": [
+        { id: "TV_15", label: "Rừng của các hộ dân có sự xuất hiện của các loài động, thực vật quý hiếm?", type: "yesno" },
+        { id: "TV_16", label: "Rừng có tồn tại những dạng sinh cảnh đặc biệt? Có giá trị bảo tồn cao?", type: "yesno" },
+        { id: "TV_17", label: "Rừng có vai trò quan trọng vào việc nhận diện văn hóa truyền thống của cộng đồng địa phương?", type: "yesno" },
+        { id: "TV_18", label: "Rừng có được coi là rừng lưu trữ nguồn gen quý? Đa dạng sinh học cao?", type: "yesno" },
+        { id: "TV_19", label: "Rừng có hiện hữu những nhu cầu cơ bản là nền tảng đối với cộng đồng địa phương?", type: "yesno" }
+      ]
+    };
+
     const VIEW_MAP = {
       'Ban_Quanly': 'Ban_Quanlynhom',
       'DS_NhomCCR': 'NhomCCR',
@@ -2730,7 +2939,14 @@
       'Taphuan': 'Taphuan',
       'Nhan_Su': 'NhanSu',
       'Admin_Province': 'Admin',
-      'Biendong': 'Biendong_lorung'
+      'Biendong': 'Biendong_lorung',
+      'ThucHien_GiamSat': 'NhomCCR',
+      'GS_Nhom': 'NhomCCR',
+      'GS_TrongRung': 'NhomCCR',
+      'GS_KhaiThac': 'NhomCCR',
+      'GS_MoiTruong': 'NhomCCR',
+      'DS_BenLienQuan': 'BenLienQuan',
+      'ThucHien_ThamVan': 'DotThamVan'
     };
 
     // === SUPABASE DATA LOADING ===
@@ -2741,7 +2957,8 @@
         'Loai_hoatdong_rung', 'Biendong_lorung', 'KH_HD_nhom',
         'KH_HD_Churung', 'HD_Lorung', 'DS_HDong', 'CauHoi_DanhGia', 'KetQua_DanhGia',
         'DG_noibo', 'Banghoi_DG_noibo',
-        'GiamSat_LoRung', 'Banghoi_GiamSat', 'KH_GiamSat_Nhom'
+        'GiamSat_LoRung', 'Banghoi_GiamSat', 'KH_GiamSat_Nhom',
+        'BenLienQuan', 'DotThamVan', 'PhanHoiThamVan'
       ];
 
       // Offline mode: load from localStorage cache
@@ -2779,6 +2996,18 @@
           } else if (r.sheetName === 'Banghoi_GiamSat') {
             APP_DATA[r.sheetName] = (r.data || []).map(row => {
               const obj = { 'ID_hoi': row.id, 'ID_GS': row.id_giam_sat };
+              if (row.answers && typeof row.answers === 'object') {
+                Object.assign(obj, row.answers);
+              }
+              return obj;
+            });
+          } else if (r.sheetName === 'PhanHoiThamVan') {
+            APP_DATA[r.sheetName] = (r.data || []).map(row => {
+              const obj = {
+                'ID': row.id, 'ID đợt': row.id_dot, 'ID BLQ': row.id_ben_lien_quan,
+                'Người trả lời': row.nguoi_tra_loi, 'Địa chỉ': row.dia_chi,
+                'Điện thoại': row.dien_thoai, 'Ngày phản hồi': row.ngay_phan_hoi
+              };
               if (row.answers && typeof row.answers === 'object') {
                 Object.assign(obj, row.answers);
               }
@@ -3452,6 +3681,7 @@
       const mainMenus = [
         { icon: 'fa-users-between-lines', labelKey: 'menu_group_mgmt', color: '#1B5E20', group: 'Quản lý nhóm' },
         { icon: 'fa-tree', labelKey: 'menu_forest_mgmt', color: '#1B5E20', group: 'Quản lý rừng bền vững' },
+        { icon: 'fa-binoculars', labelKey: 'menu_monitoring', color: '#0277BD', group: 'Giám sát' },
         { icon: 'fa-cart-shopping', labelKey: 'menu_trade', color: '#1B5E20', group: 'Mua bán sản phẩm' },
         { icon: 'fa-book-open', labelKey: 'menu_docs', color: '#1B5E20', group: 'Tài liệu tham khảo' },
         { icon: 'fa-gears', labelKey: 'menu_system', color: '#1B5E20', group: 'Hệ thống' },
@@ -3659,7 +3889,7 @@
       'nhóm ccr': 'fa-people-group', 'chủ rừng': 'fa-user-tie', 'lô rừng': 'fa-map',
       'quản lý nhóm': 'fa-users-gear', 'ban quản lý': 'fa-building-columns',
       'kế hoạch': 'fa-calendar-check', 'hoạt động': 'fa-list-check', 'tập huấn': 'fa-chalkboard-teacher',
-      'biến động': 'fa-arrows-rotate', 'đánh giá': 'fa-clipboard-check', 'nội bộ': 'fa-magnifying-glass',
+      'biến động': 'fa-arrows-rotate', 'đánh giá': 'fa-clipboard-check', 'nội bộ': 'fa-magnifying-glass', 'giám sát': 'fa-binoculars', 'thực hiện': 'fa-play-circle', 'trồng rừng': 'fa-seedling', 'khai thác': 'fa-tree', 'môi trường': 'fa-leaf', 'tham vấn': 'fa-comments', 'bên liên quan': 'fa-handshake', 'sổ tay': 'fa-book',
       'bản đồ': 'fa-map-location-dot', 'bán': 'fa-receipt', 'mua': 'fa-truck',
       'sản phẩm': 'fa-boxes-stacked', 'tài liệu': 'fa-file-lines', 'hệ thống': 'fa-gears',
       'menu': 'fa-bars', 'người dùng': 'fa-user-shield', 'profile': 'fa-id-card',
@@ -3688,6 +3918,7 @@
       const mainMenus = [
         { label: 'Quản lý nhóm', color: '#1B5E20', icon: 'fa-users-between-lines' },
         { label: 'Quản lý rừng bền vững', color: '#2E7D32', icon: 'fa-tree' },
+        { label: 'Giám sát', color: '#0277BD', icon: 'fa-binoculars' },
         { label: 'Mua bán sản phẩm', color: '#388E3C', icon: 'fa-cart-shopping' },
         { label: 'Tài liệu tham khảo', color: '#43A047', icon: 'fa-book-open' },
         { label: 'Hệ thống', color: '#4CAF50', icon: 'fa-gears' },
@@ -3723,6 +3954,7 @@
       // Translate group heading
       const GRP_I18N = {
         'Quản lý nhóm':'grp_group_mgmt','Quản lý rừng bền vững':'grp_forest_mgmt',
+        'Giám sát':'grp_monitoring',
         'Mua bán sản phẩm':'grp_trade','Tài liệu tham khảo':'grp_docs',
         'Hệ thống':'grp_system','Báo cáo':'grp_report'
       };
@@ -3795,12 +4027,14 @@
         // Group icons for accordion headers
         const GROUP_ICONS = {
           'Quản lý nhóm': 'fa-users-between-lines', 'Quản lý rừng bền vững': 'fa-tree',
+          'Giám sát': 'fa-binoculars',
           'Mua bán sản phẩm': 'fa-cart-shopping', 'Tài liệu tham khảo': 'fa-book-open',
           'Hệ thống': 'fa-gears', 'Báo cáo': 'fa-chart-pie', 'Khác': 'fa-folder'
         };
         // Map Vietnamese group names to i18n keys
         const GROUP_I18N = {
           'Quản lý nhóm': 'grp_group_mgmt', 'Quản lý rừng bền vững': 'grp_forest_mgmt',
+          'Giám sát': 'grp_monitoring',
           'Mua bán sản phẩm': 'grp_trade', 'Tài liệu tham khảo': 'grp_docs',
           'Hệ thống': 'grp_system', 'Báo cáo': 'grp_report', 'Khác': 'grp_other'
         };
@@ -3884,9 +4118,35 @@
         return;
       }
 
-      // Xử lý View đặc biệt: Giám sát lô rừng
-      if (current.viewName === 'GiamSat_LoRung' || current.title === 'Giám sát lô rừng') {
+      // Xử lý View đặc biệt: Giám sát lô rừng (tổng hợp tất cả loại)
+      if (current.viewName === 'GiamSat_LoRung' || current.viewName === 'ThucHien_GiamSat' || current.title === 'Giám sát lô rừng') {
+        _monTypeFilter = null; // show all types
         renderMonitoringModule();
+        return;
+      }
+
+      // Xử lý View đặc biệt: Giám sát theo loại (sub-menu items)
+      if (MONITORING_VIEW_TYPES[current.viewName]) {
+        _monTypeFilter = MONITORING_VIEW_TYPES[current.viewName];
+        renderMonitoringModule();
+        return;
+      }
+
+      // Xử lý View đặc biệt: Kế hoạch giám sát
+      if (current.viewName === 'KH_GiamSat_Nhom') {
+        renderMonitoringPlanView();
+        return;
+      }
+
+      // Xử lý View đặc biệt: Thực hiện tham vấn
+      if (current.viewName === 'ThucHien_ThamVan') {
+        renderConsultationModule();
+        return;
+      }
+
+      // Xử lý View đặc biệt: Sổ tay QLRBV
+      if (current.viewName === 'SoTay_QLRBV') {
+        renderHandbookView();
         return;
       }
 
@@ -5387,6 +5647,186 @@
     }
 
     // ============================================================
+    // MONITORING PLAN VIEW
+    // ============================================================
+
+    function renderMonitoringPlanView() {
+      const container = $('#page-content-dynamic');
+      container.empty();
+      const planData = APP_DATA['KH_GiamSat_Nhom'] || [];
+      const groups = APP_DATA['NhomCCR'] || [];
+      const currentYear = new Date().getFullYear();
+
+      // Get unique years from data, default to current year
+      const years = [...new Set(planData.map(r => parseInt(r['Năm'])).filter(y => !isNaN(y)))].sort((a, b) => b - a);
+      if (!years.includes(currentYear)) years.unshift(currentYear);
+
+      const months = ['T1','T2','T3','T4','T5','T6','T7','T8','T9','T10','T11','T12'];
+      const monthFull = ['Tháng 1','Tháng 2','Tháng 3','Tháng 4','Tháng 5','Tháng 6','Tháng 7','Tháng 8','Tháng 9','Tháng 10','Tháng 11','Tháng 12'];
+
+      let html = `
+        <div class="card shadow-sm border-0">
+          <div class="card-header bg-white border-0 py-3">
+            <div class="d-flex justify-content-between align-items-center flex-wrap gap-2">
+              <h5 class="fw-bold text-success mb-0"><i class="fas fa-calendar-check me-2"></i>${t('mon_plan_title')}</h5>
+              <div class="d-flex gap-2 align-items-center">
+                <select class="form-select form-select-sm fw-bold" id="planYearSelect" style="width:120px" onchange="filterPlanYear()">
+                  ${years.map(y => `<option value="${y}" ${y === currentYear ? 'selected' : ''}>${y}</option>`).join('')}
+                </select>
+                <button class="btn btn-success btn-sm fw-bold" onclick="addMonitoringPlanRow()"><i class="fas fa-plus me-1"></i>${t('mon_plan_add')}</button>
+              </div>
+            </div>
+          </div>
+          <div class="card-body p-2">
+            <div class="table-responsive">
+              <table class="table table-sm table-bordered table-hover align-middle mb-0 small" id="monPlanTable">
+                <thead class="table-success text-center">
+                  <tr>
+                    <th style="min-width:140px">${t('mon_plan_group')}</th>
+                    <th style="min-width:140px">${t('mon_type')}</th>
+                    ${months.map((m, i) => `<th style="min-width:50px">${monthFull[i]}</th>`).join('')}
+                    <th style="min-width:100px">${t('mon_pdf_note')}</th>
+                    <th style="width:60px"></th>
+                  </tr>
+                </thead>
+                <tbody id="monPlanBody">
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>`;
+
+      container.html(html);
+      filterPlanYear();
+    }
+
+    function filterPlanYear() {
+      const year = parseInt($('#planYearSelect').val());
+      const planData = (APP_DATA['KH_GiamSat_Nhom'] || []).filter(r => parseInt(r['Năm']) === year);
+      const groups = APP_DATA['NhomCCR'] || [];
+      const months = ['T1','T2','T3','T4','T5','T6','T7','T8','T9','T10','T11','T12'];
+
+      let bodyHtml = '';
+      if (planData.length === 0) {
+        bodyHtml = `<tr><td colspan="15" class="text-center text-muted py-4"><i class="fas fa-inbox me-2"></i>${t('mon_no_data')}</td></tr>`;
+      } else {
+        planData.forEach(row => {
+          const grp = groups.find(g => String(g['ID nhóm']) === String(row['ID nhóm']));
+          const grpName = grp ? (grp['Tên nhóm'] || row['ID nhóm']) : row['ID nhóm'];
+          const typeKey = row['Loại giám sát'] || '';
+          const tInfo = MONITORING_TYPES[typeKey] || { color: '#666', icon: 'fa-clipboard' };
+
+          bodyHtml += `<tr>
+            <td class="fw-bold small">${grpName}</td>
+            <td><span class="badge text-white" style="background:${tInfo.color}; font-size:10px"><i class="fas ${tInfo.icon} me-1"></i>${tmt(typeKey)}</span></td>
+            ${months.map(m => {
+              const val = row[m] || '';
+              const cellColor = val ? '#E8F5E9' : '';
+              return `<td class="text-center small" style="background:${cellColor}; cursor:pointer" onclick="editPlanCell('${row['ID']}', '${m}')" title="${val || 'Click để nhập'}">${val}</td>`;
+            }).join('')}
+            <td class="small">${row['Ghi chú'] || ''}</td>
+            <td class="text-center">
+              <button class="btn btn-sm btn-outline-danger" onclick="deletePlanRow('${row['ID']}')"><i class="fas fa-trash-alt"></i></button>
+            </td>
+          </tr>`;
+        });
+      }
+      $('#monPlanBody').html(bodyHtml);
+    }
+
+    async function addMonitoringPlanRow() {
+      const year = parseInt($('#planYearSelect').val());
+      const groups = APP_DATA['NhomCCR'] || [];
+      const typeOptions = Object.entries(MONITORING_TYPES).map(([k, v]) => `<option value="${k}">${v.title}</option>`).join('');
+      const grpOptions = groups.map(g => `<option value="${g['ID nhóm']}">${g['Tên nhóm'] || g['ID nhóm']}</option>`).join('');
+
+      const formHtml = `<div class="row g-2">
+        <div class="col-md-6"><label class="fw-bold small">${t('mon_plan_group')}</label><select class="form-select form-select-sm" id="planNewGroup">${grpOptions}</select></div>
+        <div class="col-md-6"><label class="fw-bold small">${t('mon_type')}</label><select class="form-select form-select-sm" id="planNewType">${typeOptions}</select></div>
+      </div>`;
+
+      const modal = $(`<div class="modal fade" tabindex="-1"><div class="modal-dialog"><div class="modal-content">
+        <div class="modal-header bg-success text-white"><h6 class="modal-title fw-bold"><i class="fas fa-plus-circle me-2"></i>${t('mon_plan_add')} - ${year}</h6><button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button></div>
+        <div class="modal-body">${formHtml}</div>
+        <div class="modal-footer"><button type="button" class="btn btn-secondary btn-sm" data-bs-dismiss="modal">${t('mon_cancel_back')}</button><button type="button" class="btn btn-success btn-sm fw-bold" id="planSaveBtn"><i class="fas fa-save me-1"></i>${t('mon_save_btn')}</button></div>
+      </div></div></div>`);
+
+      $('body').append(modal);
+      const bsModal = new bootstrap.Modal(modal[0]);
+      bsModal.show();
+
+      modal.find('#planSaveBtn').on('click', async function() {
+        const groupId = modal.find('#planNewGroup').val();
+        const typeKey = modal.find('#planNewType').val();
+        if (!groupId || !typeKey) return;
+
+        const id = `KHGS_${groupId}_${typeKey}_${year}`;
+        const existing = (APP_DATA['KH_GiamSat_Nhom'] || []).find(r => r['ID'] === id);
+        if (existing) { alert('Kế hoạch này đã tồn tại!'); return; }
+
+        const saveBtn = $(this);
+        saveBtn.prop('disabled', true).html('<i class="fas fa-spinner fa-spin"></i>');
+
+        try {
+          const insertData = { id, id_nhom: groupId, nam: year, loai_giam_sat: typeKey };
+          const { error } = await sb.from('kh_giam_sat_nhom').insert(insertData);
+          if (error) throw new Error(error.message);
+
+          if (!APP_DATA['KH_GiamSat_Nhom']) APP_DATA['KH_GiamSat_Nhom'] = [];
+          APP_DATA['KH_GiamSat_Nhom'].push({
+            'ID': id, 'ID nhóm': groupId, 'Năm': year, 'Loại giám sát': typeKey,
+            'T1':'','T2':'','T3':'','T4':'','T5':'','T6':'','T7':'','T8':'','T9':'','T10':'','T11':'','T12':'', 'Ghi chú':''
+          });
+
+          bsModal.hide();
+          filterPlanYear();
+        } catch(e) {
+          alert('Error: ' + e.message);
+        } finally {
+          saveBtn.prop('disabled', false).html(`<i class="fas fa-save me-1"></i>${t('mon_save_btn')}`);
+        }
+      });
+
+      modal.on('hidden.bs.modal', function() { modal.remove(); });
+    }
+
+    async function editPlanCell(rowId, monthKey) {
+      const planData = APP_DATA['KH_GiamSat_Nhom'] || [];
+      const row = planData.find(r => r['ID'] === rowId);
+      if (!row) return;
+
+      const currentVal = row[monthKey] || '';
+      const newVal = prompt(`${monthKey} (${row['Loại giám sát']}):`, currentVal);
+      if (newVal === null) return; // cancelled
+
+      try {
+        const dbCol = DB_MAP['KH_GiamSat_Nhom'].cols;
+        const colName = Object.entries(dbCol).find(([k, v]) => v === monthKey);
+        if (!colName) return;
+
+        const { error } = await sb.from('kh_giam_sat_nhom').update({ [colName[0]]: newVal }).eq('id', rowId);
+        if (error) throw new Error(error.message);
+
+        row[monthKey] = newVal;
+        filterPlanYear();
+      } catch(e) {
+        alert('Error: ' + e.message);
+      }
+    }
+
+    async function deletePlanRow(rowId) {
+      if (!confirm(t('mon_confirm_save'))) return;
+      try {
+        const { error } = await sb.from('kh_giam_sat_nhom').delete().eq('id', rowId);
+        if (error) throw new Error(error.message);
+
+        APP_DATA['KH_GiamSat_Nhom'] = (APP_DATA['KH_GiamSat_Nhom'] || []).filter(r => r['ID'] !== rowId);
+        filterPlanYear();
+      } catch(e) {
+        alert('Error: ' + e.message);
+      }
+    }
+
     // MONITORING MODULE
     // ============================================================
 
@@ -5424,8 +5864,13 @@
     }
 
     function renderMonHistoryTable() {
-      const data = APP_DATA['GiamSat_LoRung'] || [];
+      let data = APP_DATA['GiamSat_LoRung'] || [];
       const container = $('#mon-history-container');
+
+      // Apply type filter if set from monitoring sub-menu
+      if (_monTypeFilter && _monTypeFilter.length > 0) {
+        data = data.filter(r => _monTypeFilter.includes(r['Loại giám sát']));
+      }
 
       if (data.length === 0) {
         container.html(`<div class="text-center text-muted py-5"><i class="fas fa-folder-open fa-3x mb-3 opacity-50"></i><br>${t('mon_no_history')}</div>`);
@@ -5486,6 +5931,8 @@
 
       let typeOptions = '';
       for (const [key, info] of Object.entries(MONITORING_TYPES)) {
+        // Filter type options if a monitoring sub-menu filter is active
+        if (_monTypeFilter && _monTypeFilter.length > 0 && !_monTypeFilter.includes(key)) continue;
         typeOptions += `<option value="${key}">${tmt(key)}</option>`;
       }
 
@@ -5583,7 +6030,7 @@
           <div class="card-header text-white fw-bold py-2" style="background:${info.color}">
             <div class="d-flex justify-content-between align-items-center">
               <span><i class="fas ${info.icon} me-2"></i>${t('mon_form_title')}: ${tmt(typeKey)}</span>
-              <button class="btn btn-sm btn-light fw-bold" onclick="renderMonitoringModule()"><i class="fas fa-arrow-left me-1"></i>${t('mon_cancel_back')}</button>
+              <button class="btn btn-sm btn-light fw-bold" onclick="monGoBack()"><i class="fas fa-arrow-left me-1"></i>${t('mon_cancel_back')}</button>
             </div>
           </div>
           <div class="card-body bg-light" style="padding-top:0">
@@ -5695,12 +6142,52 @@
             <div class="card-body p-3">
               <h6 class="fw-bold mb-3" style="font-size: 12px; min-height: 36px; color:${color}">${tmq(q.id, q.label)}</h6>
               ${answerUI}
-              <div class="bg-light p-2 rounded">
+              <div class="bg-light p-2 rounded mb-2">
                 <textarea class="form-control form-control-sm mon-note border-0 bg-white" rows="1" placeholder="${t('mon_note_ph')}" data-qid="${q.id}" style="resize:none;"></textarea>
               </div>
+              <div class="d-flex align-items-center gap-1">
+                <label class="btn btn-outline-secondary btn-sm flex-fill mb-0" style="font-size:10px; cursor:pointer">
+                  <i class="fas fa-camera me-1"></i>${t('mon_photo')}
+                  <input type="file" accept="image/*" capture="environment" class="d-none mon-photo-input" data-qid="${q.id}" onchange="previewMonPhoto(this,'${q.id}')">
+                </label>
+                <div class="mon-photo-preview d-flex gap-1 flex-wrap" data-qid="${q.id}"></div>
+              </div>
+              <input type="hidden" class="mon-photo-urls" data-qid="${q.id}" value="">
             </div>
           </div>
         </div>`;
+    }
+
+    function previewMonPhoto(input, qid) {
+      const files = input.files;
+      if (!files || !files.length) return;
+      const file = files[0];
+      if (file.size > 5 * 1024 * 1024) { alert('Max 5MB'); input.value = ''; return; }
+
+      const reader = new FileReader();
+      reader.onload = function(e) {
+        const preview = $(`.mon-photo-preview[data-qid="${qid}"]`);
+        const idx = preview.find('img').length;
+        preview.append(`
+          <div class="position-relative" style="width:48px;height:48px">
+            <img src="${e.target.result}" class="rounded border" style="width:48px;height:48px;object-fit:cover">
+            <button type="button" class="btn btn-danger btn-sm position-absolute top-0 end-0 p-0" style="width:16px;height:16px;font-size:8px;line-height:1" onclick="removeMonPhoto(this,'${qid}',${idx})"><i class="fas fa-times"></i></button>
+          </div>
+        `);
+        // Store file data for upload later
+        if (!window._monPhotoPending) window._monPhotoPending = {};
+        if (!window._monPhotoPending[qid]) window._monPhotoPending[qid] = [];
+        window._monPhotoPending[qid].push(file);
+      };
+      reader.readAsDataURL(file);
+      input.value = '';
+    }
+
+    function removeMonPhoto(btn, qid, idx) {
+      $(btn).parent().remove();
+      if (window._monPhotoPending && window._monPhotoPending[qid]) {
+        window._monPhotoPending[qid].splice(idx, 1);
+      }
     }
 
     function toggleMonBtn(btn, qid, val) {
@@ -5755,16 +6242,36 @@
       });
       const idGS = `${idPrefix}${String(nextSeq).padStart(2, '0')}`;
 
+      // Upload pending photos first
+      const pendingPhotos = window._monPhotoPending || {};
+      const photoUrls = {};
+      for (const [qid, files] of Object.entries(pendingPhotos)) {
+        const urls = [];
+        for (let i = 0; i < files.length; i++) {
+          const file = files[i];
+          const ext = file.name.split('.').pop() || 'jpg';
+          const filePath = `monitoring/${idGS}/${qid}_${i}.${ext}`;
+          const { data: upData, error: upErr } = await sb.storage.from('fscfm-uploads').upload(filePath, file, { upsert: true });
+          if (!upErr && upData) {
+            const { data: urlData } = sb.storage.from('fscfm-uploads').getPublicUrl(filePath);
+            if (urlData) urls.push(urlData.publicUrl);
+          }
+        }
+        if (urls.length) photoUrls[qid] = urls;
+      }
+      window._monPhotoPending = {};
+
       // Prepare answers
       const answers = {};
       $('.mon-result').each(function() {
         const qid = $(this).data('qid');
         let val = $(this).val();
         const note = $(`.mon-note[data-qid="${qid}"]`).val() || '';
-        // For text type, read from text input
         const textInput = $(`.mon-text-input[data-qid="${qid}"]`);
         if (textInput.length) val = textInput.val() || '';
-        answers[qid] = JSON.stringify({ r: val, n: note });
+        const ans = { r: val, n: note };
+        if (photoUrls[qid]) ans.p = photoUrls[qid];
+        answers[qid] = JSON.stringify(ans);
       });
 
       if (!confirm(t('mon_confirm_save'))) return;
@@ -5825,7 +6332,7 @@
         APP_DATA['Banghoi_GiamSat'].push({ 'ID_hoi': idHoi, 'ID_GS': idGS, ...answers });
 
         alert(t('mon_save_ok'));
-        renderMonitoringModule();
+        monGoBack();
 
       } catch (e) {
         alert("Error: " + e.message);
@@ -5864,7 +6371,10 @@
           <div class="card-header text-white fw-bold py-3" style="background:${info.color}">
             <div class="d-flex justify-content-between align-items-center">
               <span><i class="fas fa-eye me-2"></i>${t('mon_detail_title')}: ${tmt(typeKey)}</span>
-              <button class="btn btn-sm btn-light fw-bold" onclick="renderMonitoringModule()"><i class="fas fa-arrow-left me-1"></i>${t('mon_back')}</button>
+              <div class="d-flex gap-2">
+                <button class="btn btn-sm btn-danger fw-bold" onclick="exportMonitoringPDF('${idGS}')"><i class="fas fa-file-pdf me-1"></i>${t('mon_export_pdf')}</button>
+                <button class="btn btn-sm btn-light fw-bold" onclick="monGoBack()"><i class="fas fa-arrow-left me-1"></i>${t('mon_back')}</button>
+              </div>
             </div>
           </div>
           <div class="card-body bg-light">
@@ -5924,6 +6434,7 @@
                   <h6 class="fw-bold mb-3 small" style="min-height:36px; color:${info.color}">${tmq(q.id, q.label)}</h6>
                   <div class="mb-2">${badge}</div>
                   ${ans.n ? `<div class="bg-light p-2 rounded small text-dark mt-2 border"><i class="fas fa-comment-alt me-1 text-muted"></i> ${ans.n}</div>` : ''}
+                  ${ans.p && ans.p.length ? `<div class="d-flex gap-1 flex-wrap mt-2">${ans.p.map(u => `<a href="${u}" target="_blank"><img src="${u}" class="rounded border" style="width:60px;height:60px;object-fit:cover" title="${t('mon_photo')}"></a>`).join('')}</div>` : ''}
                 </div>
               </div>
             </div>`;
@@ -5941,6 +6452,827 @@
 
       html += `</div></div>`;
       container.html(html);
+    }
+
+    // === MONITORING PDF EXPORT ===
+    function exportMonitoringPDF(idGS) {
+      const gsList = APP_DATA['GiamSat_LoRung'] || [];
+      const hoiList = APP_DATA['Banghoi_GiamSat'] || [];
+      const gsRecord = gsList.find(r => String(r['ID']) === String(idGS));
+      if (!gsRecord) return alert(t('mon_not_found'));
+
+      const hoiRecord = hoiList.find(r => String(r['ID_GS']) === String(idGS));
+      const typeKey = gsRecord['Loại giám sát'];
+      const info = MONITORING_TYPES[typeKey] || { color: '#666', icon: 'fa-clipboard' };
+      const sections = MONITORING_DICTIONARY[typeKey];
+      if (!sections) return;
+
+      // Resolve target name
+      let targetName = gsRecord['ID lô rừng'] || gsRecord['ID nhóm'] || '';
+      let plotInfo = null;
+      if (gsRecord['ID lô rừng']) {
+        plotInfo = (APP_DATA['Lo_rung'] || []).find(x => String(x['ID lô rừng']) === String(gsRecord['ID lô rừng']));
+        if (plotInfo) targetName = plotInfo['Mã số lô 2024'] || plotInfo['Tên lô rừng'] || targetName;
+      } else if (gsRecord['ID nhóm']) {
+        targetName = findGroupName(gsRecord['ID nhóm']);
+      }
+
+      const ownerName = plotInfo ? (plotInfo['Họ tên chủ rừng'] || '') : '';
+      const groupName = gsRecord['ID nhóm'] ? findGroupName(gsRecord['ID nhóm']) : '';
+
+      // Build print content
+      let rows = '';
+      for (const [secName, questions] of Object.entries(sections)) {
+        rows += `<tr class="sec-row"><td colspan="5" style="background:${info.color}; color:#fff; font-weight:700; padding:8px 12px; font-size:13px;">${tms(secName)}</td></tr>`;
+        questions.forEach((q, qi) => {
+          let ans = { r: 'N/A', n: '', p: [] };
+          if (hoiRecord && hoiRecord[q.id]) {
+            try {
+              if (typeof hoiRecord[q.id] === 'string' && hoiRecord[q.id].startsWith('{')) ans = { ...ans, ...JSON.parse(hoiRecord[q.id]) };
+              else ans = { r: hoiRecord[q.id], n: '', p: [] };
+            } catch(e) { ans = { r: hoiRecord[q.id], n: '', p: [] }; }
+          }
+
+          let resultText = ans.r || 'N/A';
+          let resultStyle = 'color:#666';
+          if (q.type === 'rating3') {
+            if (ans.r === 'Tot') { resultText = t('mon_good'); resultStyle = 'color:#2E7D32; font-weight:700'; }
+            else if (ans.r === 'TB') { resultText = t('mon_average'); resultStyle = 'color:#E65100; font-weight:700'; }
+            else if (ans.r === 'Kem') { resultText = t('mon_poor'); resultStyle = 'color:#C62828; font-weight:700'; }
+          } else if (q.type === 'check') {
+            if (ans.r === 'Co') { resultText = t('mon_yes'); resultStyle = 'color:#2E7D32; font-weight:700'; }
+            else if (ans.r === 'Khong') { resultText = t('mon_no'); resultStyle = 'color:#C62828; font-weight:700'; }
+          } else {
+            if (ans.r && ans.r !== 'NA' && ans.r !== 'N/A') resultStyle = 'color:#1565C0';
+          }
+
+          const photoHtml = (ans.p && ans.p.length) ? ans.p.map(u => `<img src="${u}" style="width:60px;height:60px;object-fit:cover;border-radius:4px;border:1px solid #ddd;margin:2px">`).join('') : '';
+
+          rows += `<tr style="border-bottom:1px solid #eee;">
+            <td style="padding:6px 8px; width:35px; text-align:center; color:#999; font-size:11px;">${qi+1}</td>
+            <td style="padding:6px 8px; font-size:12px;">${tmq(q.id, q.label)}</td>
+            <td style="padding:6px 8px; text-align:center; min-width:70px;"><span style="${resultStyle}">${resultText}</span></td>
+            <td style="padding:6px 8px; font-size:11px; color:#555; max-width:180px;">${ans.n || ''}</td>
+            <td style="padding:4px; width:140px;">${photoHtml}</td>
+          </tr>`;
+        });
+      }
+
+      const projectName = 'HỆ THỐNG QUẢN LÝ RỪNG BỀN VỮNG FSC';
+
+      const printHTML = `<!DOCTYPE html>
+<html><head>
+<meta charset="UTF-8">
+<title>${t('mon_pdf_title')} - ${gsRecord['ID']}</title>
+<link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  * { margin:0; padding:0; box-sizing:border-box; }
+  body { font-family:'Be Vietnam Pro', sans-serif; color:#333; padding:20px; font-size:12px; }
+  .project-name { text-align:center; font-size:11px; color:#1B5E20; font-weight:700; letter-spacing:2px; text-transform:uppercase; margin-bottom:8px; }
+  .header { text-align:center; margin-bottom:20px; border-bottom:3px solid ${info.color}; padding-bottom:15px; }
+  .header h1 { font-size:20px; color:${info.color}; margin-bottom:4px; letter-spacing:1px; }
+  .header h2 { font-size:14px; color:#555; font-weight:500; }
+  .info-grid { display:grid; grid-template-columns:1fr 1fr 1fr; gap:8px; margin-bottom:20px; background:#f8f9fa; padding:12px; border-radius:6px; border:1px solid #ddd; }
+  .info-item { font-size:11px; }
+  .info-item strong { color:${info.color}; display:block; font-size:10px; text-transform:uppercase; margin-bottom:2px; }
+  table { width:100%; border-collapse:collapse; margin-bottom:16px; }
+  table th { background:#f0f0f0; padding:8px; text-align:left; font-size:11px; border-bottom:2px solid #ccc; }
+  .sec-row td { page-break-inside:avoid; }
+  .proposal-box { background:#FFF8E1; border:1px solid #FFE082; border-left:4px solid #FFA000; padding:12px; margin-top:16px; border-radius:4px; }
+  .proposal-box h4 { color:#E65100; margin-bottom:6px; font-size:13px; }
+  .signature-section { display:flex; justify-content:space-between; margin-top:40px; padding:0 40px; }
+  .signature-box { text-align:center; width:40%; }
+  .signature-box .title { font-weight:700; font-size:12px; margin-bottom:6px; color:${info.color}; }
+  .signature-box .name { font-size:11px; margin-bottom:60px; }
+  .signature-box .line { border-top:1px solid #333; padding-top:4px; font-size:11px; font-style:italic; }
+  .footer { margin-top:24px; text-align:center; font-size:10px; color:#999; border-top:1px solid #ddd; padding-top:10px; }
+  @media print {
+    body { padding:10px; }
+    .no-print { display:none !important; }
+    table { page-break-inside:auto; }
+    tr { page-break-inside:avoid; }
+    .signature-section { page-break-inside:avoid; }
+  }
+</style>
+</head><body>
+<div class="no-print" style="text-align:center; margin-bottom:16px;">
+  <button onclick="window.print()" style="padding:8px 24px; background:${info.color}; color:#fff; border:none; border-radius:6px; font-weight:700; cursor:pointer; font-size:14px; font-family:inherit;">
+    🖨️ ${t('mon_export_pdf')}
+  </button>
+</div>
+<div class="project-name">${projectName}</div>
+<div class="header">
+  <h1>${t('mon_pdf_title')}</h1>
+  <h2>${tmt(typeKey)}</h2>
+</div>
+<div class="info-grid">
+  <div class="info-item"><strong>${t('mon_code')}</strong>${gsRecord['ID']}</div>
+  <div class="info-item"><strong>${t('mon_subject')}</strong>${targetName}</div>
+  <div class="info-item"><strong>${t('mon_date_label')}</strong>${gsRecord['Ngày giám sát'] || ''}</div>
+  <div class="info-item"><strong>${t('mon_staff')}</strong>${gsRecord['Người giám sát'] || ''}</div>
+  <div class="info-item"><strong>${t('mon_weather')}</strong>${gsRecord['Thời tiết'] || ''}</div>
+  <div class="info-item"><strong>${t('mon_area_label')}</strong>${gsRecord['Diện tích GS'] || ''} ha</div>
+  ${ownerName ? `<div class="info-item"><strong>${t('mon_owner')}</strong>${ownerName}</div>` : ''}
+  ${groupName ? `<div class="info-item"><strong>${t('mon_target_group')}</strong>${groupName}</div>` : ''}
+  <div class="info-item"><strong>${t('mon_representative')}</strong>${gsRecord['Đại diện tổ'] || ''}</div>
+</div>
+<table>
+  <thead><tr>
+    <th style="width:35px">#</th>
+    <th>${t('mon_pdf_result')}</th>
+    <th style="width:70px; text-align:center">${t('mon_action')}</th>
+    <th style="width:180px">${t('mon_pdf_note')}</th>
+    <th style="width:140px">${t('mon_photo')}</th>
+  </tr></thead>
+  <tbody>${rows}</tbody>
+</table>
+${gsRecord['Đề xuất'] ? `<div class="proposal-box"><h4>${t('mon_proposal')}</h4><p>${gsRecord['Đề xuất']}</p></div>` : ''}
+<div class="signature-section">
+  <div class="signature-box">
+    <div class="title">${t('mon_pdf_owner_rep')}</div>
+    <div class="name">${ownerName || gsRecord['Đại diện tổ'] || ''}</div>
+    <div class="line">(${t('mon_pdf_sign')})</div>
+  </div>
+  <div class="signature-box">
+    <div class="title">${t('mon_pdf_staff_rep')}</div>
+    <div class="name">${gsRecord['Người giám sát'] || ''}</div>
+    <div class="line">(${t('mon_pdf_sign')})</div>
+  </div>
+</div>
+<div class="footer">
+  ${projectName} — ${gsRecord['ID']} — ${new Date().toLocaleDateString()}
+</div>
+</body></html>`;
+
+      const printWin = window.open('', '_blank', 'width=900,height=700');
+      printWin.document.write(printHTML);
+      printWin.document.close();
+    }
+
+    // === PLOT/GROUP MONITORING: Action from detail views ===
+    let _monReturnContext = null; // stores {type:'plot'|'group', data: d} for back navigation
+    let _monTypeFilter = null; // null = show all types, or array of typeKeys from menu navigation
+
+    // Map monitoring sub-menu view names to type filters
+    const MONITORING_VIEW_TYPES = {
+      'GS_Nhom': ['giam_sat_nhom'],
+      'GS_TrongRung': ['trong_rung'],
+      'GS_KhaiThac': ['truoc_khai_thac', 'trong_khai_thac', 'sau_khai_thac'],
+      'GS_MoiTruong': ['bao_ve_rung', 'hanh_lang_ven_suoi']
+    };
+
+    function monGoBack() {
+      if (_monReturnContext) {
+        if (_monReturnContext.type === 'plot') return showPlotMonitoring(_monReturnContext.data);
+        if (_monReturnContext.type === 'group') return showGroupMonitoring(_monReturnContext.data);
+      }
+      renderMonitoringModule();
+    }
+
+    function showPlotMonitoring(d) {
+      _monReturnContext = { type: 'plot', data: d };
+      const container = $('#page-content-dynamic');
+      container.empty();
+
+      const plotId = d['ID lô rừng'];
+      const plotName = d['Mã số lô 2024'] || d['Tên lô rừng'] || plotId;
+      const ownerName = d['Họ tên chủ rừng'] || '';
+      const groupName = findGroupName(d['ID nhóm'] || '');
+      const area = d['Diện tích GIS'] || d['Diện tích đăng ký'] || '';
+
+      // Filter history for this plot (also apply type filter if active)
+      let gsList = (APP_DATA['GiamSat_LoRung'] || []).filter(r => String(r['ID lô rừng']) === String(plotId));
+      if (_monTypeFilter && _monTypeFilter.length > 0) {
+        gsList = gsList.filter(r => _monTypeFilter.includes(r['Loại giám sát']));
+      }
+
+      // Plot-related monitoring types (exclude giam_sat_nhom, apply filter if active)
+      let plotTypes = Object.entries(MONITORING_TYPES).filter(([k, v]) => v.target === 'lo_rung');
+      if (_monTypeFilter && _monTypeFilter.length > 0) {
+        plotTypes = plotTypes.filter(([k]) => _monTypeFilter.includes(k));
+      }
+
+      let html = `
+        <div class="card shadow-sm border-0 mb-3">
+          <div class="card-header bg-white border-0 py-3">
+            <div class="d-flex justify-content-between align-items-center flex-wrap gap-2">
+              <div>
+                <h5 class="fw-bold text-success mb-1"><i class="fas fa-clipboard-check me-2"></i>${t('dd_giamsat')}: ${plotName}</h5>
+                <span class="text-muted small"><i class="fas fa-user me-1"></i>${ownerName} &nbsp;|&nbsp; <i class="fas fa-layer-group me-1"></i>${groupName} &nbsp;|&nbsp; <i class="fas fa-ruler-combined me-1"></i>${area} ha</span>
+              </div>
+              <button class="btn btn-outline-secondary btn-sm fw-bold" onclick="navigateBack(navHistory.length-1)"><i class="fas fa-arrow-left me-1"></i>${t('mon_back')}</button>
+            </div>
+          </div>
+          <div class="card-body p-3">
+            <h6 class="fw-bold text-muted mb-3"><i class="fas fa-play-circle me-2"></i>${t('mon_start_new')}</h6>
+            <div class="row row-cols-2 row-cols-md-3 row-cols-lg-6 g-2 mb-4">`;
+
+      plotTypes.forEach(([typeKey, info]) => {
+        const count = gsList.filter(r => r['Loại giám sát'] === typeKey).length;
+        html += `
+              <div class="col">
+                <div class="card h-100 border-0 shadow-sm text-center p-3 mon-type-card"
+                     style="cursor:pointer; border-left:4px solid ${info.color}!important; transition:transform 0.15s"
+                     onmouseover="this.style.transform='scale(1.03)'" onmouseout="this.style.transform='scale(1)'"
+                     onclick="startPlotMonitoring('${typeKey}')">
+                  <i class="fas ${info.icon} fa-2x mb-2" style="color:${info.color}"></i>
+                  <div class="fw-bold small" style="color:${info.color}">${tmt(typeKey)}</div>
+                  ${count > 0 ? `<span class="badge bg-light text-dark border mt-1">${count} ${t('mon_records')}</span>` : ''}
+                </div>
+              </div>`;
+      });
+
+      html += `</div>`;
+
+      // History table
+      html += `<h6 class="fw-bold text-muted mb-2"><i class="fas fa-history me-2"></i>${t('mon_tab_history')} (${gsList.length})</h6>`;
+      if (gsList.length === 0) {
+        html += `<div class="alert alert-light text-center border"><i class="fas fa-inbox me-2"></i>${t('mon_no_data')}</div>`;
+      } else {
+        html += `<div class="table-responsive"><table class="table table-sm table-hover align-middle mb-0" id="plotMonTable">
+          <thead class="table-light"><tr>
+            <th>${t('mon_code')}</th>
+            <th>${t('mon_type')}</th>
+            <th>${t('mon_date_label')}</th>
+            <th>${t('mon_staff')}</th>
+            <th>${t('mon_weather')}</th>
+            <th></th>
+          </tr></thead><tbody>`;
+        gsList.sort((a, b) => (b['Ngày giám sát'] || '').localeCompare(a['Ngày giám sát'] || ''));
+        gsList.forEach(r => {
+          const tKey = r['Loại giám sát'];
+          const tInfo = MONITORING_TYPES[tKey] || { color: '#666', icon: 'fa-clipboard' };
+          html += `<tr>
+            <td class="fw-bold small">${r['ID']}</td>
+            <td><span class="badge text-white" style="background:${tInfo.color}"><i class="fas ${tInfo.icon} me-1"></i>${tmt(tKey)}</span></td>
+            <td>${r['Ngày giám sát'] || ''}</td>
+            <td>${r['Người giám sát'] || ''}</td>
+            <td>${r['Thời tiết'] || ''}</td>
+            <td><button class="btn btn-sm btn-outline-primary" onclick="viewMonitoringDetail('${r['ID']}')"><i class="fas fa-eye"></i></button></td>
+          </tr>`;
+        });
+        html += `</tbody></table></div>`;
+      }
+
+      html += `</div></div>`;
+      container.html(html);
+      if (gsList.length > 5) {
+        $('#plotMonTable').DataTable({ paging: true, pageLength: 10, searching: false, info: false, language: { emptyTable: t('mon_no_data') }});
+      }
+    }
+
+    function startPlotMonitoring(typeKey) {
+      if (!_monReturnContext || _monReturnContext.type !== 'plot') return;
+      const d = _monReturnContext.data;
+      const targetId = d['ID lô rừng'];
+      const targetName = d['Mã số lô 2024'] || d['Tên lô rừng'] || targetId;
+      renderMonitoringFormUI(typeKey, targetId, targetName);
+    }
+
+    function showGroupMonitoring(d) {
+      _monReturnContext = { type: 'group', data: d };
+      const container = $('#page-content-dynamic');
+      container.empty();
+
+      const groupId = d['ID nhóm'];
+      const groupName = d['Tên nhóm'] || groupId;
+
+      const gsList = (APP_DATA['GiamSat_LoRung'] || []).filter(r => String(r['ID nhóm']) === String(groupId) && r['Loại giám sát'] === 'giam_sat_nhom');
+      const info = MONITORING_TYPES['giam_sat_nhom'];
+
+      let html = `
+        <div class="card shadow-sm border-0 mb-3">
+          <div class="card-header bg-white border-0 py-3">
+            <div class="d-flex justify-content-between align-items-center flex-wrap gap-2">
+              <div>
+                <h5 class="fw-bold mb-1" style="color:${info.color}"><i class="fas ${info.icon} me-2"></i>${tmt('giam_sat_nhom')}: ${groupName}</h5>
+              </div>
+              <button class="btn btn-outline-secondary btn-sm fw-bold" onclick="navigateBack(navHistory.length-1)"><i class="fas fa-arrow-left me-1"></i>${t('mon_back')}</button>
+            </div>
+          </div>
+          <div class="card-body p-3">
+            <div class="text-center mb-4">
+              <button class="btn btn-lg fw-bold text-white shadow px-5" style="background:${info.color}" onclick="startGroupMonitoring()">
+                <i class="fas fa-plus-circle me-2"></i>${t('mon_start_new')}
+              </button>
+            </div>`;
+
+      html += `<h6 class="fw-bold text-muted mb-2"><i class="fas fa-history me-2"></i>${t('mon_tab_history')} (${gsList.length})</h6>`;
+      if (gsList.length === 0) {
+        html += `<div class="alert alert-light text-center border"><i class="fas fa-inbox me-2"></i>${t('mon_no_data')}</div>`;
+      } else {
+        html += `<div class="table-responsive"><table class="table table-sm table-hover align-middle mb-0">
+          <thead class="table-light"><tr>
+            <th>${t('mon_code')}</th>
+            <th>${t('mon_date_label')}</th>
+            <th>${t('mon_staff')}</th>
+            <th></th>
+          </tr></thead><tbody>`;
+        gsList.sort((a, b) => (b['Ngày giám sát'] || '').localeCompare(a['Ngày giám sát'] || ''));
+        gsList.forEach(r => {
+          html += `<tr>
+            <td class="fw-bold small">${r['ID']}</td>
+            <td>${r['Ngày giám sát'] || ''}</td>
+            <td>${r['Người giám sát'] || ''}</td>
+            <td><button class="btn btn-sm btn-outline-primary" onclick="viewMonitoringDetail('${r['ID']}')"><i class="fas fa-eye"></i></button></td>
+          </tr>`;
+        });
+        html += `</tbody></table></div>`;
+      }
+
+      html += `</div></div>`;
+      container.html(html);
+    }
+
+    function startGroupMonitoring() {
+      if (!_monReturnContext || _monReturnContext.type !== 'group') return;
+      const d = _monReturnContext.data;
+      const targetId = d['ID nhóm'];
+      const targetName = d['Tên nhóm'] || targetId;
+      renderMonitoringFormUI('giam_sat_nhom', targetId, targetName);
+    }
+
+    // ============================================================
+    // === CONSULTATION MODULE (Tham vấn các bên liên quan) ===
+    // ============================================================
+
+    function renderConsultationModule() {
+      const container = $('#page-content-dynamic');
+      container.empty();
+
+      const html = `
+        <div class="card shadow border-0 rounded-4">
+          <div class="card-header bg-white border-0 pt-4 px-4">
+            <ul class="nav nav-tabs card-header-tabs" id="conTabs" role="tablist">
+              <li class="nav-item" role="presentation">
+                <button class="nav-link active fw-bold text-success" id="con-sessions-tab" data-bs-toggle="tab" data-bs-target="#con-sessions-pane" type="button" role="tab"><i class="fas fa-list me-2"></i>${t('con_sessions')}</button>
+              </li>
+              <li class="nav-item" role="presentation">
+                <button class="nav-link fw-bold text-success" id="con-new-tab" data-bs-toggle="tab" data-bs-target="#con-new-pane" type="button" role="tab"><i class="fas fa-plus-circle me-2"></i>${t('con_new_session')}</button>
+              </li>
+            </ul>
+          </div>
+          <div class="card-body p-2">
+            <div class="tab-content">
+              <div class="tab-pane fade show active" id="con-sessions-pane" role="tabpanel">
+                <div id="con-sessions-container"></div>
+              </div>
+              <div class="tab-pane fade" id="con-new-pane" role="tabpanel">
+                <div id="con-new-container"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      `;
+      container.html(html);
+      renderConsultationSessions();
+      renderConsultationNewForm();
+    }
+
+    function renderConsultationSessions() {
+      const sessions = APP_DATA['DotThamVan'] || [];
+      const responses = APP_DATA['PhanHoiThamVan'] || [];
+      const container = $('#con-sessions-container');
+      const isAdmin = currentUser && (String(currentUser['Chức vụ']).toLowerCase().includes('admin'));
+
+      if (sessions.length === 0) {
+        container.html(`<div class="text-center text-muted py-5"><i class="fas fa-folder-open fa-3x mb-3 opacity-50"></i><br>${t('con_no_sessions')}</div>`);
+        return;
+      }
+
+      const sorted = [...sessions].sort((a, b) => (b['Năm'] || 0) - (a['Năm'] || 0));
+      let html = `<div class="table-responsive"><table class="table table-hover align-middle" id="con-sessions-table">
+        <thead class="table-light text-success"><tr>
+          <th>${t('con_session_name')}</th>
+          <th>${t('con_year')}</th>
+          <th>${t('con_status')}</th>
+          <th>${t('con_responses')}</th>
+          <th></th>
+        </tr></thead><tbody>`;
+
+      sorted.forEach(s => {
+        const count = responses.filter(r => r['ID đợt'] === s['ID']).length;
+        const isOpen = s['Trạng thái'] !== 'Đã đóng';
+        const statusBadge = isOpen
+          ? `<span class="badge bg-success">${t('con_status_open')}</span>`
+          : `<span class="badge bg-secondary">${t('con_status_closed')}</span>`;
+        const sId = s['ID'];
+        html += `<tr>
+          <td class="fw-bold">${s['Tên đợt'] || sId}</td>
+          <td>${s['Năm'] || ''}</td>
+          <td>${statusBadge}</td>
+          <td><span class="badge bg-info text-dark">${count} ${t('con_responses')}</span></td>
+          <td>
+            <div class="btn-group btn-group-sm">
+              ${isOpen ? `<button class="btn btn-outline-primary" onclick="copyConsultationLink('${sId}')" title="${t('con_copy_link')}"><i class="fas fa-link"></i></button>` : ''}
+              ${isOpen ? `<button class="btn btn-outline-success" onclick="sendBulkEmail('${sId}')" title="${t('con_send_email')}"><i class="fas fa-envelope"></i></button>` : ''}
+              <button class="btn btn-outline-info" onclick="viewConsultationResponses('${sId}')" title="${t('con_view_responses')}"><i class="fas fa-chart-bar"></i></button>
+              ${isOpen ? `<button class="btn btn-outline-warning" onclick="closeConsultationSession('${sId}')" title="${t('con_close_session')}"><i class="fas fa-lock"></i></button>` : ''}
+              ${isAdmin ? `<button class="btn btn-outline-danger" onclick="deleteConsultationSession('${sId}','${(s['Tên đợt']||sId).replace(/'/g,'\\&#39;')}')" title="${t('btn_delete')}"><i class="fas fa-trash-alt"></i></button>` : ''}
+            </div>
+          </td>
+        </tr>`;
+      });
+      html += `</tbody></table></div>`;
+      container.html(html);
+
+      if ($.fn.DataTable && sorted.length > 5) {
+        $('#con-sessions-table').DataTable({
+          language: currentLang === 'en' ? {} : { url: "//cdn.datatables.net/plug-ins/1.13.4/i18n/vi.json" },
+          pageLength: 10, dom: 'ftp', ordering: false
+        });
+      }
+    }
+
+    function renderConsultationNewForm() {
+      const container = $('#con-new-container');
+      const year = new Date().getFullYear();
+      const html = `
+        <div class="card bg-light border-0 mb-3">
+          <div class="card-body py-4">
+            <h6 class="fw-bold text-success mb-3"><i class="fas fa-plus-circle me-2"></i>${t('con_create_btn')}</h6>
+            <div class="row g-3">
+              <div class="col-md-6">
+                <label class="fw-bold small mb-1">${t('con_session_name')}</label>
+                <input type="text" class="form-control" id="con-name" value="Tham vấn QLRBV ${year}" placeholder="${t('con_session_name')}">
+              </div>
+              <div class="col-md-3">
+                <label class="fw-bold small mb-1">${t('con_year')}</label>
+                <input type="number" class="form-control" id="con-year" value="${year}">
+              </div>
+              <div class="col-md-3 d-flex align-items-end">
+                <button class="btn btn-success fw-bold w-100" onclick="createConsultationSession()"><i class="fas fa-check me-1"></i>${t('con_create_btn')}</button>
+              </div>
+              <div class="col-12">
+                <label class="fw-bold small mb-1">${t('con_intro')}</label>
+                <textarea class="form-control" id="con-intro" rows="4" placeholder="Xin chân thành cảm ơn quý vị đã đọc bản Báo cáo tóm tắt Phương án quản lý rừng bền vững..."></textarea>
+              </div>
+            </div>
+          </div>
+        </div>
+      `;
+      container.html(html);
+    }
+
+    async function createConsultationSession() {
+      const name = $('#con-name').val().trim();
+      const year = parseInt($('#con-year').val()) || new Date().getFullYear();
+      const intro = $('#con-intro').val().trim();
+      if (!name) { alert('Vui lòng nhập tên đợt tham vấn'); return; }
+
+      const existing = APP_DATA['DotThamVan'] || [];
+      const seq = existing.filter(s => (s['Năm'] || 0) == year).length + 1;
+      const id = `TV_${year}_${String(seq).padStart(3, '0')}`;
+      const staff = currentUser ? (currentUser['Họ và tên'] || currentUser['Username'] || '') : '';
+
+      const insertData = { id, ten_dot: name, nam: year, noi_dung_gioi_thieu: intro, trang_thai: 'Đang mở', nguoi_tao: staff };
+      const { error } = await sb.from('dot_tham_van').insert(insertData);
+      if (error) { alert('Lỗi: ' + error.message); return; }
+
+      if (!APP_DATA['DotThamVan']) APP_DATA['DotThamVan'] = [];
+      APP_DATA['DotThamVan'].push({ 'ID': id, 'Tên đợt': name, 'Năm': year, 'Nội dung giới thiệu': intro, 'Trạng thái': 'Đang mở', 'Người tạo': staff });
+
+      renderConsultationModule();
+      // Switch to sessions tab and show the new session
+      setTimeout(() => { $('#con-sessions-tab').tab('show'); }, 100);
+    }
+
+    function getConsultationLink(idDot) {
+      const base = window.location.origin + window.location.pathname.replace(/[^/]*$/, '');
+      return `${base}consultation.html?dot=${encodeURIComponent(idDot)}`;
+    }
+
+    function copyConsultationLink(idDot) {
+      const link = getConsultationLink(idDot);
+      navigator.clipboard.writeText(link).then(() => {
+        alert(t('con_link_copied'));
+      }).catch(() => {
+        prompt('Copy link:', link);
+      });
+    }
+
+    function sendBulkEmail(idDot) {
+      const session = (APP_DATA['DotThamVan'] || []).find(s => s['ID'] === idDot);
+      const stakeholders = APP_DATA['BenLienQuan'] || [];
+      if (!session) return;
+
+      const link = getConsultationLink(idDot);
+      const container = $('#page-content-dynamic');
+
+      let listHtml = '';
+      stakeholders.forEach(s => {
+        const checked = s['Email'] ? 'checked' : '';
+        listHtml += `<div class="form-check">
+          <input class="form-check-input con-email-check" type="checkbox" value="${s['ID']}" data-email="${s['Email'] || ''}" ${checked} id="chk_${s['ID']}">
+          <label class="form-check-label" for="chk_${s['ID']}">${s['Tên tổ chức'] || ''} — ${s['Người đại diện'] || ''} (${s['Email'] || 'N/A'})</label>
+        </div>`;
+      });
+
+      if (stakeholders.length === 0) {
+        listHtml = `<div class="alert alert-warning"><i class="fas fa-exclamation-triangle me-2"></i>Chưa có bên liên quan nào. Hãy thêm tại menu "Danh sách bên liên quan" trước.</div>`;
+      }
+
+      const html = `
+        <div class="card shadow-sm border-0">
+          <div class="card-header bg-white border-0 py-3">
+            <div class="d-flex justify-content-between align-items-center">
+              <h5 class="fw-bold text-success mb-0"><i class="fas fa-envelope me-2"></i>${t('con_send_email')}: ${session['Tên đợt']}</h5>
+              <button class="btn btn-outline-secondary btn-sm" onclick="renderConsultationModule()"><i class="fas fa-arrow-left me-1"></i>${t('mon_back')}</button>
+            </div>
+          </div>
+          <div class="card-body">
+            <div class="alert alert-info mb-3"><i class="fas fa-link me-2"></i>Link form: <a href="${link}" target="_blank" class="fw-bold">${link}</a></div>
+            <h6 class="fw-bold mb-3">Chọn tổ chức gửi email:</h6>
+            ${listHtml}
+            ${stakeholders.length > 0 ? `
+            <div class="mt-3">
+              <button class="btn btn-success fw-bold" onclick="executeBulkEmail('${idDot}')"><i class="fas fa-paper-plane me-2"></i>${t('con_send_all')}</button>
+            </div>` : ''}
+          </div>
+        </div>
+      `;
+      container.html(html);
+    }
+
+    function executeBulkEmail(idDot) {
+      const session = (APP_DATA['DotThamVan'] || []).find(s => s['ID'] === idDot);
+      if (!session) return;
+      const link = getConsultationLink(idDot);
+
+      const emails = [];
+      $('.con-email-check:checked').each(function() {
+        const email = $(this).data('email');
+        if (email) emails.push(email);
+      });
+
+      if (emails.length === 0) { alert('Không có email nào được chọn.'); return; }
+
+      const subject = encodeURIComponent(`Tham vấn quản lý rừng FSC - ${session['Tên đợt']}`);
+      const body = encodeURIComponent(
+        `Kính gửi Quý cơ quan,\n\n` +
+        `Chúng tôi kính mời Quý cơ quan tham gia đợt tham vấn về hoạt động quản lý rừng FSC.\n\n` +
+        `${session['Nội dung giới thiệu'] || ''}\n\n` +
+        `Vui lòng truy cập link sau để điền phiếu tham vấn:\n${link}\n\n` +
+        `Trân trọng cảm ơn.\n\nBan quản lý CCR - Nhóm hộ chứng chỉ rừng FSC`
+      );
+      window.open(`mailto:?bcc=${emails.join(',')}&subject=${subject}&body=${body}`);
+    }
+
+    async function closeConsultationSession(idDot) {
+      if (!confirm('Đóng đợt tham vấn này? Sẽ không nhận phản hồi mới.')) return;
+      const { error } = await sb.from('dot_tham_van').update({ trang_thai: 'Đã đóng' }).eq('id', idDot);
+      if (error) { alert('Lỗi: ' + error.message); return; }
+      const s = (APP_DATA['DotThamVan'] || []).find(s => s['ID'] === idDot);
+      if (s) s['Trạng thái'] = 'Đã đóng';
+      renderConsultationModule();
+    }
+
+    async function deleteConsultationSession(idDot, tenDot) {
+      const isAdmin = currentUser && (String(currentUser['Chức vụ']).toLowerCase().includes('admin'));
+      if (!isAdmin) { alert('Chỉ Admin mới có quyền xóa đợt tham vấn.'); return; }
+
+      const responses = (APP_DATA['PhanHoiThamVan'] || []).filter(r => r['ID đợt'] === idDot);
+      const msg = responses.length > 0
+        ? `Xóa đợt "${tenDot}" cùng ${responses.length} phản hồi? Hành động này không thể hoàn tác!`
+        : `Xóa đợt "${tenDot}"? Hành động này không thể hoàn tác!`;
+      if (!confirm(msg)) return;
+
+      // Delete responses first (CASCADE should handle, but explicit for safety)
+      if (responses.length > 0) {
+        const { error: rErr } = await sb.from('phan_hoi_tham_van').delete().eq('id_dot', idDot);
+        if (rErr) { alert('Lỗi xóa phản hồi: ' + rErr.message); return; }
+      }
+
+      const { error } = await sb.from('dot_tham_van').delete().eq('id', idDot);
+      if (error) { alert('Lỗi xóa đợt: ' + error.message); return; }
+
+      // Update local data
+      APP_DATA['DotThamVan'] = (APP_DATA['DotThamVan'] || []).filter(s => s['ID'] !== idDot);
+      APP_DATA['PhanHoiThamVan'] = (APP_DATA['PhanHoiThamVan'] || []).filter(r => r['ID đợt'] !== idDot);
+      renderConsultationModule();
+    }
+
+    function viewConsultationResponses(idDot) {
+      const session = (APP_DATA['DotThamVan'] || []).find(s => s['ID'] === idDot);
+      const responses = (APP_DATA['PhanHoiThamVan'] || []).filter(r => r['ID đợt'] === idDot);
+      const container = $('#page-content-dynamic');
+
+      let html = `
+        <div class="card shadow-sm border-0 mb-3">
+          <div class="card-header bg-white border-0 py-3">
+            <div class="d-flex justify-content-between align-items-center flex-wrap gap-2">
+              <div>
+                <h5 class="fw-bold text-success mb-1"><i class="fas fa-chart-bar me-2"></i>${t('con_summary')}: ${session ? session['Tên đợt'] : idDot}</h5>
+                <span class="text-muted small">${responses.length} ${t('con_responses')}</span>
+              </div>
+              <button class="btn btn-outline-secondary btn-sm" onclick="renderConsultationModule()"><i class="fas fa-arrow-left me-1"></i>${t('mon_back')}</button>
+            </div>
+          </div>
+          <div class="card-body p-3">`;
+
+      if (responses.length === 0) {
+        html += `<div class="alert alert-light text-center border"><i class="fas fa-inbox me-2"></i>${t('con_no_responses')}</div>`;
+      } else {
+        // Summary statistics for rating questions
+        html += `<h6 class="fw-bold text-success mb-3"><i class="fas fa-poll me-2"></i>${t('con_section_b1')}</h6>`;
+        html += `<div class="table-responsive mb-4"><table class="table table-sm table-bordered align-middle"><thead class="table-light"><tr><th>#</th><th>Câu hỏi</th><th class="text-center text-success">${t('con_good')}</th><th class="text-center text-warning">${t('con_moderate')}</th><th class="text-center text-danger">${t('con_poor')}</th></tr></thead><tbody>`;
+
+        const ratingQs = CONSULTATION_DICTIONARY["B-I. Đánh giá hoạt động quản lý rừng"] || [];
+        ratingQs.forEach((q, idx) => {
+          let good = 0, mod = 0, poor = 0;
+          responses.forEach(r => {
+            try {
+              const ans = r[q.id] ? (typeof r[q.id] === 'string' && r[q.id].startsWith('{') ? JSON.parse(r[q.id]) : { r: r[q.id] }) : null;
+              if (ans) {
+                if (ans.r === 'Tot') good++;
+                else if (ans.r === 'VuaPhai') mod++;
+                else if (ans.r === 'ChuaTot') poor++;
+              }
+            } catch(e) {}
+          });
+          html += `<tr><td>${idx + 1}</td><td class="small">${q.label}</td><td class="text-center fw-bold text-success">${good || '-'}</td><td class="text-center fw-bold text-warning">${mod || '-'}</td><td class="text-center fw-bold text-danger">${poor || '-'}</td></tr>`;
+        });
+        html += `</tbody></table></div>`;
+
+        // Yes/No summary
+        html += `<h6 class="fw-bold text-success mb-3"><i class="fas fa-check-circle me-2"></i>${t('con_section_c')}</h6>`;
+        html += `<div class="table-responsive mb-4"><table class="table table-sm table-bordered align-middle"><thead class="table-light"><tr><th>#</th><th>Câu hỏi</th><th class="text-center text-success">${t('con_yes')}</th><th class="text-center text-danger">${t('con_no')}</th></tr></thead><tbody>`;
+
+        const ynQs = CONSULTATION_DICTIONARY["C. Giá trị bảo tồn cao"] || [];
+        ynQs.forEach((q, idx) => {
+          let yes = 0, no = 0;
+          responses.forEach(r => {
+            try {
+              const ans = r[q.id] ? (typeof r[q.id] === 'string' && r[q.id].startsWith('{') ? JSON.parse(r[q.id]) : { r: r[q.id] }) : null;
+              if (ans) {
+                if (ans.r === 'Co') yes++;
+                else if (ans.r === 'Khong') no++;
+              }
+            } catch(e) {}
+          });
+          html += `<tr><td>${idx + 1}</td><td class="small">${q.label}</td><td class="text-center fw-bold text-success">${yes || '-'}</td><td class="text-center fw-bold text-danger">${no || '-'}</td></tr>`;
+        });
+        html += `</tbody></table></div>`;
+
+        // Individual responses
+        html += `<h6 class="fw-bold text-success mb-3"><i class="fas fa-users me-2"></i>Phản hồi chi tiết</h6>`;
+        html += `<div class="accordion" id="conResAccordion">`;
+        responses.forEach((r, idx) => {
+          html += `<div class="accordion-item mb-2 border rounded shadow-sm overflow-hidden">
+            <h2 class="accordion-header"><button class="accordion-button ${idx > 0 ? 'collapsed' : ''} fw-bold bg-white text-success py-2" type="button" data-bs-toggle="collapse" data-bs-target="#conRes${idx}">
+              ${r['Người trả lời'] || 'Ẩn danh'} — ${r['Ngày phản hồi'] || ''}
+            </button></h2>
+            <div id="conRes${idx}" class="accordion-collapse collapse ${idx === 0 ? 'show' : ''}" data-bs-parent="#conResAccordion">
+              <div class="accordion-body small">
+                <p><strong>${t('con_address')}:</strong> ${r['Địa chỉ'] || '-'} | <strong>${t('con_phone')}:</strong> ${r['Điện thoại'] || '-'}</p>`;
+
+          // Show answers
+          for (const [section, questions] of Object.entries(CONSULTATION_DICTIONARY)) {
+            html += `<h6 class="fw-bold mt-2">${section}</h6>`;
+            questions.forEach(q => {
+              let ans = { r: '-', n: '' };
+              try {
+                if (r[q.id]) ans = typeof r[q.id] === 'string' && r[q.id].startsWith('{') ? JSON.parse(r[q.id]) : { r: r[q.id], n: '' };
+              } catch(e) {}
+
+              let display = ans.r || '-';
+              if (q.type === 'rating') {
+                const rMap = { 'Tot': `<span class="badge bg-success">${t('con_good')}</span>`, 'VuaPhai': `<span class="badge bg-warning text-dark">${t('con_moderate')}</span>`, 'ChuaTot': `<span class="badge bg-danger">${t('con_poor')}</span>` };
+                display = rMap[ans.r] || `<span class="badge bg-light text-dark">${ans.r || '-'}</span>`;
+              } else if (q.type === 'yesno') {
+                const yMap = { 'Co': `<span class="badge bg-success">${t('con_yes')}</span>`, 'Khong': `<span class="badge bg-danger">${t('con_no')}</span>` };
+                display = yMap[ans.r] || `<span class="badge bg-light text-dark">${ans.r || '-'}</span>`;
+              } else {
+                display = ans.r || '-';
+              }
+
+              html += `<div class="mb-1"><strong>${q.label}</strong><br>${display}`;
+              if (ans.n) html += ` <em class="text-muted ms-2">${ans.n}</em>`;
+              html += `</div>`;
+            });
+          }
+          html += `</div></div></div>`;
+        });
+        html += `</div>`;
+      }
+
+      html += `</div></div>`;
+      container.html(html);
+    }
+
+    // ============================================================
+    // === HANDBOOK VIEWER (Sổ tay quản lý rừng bền vững) ===
+    // ============================================================
+
+    const _handbookCache = {};
+
+    function renderHandbookView() {
+      const container = $('#page-content-dynamic');
+      container.empty();
+
+      const HANDBOOK_TABS = [
+        { key: 'process', label: t('hb_process') },
+        { key: 'm1', label: `${t('hb_part')} M1` },
+        { key: 'm2', label: `${t('hb_part')} M2` },
+        { key: 'm3', label: `${t('hb_part')} M3` },
+        { key: 'm4', label: `${t('hb_part')} M4` },
+        { key: 'm5', label: `${t('hb_part')} M5` },
+        { key: 'm6', label: `${t('hb_part')} M6` }
+      ];
+
+      let tabHeaders = HANDBOOK_TABS.map((tab, i) =>
+        `<li class="nav-item" role="presentation">
+           <button class="nav-link ${i === 0 ? 'active' : ''} fw-bold text-success" id="hb-tab-${tab.key}" data-bs-toggle="tab" data-bs-target="#hb-pane-${tab.key}" type="button" role="tab" data-hb-key="${tab.key}">${tab.label}</button>
+         </li>`
+      ).join('');
+
+      let tabPanes = HANDBOOK_TABS.map((tab, i) =>
+        `<div class="tab-pane fade ${i === 0 ? 'show active' : ''}" id="hb-pane-${tab.key}" role="tabpanel">
+           <div class="handbook-content" id="hb-content-${tab.key}">
+             <div class="handbook-loading"><div class="spinner-border text-success mb-3"></div><br>${t('hb_loading')}</div>
+           </div>
+         </div>`
+      ).join('');
+
+      const html = `
+        <div class="card shadow border-0 rounded-4">
+          <div class="card-header bg-white border-0 pt-4 px-4">
+            <div class="d-flex justify-content-between align-items-center mb-3">
+              <h5 class="text-success fw-bold mb-0"><i class="fas fa-book me-2"></i>${t('hb_title')}</h5>
+              <button class="btn btn-outline-success btn-sm no-print" onclick="printHandbookTab()"><i class="fas fa-print me-1"></i>${t('hb_print')}</button>
+            </div>
+            <ul class="nav nav-tabs card-header-tabs flex-nowrap overflow-auto no-print" id="handbookTabs" role="tablist" style="white-space:nowrap">
+              ${tabHeaders}
+            </ul>
+          </div>
+          <div class="card-body p-3 p-md-4">
+            <div class="tab-content" id="handbookTabsContent">
+              ${tabPanes}
+            </div>
+          </div>
+        </div>
+      `;
+      container.html(html);
+
+      // Load first tab immediately
+      loadHandbookTab('process');
+
+      // Lazy load on tab click
+      $(document).off('shown.bs.tab', '#handbookTabs button').on('shown.bs.tab', '#handbookTabs button', function() {
+        const key = $(this).data('hb-key');
+        if (key) loadHandbookTab(key);
+      });
+    }
+
+    async function loadHandbookTab(key) {
+      const el = document.getElementById('hb-content-' + key);
+      if (!el || el.dataset.loaded === 'true') return;
+
+      // Check cache
+      if (_handbookCache[key]) {
+        el.innerHTML = _handbookCache[key];
+        el.dataset.loaded = 'true';
+        return;
+      }
+
+      try {
+        const resp = await fetch('handbook/' + key + '.html');
+        if (!resp.ok) throw new Error('HTTP ' + resp.status);
+        const html = await resp.text();
+        _handbookCache[key] = html;
+        el.innerHTML = html;
+        el.dataset.loaded = 'true';
+      } catch (err) {
+        el.innerHTML = `<div class="text-center py-5 text-muted"><i class="fas fa-exclamation-triangle fa-2x text-warning mb-3"></i><br>Không tải được nội dung: ${err.message}</div>`;
+      }
+    }
+
+    function printHandbookTab() {
+      // Find active tab pane and print its content
+      const activePane = document.querySelector('#handbookTabsContent .tab-pane.active .handbook-content');
+      if (!activePane) return;
+
+      const printWin = window.open('', '_blank');
+      printWin.document.write(`<!DOCTYPE html><html><head><meta charset="utf-8">
+        <title>${t('hb_title')}</title>
+        <style>
+          body { font-family: Arial, sans-serif; max-width: 900px; margin: 20px auto; padding: 0 20px; font-size: 12pt; line-height: 1.5; color: #333; }
+          h1 { color: #1b5e20; font-size: 16pt; border-bottom: 2px solid #a5d6a7; padding-bottom: 6px; }
+          h2 { color: #2e7d32; font-size: 14pt; border-bottom: 1px solid #c8e6c9; padding-bottom: 4px; }
+          h3 { color: #388e3c; font-size: 13pt; }
+          p { text-align: justify; margin-bottom: 8px; }
+          table { width: 100%; border-collapse: collapse; margin: 10px 0; font-size: 11pt; }
+          th { background: #e8f5e9; font-weight: bold; border: 1px solid #a5d6a7; padding: 6px 8px; }
+          td { border: 1px solid #ccc; padding: 5px 8px; vertical-align: top; }
+          tr:nth-child(even) { background: #f9f9f9; }
+          img { max-width: 80%; height: auto; }
+          ul, ol { padding-left: 20px; }
+          @media print { table { page-break-inside: auto; } tr { page-break-inside: avoid; } img { page-break-inside: avoid; } }
+        </style>
+      </head><body>${activePane.innerHTML}</body></html>`);
+      printWin.document.close();
+      printWin.focus();
+      setTimeout(() => { printWin.print(); }, 500);
     }
 
     function renderBreadcrumb() {
@@ -6026,9 +7358,11 @@
         </div>`;
       } else if (sheetName === 'NhomCCR') {
         const safeItem = JSON.stringify(d).replace(/"/g, '&quot;');
+        const grpSafe = JSON.stringify(d).replace(/"/g, '&quot;');
         html += `<div class="d-flex gap-1 mb-2 flex-nowrap detail-action-bar">
           <button class="btn btn-success btn-sm fw-bold shadow-sm flex-fill" onclick="loadViewWithFilter('Churung', 'ID nhóm', '${d['ID nhóm']}', 'Hộ dân thuộc ${d['Tên nhóm']}')"><i class="fa-solid fa-users me-1"></i> ${t('dd_hodan')}</button>
           <button class="btn btn-outline-success btn-sm fw-bold shadow-sm flex-fill" onclick="showTargetHistory(${safeItem}, 'NhomCCR')"><i class="fa-solid fa-clipboard-check me-1"></i> ${t('dd_danhgia')}</button>
+          <button class="btn btn-outline-primary btn-sm fw-bold shadow-sm flex-fill" onclick="showGroupMonitoring(${grpSafe})"><i class="fa-solid fa-users-viewfinder me-1"></i> ${t('dd_giamsat')}</button>
         </div>`;
       } else if (sheetName === 'Churung') {
         html += `<div class="d-flex gap-1 mb-2 flex-nowrap detail-action-bar">
@@ -6036,11 +7370,12 @@
           <button class="btn btn-outline-success btn-sm fw-bold shadow-sm flex-fill" onclick="loadViewWithFilter('Taphuan', 'ID chủ rừng', '${d['ID chủ rừng']}', 'Tập huấn của ${d['Họ tên chủ rừng']}')"><i class="fa-solid fa-graduation-cap me-1"></i> ${t('dd_taphuan')}</button>
         </div>`;
       } else if (sheetName === 'Lo_rung') {
+        const plotSafe = JSON.stringify(d).replace(/"/g, '&quot;');
         html += `<div class="d-flex gap-1 mb-2 flex-nowrap detail-action-bar">
           <button class="btn btn-success btn-sm fw-bold shadow-sm flex-fill" onclick="showOnMap('${d['ID lô rừng']}')"><i class="fa-solid fa-map me-1"></i> ${t('dd_bando')}</button>
           <button class="btn btn-outline-success btn-sm fw-bold shadow-sm flex-fill" onclick="loadViewWithFilter('HD_Lorung', 'ID lô rừng', '${d['ID lô rừng']}', 'Hoạt động lô ${d['Mã số lô 2024']}')"><i class="fa-solid fa-clipboard-list me-1"></i> ${t('dd_baocao')}</button>
           <button class="btn btn-outline-success btn-sm fw-bold shadow-sm flex-fill" onclick="loadViewWithFilter('KH_QL_Lorung', 'ID lô rừng', '${d['ID lô rừng']}', 'Kế hoạch lô ${d['Mã số lô 2024']}')"><i class="fa-solid fa-calendar-check me-1"></i> ${t('dd_kehoach')}</button>
-          <button class="btn btn-outline-success btn-sm fw-bold shadow-sm flex-fill" onclick="loadViewWithFilter('Biendong_lorung', 'ID lô rừng', '${d['ID lô rừng']}', 'Giám sát lô ${d['Mã số lô 2024']}')"><i class="fa-solid fa-chart-line me-1"></i> ${t('dd_giamsat')}</button>
+          <button class="btn btn-outline-primary btn-sm fw-bold shadow-sm flex-fill" onclick="showPlotMonitoring(${plotSafe})"><i class="fa-solid fa-clipboard-check me-1"></i> ${t('dd_giamsat')}</button>
         </div>`;
       } else if (sheetName === 'NhanSu') {
         const isAdmin = currentUser && (String(currentUser['Chức vụ']).toLowerCase().includes('admin'));
