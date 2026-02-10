@@ -997,6 +997,40 @@
       .handbook-content img { max-width: 80%; page-break-inside: avoid; }
       .card { box-shadow: none !important; border: none !important; }
     }
+
+    /* FSC Standards viewer */
+    .fsc-std-accordion .accordion-button { font-weight: 600; color: #1b5e20; font-size: 0.95rem; padding: 12px 16px; }
+    .fsc-std-accordion .accordion-button:not(.collapsed) { background: #e8f5e9; color: #1b5e20; box-shadow: none; }
+    .fsc-std-accordion .accordion-button::after { filter: brightness(0) saturate(100%) invert(27%) sepia(61%) saturate(500%) hue-rotate(85deg); }
+    .fsc-std-accordion .accordion-body { padding: 12px 16px; }
+    .fsc-std-criterion { padding: 12px 16px; border-left: 3px solid #a5d6a7; margin-bottom: 10px; background: #fafafa; border-radius: 0 6px 6px 0; transition: border-color 0.2s; }
+    .fsc-std-criterion:hover { background: #f1f8e9; }
+    .fsc-std-criterion.has-note { border-left-color: #ffc107; background: #fffde7; }
+    .fsc-std-criterion-id { font-weight: 700; color: #2e7d32; font-size: 0.9rem; }
+    .fsc-std-criterion-text { font-size: 0.9rem; line-height: 1.6; color: #444; margin-top: 4px; }
+    .fsc-std-criterion-text-vi { font-size: 0.85rem; color: #666; font-style: italic; margin-top: 4px; }
+    .fsc-std-actions .btn { padding: 2px 8px; font-size: 0.78rem; }
+    .fsc-std-note-area { display: none; margin-top: 8px; }
+    .fsc-std-note-area.show { display: block; }
+    .fsc-std-desc { font-size: 0.88rem; color: #555; font-style: italic; padding: 0 4px 8px; border-bottom: 1px dashed #c8e6c9; margin-bottom: 12px; }
+    .fsc-std-search-wrap { position: relative; max-width: 320px; flex-grow: 1; }
+    .fsc-std-search { width: 100%; }
+    .fsc-std-dropdown { position: absolute; top: 100%; left: 0; right: 0; z-index: 1050; background: #fff; border: 1px solid #c8e6c9; border-top: none; border-radius: 0 0 8px 8px; max-height: 320px; overflow-y: auto; box-shadow: 0 4px 12px rgba(0,0,0,.15); display: none; }
+    .fsc-std-dropdown.show { display: block; }
+    .fsc-std-dropdown-item { padding: 8px 12px; cursor: pointer; border-bottom: 1px solid #f0f0f0; font-size: 0.85rem; }
+    .fsc-std-dropdown-item:last-child { border-bottom: none; }
+    .fsc-std-dropdown-item:hover, .fsc-std-dropdown-item.active { background: #e8f5e9; }
+    .fsc-std-dropdown-item .dd-id { font-weight: 700; color: #2e7d32; margin-right: 6px; }
+    .fsc-std-dropdown-item .dd-snippet { color: #666; }
+    .fsc-std-dropdown-item .dd-snippet mark { background: #fff9c4; padding: 0 1px; border-radius: 2px; }
+    .fsc-std-highlight { animation: fscHighlight 2s ease-out; }
+    @keyframes fscHighlight { 0% { background: #fff9c4; box-shadow: 0 0 0 3px #ffc107; } 100% { background: inherit; box-shadow: none; } }
+    .fsc-std-badge { font-size: 0.7rem; padding: 3px 8px; }
+    @media (max-width: 576px) {
+      .fsc-std-accordion .accordion-button { font-size: 0.85rem; padding: 10px 12px; }
+      .fsc-std-criterion { padding: 10px 12px; }
+      .fsc-std-search { max-width: 100%; }
+    }
   </style>
 </head>
 
@@ -1588,7 +1622,22 @@
         hb_process: 'Sơ đồ tiến trình',
         hb_part: 'Phần',
         hb_print: 'In nội dung',
-        hb_loading: 'Đang tải nội dung...'
+        hb_loading: 'Đang tải nội dung...',
+        // FSC Standards
+        fsc_std_title: 'Bộ tiêu chuẩn FSC',
+        fsc_std_group: 'TC Nhóm',
+        fsc_std_vietnam: 'TC Việt Nam',
+        fsc_std_search: 'Tìm kiếm tiêu chí...',
+        fsc_std_print: 'In nội dung',
+        fsc_std_note: 'Ghi chú',
+        fsc_std_note_placeholder: 'Nhập ghi chú...',
+        fsc_std_note_saved: 'Đã lưu',
+        fsc_std_copied: 'Đã sao chép',
+        fsc_std_principle: 'Nguyên tắc',
+        fsc_std_criterion: 'Tiêu chí',
+        fsc_std_clause: 'Điều khoản',
+        fsc_std_part: 'Phần',
+        fsc_std_no_results: 'Không tìm thấy tiêu chí phù hợp'
       },
       en: {
         login_title: 'FSC Forest Management System',
@@ -1918,7 +1967,22 @@
         hb_process: 'Process Diagram',
         hb_part: 'Part',
         hb_print: 'Print content',
-        hb_loading: 'Loading content...'
+        hb_loading: 'Loading content...',
+        // FSC Standards
+        fsc_std_title: 'FSC Standards',
+        fsc_std_group: 'Group Std',
+        fsc_std_vietnam: 'Vietnam Std',
+        fsc_std_search: 'Search criteria...',
+        fsc_std_print: 'Print content',
+        fsc_std_note: 'Note',
+        fsc_std_note_placeholder: 'Enter note...',
+        fsc_std_note_saved: 'Saved',
+        fsc_std_copied: 'Copied',
+        fsc_std_principle: 'Principle',
+        fsc_std_criterion: 'Criterion',
+        fsc_std_clause: 'Clause',
+        fsc_std_part: 'Part',
+        fsc_std_no_results: 'No matching criteria found'
       }
     };
 
@@ -3002,6 +3066,275 @@
         { id: "TV_18", label: "Rừng có được coi là rừng lưu trữ nguồn gen quý? Đa dạng sinh học cao?", type: "yesno" },
         { id: "TV_19", label: "Rừng có hiện hữu những nhu cầu cơ bản là nền tảng đối với cộng đồng địa phương?", type: "yesno" }
       ]
+    };
+
+    // === FSC STANDARDS DATA ===
+    const FSC_STANDARDS = {
+      group: {
+        id: 'FSC-STD-30-005 V2-0',
+        title_vi: 'Tiêu chuẩn nhóm quản lý rừng FSC',
+        title_en: 'Standard for Group Entities in Forest Management Groups',
+        parts: [
+          {
+            id: 'I', title_en: 'Establishment of Forest Management Groups', title_vi: 'Thành lập nhóm quản lý rừng',
+            clauses: [
+              { id: '1', title: 'Requirements for Group Entities', title_vi: 'Yêu cầu đối với Tổ chức nhóm',
+                text: 'The Group Entity shall be a person or group of persons registered as one independent legal entity or as a part of one independent legal entity. The Group Entity shall comply with all applicable legal obligations regarding registration, fees, and taxes. When the Group Entity manages more than one group, it shall have enough capacity and resources to adequately manage all groups.' },
+              { id: '2', title: 'Requirements for Group Members', title_vi: 'Yêu cầu đối với Thành viên nhóm',
+                text: 'Each Group Member shall sign a declaration of consent to participate in the group and to comply with the Group Rules and the applicable Forest Stewardship Standard. When a Group Member is represented by another party (e.g. a Resource Manager), the declaration of consent shall include a verifiable agreement signed by the Group Member.' },
+              { id: '3', title: 'Division of Responsibilities', title_vi: 'Phân chia trách nhiệm',
+                text: 'The Group Entity can divide responsibilities for conformance with the applicable Forest Stewardship Standard among different actors within the group (e.g. group members, Resource Managers, contractors). The Group Entity shall define and document the division of key responsibilities within the group.' },
+              { id: '4', title: 'Conformance across Management Units', title_vi: 'Sự tuân thủ trên các đơn vị quản lý',
+                text: 'The Group Entity shall ensure conformance with the applicable Forest Stewardship Standard across all Management Units within the scope of the group certificate. Non-conformities at the level of individual Management Units may be addressed through corrective action requests.' },
+              { id: '5', title: 'Group Size', title_vi: 'Quy mô nhóm',
+                text: 'There are no limits on the size of individual Management Units. Groups can combine Management Units of varying sizes. The total area of the group is the sum of all Management Unit areas included in the scope of the group certificate.' },
+              { id: '6', title: 'Multinational Groups', title_vi: 'Nhóm đa quốc gia',
+                text: 'Management Units can be in different areas within a country or in different countries. Multinational groups require special approval from the certification body and must comply with all applicable Forest Stewardship Standards for each country where Management Units are located.' }
+            ]
+          },
+          {
+            id: 'II', title_en: 'Group Management System', title_vi: 'Hệ thống quản lý nhóm',
+            clauses: [
+              { id: '7', title: 'Adding New Members', title_vi: 'Kết nạp thành viên mới',
+                text: 'The Group Entity shall evaluate every applicant to ensure there are no major non-conformities with the applicable Forest Stewardship Standard before adding the applicant as a new Group Member. The evaluation shall include a field visit to the applicant\'s Management Unit.' },
+              { id: '8', title: 'Provision of Information to Members', title_vi: 'Cung cấp thông tin cho thành viên',
+                text: 'The Group Entity shall provide each Group Member with information, or access to information, about: the applicable Forest Stewardship Standard requirements; the Group Rules; and the division of responsibilities within the group, including an explanation of each member\'s obligations.' },
+              { id: '9', title: 'Group Rules', title_vi: 'Quy chế nhóm',
+                text: 'The Group Entity shall establish Group Rules (procedures) to meet the requirements of the applicable Forest Stewardship Standard and to administer the group. Group Rules shall cover at minimum: requirements for membership, member obligations, procedures for adding/removing members, internal monitoring procedures, and corrective action procedures.' },
+              { id: '10', title: 'Group Records', title_vi: 'Hồ sơ nhóm',
+                text: 'The Group Entity shall maintain up-to-date records including: list of Group Members with contact details, location and area of each Management Unit, records of harvesting and FSC sales volumes, records of internal monitoring visits and results, and corrective action requests and their implementation status.' },
+              { id: '11', title: 'Internal Monitoring', title_vi: 'Giám sát nội bộ',
+                text: 'The Group Entity shall implement an internal monitoring program to assess conformance with the applicable Forest Stewardship Standard across all Management Units. The program shall use a risk-based sampling methodology. The Group Entity shall issue corrective action requests to address non-conformities identified during internal monitoring and follow up on their implementation.' },
+              { id: '12', title: 'Chain of Custody', title_vi: 'Chuỗi hành trình sản phẩm',
+                text: 'Group Members who sell FSC-certified forest products shall comply with applicable Chain of Custody requirements. The Group Entity shall maintain a centralized Chain of Custody system or ensure each selling member has an individual CoC system in place.' }
+            ]
+          },
+          {
+            id: 'III', title_en: 'Optional Inclusion of Forestry Contractors', title_vi: 'Tùy chọn bao gồm nhà thầu lâm nghiệp',
+            clauses: [
+              { id: '13', title: 'Requirements for Forestry Contractors', title_vi: 'Yêu cầu đối với nhà thầu lâm nghiệp',
+                text: 'A contract including a declaration of consent shall be signed by each forestry contractor wishing to join the group. The contractor shall commit to follow the applicable Forest Stewardship Standard and Group Rules, and shall ensure that sub-contractors follow them as well. The Group Entity shall monitor contractor compliance through its internal monitoring program.' }
+            ]
+          }
+        ]
+      },
+      vietnam: {
+        id: 'FSC-STD-VN V1-0',
+        title_vi: 'Tiêu chuẩn Quốc gia Việt Nam về Quản lý rừng FSC',
+        title_en: 'The FSC National Forest Stewardship Standard of Vietnam',
+        principles: [
+          {
+            id: '1', title: 'Compliance with Laws', title_vi: 'Tuân thủ pháp luật',
+            description: 'The Organisation shall comply with all applicable laws, regulations and nationally-ratified international treaties, conventions and agreements.',
+            description_vi: 'Tổ chức phải tuân thủ tất cả các luật, quy định hiện hành và các điều ước, công ước, hiệp định quốc tế đã được phê chuẩn.',
+            criteria: [
+              { id: '1.1', text: 'The Organisation shall be a legally defined entity with clear, documented and unchallenged legal registration to carry out all activities within the scope of the certificate.',
+                text_vi: 'Tổ chức phải là pháp nhân được xác định rõ ràng, có đăng ký pháp lý rõ ràng, được lập thành văn bản và không bị tranh chấp để thực hiện tất cả các hoạt động trong phạm vi chứng chỉ.' },
+              { id: '1.2', text: 'The Organisation shall demonstrate that the legal status of the Management Unit, including tenure and use rights, and its boundaries, are clearly defined.',
+                text_vi: 'Tổ chức phải chứng minh tình trạng pháp lý của Đơn vị quản lý, bao gồm quyền sở hữu, quyền sử dụng và ranh giới được xác định rõ ràng.' },
+              { id: '1.3', text: 'The Organisation shall have legal rights to operate in the Management Unit, which fit the legal status of The Organisation and of the Management Unit, and shall comply with the associated legal obligations in applicable national and local laws and regulations and administrative requirements.',
+                text_vi: 'Tổ chức phải có quyền hợp pháp để hoạt động trong Đơn vị quản lý, phù hợp với tình trạng pháp lý của Tổ chức và Đơn vị quản lý, và phải tuân thủ các nghĩa vụ pháp lý liên quan.' },
+              { id: '1.4', text: 'The Organisation shall develop and implement measures, and/or shall engage with regulatory agencies, to systematically protect the Management Unit from unauthorized or illegal resource use, settlement and other illegal activities.',
+                text_vi: 'Tổ chức phải xây dựng và thực hiện các biện pháp bảo vệ Đơn vị quản lý khỏi việc sử dụng tài nguyên trái phép hoặc bất hợp pháp, định cư và các hoạt động bất hợp pháp khác.' },
+              { id: '1.5', text: 'The Organisation shall comply with the applicable national laws, local laws, ratified international conventions and obligatory codes of practice, relating to the transportation and trade of forest products within and from the Management Unit, and/or up to the point of first sale.',
+                text_vi: 'Tổ chức phải tuân thủ luật quốc gia, luật địa phương, các công ước quốc tế đã phê chuẩn liên quan đến vận chuyển và buôn bán lâm sản.' },
+              { id: '1.6', text: 'The Organisation shall identify, prevent and resolve disputes over issues of statutory or customary law, which can be settled out of court in a timely manner, through engagement with affected stakeholders.',
+                text_vi: 'Tổ chức phải xác định, ngăn ngừa và giải quyết các tranh chấp về luật định hoặc luật tục thông qua sự tham gia của các bên liên quan bị ảnh hưởng.' },
+              { id: '1.7', text: 'The Organisation shall publicly commit not to offer or receive bribes in money or any other form of corruption, and shall comply with anti-corruption legislation where such legislation exists. In the absence of anti-corruption legislation, The Organisation shall implement other anti-corruption measures proportionate to the scale and intensity of management activities and the risk of corruption.',
+                text_vi: 'Tổ chức phải cam kết công khai không đưa hoặc nhận hối lộ dưới bất kỳ hình thức tham nhũng nào, và phải tuân thủ luật chống tham nhũng.' },
+              { id: '1.8', text: 'The Organisation shall demonstrate a long-term commitment to adhere to the FSC Principles and Criteria in the Management Unit, and to related FSC Policies and Standards. A statement of this commitment shall be contained in a publicly available document made freely available.',
+                text_vi: 'Tổ chức phải thể hiện cam kết dài hạn tuân thủ các Nguyên tắc và Tiêu chí FSC trong Đơn vị quản lý. Tuyên bố cam kết này phải có trong tài liệu công khai miễn phí.' }
+            ]
+          },
+          {
+            id: '2', title: 'Workers\' Rights and Employment Conditions', title_vi: 'Quyền người lao động và điều kiện lao động',
+            description: 'The Organisation shall maintain or enhance the social and economic wellbeing of workers.',
+            description_vi: 'Tổ chức phải duy trì hoặc nâng cao phúc lợi xã hội và kinh tế của người lao động.',
+            criteria: [
+              { id: '2.1', text: 'The Organisation shall uphold the principles and rights at work as defined in the ILO Declaration on Fundamental Principles and Rights at Work (1998) based on the eight ILO Core Labour Conventions.',
+                text_vi: 'Tổ chức phải duy trì các nguyên tắc và quyền tại nơi làm việc theo Tuyên bố ILO về Nguyên tắc và Quyền Cơ bản tại Nơi làm việc.' },
+              { id: '2.2', text: 'The Organisation shall promote gender equality in employment practices, training opportunities, awarding of contracts, processes of engagement and management activities.',
+                text_vi: 'Tổ chức phải thúc đẩy bình đẳng giới trong thực hành tuyển dụng, cơ hội đào tạo, trao hợp đồng và hoạt động quản lý.' },
+              { id: '2.3', text: 'The Organisation shall implement health and safety practices to protect workers from occupational safety and health hazards. These practices shall, proportionate to scale, intensity and risk of management activities, meet or exceed the recommendations of the ILO Code of Practice on Safety and Health in Forestry Work.',
+                text_vi: 'Tổ chức phải thực hiện các biện pháp sức khỏe và an toàn để bảo vệ người lao động khỏi các nguy cơ an toàn và sức khỏe nghề nghiệp.' },
+              { id: '2.4', text: 'The Organisation shall offer wages that meet or exceed the minimum forest industry standards or other recognized forest industry wage agreements or living wages, where these are higher than the legal minimum wages. Where none of these exist, The Organisation shall through engagement with workers develop mechanisms for determining living wages.',
+                text_vi: 'Tổ chức phải trả lương đáp ứng hoặc vượt qua mức lương tối thiểu của ngành lâm nghiệp hoặc mức lương đủ sống.' },
+              { id: '2.5', text: 'The Organisation shall demonstrate that workers have job-specific training and supervision to safely and effectively implement the management plan and all management activities.',
+                text_vi: 'Tổ chức phải chứng minh rằng người lao động được đào tạo và giám sát phù hợp với công việc cụ thể.' },
+              { id: '2.6', text: 'The Organisation through engagement with workers shall have mechanisms for resolving grievances and for providing fair compensation to workers for loss or damage to property, occupational diseases, or occupational injuries sustained while working for The Organisation.',
+                text_vi: 'Tổ chức phải có cơ chế giải quyết khiếu nại và bồi thường công bằng cho người lao động về thiệt hại tài sản, bệnh nghề nghiệp hoặc thương tích nghề nghiệp.' }
+            ]
+          },
+          {
+            id: '3', title: 'Indigenous Peoples\' Rights', title_vi: 'Quyền của người bản địa',
+            description: 'The Organisation shall identify and uphold Indigenous Peoples\' legal and customary rights of ownership, use and management of land, territories and resources affected by management activities.',
+            description_vi: 'Tổ chức phải xác định và duy trì các quyền pháp lý và tập quán của Người bản địa về quyền sở hữu, sử dụng và quản lý đất đai, lãnh thổ và tài nguyên.',
+            criteria: [
+              { id: '3.1', text: 'The Organisation shall identify the Indigenous Peoples that exist within the Management Unit or those that are affected by management activities. The Organisation shall then, through engagement with these Indigenous Peoples, identify their rights of tenure, their rights of access to and use of forest resources and ecosystem services, their customary rights and legal rights and obligations, that apply within the Management Unit.',
+                text_vi: 'Tổ chức phải xác định Người bản địa tồn tại trong hoặc bị ảnh hưởng bởi các hoạt động quản lý, sau đó xác định các quyền của họ.' },
+              { id: '3.2', text: 'The Organisation shall recognize and uphold the legal and customary rights of Indigenous Peoples to maintain control over management activities within or related to the Management Unit to the extent necessary to protect their rights, resources and lands and territories. Delegation by Indigenous Peoples of control over management activities to third parties requires Free, Prior and Informed Consent.',
+                text_vi: 'Tổ chức phải công nhận và duy trì các quyền pháp lý và tập quán của Người bản địa trong việc kiểm soát các hoạt động quản lý. Ủy quyền cần có sự đồng thuận tự do, trước và được thông tin đầy đủ (FPIC).' },
+              { id: '3.3', text: 'In the event of delegation of control over management activities, a binding agreement between The Organisation and the Indigenous Peoples shall be concluded through Free, Prior and Informed Consent. The agreement shall define its duration, provisions for renegotiation, renewal, termination, economic conditions and other terms and conditions.',
+                text_vi: 'Trong trường hợp ủy quyền kiểm soát, một thỏa thuận ràng buộc phải được ký kết thông qua FPIC, xác định thời hạn, điều khoản đàm phán lại và các điều kiện kinh tế.' },
+              { id: '3.4', text: 'The Organisation shall recognize and uphold the rights, customs and culture of Indigenous Peoples as defined in the United Nations Declaration on the Rights of Indigenous Peoples (2007) and ILO Convention 169 (1989).',
+                text_vi: 'Tổ chức phải công nhận và duy trì quyền, phong tục và văn hóa của Người bản địa theo Tuyên bố LHQ về Quyền của Người bản địa và Công ước ILO 169.' },
+              { id: '3.5', text: 'The Organisation shall, through engagement with Indigenous Peoples, identify sites which are of special cultural, ecological, economic, religious or spiritual significance and for which these Indigenous Peoples hold legal or customary rights. These sites shall be recognized by The Organisation and their management, and/or protection, shall be agreed through engagement with these Indigenous Peoples.',
+                text_vi: 'Tổ chức phải xác định các địa điểm có ý nghĩa đặc biệt về văn hóa, sinh thái, kinh tế, tôn giáo hoặc tâm linh và bảo vệ chúng.' },
+              { id: '3.6', text: 'The Organisation shall uphold the right of Indigenous Peoples to protect and utilize their traditional knowledge and shall compensate Indigenous Peoples for the utilization of such traditional knowledge and their intellectual property.',
+                text_vi: 'Tổ chức phải duy trì quyền của Người bản địa trong việc bảo vệ và sử dụng kiến thức truyền thống và phải bồi thường cho việc sử dụng kiến thức đó.' }
+            ]
+          },
+          {
+            id: '4', title: 'Community Relations', title_vi: 'Quan hệ cộng đồng',
+            description: 'The Organisation shall contribute to maintaining or enhancing the social and economic wellbeing of local communities.',
+            description_vi: 'Tổ chức phải đóng góp vào việc duy trì hoặc nâng cao phúc lợi xã hội và kinh tế của cộng đồng địa phương.',
+            criteria: [
+              { id: '4.1', text: 'The Organisation shall identify the local communities that exist within the Management Unit and those that are affected by management activities. The Organisation shall then, through engagement with these local communities, identify their rights of tenure, their rights of access to and use of forest resources and ecosystem services, and their customary and legal rights and obligations.',
+                text_vi: 'Tổ chức phải xác định cộng đồng địa phương trong và bị ảnh hưởng bởi các hoạt động quản lý, sau đó xác định các quyền của họ.' },
+              { id: '4.2', text: 'The Organisation shall recognize and uphold the legal and customary rights of local communities to maintain control over management activities within or related to the Management Unit to the extent necessary to protect their rights, resources, lands and territories. Delegation by local communities of control over management activities to third parties requires Free, Prior and Informed Consent.',
+                text_vi: 'Tổ chức phải công nhận và duy trì quyền của cộng đồng địa phương trong kiểm soát các hoạt động quản lý. Ủy quyền cần có FPIC.' },
+              { id: '4.3', text: 'The Organisation shall provide reasonable opportunities for employment, training and other services to local communities, contractors and suppliers proportionate to scale and intensity of its management activities.',
+                text_vi: 'Tổ chức phải tạo cơ hội việc làm, đào tạo và dịch vụ hợp lý cho cộng đồng địa phương tương xứng với quy mô hoạt động.' },
+              { id: '4.4', text: 'The Organisation shall implement additional activities, through engagement with local communities, that contribute to their social and economic development, proportionate to the scale, intensity and socio-economic impact of its management activities.',
+                text_vi: 'Tổ chức phải thực hiện các hoạt động bổ sung đóng góp vào phát triển xã hội và kinh tế của cộng đồng.' },
+              { id: '4.5', text: 'The Organisation, through engagement with local communities, shall take action to identify, avoid and mitigate significant negative social, environmental and economic impacts of its management activities on affected communities.',
+                text_vi: 'Tổ chức phải hành động để xác định, tránh và giảm thiểu các tác động tiêu cực đáng kể đến cộng đồng bị ảnh hưởng.' },
+              { id: '4.6', text: 'The Organisation, through engagement with local communities, shall have mechanisms for resolving grievances and providing fair compensation to local communities and individuals with regard to the impacts of management activities of The Organisation.',
+                text_vi: 'Tổ chức phải có cơ chế giải quyết khiếu nại và bồi thường công bằng cho cộng đồng địa phương về tác động của hoạt động quản lý.' },
+              { id: '4.7', text: 'The Organisation, through engagement with local communities, shall identify sites which are of special cultural, ecological, economic, religious or spiritual significance, and for which these local communities hold legal or customary rights. These sites shall be recognized by The Organisation, and their management and/or protection shall be agreed through engagement with these local communities.',
+                text_vi: 'Tổ chức phải xác định các địa điểm có ý nghĩa đặc biệt và bảo vệ chúng thông qua thỏa thuận với cộng đồng.' },
+              { id: '4.8', text: 'The Organisation shall uphold the right of local communities to protect and utilize their traditional knowledge and shall compensate local communities for the utilization of such traditional knowledge and their intellectual property.',
+                text_vi: 'Tổ chức phải duy trì quyền của cộng đồng trong việc bảo vệ kiến thức truyền thống và bồi thường cho việc sử dụng.' }
+            ]
+          },
+          {
+            id: '5', title: 'Benefits from the Forest', title_vi: 'Lợi ích từ rừng',
+            description: 'The Organisation shall efficiently manage the range of multiple products and services of the Management Unit to maintain or enhance long term economic viability and the range of environmental and social benefits.',
+            description_vi: 'Tổ chức phải quản lý hiệu quả nhiều sản phẩm và dịch vụ để duy trì hoặc nâng cao khả năng kinh tế dài hạn và lợi ích môi trường, xã hội.',
+            criteria: [
+              { id: '5.1', text: 'The Organisation shall identify, produce, or enable the production of, diversified benefits and/or products, based on the range of resources and ecosystem services existing in the Management Unit in order to strengthen and diversify the local economy proportionate to the scale and intensity of management activities.',
+                text_vi: 'Tổ chức phải xác định, sản xuất hoặc tạo điều kiện sản xuất các lợi ích/sản phẩm đa dạng để tăng cường kinh tế địa phương.' },
+              { id: '5.2', text: 'The Organisation shall normally harvest products and services from the Management Unit at or below a level which can be permanently sustained.',
+                text_vi: 'Tổ chức phải khai thác sản phẩm và dịch vụ ở mức có thể duy trì bền vững vĩnh viễn.' },
+              { id: '5.3', text: 'The Organisation shall demonstrate that the positive and negative externalities of operations are included in the management plan.',
+                text_vi: 'Tổ chức phải chứng minh rằng các yếu tố ngoại vi tích cực và tiêu cực được bao gồm trong kế hoạch quản lý.' },
+              { id: '5.4', text: 'The Organisation shall use local processing, local services, and local value adding to meet the requirements of The Organisation where these are available, proportionate to scale, intensity and risk.',
+                text_vi: 'Tổ chức phải sử dụng chế biến, dịch vụ và giá trị gia tăng địa phương khi có sẵn.' },
+              { id: '5.5', text: 'The Organisation shall demonstrate through its planning and expenditures proportionate to scale, intensity and risk, its commitment to long-term economic viability.',
+                text_vi: 'Tổ chức phải thể hiện cam kết về khả năng kinh tế dài hạn thông qua kế hoạch và chi tiêu.' }
+            ]
+          },
+          {
+            id: '6', title: 'Environmental Values and Impacts', title_vi: 'Giá trị và tác động môi trường',
+            description: 'The Organisation shall maintain, conserve and/or restore ecosystem services and environmental values of the Management Unit, and shall avoid, repair or mitigate negative environmental impacts.',
+            description_vi: 'Tổ chức phải duy trì, bảo tồn và/hoặc phục hồi các dịch vụ hệ sinh thái và giá trị môi trường, tránh, sửa chữa hoặc giảm thiểu tác động tiêu cực.',
+            criteria: [
+              { id: '6.1', text: 'The Organisation shall assess environmental values in the Management Unit and those values outside the Management Unit potentially affected by management activities. This assessment shall be undertaken with a level of detail, scale and frequency proportionate to the scale, intensity and risk of management activities.',
+                text_vi: 'Tổ chức phải đánh giá các giá trị môi trường trong và ngoài Đơn vị quản lý có thể bị ảnh hưởng bởi hoạt động quản lý.' },
+              { id: '6.2', text: 'The Organisation shall identify and assess the potential positive and negative environmental impacts of management activities prior to the start of site-disturbing activities.',
+                text_vi: 'Tổ chức phải xác định và đánh giá các tác động môi trường tiềm tàng trước khi bắt đầu các hoạt động gây xáo trộn.' },
+              { id: '6.3', text: 'The Organisation shall identify and implement effective actions to prevent negative environmental impacts of management activities, and to mitigate and repair those that occur.',
+                text_vi: 'Tổ chức phải xác định và thực hiện các hành động hiệu quả để ngăn ngừa tác động tiêu cực và giảm thiểu, sửa chữa những tác động đã xảy ra.' },
+              { id: '6.4', text: 'The Organisation shall protect rare and threatened species and their habitats in and adjacent to the Management Unit through conservation zones, protection areas, connectivity and/or other direct measures for their survival and viability.',
+                text_vi: 'Tổ chức phải bảo vệ các loài quý hiếm và bị đe dọa cùng môi trường sống của chúng.' },
+              { id: '6.5', text: 'The Organisation shall identify and protect representative sample areas of native ecosystems and/or restore them to more natural conditions. Where representative sample areas do not exist or are insufficient, The Organisation shall restore a proportion of the Management Unit to more natural conditions.',
+                text_vi: 'Tổ chức phải xác định và bảo vệ các khu vực mẫu đại diện của hệ sinh thái bản địa hoặc phục hồi chúng.' },
+              { id: '6.6', text: 'The Organisation shall effectively maintain the continued existence of naturally occurring native species and genotypes, and prevent losses of biological diversity, especially through habitat management in the Management Unit. The Organisation shall demonstrate that effective measures are in place to manage and control hunting, fishing, trapping and collecting.',
+                text_vi: 'Tổ chức phải duy trì hiệu quả sự tồn tại của các loài bản địa và kiểu gen, ngăn ngừa mất đa dạng sinh học.' },
+              { id: '6.7', text: 'The Organisation shall protect or restore natural water courses, water bodies, riparian zones and their connectivity. The Organisation shall avoid negative impacts on water quality and quantity and mitigate and remedy those that occur.',
+                text_vi: 'Tổ chức phải bảo vệ hoặc phục hồi các nguồn nước tự nhiên, vùng ven sông và kết nối của chúng.' },
+              { id: '6.8', text: 'The Organisation shall manage the landscape in the Management Unit to maintain and/or restore a varying mosaic of species, sizes, ages, spatial scales and regeneration cycles appropriate for the landscape values in that region, and for enhancing environmental and economic resilience.',
+                text_vi: 'Tổ chức phải quản lý cảnh quan để duy trì/phục hồi sự đa dạng về loài, kích thước, tuổi và chu kỳ tái sinh phù hợp.' },
+              { id: '6.9', text: 'The Organisation shall not convert natural forest to plantations, nor natural forests or plantations on sites directly converted from natural forest to non-forest land use, except when the conversion: affects a very limited portion of the Management Unit, and will produce clear, substantial, additional, secure long-term conservation benefits in the Management Unit.',
+                text_vi: 'Tổ chức không được chuyển đổi rừng tự nhiên sang rừng trồng, trừ khi chuyển đổi ảnh hưởng rất nhỏ và mang lại lợi ích bảo tồn rõ ràng.' },
+              { id: '6.10', text: 'Management Units containing plantations that were established on areas converted from natural forest after November 1994 shall not qualify for certification, except where clear and sufficient evidence is provided that The Organisation was not directly or indirectly responsible for the conversion.',
+                text_vi: 'Các Đơn vị quản lý chứa rừng trồng trên đất chuyển đổi từ rừng tự nhiên sau tháng 11/1994 không đủ điều kiện chứng chỉ, trừ khi có bằng chứng rõ ràng.' }
+            ]
+          },
+          {
+            id: '7', title: 'Management Planning', title_vi: 'Kế hoạch quản lý',
+            description: 'The Organisation shall have a management plan consistent with its policies and objectives and proportionate to scale, intensity and risks of its management activities. The management plan shall be implemented and kept up to date based on monitoring information in order to promote adaptive management.',
+            description_vi: 'Tổ chức phải có kế hoạch quản lý phù hợp với chính sách và mục tiêu, tương xứng với quy mô, cường độ và rủi ro của hoạt động quản lý.',
+            criteria: [
+              { id: '7.1', text: 'The Organisation shall, proportionate to scale, intensity and risk of its management activities, set policies (visions and values) and objectives for management, which are environmentally sound, socially beneficial and economically viable. Summaries of these policies and objectives shall be incorporated into the management plan, and publicized.',
+                text_vi: 'Tổ chức phải thiết lập chính sách và mục tiêu quản lý hợp lý về môi trường, có lợi xã hội và khả thi kinh tế.' },
+              { id: '7.2', text: 'The Organisation shall have and implement a management plan for the Management Unit which is fully consistent with the policies and management objectives as established according to Criterion 7.1. The management plan shall describe the natural resources that exist in the Management Unit and explain how the plan will meet the FSC certification requirements.',
+                text_vi: 'Tổ chức phải có và thực hiện kế hoạch quản lý mô tả tài nguyên thiên nhiên và giải thích cách đáp ứng yêu cầu chứng chỉ FSC.' },
+              { id: '7.3', text: 'The management plan shall include verifiable targets by which progress towards each of the prescribed management objectives can be assessed.',
+                text_vi: 'Kế hoạch quản lý phải bao gồm các mục tiêu có thể kiểm chứng để đánh giá tiến độ đạt được các mục tiêu quản lý.' },
+              { id: '7.4', text: 'The Organisation shall update and revise periodically the management planning and procedural documentation to incorporate the results of monitoring and evaluation, stakeholder engagement or new scientific and technical information, as well as to respond to changing environmental, social and economic circumstances.',
+                text_vi: 'Tổ chức phải cập nhật và sửa đổi định kỳ kế hoạch quản lý để kết hợp kết quả giám sát, ý kiến các bên liên quan và thông tin khoa học mới.' },
+              { id: '7.5', text: 'The Organisation shall make publicly available a summary of the management plan free of charge. Excluding confidential information, other relevant components of the management plan shall be made available to affected stakeholders on request, and at cost of reproduction and handling.',
+                text_vi: 'Tổ chức phải công khai miễn phí bản tóm tắt kế hoạch quản lý. Các thành phần khác phải có sẵn cho các bên liên quan khi yêu cầu.' },
+              { id: '7.6', text: 'The Organisation shall, proportionate to scale, intensity and risk of management activities, proactively and transparently engage affected stakeholders in its management planning and monitoring processes, and shall engage interested stakeholders on request.',
+                text_vi: 'Tổ chức phải chủ động và minh bạch thu hút sự tham gia của các bên liên quan bị ảnh hưởng trong quy trình lập kế hoạch và giám sát.' }
+            ]
+          },
+          {
+            id: '8', title: 'Monitoring and Assessment', title_vi: 'Giám sát và đánh giá',
+            description: 'The Organisation shall demonstrate that, progress towards achieving the management objectives, the impacts of management activities and the condition of the Management Unit, are monitored and evaluated proportionate to the scale, intensity and risk of management activities, in order to implement adaptive management.',
+            description_vi: 'Tổ chức phải chứng minh rằng tiến độ đạt mục tiêu, tác động của hoạt động quản lý và tình trạng Đơn vị quản lý được giám sát và đánh giá.',
+            criteria: [
+              { id: '8.1', text: 'The Organisation shall monitor the implementation of its management plan including its policies and management objectives, its progress with the activities planned, and the achievement of its verifiable targets.',
+                text_vi: 'Tổ chức phải giám sát việc thực hiện kế hoạch quản lý bao gồm chính sách, mục tiêu và tiến độ các hoạt động.' },
+              { id: '8.2', text: 'The Organisation shall monitor and evaluate the environmental and social impacts of the activities carried out in the Management Unit, and changes in its environmental condition.',
+                text_vi: 'Tổ chức phải giám sát và đánh giá các tác động môi trường và xã hội của hoạt động trong Đơn vị quản lý.' },
+              { id: '8.3', text: 'The Organisation shall analyze the results of monitoring and evaluation and feed the outcomes of this analysis back into the planning process.',
+                text_vi: 'Tổ chức phải phân tích kết quả giám sát và đánh giá, đưa kết quả vào quy trình lập kế hoạch.' },
+              { id: '8.4', text: 'The Organisation shall make publicly available a summary of the results of monitoring free of charge, excluding confidential information.',
+                text_vi: 'Tổ chức phải công khai miễn phí bản tóm tắt kết quả giám sát, trừ thông tin bảo mật.' },
+              { id: '8.5', text: 'The Organisation shall have and implement a tracking and tracing system proportionate to scale, intensity and risk of its management activities, for demonstrating the source and volume in proportion to projected output for each year, for all products from the Management Unit that are marketed as FSC certified.',
+                text_vi: 'Tổ chức phải có hệ thống theo dõi và truy xuất nguồn gốc cho tất cả sản phẩm được bán dưới dạng chứng chỉ FSC.' }
+            ]
+          },
+          {
+            id: '9', title: 'High Conservation Values', title_vi: 'Giá trị bảo tồn cao',
+            description: 'The Organisation shall maintain and/or enhance the High Conservation Values in the Management Unit through applying the precautionary approach.',
+            description_vi: 'Tổ chức phải duy trì và/hoặc nâng cao Giá trị bảo tồn cao trong Đơn vị quản lý thông qua áp dụng nguyên tắc phòng ngừa.',
+            criteria: [
+              { id: '9.1', text: 'The Organisation, through engagement with affected stakeholders, interested stakeholders and other means and sources, shall assess and record the presence and status of High Conservation Values in the Management Unit and the surrounding landscape: HCV 1 - Species diversity; HCV 2 - Landscape-level ecosystems and mosaics; HCV 3 - Ecosystems and habitats; HCV 4 - Critical ecosystem services; HCV 5 - Community needs; HCV 6 - Cultural values.',
+                text_vi: 'Tổ chức phải đánh giá và ghi nhận sự hiện diện của các Giá trị bảo tồn cao: HCV 1 - Đa dạng loài; HCV 2 - Hệ sinh thái cảnh quan; HCV 3 - Hệ sinh thái quý hiếm; HCV 4 - Dịch vụ hệ sinh thái quan trọng; HCV 5 - Nhu cầu cộng đồng; HCV 6 - Giá trị văn hóa.' },
+              { id: '9.2', text: 'The Organisation shall develop effective strategies that maintain and/or enhance the identified High Conservation Values, through engagement with affected stakeholders, interested stakeholders and experts.',
+                text_vi: 'Tổ chức phải xây dựng chiến lược hiệu quả để duy trì và/hoặc nâng cao các Giá trị bảo tồn cao đã xác định.' },
+              { id: '9.3', text: 'The Organisation shall implement strategies and actions that maintain and/or enhance the identified High Conservation Values. These strategies and actions shall implement the precautionary approach and be proportionate to the scale, intensity and risk of management activities.',
+                text_vi: 'Tổ chức phải thực hiện chiến lược và hành động duy trì/nâng cao Giá trị bảo tồn cao, áp dụng nguyên tắc phòng ngừa.' },
+              { id: '9.4', text: 'The Organisation shall demonstrate that periodic monitoring is carried out to assess changes in the status of High Conservation Values, and shall adapt its management strategies to ensure their effective protection.',
+                text_vi: 'Tổ chức phải chứng minh việc giám sát định kỳ được thực hiện để đánh giá thay đổi trạng thái Giá trị bảo tồn cao và điều chỉnh chiến lược quản lý.' }
+            ]
+          },
+          {
+            id: '10', title: 'Implementation of Management Activities', title_vi: 'Thực hiện hoạt động quản lý',
+            description: 'Management activities conducted by or for The Organisation for the Management Unit shall be selected and implemented consistent with The Organisation\'s economic, environmental and social policies and objectives and in compliance with the Principles and Criteria collectively.',
+            description_vi: 'Hoạt động quản lý phải được lựa chọn và thực hiện phù hợp với chính sách và mục tiêu kinh tế, môi trường, xã hội của Tổ chức.',
+            criteria: [
+              { id: '10.1', text: 'After harvest or in accordance with the management plan, The Organisation shall, by natural or artificial regeneration methods, regenerate vegetation cover in a timely fashion to pre-harvesting or more natural conditions.',
+                text_vi: 'Sau khai thác, Tổ chức phải tái sinh thảm thực vật kịp thời bằng phương pháp tự nhiên hoặc nhân tạo.' },
+              { id: '10.2', text: 'The Organisation shall use species for regeneration that are ecologically well adapted to the site and to the management objectives. The Organisation shall use native species and local genotypes for regeneration, unless there is clear and convincing justification for using others.',
+                text_vi: 'Tổ chức phải sử dụng các loài thích nghi sinh thái để tái sinh, ưu tiên loài bản địa và kiểu gen địa phương.' },
+              { id: '10.3', text: 'The Organisation shall only use alien species when knowledge and/or experience have shown that any invasive impacts can be controlled and effective mitigation measures are in place.',
+                text_vi: 'Tổ chức chỉ được sử dụng loài ngoại lai khi đã chứng minh có thể kiểm soát tác động xâm lấn.' },
+              { id: '10.4', text: 'The Organisation shall not use genetically modified organisms in the Management Unit.',
+                text_vi: 'Tổ chức không được sử dụng sinh vật biến đổi gen trong Đơn vị quản lý.' },
+              { id: '10.5', text: 'The Organisation shall use silvicultural practices that are ecologically appropriate for the vegetation, species, sites and management objectives.',
+                text_vi: 'Tổ chức phải áp dụng các biện pháp lâm sinh phù hợp sinh thái với thảm thực vật, loài, lập địa và mục tiêu quản lý.' },
+              { id: '10.6', text: 'The Organisation shall minimize or avoid the use of fertilizers. When fertilizers are used, The Organisation shall demonstrate that use is equally or more ecologically and economically beneficial than use of silvicultural systems that do not require fertilizers, and prevent, mitigate, and/or repair damage to environmental values including soils.',
+                text_vi: 'Tổ chức phải giảm thiểu hoặc tránh sử dụng phân bón. Khi sử dụng phải chứng minh lợi ích và ngăn ngừa thiệt hại môi trường.' },
+              { id: '10.7', text: 'The Organisation shall use integrated pest management and silviculture systems which avoid, or aim at eliminating, the use of chemical pesticides. The Organisation shall not use any chemical pesticides prohibited by FSC policy. When pesticides are used, The Organisation shall prevent, mitigate, and/or repair damage to environmental values and human health.',
+                text_vi: 'Tổ chức phải sử dụng quản lý dịch hại tổng hợp, tránh sử dụng thuốc trừ sâu hóa học. Không được sử dụng thuốc bị FSC cấm.' },
+              { id: '10.8', text: 'The Organisation shall minimize, monitor and strictly control the use of biological control agents in accordance with internationally accepted scientific protocols. When biological control agents are used, The Organisation shall prevent, mitigate, and/or repair damage to environmental values.',
+                text_vi: 'Tổ chức phải giảm thiểu, giám sát và kiểm soát chặt chẽ việc sử dụng tác nhân kiểm soát sinh học.' },
+              { id: '10.9', text: 'The Organisation shall assess risks and implement activities that reduce the potential for natural hazards such as wildfire, storm, wind, erosion, flood, avalanche, landslide, drought, and invasive species.',
+                text_vi: 'Tổ chức phải đánh giá rủi ro và thực hiện hoạt động giảm thiểu nguy cơ thiên tai như cháy rừng, bão, xói mòn, lũ lụt, sạt lở.' },
+              { id: '10.10', text: 'The Organisation shall manage infrastructural development, transport activities and silviculture so that water resources and soils are protected, and disturbance of and damage to rare and threatened species, habitats, ecosystems and landscape values are prevented, mitigated and/or repaired.',
+                text_vi: 'Tổ chức phải quản lý phát triển cơ sở hạ tầng, vận chuyển và lâm sinh để bảo vệ tài nguyên nước và đất.' },
+              { id: '10.11', text: 'The Organisation shall manage activities associated with harvesting and extraction of timber and non-timber forest products so that environmental values are conserved, merchantable waste is reduced, and damage to other products and services is avoided.',
+                text_vi: 'Tổ chức phải quản lý khai thác gỗ và lâm sản ngoài gỗ để bảo tồn giá trị môi trường, giảm lãng phí và tránh thiệt hại.' },
+              { id: '10.12', text: 'The Organisation shall dispose of waste materials in an environmentally appropriate manner.',
+                text_vi: 'Tổ chức phải xử lý rác thải theo cách phù hợp với môi trường.' }
+            ]
+          }
+        ]
+      }
     };
 
     const VIEW_MAP = {
@@ -4286,7 +4619,7 @@
       'sản phẩm': 'fa-boxes-stacked', 'tài liệu': 'fa-file-lines', 'hệ thống': 'fa-gears',
       'menu': 'fa-bars', 'người dùng': 'fa-user-shield', 'profile': 'fa-id-card',
       'báo cáo': 'fa-chart-column', 'thống kê': 'fa-chart-bar', 'cài đặt': 'fa-sliders',
-      'loại': 'fa-tags', 'danh sách': 'fa-clipboard-list'
+      'tiêu chuẩn': 'fa-scale-balanced', 'loại': 'fa-tags', 'danh sách': 'fa-clipboard-list'
     };
 
     function getSubMenuIcon(moduleName) {
@@ -4583,6 +4916,12 @@
       // Xử lý View đặc biệt: Sổ tay QLRBV
       if (current.viewName === 'SoTay_QLRBV') {
         renderHandbookView();
+        return;
+      }
+
+      // Xử lý View đặc biệt: Bộ tiêu chuẩn FSC
+      if (current.viewName === 'BoTieuChuan_FSC') {
+        renderFSCStandardsView();
         return;
       }
 
@@ -8289,6 +8628,472 @@ ${gsRecord['Đề xuất'] ? `<div class="proposal-box"><h4>${t('mon_proposal')}
       printWin.document.close();
       printWin.focus();
       setTimeout(() => { printWin.print(); }, 500);
+    }
+
+    // ============================================================
+    // === FSC STANDARDS VIEWER (Bộ tiêu chuẩn FSC) ===
+    // ============================================================
+
+    let _fscStdCurrentTab = 'vietnam'; // default tab
+
+    function renderFSCStandardsView() {
+      const container = $('#page-content-dynamic');
+      container.empty();
+
+      const html = `
+        <div class="card shadow border-0 rounded-4">
+          <div class="card-header bg-white border-0 pt-4 px-4">
+            <div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-3">
+              <h5 class="text-success fw-bold mb-0"><i class="fas fa-scale-balanced me-2"></i>${t('fsc_std_title')}</h5>
+              <div class="d-flex gap-2 align-items-center">
+                <div class="fsc-std-search-wrap">
+                  <input type="text" class="form-control form-control-sm fsc-std-search" id="fscStdSearch" placeholder="${t('fsc_std_search')}" autocomplete="off">
+                  <div class="fsc-std-dropdown" id="fscStdDropdown"></div>
+                </div>
+                <button class="btn btn-outline-success btn-sm no-print" onclick="printFSCStandard()"><i class="fas fa-print me-1"></i>${t('fsc_std_print')}</button>
+              </div>
+            </div>
+            <ul class="nav nav-pills mb-0 no-print" id="fscStdTabs" role="tablist">
+              <li class="nav-item" role="presentation">
+                <button class="nav-link ${_fscStdCurrentTab === 'vietnam' ? 'active' : ''} fw-bold" data-fsc-tab="vietnam" type="button">${t('fsc_std_vietnam')}</button>
+              </li>
+              <li class="nav-item" role="presentation">
+                <button class="nav-link ${_fscStdCurrentTab === 'group' ? 'active' : ''} fw-bold" data-fsc-tab="group" type="button">${t('fsc_std_group')}</button>
+              </li>
+            </ul>
+          </div>
+          <div class="card-body p-3 p-md-4">
+            <div id="fscStdSubtitle" class="text-muted small mb-3"></div>
+            <div id="fscStdContent"></div>
+          </div>
+        </div>
+      `;
+      container.html(html);
+
+      // Tab switching
+      $(document).off('click', '#fscStdTabs .nav-link').on('click', '#fscStdTabs .nav-link', function() {
+        $('#fscStdTabs .nav-link').removeClass('active');
+        $(this).addClass('active');
+        _fscStdCurrentTab = $(this).data('fsc-tab');
+        $('#fscStdSearch').val('');
+        renderFSCStdContent();
+      });
+
+      // Smart search with dropdown
+      let _fscSearchTimer = null;
+      $(document).off('input', '#fscStdSearch').on('input', '#fscStdSearch', function() {
+        clearTimeout(_fscSearchTimer);
+        const q = $(this).val().trim();
+        _fscSearchTimer = setTimeout(() => fscSmartSearch(q), 150);
+      });
+
+      // Keyboard navigation in dropdown
+      $(document).off('keydown', '#fscStdSearch').on('keydown', '#fscStdSearch', function(e) {
+        const dd = document.getElementById('fscStdDropdown');
+        if (!dd || !dd.classList.contains('show')) return;
+        const items = dd.querySelectorAll('.fsc-std-dropdown-item');
+        let idx = [...items].findIndex(i => i.classList.contains('active'));
+        if (e.key === 'ArrowDown') { e.preventDefault(); idx = Math.min(idx + 1, items.length - 1); }
+        else if (e.key === 'ArrowUp') { e.preventDefault(); idx = Math.max(idx - 1, 0); }
+        else if (e.key === 'Enter' && idx >= 0) { e.preventDefault(); items[idx].click(); return; }
+        else if (e.key === 'Escape') { dd.classList.remove('show'); return; }
+        else return;
+        items.forEach(i => i.classList.remove('active'));
+        if (items[idx]) { items[idx].classList.add('active'); items[idx].scrollIntoView({ block: 'nearest' }); }
+      });
+
+      // Close dropdown on outside click
+      $(document).off('click.fscdd').on('click.fscdd', function(e) {
+        if (!$(e.target).closest('.fsc-std-search-wrap').length) {
+          $('#fscStdDropdown').removeClass('show');
+        }
+      });
+
+      renderFSCStdContent();
+    }
+
+    function renderFSCStdContent() {
+      const contentEl = document.getElementById('fscStdContent');
+      const subtitleEl = document.getElementById('fscStdSubtitle');
+      if (!contentEl) return;
+
+      if (_fscStdCurrentTab === 'vietnam') {
+        const std = FSC_STANDARDS.vietnam;
+        subtitleEl.innerHTML = `<strong>${std.id}</strong> &mdash; ${currentLang === 'vi' ? std.title_vi : std.title_en}`;
+        contentEl.innerHTML = buildVietnamStdAccordion(std);
+      } else {
+        const std = FSC_STANDARDS.group;
+        subtitleEl.innerHTML = `<strong>${std.id}</strong> &mdash; ${currentLang === 'vi' ? std.title_vi : std.title_en}`;
+        contentEl.innerHTML = buildGroupStdAccordion(std);
+      }
+
+      // Restore notes highlights
+      restoreFSCNoteHighlights();
+    }
+
+    function buildVietnamStdAccordion(std) {
+      let html = '<div class="accordion fsc-std-accordion" id="fscVnAccordion">';
+      std.principles.forEach((p, idx) => {
+        const pTitle = currentLang === 'vi' ? p.title_vi : p.title;
+        const pDesc = currentLang === 'vi' ? (p.description_vi || p.description) : p.description;
+        const collapseId = `fscVn_p${p.id}`;
+
+        html += `
+          <div class="accordion-item fsc-std-item" data-search-text="${(p.title + ' ' + p.title_vi + ' ' + p.description + ' ' + (p.description_vi||'')).toLowerCase()}">
+            <h2 class="accordion-header">
+              <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#${collapseId}">
+                <span class="badge bg-success fsc-std-badge me-2">${t('fsc_std_principle')} ${p.id}</span>
+                ${pTitle}
+              </button>
+            </h2>
+            <div id="${collapseId}" class="accordion-collapse collapse" data-bs-parent="#fscVnAccordion">
+              <div class="accordion-body">
+                <div class="fsc-std-desc">${pDesc}</div>
+                ${p.criteria.map(c => buildCriterionCard('vietnam', c)).join('')}
+              </div>
+            </div>
+          </div>`;
+      });
+      html += '</div>';
+      return html;
+    }
+
+    function buildGroupStdAccordion(std) {
+      let html = '<div class="accordion fsc-std-accordion" id="fscGrpAccordion">';
+      std.parts.forEach(part => {
+        const partTitle = currentLang === 'vi' ? part.title_vi : part.title_en;
+        const partCollapseId = `fscGrp_part${part.id}`;
+
+        html += `
+          <div class="accordion-item fsc-std-item">
+            <h2 class="accordion-header">
+              <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#${partCollapseId}">
+                <span class="badge bg-success fsc-std-badge me-2">${t('fsc_std_part')} ${part.id}</span>
+                ${partTitle}
+              </button>
+            </h2>
+            <div id="${partCollapseId}" class="accordion-collapse collapse" data-bs-parent="#fscGrpAccordion">
+              <div class="accordion-body">
+                ${part.clauses.map(c => buildClauseCard('group', part.id, c)).join('')}
+              </div>
+            </div>
+          </div>`;
+      });
+      html += '</div>';
+      return html;
+    }
+
+    function buildCriterionCard(stdKey, c) {
+      const noteKey = `fsc_note_${stdKey}_${c.id}`;
+      const hasNote = localStorage.getItem(noteKey) ? 'has-note' : '';
+      const savedNote = localStorage.getItem(noteKey) || '';
+
+      return `
+        <div class="fsc-std-criterion ${hasNote}" id="fsc-crit-${stdKey}-${c.id.replace(/\./g,'-')}" data-note-key="${noteKey}" data-search-text="${(c.id + ' ' + c.text + ' ' + (c.text_vi||'')).toLowerCase()}">
+          <div class="d-flex justify-content-between align-items-start">
+            <div class="flex-grow-1">
+              <span class="fsc-std-criterion-id">${t('fsc_std_criterion')} ${c.id}</span>
+              <div class="fsc-std-criterion-text">${c.text}</div>
+              ${c.text_vi ? `<div class="fsc-std-criterion-text-vi">${c.text_vi}</div>` : ''}
+            </div>
+            <div class="d-flex fsc-std-actions ms-2 flex-shrink-0">
+              <button class="btn btn-outline-warning btn-sm" title="${t('fsc_std_note')}" onclick="toggleFSCNote(this)"><i class="fas fa-sticky-note"></i></button>
+              <button class="btn btn-outline-secondary btn-sm" title="Copy" onclick="copyFSCCriterion(this)"><i class="fas fa-copy"></i></button>
+            </div>
+          </div>
+          <div class="fsc-std-note-area">
+            <textarea class="form-control form-control-sm" rows="2" placeholder="${t('fsc_std_note_placeholder')}">${savedNote.replace(/</g,'&lt;')}</textarea>
+            <button class="btn btn-sm btn-success mt-1" onclick="saveFSCNote(this)">${t('fsc_std_note_saved')}</button>
+          </div>
+        </div>`;
+    }
+
+    function buildClauseCard(stdKey, partId, c) {
+      const noteKey = `fsc_note_${stdKey}_${partId}_${c.id}`;
+      const hasNote = localStorage.getItem(noteKey) ? 'has-note' : '';
+      const savedNote = localStorage.getItem(noteKey) || '';
+      const clauseTitle = currentLang === 'vi' ? c.title_vi : c.title;
+
+      return `
+        <div class="fsc-std-criterion ${hasNote}" id="fsc-clause-${partId}-${c.id}" data-note-key="${noteKey}" data-search-text="${(c.id + ' ' + c.title + ' ' + (c.title_vi||'') + ' ' + c.text).toLowerCase()}">
+          <div class="d-flex justify-content-between align-items-start">
+            <div class="flex-grow-1">
+              <span class="fsc-std-criterion-id">${t('fsc_std_clause')} ${c.id}: ${clauseTitle}</span>
+              <div class="fsc-std-criterion-text">${c.text}</div>
+            </div>
+            <div class="d-flex fsc-std-actions ms-2 flex-shrink-0">
+              <button class="btn btn-outline-warning btn-sm" title="${t('fsc_std_note')}" onclick="toggleFSCNote(this)"><i class="fas fa-sticky-note"></i></button>
+              <button class="btn btn-outline-secondary btn-sm" title="Copy" onclick="copyFSCCriterion(this)"><i class="fas fa-copy"></i></button>
+            </div>
+          </div>
+          <div class="fsc-std-note-area">
+            <textarea class="form-control form-control-sm" rows="2" placeholder="${t('fsc_std_note_placeholder')}">${savedNote.replace(/</g,'&lt;')}</textarea>
+            <button class="btn btn-sm btn-success mt-1" onclick="saveFSCNote(this)">${t('fsc_std_note_saved')}</button>
+          </div>
+        </div>`;
+    }
+
+    function toggleFSCNote(btn) {
+      const card = btn.closest('.fsc-std-criterion');
+      const noteArea = card.querySelector('.fsc-std-note-area');
+      noteArea.classList.toggle('show');
+      if (noteArea.classList.contains('show')) {
+        noteArea.querySelector('textarea').focus();
+      }
+    }
+
+    function saveFSCNote(btn) {
+      const card = btn.closest('.fsc-std-criterion');
+      const noteKey = card.dataset.noteKey;
+      const text = card.querySelector('.fsc-std-note-area textarea').value.trim();
+      if (text) {
+        localStorage.setItem(noteKey, text);
+        card.classList.add('has-note');
+      } else {
+        localStorage.removeItem(noteKey);
+        card.classList.remove('has-note');
+      }
+      // Flash feedback
+      const origText = btn.textContent;
+      btn.textContent = '✓';
+      setTimeout(() => { btn.textContent = origText; }, 800);
+    }
+
+    function copyFSCCriterion(btn) {
+      const card = btn.closest('.fsc-std-criterion');
+      const id = card.querySelector('.fsc-std-criterion-id').textContent;
+      const text = card.querySelector('.fsc-std-criterion-text').textContent;
+      const note = localStorage.getItem(card.dataset.noteKey);
+      let copyText = `${id}\n${text}`;
+      if (note) copyText += `\n\n[${t('fsc_std_note')}] ${note}`;
+
+      navigator.clipboard.writeText(copyText).then(() => {
+        const icon = btn.querySelector('i');
+        icon.className = 'fas fa-check';
+        setTimeout(() => { icon.className = 'fas fa-copy'; }, 1000);
+      });
+    }
+
+    function _buildFSCSearchIndex() {
+      const items = [];
+      // Vietnam standard
+      const vn = FSC_STANDARDS.vietnam;
+      vn.principles.forEach(p => {
+        const pLabel = currentLang === 'vi' ? p.title_vi : p.title;
+        p.criteria.forEach(c => {
+          items.push({
+            stdKey: 'vietnam',
+            id: c.id,
+            label: `${t('fsc_std_criterion')} ${c.id}`,
+            parentLabel: `${t('fsc_std_principle')} ${p.id}: ${pLabel}`,
+            text: (c.text + ' ' + (c.text_vi || '')).toLowerCase(),
+            elId: `fsc-crit-vietnam-${c.id.replace(/\./g, '-')}`,
+            accordionId: `fscVn_p${p.id}`
+          });
+        });
+      });
+      // Group standard
+      const grp = FSC_STANDARDS.group;
+      grp.parts.forEach(part => {
+        const partLabel = currentLang === 'vi' ? part.title_vi : part.title_en;
+        part.clauses.forEach(c => {
+          const cLabel = currentLang === 'vi' ? c.title_vi : c.title;
+          items.push({
+            stdKey: 'group',
+            id: c.id,
+            label: `${t('fsc_std_clause')} ${c.id}: ${cLabel}`,
+            parentLabel: `${t('fsc_std_part')} ${part.id}: ${partLabel}`,
+            text: (c.id + ' ' + c.title + ' ' + (c.title_vi || '') + ' ' + c.text).toLowerCase(),
+            elId: `fsc-clause-${part.id}-${c.id}`,
+            accordionId: `fscGrp_part${part.id}`
+          });
+        });
+      });
+      return items;
+    }
+
+    function fscSmartSearch(query) {
+      const dd = document.getElementById('fscStdDropdown');
+      if (!dd) return;
+
+      if (!query || query.length < 2) {
+        dd.classList.remove('show');
+        dd.innerHTML = '';
+        // Reset view: show all, collapse all
+        document.querySelectorAll('.fsc-std-item, .fsc-std-criterion').forEach(el => { el.style.display = ''; });
+        document.querySelectorAll('.fsc-std-accordion .accordion-collapse').forEach(el => {
+          el.classList.remove('show');
+          const btn = el.previousElementSibling?.querySelector('.accordion-button');
+          if (btn) btn.classList.add('collapsed');
+        });
+        return;
+      }
+
+      const q = query.toLowerCase();
+      const index = _buildFSCSearchIndex();
+      // Search both standards regardless of current tab
+      const results = index.filter(item => item.text.includes(q) || item.id.includes(q) || item.label.toLowerCase().includes(q));
+
+      if (results.length === 0) {
+        dd.innerHTML = `<div class="fsc-std-dropdown-item text-muted text-center"><i class="fas fa-search me-1"></i>${t('fsc_std_no_results')}</div>`;
+        dd.classList.add('show');
+        return;
+      }
+
+      // Build dropdown (max 15 results)
+      const shown = results.slice(0, 15);
+      dd.innerHTML = shown.map((r, i) => {
+        const snippet = _fscSnippet(r.text, q, 60);
+        const stdBadge = r.stdKey === 'vietnam' ? t('fsc_std_vietnam') : t('fsc_std_group');
+        return `<div class="fsc-std-dropdown-item ${i === 0 ? 'active' : ''}" data-std="${r.stdKey}" data-el-id="${r.elId}" data-acc-id="${r.accordionId}">
+          <div><span class="dd-id">${r.label}</span><span class="badge bg-secondary fsc-std-badge ms-1">${stdBadge}</span></div>
+          <div class="dd-snippet">${snippet}</div>
+        </div>`;
+      }).join('');
+
+      if (results.length > 15) {
+        dd.innerHTML += `<div class="fsc-std-dropdown-item text-muted text-center small">+${results.length - 15} more...</div>`;
+      }
+
+      dd.classList.add('show');
+
+      // Click handler on dropdown items
+      dd.querySelectorAll('.fsc-std-dropdown-item[data-el-id]').forEach(item => {
+        item.addEventListener('click', function() {
+          const stdKey = this.dataset.std;
+          const elId = this.dataset.elId;
+          const accId = this.dataset.accId;
+          dd.classList.remove('show');
+          fscJumpTo(stdKey, elId, accId);
+        });
+      });
+    }
+
+    function _fscSnippet(text, query, maxLen) {
+      const idx = text.indexOf(query);
+      if (idx < 0) return text.substring(0, maxLen) + '...';
+      const start = Math.max(0, idx - 25);
+      const end = Math.min(text.length, idx + query.length + 35);
+      let snippet = (start > 0 ? '...' : '') + text.substring(start, end) + (end < text.length ? '...' : '');
+      // Highlight match
+      const escaped = query.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+      snippet = snippet.replace(new RegExp(escaped, 'gi'), '<mark>$&</mark>');
+      return snippet;
+    }
+
+    function fscJumpTo(stdKey, elId, accordionId) {
+      // Switch tab if needed
+      if (_fscStdCurrentTab !== stdKey) {
+        _fscStdCurrentTab = stdKey;
+        $('#fscStdTabs .nav-link').removeClass('active');
+        $(`#fscStdTabs .nav-link[data-fsc-tab="${stdKey}"]`).addClass('active');
+        renderFSCStdContent();
+      }
+
+      // Ensure all items visible
+      document.querySelectorAll('.fsc-std-item, .fsc-std-criterion').forEach(el => { el.style.display = ''; });
+
+      // Expand the target accordion
+      const accEl = document.getElementById(accordionId);
+      if (accEl && !accEl.classList.contains('show')) {
+        // Collapse others first
+        const parent = accEl.closest('.accordion');
+        if (parent) {
+          parent.querySelectorAll('.accordion-collapse.show').forEach(c => {
+            c.classList.remove('show');
+            const btn = c.previousElementSibling?.querySelector('.accordion-button');
+            if (btn) btn.classList.add('collapsed');
+          });
+        }
+        accEl.classList.add('show');
+        const btn = accEl.previousElementSibling?.querySelector('.accordion-button');
+        if (btn) btn.classList.remove('collapsed');
+      }
+
+      // Scroll to and highlight the target element
+      setTimeout(() => {
+        const el = document.getElementById(elId);
+        if (el) {
+          el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+          el.classList.remove('fsc-std-highlight');
+          void el.offsetWidth; // force reflow
+          el.classList.add('fsc-std-highlight');
+        }
+      }, 100);
+    }
+
+    function restoreFSCNoteHighlights() {
+      document.querySelectorAll('.fsc-std-criterion[data-note-key]').forEach(card => {
+        if (localStorage.getItem(card.dataset.noteKey)) {
+          card.classList.add('has-note');
+        }
+      });
+    }
+
+    function printFSCStandard() {
+      const contentEl = document.getElementById('fscStdContent');
+      const subtitleEl = document.getElementById('fscStdSubtitle');
+      if (!contentEl) return;
+
+      const printWin = window.open('', '_blank');
+      printWin.document.write(`<!DOCTYPE html><html><head><meta charset="utf-8">
+        <title>${t('fsc_std_title')}</title>
+        <style>
+          body { font-family: Arial, sans-serif; max-width: 900px; margin: 20px auto; padding: 0 20px; font-size: 11pt; line-height: 1.5; color: #333; }
+          h2 { color: #1b5e20; font-size: 14pt; border-bottom: 2px solid #a5d6a7; padding-bottom: 4px; margin-top: 20px; }
+          h3 { color: #2e7d32; font-size: 12pt; margin-top: 14px; }
+          .subtitle { font-size: 10pt; color: #666; margin-bottom: 16px; }
+          .criterion { padding: 8px 12px; border-left: 3px solid #a5d6a7; margin-bottom: 8px; background: #fafafa; }
+          .criterion.has-note { border-left-color: #ffc107; background: #fffde7; }
+          .crit-id { font-weight: 700; color: #2e7d32; }
+          .crit-text { font-size: 10pt; margin-top: 2px; }
+          .crit-note { font-size: 9pt; color: #795548; margin-top: 4px; font-style: italic; }
+          .fsc-std-actions, .fsc-std-note-area, .btn { display: none; }
+          @media print { .criterion { page-break-inside: avoid; } }
+        </style>
+      </head><body>
+        <h1 style="color:#1b5e20">${t('fsc_std_title')}</h1>
+        <div class="subtitle">${subtitleEl ? subtitleEl.innerHTML : ''}</div>
+        ${buildPrintContent()}
+      </body></html>`);
+      printWin.document.close();
+      printWin.focus();
+      setTimeout(() => { printWin.print(); }, 500);
+    }
+
+    function buildPrintContent() {
+      let html = '';
+      if (_fscStdCurrentTab === 'vietnam') {
+        const std = FSC_STANDARDS.vietnam;
+        std.principles.forEach(p => {
+          const pTitle = currentLang === 'vi' ? p.title_vi : p.title;
+          const pDesc = currentLang === 'vi' ? (p.description_vi || p.description) : p.description;
+          html += `<h2>${t('fsc_std_principle')} ${p.id}: ${pTitle}</h2><p style="font-style:italic;color:#555">${pDesc}</p>`;
+          p.criteria.forEach(c => {
+            const noteKey = `fsc_note_vietnam_${c.id}`;
+            const note = localStorage.getItem(noteKey);
+            html += `<div class="criterion ${note ? 'has-note' : ''}"><span class="crit-id">${c.id}</span><div class="crit-text">${c.text}</div>`;
+            if (c.text_vi) html += `<div class="crit-text" style="color:#666;font-style:italic">${c.text_vi}</div>`;
+            if (note) html += `<div class="crit-note">📝 ${note}</div>`;
+            html += '</div>';
+          });
+        });
+      } else {
+        const std = FSC_STANDARDS.group;
+        std.parts.forEach(part => {
+          const partTitle = currentLang === 'vi' ? part.title_vi : part.title_en;
+          html += `<h2>${t('fsc_std_part')} ${part.id}: ${partTitle}</h2>`;
+          part.clauses.forEach(c => {
+            const noteKey = `fsc_note_group_${part.id}_${c.id}`;
+            const note = localStorage.getItem(noteKey);
+            const clauseTitle = currentLang === 'vi' ? c.title_vi : c.title;
+            html += `<div class="criterion ${note ? 'has-note' : ''}"><span class="crit-id">${t('fsc_std_clause')} ${c.id}: ${clauseTitle}</span><div class="crit-text">${c.text}</div>`;
+            if (note) html += `<div class="crit-note">📝 ${note}</div>`;
+            html += '</div>';
+          });
+        });
+      }
+      return html;
     }
 
     function renderBreadcrumb() {
