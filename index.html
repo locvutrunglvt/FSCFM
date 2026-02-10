@@ -4490,7 +4490,6 @@
       mapPlotLabels = L.layerGroup().addTo(mapInstance);
       mapLayers['Nhãn lô rừng'] = mapPlotLabels;
 
-      loadLoRungMarkers();
       loadStoredGeoJSON().then(() => {
         createPlotLabels();
         setTimeout(() => { zoomToAllData(); updateZoomLayerMenu(); renderMapLayerPanel(); }, 300);
@@ -4559,54 +4558,12 @@
 
     function zoomToAllData() {
       if (!mapInstance) return;
-      const allBounds = [];
       if (mapDrawnItems && mapDrawnItems.getLayers().length > 0) {
-        allBounds.push(mapDrawnItems.getBounds());
-      }
-      if (mapLayers['Tâm lô rừng'] && mapLayers['Tâm lô rừng'].getLayers().length > 0) {
-        allBounds.push(mapLayers['Tâm lô rừng'].getBounds());
-      }
-      if (allBounds.length > 0) {
-        let combined = allBounds[0];
-        for (let i = 1; i < allBounds.length; i++) combined.extend(allBounds[i]);
-        mapInstance.fitBounds(combined.pad(0.1));
+        mapInstance.fitBounds(mapDrawnItems.getBounds().pad(0.1));
       }
     }
 
-    function loadLoRungMarkers() {
-      const loRungData = APP_DATA['Lo_rung'] || [];
-      const markerLayer = L.layerGroup();
-
-      loRungData.forEach(lr => {
-        // Use separate kinh_do/vi_do fields first, fallback to toa_do_tam_lo
-        let lat, lng;
-        const kd = parseFloat(lr['Kinh độ']);
-        const vd = parseFloat(lr['Vĩ độ']);
-        if (!isNaN(vd) && !isNaN(kd)) {
-          lat = vd; lng = kd;
-        } else {
-          const coords = lr['Tọa độ tâm lô'];
-          if (!coords) return;
-          const parts = String(coords).split(',').map(s => parseFloat(s.trim()));
-          if (parts.length !== 2 || isNaN(parts[0]) || isNaN(parts[1])) return;
-          lat = parts[0]; lng = parts[1];
-        }
-
-        const marker = L.circleMarker([lat, lng], {
-          radius: 3, fillColor: '#1B5E20', fillOpacity: 0.8,
-          color: '#fff', weight: 1, opacity: 0.9
-        }).bindPopup(`
-          <strong>${lr['Mã số lô rừng'] || lr['Tên lô rừng'] || 'Lô rừng'}</strong><br>
-          ${lr['Địa danh'] ? 'Địa danh: ' + lr['Địa danh'] + '<br>' : ''}
-          Diện tích: ${lr['Tổng diện tích'] || '?'} ha
-          <br><button class="btn btn-sm btn-outline-success mt-1" onclick="viewLoRungFromMap('${lr['ID lô rừng']}')">Xem chi tiết</button>
-        `);
-        markerLayer.addLayer(marker);
-      });
-
-      markerLayer.addTo(mapInstance);
-      mapLayers['Tâm lô rừng'] = markerLayer;
-    }
+    // loadLoRungMarkers removed — only polygons with data linkage are shown
 
     function handleGeoJSONUpload(event) {
       const file = event.target.files[0];
@@ -4943,8 +4900,8 @@
       const menu = document.getElementById('zoom-layer-menu');
       if (!menu) return;
       let html = '<li><a class="dropdown-item small" href="#" onclick="zoomToAllData();return false"><i class="fa-solid fa-globe me-2"></i>Tất cả lớp</a></li>';
-      if (mapLayers['Tâm lô rừng']) {
-        html += '<li><a class="dropdown-item small" href="#" onclick="zoomToLayer(\'Tâm lô rừng\');return false"><i class="fa-solid fa-location-dot me-2"></i>Tâm lô rừng</a></li>';
+      if (mapDrawnItems && mapDrawnItems.getLayers().length > 0) {
+        html += '<li><a class="dropdown-item small" href="#" onclick="mapInstance.fitBounds(mapDrawnItems.getBounds().pad(0.05));return false"><i class="fa-solid fa-map me-2"></i>Lô rừng (GeoJSON)</a></li>';
       }
       for (const name of Object.keys(geoJsonNamedLayers)) {
         html += `<li><a class="dropdown-item small" href="#" onclick="zoomToLayer('${name.replace(/'/g,"\\'")}');return false"><i class="fa-solid fa-map me-2"></i>${name}</a></li>`;
@@ -5080,7 +5037,7 @@
         html += `<label><input type="radio" name="map-basemap" ${checked} onchange="switchBasemap('${safeName}')" class="me-1"> ${name}</label>`;
       }
       html += '<hr class="my-2"><h6 class="fw-bold mb-2 small">Dữ liệu</h6>';
-      const dataLayers = ['Tâm lô rừng', 'Lô rừng (GeoJSON)', 'Nhãn lô rừng', 'Ghi chú'];
+      const dataLayers = ['Lô rừng (GeoJSON)', 'Nhãn lô rừng', 'Ghi chú'];
       for (const name of dataLayers) {
         const layer = mapLayers[name];
         if (!layer) continue;
@@ -5169,27 +5126,22 @@
           });
         }
 
-        // 2. Fallback: use marker coordinates from Lo_rung data
+        // 2. Fallback: use coordinates from Lo_rung data (kinh_do/vi_do or toa_do_tam_lo)
         if (!found) {
           const loRungData = APP_DATA['Lo_rung'] || [];
           const lr = loRungData.find(r => String(r['ID lô rừng']) === String(loRungId));
           if (lr) {
-            const coords = lr['Tọa độ tâm lô'];
-            if (coords) {
-              const parts = String(coords).split(',').map(s => parseFloat(s.trim()));
-              if (parts.length === 2 && !isNaN(parts[0]) && !isNaN(parts[1])) {
-                mapInstance.setView([parts[0], parts[1]], 16);
-                // Open marker popup if exists
-                if (mapLayers['Tâm lô rừng']) {
-                  mapLayers['Tâm lô rừng'].eachLayer(marker => {
-                    const ll = marker.getLatLng();
-                    if (Math.abs(ll.lat - parts[0]) < 0.001 && Math.abs(ll.lng - parts[1]) < 0.001) {
-                      marker.openPopup();
-                    }
-                  });
-                }
-                found = true;
-              }
+            let lat, lng;
+            const kd = parseFloat(lr['Kinh độ']);
+            const vd = parseFloat(lr['Vĩ độ']);
+            if (!isNaN(vd) && !isNaN(kd)) { lat = vd; lng = kd; }
+            else {
+              const coords = lr['Tọa độ tâm lô'];
+              if (coords) { const parts = String(coords).split(',').map(s => parseFloat(s.trim())); if (parts.length === 2) { lat = parts[0]; lng = parts[1]; } }
+            }
+            if (lat && lng && !isNaN(lat) && !isNaN(lng)) {
+              mapInstance.setView([lat, lng], 16);
+              found = true;
             }
           }
         }
