@@ -994,7 +994,7 @@
         </button>
         <div class="d-flex align-items-center justify-content-center" style="gap:12px;margin-bottom:10px">
           <img src="Logo Clever forestry.png" height="52" alt="Clever Forestry" style="border-radius:8px;background:#fff;padding:2px" onerror="this.style.display='none'">
-          <img src="https://github.com/impactslowforest/Logo/blob/main/FSC%20logo%20-%20R.png?raw=true" height="52" alt="FSC Logo" onerror="this.style.display='none'">
+          <img id="login-logo-custom" src="data:," height="52" alt="" style="border-radius:8px;background:#fff;padding:2px;display:none">
         </div>
         <h5 style="color:#fff;font-weight:700;font-size:15px;margin:0;letter-spacing:0.3px" data-i18n="login_title">He thong Quan ly Rung FSC</h5>
         <div style="color:rgba(255,255,255,0.7);font-size:11px;margin-top:4px" data-i18n="login_subtitle">Forest Stewardship Council</div>
@@ -1070,14 +1070,14 @@
       style="background: linear-gradient(135deg, #2E7D32 0%, #1B5E20 100%) !important; min-height: 56px;">
       <button class="btn text-white flex-shrink-0 d-none d-lg-inline-block" id="sidebarToggle"><i class="fa-solid fa-bars"></i></button>
       <div class="navbar-title-area position-absolute start-50 translate-middle-x text-center d-none d-md-flex align-items-center" style="gap:12px">
-        <img src="https://github.com/impactslowforest/Logo/blob/main/FSC%20logo%20-%20R.png?raw=true" height="40" alt="FSC Logo" onerror="this.style.display='none'">
+        <img src="Logo Clever forestry.png" height="40" alt="Clever Forestry" style="border-radius:6px" onerror="this.style.display='none'">
         <span class="text-white fw-bold" style="font-size:20px;letter-spacing:0.5px;text-transform:uppercase" id="navbar-project-name">Quan ly rung ben vung FSC</span>
-        <img src="Logo Clever forestry.png" height="36" alt="Clever Forestry" style="border-radius:6px" onerror="this.style.display='none'">
+        <img id="navbar-logo-custom" src="data:," height="40" alt="" style="border-radius:6px;display:none">
       </div>
       <div class="d-md-none d-flex align-items-center justify-content-center flex-grow-1 min-w-0 ms-1" style="gap:6px">
         <img src="Logo Clever forestry.png" height="28" class="flex-shrink-0" alt="CF" style="border-radius:4px">
         <span class="text-white fw-bold text-center text-nowrap" id="navbar-project-name-mobile" style="font-size:12px;line-height:1;letter-spacing:0.3px">QUẢN LÝ RỪNG FSC</span>
-        <img src="https://github.com/impactslowforest/Logo/blob/main/FSC%20logo%20-%20R.png?raw=true" height="28" class="flex-shrink-0" alt="FSC">
+        <img id="navbar-logo-custom-mobile" src="data:," height="28" class="flex-shrink-0" alt="" style="border-radius:4px;display:none">
       </div>
       <div class="d-flex align-items-center gap-1 gap-md-2 ms-auto flex-shrink-0">
         <div class="text-end d-none d-md-block" style="line-height:1.2">
@@ -2250,7 +2250,7 @@
       }
       // Update mobile project name
       const mobName = document.getElementById('navbar-project-name-mobile');
-      if (mobName) mobName.textContent = currentLang === 'en' ? 'FSC FOREST MANAGEMENT' : 'QUẢN LÝ RỪNG FSC';
+      if (mobName) { const s = getSettings(); mobName.textContent = s.projectName; }
     }
 
     // Apply language on page load
@@ -3382,8 +3382,13 @@
         titleContainer.addClass('start-50 translate-middle-x').removeClass('start-0').css({'left':'','right':'','transform':''});
       }
 
-      // Secondary logo (disabled - already in navbar HTML)
-      $('#navbar-logo-2').remove();
+      // Custom logo from settings
+      const logoEls = ['#navbar-logo-custom', '#navbar-logo-custom-mobile', '#login-logo-custom'];
+      if (s.logoUrl) {
+        logoEls.forEach(sel => { const el = $(sel); if (el.length) { el.attr('src', s.logoUrl).css('display', ''); el.on('error', function() { $(this).css('display','none'); }); } });
+      } else {
+        logoEls.forEach(sel => $(sel).css('display', 'none'));
+      }
 
       const navTxt = s.colorNavbarText || '#FFFFFF';
       const sidebarTxt = s.colorSidebarText || '#FFFFFF';
@@ -3530,7 +3535,7 @@
                   <div class="col-md-6"><label class="form-label small fw-bold mb-1">Font chữ</label><select class="form-select form-select-sm" id="set-font-family">${fontOpts}</select></div>
                   <div class="col-md-3 col-6">${colorInput('set-color-navbar-text', s.colorNavbarText||'#FFFFFF', 'Màu chữ Navbar')}</div>
                   <div class="col-md-3 col-6">${colorInput('set-color-primary', s.colorPrimary, 'Màu chính')}</div>
-                  <div class="col-md-6"><label class="form-label small fw-bold mb-1">Logo phụ (URL)</label><input type="text" class="form-control form-control-sm" id="set-logo-url" value="${s.logoUrl||''}" placeholder="Dán URL logo hoặc để trống"></div>
+                  <div class="col-md-6"><label class="form-label small fw-bold mb-1">Logo (URL)</label><input type="text" class="form-control form-control-sm" id="set-logo-url" value="${s.logoUrl||''}" placeholder="Dán URL logo hoặc để trống"></div>
                   <div class="col-md-3 col-6">${colorInput('set-color-accent', s.colorAccent, 'Màu gradient phụ')}</div>
                   <div class="col-md-3 col-6">${colorInput('set-color-bg', s.colorBg, 'Màu nền chung')}</div>
                 </div>
