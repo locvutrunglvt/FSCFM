@@ -59,20 +59,24 @@
     }
     .login-body { padding: 24px 24px 20px; }
     .login-input-group {
-      position: relative;
+      display: flex;
+      align-items: center;
+      gap: 10px;
       margin-bottom: 14px;
     }
     .login-input-group i.input-icon {
-      position: absolute;
-      left: 14px; top: 50%; transform: translateY(-50%);
-      color: #999; font-size: 14px; z-index: 2;
+      color: #2E7D32; font-size: 18px; flex-shrink: 0; width: 22px; text-align: center;
+    }
+    .login-input-group .input-wrap {
+      position: relative; flex: 1;
     }
     .login-input-group .form-control {
-      padding: 12px 14px 12px 40px;
+      padding: 14px 40px 14px 14px;
       border-radius: 10px;
       border: 1.5px solid #e0e0e0;
-      font-size: 14px;
+      font-size: 15px;
       transition: border-color 0.2s, box-shadow 0.2s;
+      width: 100%;
     }
     .login-input-group .form-control:focus {
       border-color: #2E7D32;
@@ -85,18 +89,18 @@
     .btn-login-main {
       background: linear-gradient(135deg, #2E7D32, #1B5E20);
       color: #fff; border: none; border-radius: 10px;
-      padding: 12px; font-size: 15px; font-weight: 600;
+      padding: 14px; font-size: 16px; font-weight: 600;
       width: 100%; transition: all 0.2s;
       box-shadow: 0 4px 12px rgba(27,94,32,0.3);
     }
     .btn-login-main:hover { transform: translateY(-1px); box-shadow: 0 6px 20px rgba(27,94,32,0.4); background: linear-gradient(135deg, #388E3C, #2E7D32); color: #fff; }
     .btn-login-main:active { transform: translateY(0); }
     .btn-register-main {
-      background: linear-gradient(135deg, #1565C0, #0D47A1);
+      background: linear-gradient(135deg, #43A047, #2E7D32);
       color: #fff; border: none; border-radius: 10px;
-      padding: 12px; font-size: 15px; font-weight: 600;
+      padding: 14px; font-size: 16px; font-weight: 600;
       width: 100%; transition: all 0.2s;
-      box-shadow: 0 4px 12px rgba(13,71,161,0.3);
+      box-shadow: 0 4px 12px rgba(46,125,50,0.3);
     }
     .btn-register-main:hover { transform: translateY(-1px); color: #fff; }
     @media (max-width: 767px) {
@@ -105,14 +109,16 @@
       .login-header img { height: 56px !important; }
       .login-header h5 { font-size: 15px !important; }
       .login-body { padding: 20px 18px 16px; }
-      .login-input-group .form-control { padding: 11px 14px 11px 38px; font-size: 14px; }
-      .btn-login-main, .btn-register-main { padding: 11px; font-size: 14px; }
+      .login-input-group i.input-icon { font-size: 18px; }
+      .login-input-group .form-control { padding: 14px 40px 14px 14px; font-size: 15px; }
+      .btn-login-main, .btn-register-main { padding: 14px; font-size: 16px; }
     }
     @media (max-width: 374px) {
       .login-card { margin: 0 8px; }
       .login-header { padding: 18px 14px 14px; }
       .login-header img { height: 48px !important; }
       .login-body { padding: 16px 14px 12px; }
+      .login-input-group .form-control { padding: 12px 36px 12px 12px; font-size: 14px; }
     }
 
     #sidebar-wrapper {
@@ -236,6 +242,15 @@
       color: var(--forest-primary);
       border-left: 4px solid var(--forest-primary);
       font-weight: 700;
+    }
+    /* All sidebar icons dark green */
+    .accordion-button i,
+    .menu-sub-link i {
+      color: #1B5E20 !important;
+      opacity: 1 !important;
+    }
+    .accordion-button:not(.collapsed) i {
+      color: #1B5E20 !important;
     }
     .search-result-item:hover { background-color: #E8F5E9 !important; }
 
@@ -773,7 +788,7 @@
       align-items: center;
       background: none;
       border: none;
-      color: #666;
+      color: #1B5E20;
       font-size: 10px;
       padding: 4px 12px;
       cursor: pointer;
@@ -782,10 +797,12 @@
     #mobile-home-bar .mob-nav-btn i {
       font-size: 1.2rem;
       margin-bottom: 2px;
+      color: #1B5E20;
     }
     #mobile-home-bar .mob-nav-btn.active,
     #mobile-home-bar .mob-nav-btn:active {
       color: #1B5E20;
+      font-weight: 700;
     }
 
     /* Dashboard: fit one screen */
@@ -883,18 +900,18 @@
       border-radius: 12px;
       padding: 10px 12px;
       box-shadow: 0 2px 10px rgba(0,0,0,0.05);
-      border-left: 4px solid #2E7D32;
+      border-left: 4px solid #1B5E20;
       transition: all 0.25s ease;
     }
     .kpi-card:hover { transform: translateY(-3px); box-shadow: 0 6px 16px rgba(0,0,0,0.1); }
-    .kpi-value { font-size: 1.3rem; font-weight: 800; color: #1B5E20; letter-spacing: -0.5px; }
+    .kpi-value { font-size: 1.3rem; font-weight: 800; color: #1B5E20 !important; letter-spacing: -0.5px; }
     .kpi-label { font-size: 11px; color: #777; font-weight: 600; text-transform: uppercase; letter-spacing: 0.3px; }
-    .kpi-card.blue { border-left-color: #1565C0; }
-    .kpi-card.blue .kpi-value { color: #1565C0; }
-    .kpi-card.orange { border-left-color: #E65100; }
-    .kpi-card.orange .kpi-value { color: #E65100; }
-    .kpi-card.purple { border-left-color: #6A1B9A; }
-    .kpi-card.purple .kpi-value { color: #6A1B9A; }
+    .kpi-card.blue { border-left-color: #1B5E20; }
+    .kpi-card.blue .kpi-value { color: #1B5E20; }
+    .kpi-card.orange { border-left-color: #1B5E20; }
+    .kpi-card.orange .kpi-value { color: #1B5E20; }
+    .kpi-card.purple { border-left-color: #1B5E20; }
+    .kpi-card.purple .kpi-value { color: #1B5E20; }
 
     /* Map Styles */
     #map-container {
@@ -960,12 +977,16 @@
         <form id="form-login">
           <div class="login-input-group">
             <i class="fa-solid fa-user input-icon"></i>
-            <input type="text" class="form-control" id="login-email" data-i18n-ph="ph_email_user" placeholder="Email hoac Username" required autocomplete="username" autocapitalize="none" autocorrect="off" spellcheck="false" inputmode="email">
+            <div class="input-wrap">
+              <input type="text" class="form-control" id="login-email" data-i18n-ph="ph_email_user" placeholder="Email hoac Username" required autocomplete="username" autocapitalize="none" autocorrect="off" spellcheck="false" inputmode="email">
+            </div>
           </div>
           <div class="login-input-group">
             <i class="fa-solid fa-lock input-icon"></i>
-            <input type="password" class="form-control" id="login-pass" data-i18n-ph="ph_password" placeholder="Mat khau" required autocomplete="current-password">
-            <button type="button" class="toggle-pass" onclick="togglePasswordVis(this)" tabindex="-1"><i class="fa-solid fa-eye"></i></button>
+            <div class="input-wrap">
+              <input type="password" class="form-control" id="login-pass" data-i18n-ph="ph_password" placeholder="Mat khau" required autocomplete="current-password">
+              <button type="button" class="toggle-pass" onclick="togglePasswordVis(this)" tabindex="-1"><i class="fa-solid fa-eye"></i></button>
+            </div>
           </div>
           <div class="d-flex justify-content-between align-items-center mb-3" style="margin-top:-2px">
             <a href="javascript:void(0)" class="text-decoration-none text-success fw-semibold" style="font-size:13px" onclick="toggleAuth('REGISTER')" data-i18n="register_new">Dang ky moi</a>
@@ -977,28 +998,30 @@
         <form id="form-register" class="d-none">
           <div class="login-input-group">
             <i class="fa-solid fa-user-pen input-icon"></i>
-            <input type="text" class="form-control" id="reg-name" data-i18n-ph="ph_fullname" placeholder="Ho ten day du" required>
+            <div class="input-wrap"><input type="text" class="form-control" id="reg-name" data-i18n-ph="ph_fullname" placeholder="Ho ten day du" required></div>
           </div>
           <div class="login-input-group">
             <i class="fa-solid fa-at input-icon"></i>
-            <input type="text" class="form-control" id="reg-username" data-i18n-ph="ph_username" placeholder="Username (viet lien, khong dau)" required autocapitalize="none" autocorrect="off" spellcheck="false" pattern="[a-zA-Z0-9_]+" title="Chi cho phep chu cai, so va dau gach duoi">
+            <div class="input-wrap"><input type="text" class="form-control" id="reg-username" data-i18n-ph="ph_username" placeholder="Username (viet lien, khong dau)" required autocapitalize="none" autocorrect="off" spellcheck="false" pattern="[a-zA-Z0-9_]+" title="Chi cho phep chu cai, so va dau gach duoi"></div>
           </div>
           <div class="login-input-group">
             <i class="fa-solid fa-envelope input-icon"></i>
-            <input type="email" class="form-control" id="reg-email" placeholder="Email" required autocapitalize="none">
+            <div class="input-wrap"><input type="email" class="form-control" id="reg-email" placeholder="Email" required autocapitalize="none"></div>
           </div>
           <div class="login-input-group">
             <i class="fa-solid fa-phone input-icon"></i>
-            <input type="tel" class="form-control" id="reg-phone" data-i18n-ph="ph_phone" placeholder="So dien thoai">
+            <div class="input-wrap"><input type="tel" class="form-control" id="reg-phone" data-i18n-ph="ph_phone" placeholder="So dien thoai"></div>
           </div>
           <div class="login-input-group">
             <i class="fa-solid fa-lock input-icon"></i>
-            <input type="password" class="form-control" id="reg-pass" data-i18n-ph="ph_password" placeholder="Mat khau" required autocomplete="new-password">
-            <button type="button" class="toggle-pass" onclick="togglePasswordVis(this)" tabindex="-1"><i class="fa-solid fa-eye"></i></button>
+            <div class="input-wrap">
+              <input type="password" class="form-control" id="reg-pass" data-i18n-ph="ph_password" placeholder="Mat khau" required autocomplete="new-password">
+              <button type="button" class="toggle-pass" onclick="togglePasswordVis(this)" tabindex="-1"><i class="fa-solid fa-eye"></i></button>
+            </div>
           </div>
           <div class="login-input-group">
             <i class="fa-solid fa-check-double input-icon"></i>
-            <input type="password" class="form-control" id="reg-confirm-pass" data-i18n-ph="ph_confirm_pass" placeholder="Nhap lai mat khau" required autocomplete="new-password">
+            <div class="input-wrap"><input type="password" class="form-control" id="reg-confirm-pass" data-i18n-ph="ph_confirm_pass" placeholder="Nhap lai mat khau" required autocomplete="new-password"></div>
           </div>
           <button type="submit" class="btn btn-register-main mb-3" id="btn-register"><i class="fa-solid fa-user-plus me-2"></i><span data-i18n="btn_register">Dang ky</span></button>
           <div class="text-center">
@@ -1010,7 +1033,7 @@
       </div>
 
       <div class="text-center py-3" style="background:#f8f9fa;border-top:1px solid #eee;font-size:11px;color:#999">
-        <i class="fa-solid fa-shield-halved me-1"></i> <span data-i18n="secured_by">Bao mat boi Supabase Auth</span>
+        <i class="fa-solid fa-code me-1"></i> <span data-i18n="developed_by">Phat trien boi Cong ty tu van CleverForestry</span>
       </div>
     </div>
   </div>
@@ -1020,14 +1043,14 @@
       style="background: linear-gradient(135deg, #2E7D32 0%, #1B5E20 100%) !important; min-height: 56px;">
       <button class="btn text-white flex-shrink-0 d-none d-lg-inline-block" id="sidebarToggle"><i class="fa-solid fa-bars"></i></button>
       <div class="navbar-title-area position-absolute start-50 translate-middle-x text-center d-none d-md-flex align-items-center" style="gap:12px">
-        <img src="Logo Clever forestry.png" height="40" alt="Clever Forestry" style="border-radius:6px">
+        <img src="https://github.com/impactslowforest/Logo/blob/main/FSC%20logo%20-%20R.png?raw=true" height="40" alt="FSC Logo" onerror="this.style.display='none'">
         <span class="text-white fw-bold" style="font-size:20px;letter-spacing:0.5px;text-transform:uppercase" id="navbar-project-name">Quan ly rung ben vung FSC</span>
-        <img src="https://github.com/impactslowforest/Logo/blob/main/FSC%20logo%20-%20R.png?raw=true" height="40" alt="FSC" style="vertical-align:middle">
+        <img src="Logo Clever forestry.png" height="36" alt="Clever Forestry" style="border-radius:6px" onerror="this.style.display='none'">
       </div>
-      <div class="d-md-none d-flex align-items-center flex-grow-1 min-w-0 ms-1" style="gap:4px">
-        <img src="Logo Clever forestry.png" height="24" class="flex-shrink-0" alt="CF" style="border-radius:4px">
-        <span class="text-white fw-bold text-truncate" id="navbar-project-name-mobile" style="font-size:10px;line-height:1.15;letter-spacing:0;flex:1;min-width:0">FSC</span>
-        <img src="https://github.com/impactslowforest/Logo/blob/main/FSC%20logo%20-%20R.png?raw=true" height="24" class="flex-shrink-0" alt="FSC">
+      <div class="d-md-none d-flex align-items-center justify-content-center flex-grow-1 min-w-0 ms-1" style="gap:6px">
+        <img src="Logo Clever forestry.png" height="28" class="flex-shrink-0" alt="CF" style="border-radius:4px">
+        <span class="text-white fw-bold text-center" id="navbar-project-name-mobile" style="font-size:13px;line-height:1.2;letter-spacing:0.3px;flex:1;min-width:0">QUẢN LÝ RỪNG FSC</span>
+        <img src="https://github.com/impactslowforest/Logo/blob/main/FSC%20logo%20-%20R.png?raw=true" height="28" class="flex-shrink-0" alt="FSC">
       </div>
       <div class="d-flex align-items-center gap-1 gap-md-2 ms-auto flex-shrink-0">
         <div class="text-end d-none d-md-block" style="line-height:1.2">
@@ -1037,8 +1060,8 @@
         <span class="text-white me-1 small d-none d-md-block" id="user-display-name" style="opacity:0.85">User</span>
         <span id="offline-badge" class="badge bg-warning text-dark d-none" style="font-size:10px"><i class="fa-solid fa-wifi-slash me-1"></i>Offline</span>
         <button type="button" class="btn btn-sm btn-logout fw-bold rounded-pill px-2 px-md-3 shadow-sm"
-          style="background:#fff;color:#C62828;border:2px solid rgba(255,255,255,0.3);white-space:nowrap"
-          onmouseenter="this.style.background='#FFEBEE';this.style.color='#B71C1C'" onmouseleave="this.style.background='#fff';this.style.color='#C62828'"
+          style="background:rgba(255,255,255,0.15);color:#fff;border:1px solid rgba(255,255,255,0.3);white-space:nowrap"
+          onmouseenter="this.style.background='rgba(255,255,255,0.3)'" onmouseleave="this.style.background='rgba(255,255,255,0.15)'"
           onclick="logout()"><i class="fa-solid fa-right-from-bracket me-1"></i><span class="d-none d-sm-inline" data-i18n="btn_logout">Thoát</span></button>
       </div>
     </nav>
@@ -1071,29 +1094,29 @@
                 <span class="fw-bold text-success ms-2" data-i18n="map_title">Bản đồ quản lý lô rừng</span>
               </div>
               <div class="d-flex gap-2 flex-wrap">
-                <label class="btn btn-outline-primary btn-sm mb-0">
+                <label class="btn btn-outline-success btn-sm mb-0">
                   <i class="fa-solid fa-upload me-1"></i> <span data-i18n="btn_upload_geojson">Tải GeoJSON</span>
                   <input type="file" accept=".geojson,.json" class="d-none" id="geojson-upload" onchange="handleGeoJSONUpload(event)">
                 </label>
-                <button type="button" class="btn btn-outline-warning btn-sm" id="btn-edit-polygon" onclick="togglePolygonEdit()">
+                <button type="button" class="btn btn-outline-success btn-sm" id="btn-edit-polygon" onclick="togglePolygonEdit()">
                   <i class="fa-solid fa-pen-to-square me-1"></i> <span data-i18n="btn_edit_polygon">Chỉnh sửa</span>
                 </button>
-                <button type="button" class="btn btn-outline-secondary btn-sm" onclick="toggleMapLayers()">
+                <button type="button" class="btn btn-outline-success btn-sm" onclick="toggleMapLayers()">
                   <i class="fa-solid fa-layer-group me-1"></i> <span data-i18n="btn_layers">Lớp</span>
                 </button>
-                <button type="button" class="btn btn-outline-info btn-sm" onclick="addMapNote()">
+                <button type="button" class="btn btn-outline-success btn-sm" onclick="addMapNote()">
                   <i class="fa-solid fa-sticky-note me-1"></i> <span data-i18n="map_notes">Ghi chú</span>
                 </button>
                 <div class="btn-group">
-                  <button type="button" class="btn btn-outline-dark btn-sm" onclick="zoomToAllData()">
+                  <button type="button" class="btn btn-outline-success btn-sm" onclick="zoomToAllData()">
                     <i class="fa-solid fa-expand me-1"></i> <span data-i18n="btn_zoom_all">Toàn bộ</span>
                   </button>
-                  <button type="button" class="btn btn-outline-dark btn-sm dropdown-toggle dropdown-toggle-split" data-bs-toggle="dropdown"></button>
+                  <button type="button" class="btn btn-outline-success btn-sm dropdown-toggle dropdown-toggle-split" data-bs-toggle="dropdown"></button>
                   <ul class="dropdown-menu dropdown-menu-end" id="zoom-layer-menu">
                     <li><a class="dropdown-item small" href="#" onclick="zoomToAllData();return false"><i class="fa-solid fa-globe me-1"></i> <span data-i18n="btn_all_layers">Tất cả lớp</span></a></li>
                   </ul>
                 </div>
-                <button type="button" class="btn btn-outline-purple btn-sm" onclick="openGeoJSONRepo()" style="border-color:#7B1FA2;color:#7B1FA2">
+                <button type="button" class="btn btn-outline-success btn-sm" onclick="openGeoJSONRepo()">
                   <i class="fa-solid fa-database me-1"></i> <span data-i18n="btn_geo_repo">Kho bản đồ</span>
                 </button>
                 <button type="button" class="btn btn-success btn-sm" onclick="goHome()">
@@ -1195,7 +1218,7 @@
         btn_login: 'Đăng nhập',
         btn_register: 'Đăng ký',
         back_login: 'Quay lại Đăng nhập',
-        secured_by: 'Bảo mật bởi Supabase Auth',
+        developed_by: 'Phát triển bởi Công ty tư vấn CleverForestry',
         processing: 'Đang xử lý...',
         registering: 'Đang đăng ký...',
         username_not_found: 'Không tìm thấy username này',
@@ -1342,7 +1365,57 @@
         saved_ok: 'Đã lưu cài đặt thành công!',
         reset_ok: 'Đã khôi phục cài đặt mặc định.',
         no_network: 'Không có kết nối mạng và không có dữ liệu được lưu trước đó.',
-        account_locked: 'Tài khoản chưa kích hoạt hoặc đã bị khóa!'
+        account_locked: 'Tài khoản chưa kích hoạt hoặc đã bị khóa!',
+
+        // Audit module
+        audit_tab_history: 'Lịch sử đánh giá',
+        audit_tab_new: 'Thực hiện đánh giá',
+        audit_no_history: 'Chưa có dữ liệu lịch sử đánh giá.',
+        audit_list_title: 'Danh sách đã đánh giá',
+        audit_code: 'Mã ĐG',
+        audit_target: 'Đối tượng',
+        audit_date: 'Ngày đánh giá',
+        audit_staff: 'Người đánh giá',
+        audit_detail: 'Chi tiết',
+        audit_select_type: 'Chọn loại đối tượng:',
+        audit_type_group: 'Nhóm Chứng Chỉ Rừng',
+        audit_type_board: 'Ban Quản lý',
+        audit_select_hint: 'Chọn đối tượng để tiến hành đánh giá mới',
+        audit_no_data: 'Chưa có dữ liệu cho loại đối tượng này.',
+        audit_group_code: 'Mã Nhóm',
+        audit_group_name: 'Tên Nhóm',
+        audit_fsc_area: 'Diện Tích FSC',
+        audit_board_id: 'ID Ban',
+        audit_board_name: 'Tên Ban Quản lý',
+        audit_total_area: 'Tổng Diện Tích',
+        audit_action: 'Hành động',
+        audit_history_btn: 'Lịch sử & Đánh giá',
+        audit_record_title: 'Hồ sơ đánh giá',
+        audit_back_list: 'Quay lại DS',
+        audit_info: 'Thông tin',
+        audit_new_btn: 'Thực hiện đánh giá mới',
+        audit_history_label: 'LỊCH SỬ ĐÁNH GIÁ',
+        audit_records: 'bản ghi',
+        audit_executor: 'Người thực hiện',
+        audit_result: 'Kết quả',
+        audit_no_records: 'Chưa có lịch sử đánh giá nào.',
+        audit_done: 'Đã xong',
+        audit_form_title: 'PHIẾU ĐÁNH GIÁ',
+        audit_cancel_back: 'Hủy / Quay lại',
+        audit_subject: 'Đối tượng',
+        audit_date_label: 'Ngày',
+        audit_compliant: 'Tuân thủ',
+        audit_non_compliant: 'Không TT',
+        audit_note_ph: 'Ghi chú chi tiết...',
+        audit_cancel_file: 'Hủy file',
+        audit_save_btn: 'Lưu kết quả đánh giá',
+        audit_detail_title: 'Chi tiết đánh giá',
+        audit_back: 'Quay lại',
+        audit_auditor: 'Người ĐG',
+        audit_update: 'Cập nhật',
+        audit_compliant_badge: 'TUÂN THỦ',
+        audit_non_compliant_badge: 'KHÔNG TT',
+        audit_not_found: 'Không tìm thấy bản ghi đánh giá!'
       },
       en: {
         login_title: 'FSC Forest Management System',
@@ -1358,7 +1431,7 @@
         btn_login: 'Sign in',
         btn_register: 'Register',
         back_login: 'Back to Sign in',
-        secured_by: 'Secured by Supabase Auth',
+        developed_by: 'Developed by CleverForestry Consulting',
         processing: 'Processing...',
         registering: 'Registering...',
         username_not_found: 'Username not found',
@@ -1489,12 +1562,292 @@
         saved_ok: 'Settings saved successfully!',
         reset_ok: 'Settings have been reset to defaults.',
         no_network: 'No internet connection and no cached data available.',
-        account_locked: 'Account not activated or has been locked!'
+        account_locked: 'Account not activated or has been locked!',
+
+        // Audit module
+        audit_tab_history: 'Audit History',
+        audit_tab_new: 'Perform Audit',
+        audit_no_history: 'No audit history data available.',
+        audit_list_title: 'Audit List',
+        audit_code: 'Audit ID',
+        audit_target: 'Target',
+        audit_date: 'Audit Date',
+        audit_staff: 'Auditor',
+        audit_detail: 'Details',
+        audit_select_type: 'Select target type:',
+        audit_type_group: 'Forest Certificate Groups',
+        audit_type_board: 'Management Boards',
+        audit_select_hint: 'Select a target to perform a new audit',
+        audit_no_data: 'No data available for this target type.',
+        audit_group_code: 'Group Code',
+        audit_group_name: 'Group Name',
+        audit_fsc_area: 'FSC Area',
+        audit_board_id: 'Board ID',
+        audit_board_name: 'Board Name',
+        audit_total_area: 'Total Area',
+        audit_action: 'Actions',
+        audit_history_btn: 'History & Audit',
+        audit_record_title: 'Audit Record',
+        audit_back_list: 'Back to List',
+        audit_info: 'Information',
+        audit_new_btn: 'Perform New Audit',
+        audit_history_label: 'AUDIT HISTORY',
+        audit_records: 'records',
+        audit_executor: 'Performed by',
+        audit_result: 'Result',
+        audit_no_records: 'No audit history records found.',
+        audit_done: 'Completed',
+        audit_form_title: 'AUDIT FORM',
+        audit_cancel_back: 'Cancel / Back',
+        audit_subject: 'Subject',
+        audit_date_label: 'Date',
+        audit_compliant: 'Compliant',
+        audit_non_compliant: 'Non-compliant',
+        audit_note_ph: 'Detailed notes...',
+        audit_cancel_file: 'Remove file',
+        audit_save_btn: 'Save Audit Results',
+        audit_detail_title: 'Audit Details',
+        audit_back: 'Back',
+        audit_auditor: 'Auditor',
+        audit_update: 'Updated',
+        audit_compliant_badge: 'COMPLIANT',
+        audit_non_compliant_badge: 'NON-COMPLIANT',
+        audit_not_found: 'Audit record not found!'
       }
     };
 
     function t(key) {
       return (LANG[currentLang] && LANG[currentLang][key]) || (LANG['vi'] && LANG['vi'][key]) || key;
+    }
+
+    // === COLUMN NAME TRANSLATION (Vietnamese → English) ===
+    const COL_EN = {
+      // Common
+      'ID':'ID','Email':'Email','Website':'Website','QR code':'QR code','Username':'Username',
+      // NhanSu
+      'ID_staff':'Staff ID','Họ và tên':'Full Name','Giới tính':'Gender','Ngày sinh':'Date of Birth',
+      'Chức vụ':'Position','Số điện thoại':'Phone','Trạng thái':'Status',
+      'Thuộc Ban quản lý':'Management Board','Thuộc nhóm':'Group',
+      // Ban_Quanlynhom
+      'ID ban quản lý':'Board ID','Tên ban quản lý':'Board Name','Loại tổ chức':'Organization Type',
+      'Địa chỉ':'Address','Tỉnh':'Province','Huyện':'District','Người đại diện':'Representative',
+      'Điện thoại':'Phone','Loài cây trồng chính':'Main Tree Species',
+      // NhomCCR
+      'ID nhóm':'Group ID','ID ban quản lý':'Board ID','Mã nhóm':'Group Code','Tên nhóm':'Group Name',
+      'Xã':'Commune','Xóm':'Village','Vị trí':'Location',
+      'Diện tích FSC':'FSC Area','Diện tích ngoài FSC':'Non-FSC Area',
+      'Diện tích rừng tự nhiên':'Natural Forest Area','Diện tích vùng đệm':'Buffer Zone Area',
+      'Tổng diện tích':'Total Area','Sản lượng dự kiến năm':'Annual Estimated Yield',
+      'Diện tích trồng rừng năm':'Annual Planting Area','Số thành viên':'Members',
+      'Ngày cập nhật':'Updated Date','Người cập nhật':'Updated By','Đường dẫn file':'File Path',
+      // Churung
+      'ID chủ rừng':'Owner ID','Họ tên chủ rừng':'Forest Owner Name',
+      'Dân tộc':'Ethnicity','CCCD':'Citizen ID',
+      'Họ tên vợ':'Wife Name','Họ tên chồng':'Husband Name','Thôn':'Hamlet',
+      'Ngày tham gia':'Join Date','Ngày rời nhóm':'Leave Date',
+      'Số lô rừng':'Number of Plots','Người nhập dữ liệu':'Data Entry By',
+      // Lo_rung
+      'ID lô rừng':'Plot ID','Mã số lô 2024':'Plot Code 2024','Mã số lô 2023':'Plot Code 2023',
+      'Tên lô rừng':'Plot Name','Số sổ đỏ':'Land Title No.','Tờ bản đồ':'Map Sheet',
+      'Thửa đất':'Land Parcel','Tiểu khu':'Sub-zone','Khoảnh':'Compartment',
+      'Tọa độ tâm lô':'Plot Center Coordinates','Khoảng cách tới nhà':'Distance to House',
+      'Địa chỉ lô':'Plot Address','Tình trạng sổ đỏ':'Land Title Status',
+      'Ngày tham gia FSC':'FSC Join Date','Tình trạng xói mòn':'Erosion Status',
+      'Nguyên nhân xói mòn':'Erosion Cause','Mốc ranh giới':'Boundary Markers',
+      'Độ bền vững mốc ranh':'Marker Durability',
+      'Độ dốc bình quân':'Average Slope','Giáp ranh rừng tự nhiên':'Adjacent to Natural Forest',
+      'Có loài cây bản địa':'Has Native Species','Tên động vật thực vật quý':'Rare Species Names',
+      'Loài cây trồng xen ghép':'Intercropping Species','Loài cây trồng FSC':'FSC Tree Species',
+      'Nguồn gốc giống':'Seedling Origin','Mô tả nguồn gốc giống':'Seedling Origin Description',
+      'Có hóa đơn giống':'Has Seedling Invoice','Mật độ ban đầu':'Initial Density',
+      'Mật độ sau khi tỉa thưa':'Density After Thinning','Số cây trồng chính':'Main Trees Count',
+      'Số cây trồng dặm':'Supplemental Trees Count','Diện tích GCN QSDĐ':'Land Certificate Area',
+      'Diện tích trồng rừng':'Planted Forest Area','Diện tích HLVS':'Riparian Corridor Area',
+      'Có ao hồ':'Has Ponds','Thời điểm trồng':'Planting Date','Năm trồng':'Planting Year',
+      'Số năm khai thác':'Harvest Cycle (years)','Năm khai thác':'Harvest Year',
+      'Sản lượng khai thác xe':'Harvest Volume (loads)','Sản lượng khai thác đăm':'Harvest Volume (cubic)',
+      'Có thuê lao động':'Hired Labor','Phương tiện bảo hộ lao động':'PPE Equipment',
+      'Loại phương tiện BHLD':'PPE Types',
+      'Kỹ thuật trước trồng':'Pre-planting Technique','Kỹ thuật chăm sóc':'Maintenance Technique',
+      'Cuốc hố bằng máy':'Machine Digging','Bón phân':'Fertilizer Applied',
+      'Loại phân bón':'Fertilizer Type','Định lượng phân bón':'Fertilizer Amount',
+      'Kiểm soát dịch bệnh':'Pest Control','Tình hình sâu bệnh':'Pest Situation',
+      'Thuốc sử dụng':'Pesticides Used','Phòng cháy chữa cháy':'Fire Prevention',
+      // Section headers in Lo_rung
+      '2. Thông tin địa lý – pháp lý':'2. Geographic & Legal Info',
+      '3. Thông tin pháp lý – sở hữu – ổn định':'3. Legal & Ownership Info',
+      '4. Đặc điểm sinh thái – địa hình':'4. Ecology & Terrain',
+      '5. Cây trồng và nguồn gốc giống':'5. Species & Seedling Origin',
+      '6. Mật độ và số cây':'6. Density & Tree Count',
+      '8. Thời gian – chu kỳ – sản lượng':'8. Time & Yield Cycle',
+      '9. Lao động – an toàn – thiết bị':'9. Labor & Safety',
+      '10. Biện pháp kỹ thuật lâm sinh':'10. Silviculture Techniques',
+      // Churung section headers
+      'Thông tin cá nhân':'Personal Info','Thông tin liên hệ và địa chỉ':'Contact & Address',
+      'Thông tin tham gia nhóm':'Group Membership','Thông tin rừng quản lý':'Forest Management Info',
+      'Thông tin hệ thống':'System Info','Cập nhật':'Updated',
+      // Taphuan
+      'ID tập huấn':'Training ID','ID chủ rừng':'Owner ID','Loại tập huấn':'Training Type',
+      'Ngày tập huấn':'Training Date','Địa điểm':'Location','Giảng viên':'Instructor',
+      'Số lượng tham dự':'Attendees',
+      // Noidung_taphuan
+      'Tên lớp tập huấn':'Class Name','Ghi chú':'Notes',
+      // KH_QL_Lorung / Biendong
+      'ID kế hoạch':'Plan ID','Hoạt động':'Activity','Ngày thực hiện':'Execution Date',
+      'Nội dung':'Content','Người nhập':'Entered By',
+      'Loại biến động':'Change Type','Ngày biến động':'Change Date',
+      // HD_Lorung
+      'ID hoạt động lô':'Plot Activity ID','ID hoạt động':'Activity ID','Tên hoạt động':'Activity Name',
+      'Ngày triển khai':'Start Date','Ngày kết thúc':'End Date','Ngày báo cáo':'Report Date',
+      'Địa điểm kiểm tra':'Inspection Location','Người kiểm tra':'Inspector',
+      'Kết quả hoạt động':'Activity Result','Diện tích thực hiện':'Area Implemented',
+      'Số lao động':'Workers','Tuổi lao động':'Worker Age',
+      // DS_HDong
+      'ID DS hoat dong':'Activity List ID','Hoạt động chi tiết':'Activity Details','Nhóm hoạt động':'Activity Group',
+      // CauHoi_DanhGia
+      'ID câu hỏi':'Question ID','Nhóm tiêu chí':'Criteria Group','Nội dung câu hỏi':'Question Content',
+      'Phương pháp kiểm tra':'Inspection Method','Gợi ý bằng chứng':'Evidence Suggestions',
+      // DG_noibo
+      'ID đánh giá':'Audit ID','Date':'Date','Staff':'Staff','Update':'Update',
+      // Loai_hoatdong_rung
+      'Tên hoạt động':'Activity Name','Mô tả chi tiết':'Detailed Description',
+      // Menu
+      'Nhom':'Group','Module':'Module','View':'View','Xem':'View','Thêm':'Add','Sửa':'Edit','Xóa':'Delete','PhanQuyen':'Permission',
+      // Admin
+      'Province code':'Province Code','Province':'Province','District':'District','Commune':'Commune','TYPE':'Type',
+      'Số nhóm quản lý':'Managed Groups','Số hộ thành viên':'Member Households',
+      'Dien tich ngoai FSC':'Non-FSC Area','Diện tích vùng đệm':'Buffer Zone Area'
+    };
+
+    // Translate column name: returns English when lang is EN
+    function tc(colName) {
+      if (currentLang === 'en' && COL_EN[colName]) return COL_EN[colName];
+      return colName;
+    }
+
+    // === AUDIT DICTIONARY ENGLISH TRANSLATIONS ===
+    const AUDIT_CAT_EN = {
+      'Tuân thủ pháp luật':'Legal Compliance',
+      'Quyền người lao động':'Workers\' Rights',
+      'Quyền người bản địa':'Indigenous Peoples\' Rights',
+      'Quan hệ cộng đồng':'Community Relations',
+      'Lợi ích từ rừng':'Benefits from Forests',
+      'Môi trường':'Environmental Impact',
+      'Kế hoạch quản lý':'Management Planning',
+      'Giám sát & Đánh giá':'Monitoring & Evaluation',
+      'Thực hiện quản lý':'Management Implementation'
+    };
+    function tcat(catName) {
+      if (currentLang === 'en' && AUDIT_CAT_EN[catName]) return AUDIT_CAT_EN[catName];
+      return catName;
+    }
+
+    // Audit question label translations (68 questions)
+    const AUDIT_LABEL_EN = {
+      'RanhGioiRoRang':'Are the boundaries of all Management Units within the certificate scope clearly defined, documented, and shown on maps?',
+      'NopThuePhiDayDu':'Are all taxes and fees related to forest management paid on time in accordance with current regulations?',
+      'GiamSatNoiBo':'Is internal monitoring of group activities being carried out?',
+      'XuLyViPham':'If illegal or unauthorized activities are detected, does the forest owner take measures to address them?',
+      'GiaiQuyetTranhChapNgoaiToa':'Are disputes related to law and traditional rights resolved promptly out of court?',
+      'HoSoTranhChap':'Are dispute records updated with resolution steps, results, or reasons for pending resolution?',
+      'NgungHoatDongKhiTranhChap':'Does the forest owner cease operations in areas with serious, prolonged, or multi-party disputes?',
+      'TuDoThamGiaToChuc':'Are workers free to join the labor organization of their choice?',
+      'KhongLaoDongCuongBuc':'Are there any forms of forced labor among forest owners and contractor workers?',
+      'TraLuongCongBang':'Are women and men paid equally for the same work?',
+      'PhuongThucTraLuongNu':'Are women paid directly using safe methods (bank transfer, tuition payment, etc.)?',
+      'NghiThaiSan':'Are women granted maternity leave as required by social insurance law?',
+      'TrangBiBaoHo':'Are workers provided with adequate and appropriate personal protective equipment?',
+      'BatBuocDungBaoHo':'Is the use of personal protective equipment mandatory?',
+      'HoSoAnToanLaoDong':'Are occupational safety records, including accidents and work-loss time, maintained?',
+      'CaiThienAnToanSauSuCo':'Is occupational safety reviewed and improved after serious incidents or accidents?',
+      'MucLuongToiThieu':'Are wages equal to or higher than the regional/industry minimum wage or agreed rates?',
+      'TraLuongDungHan':'Are wages and contractual payments made on time and as agreed?',
+      'DaoTaoNguoiLaoDong':'Are workers trained on specific tasks and supervised for safety to contribute to the forest management plan?',
+      'HoSoDaoTao':'Are up-to-date training records maintained for all workers?',
+      'GiaiQuyetKhieuNai':'Are worker complaints and grievances identified, responded to, and resolved satisfactorily?',
+      'BoiThuongThietHai':'Are workers fairly compensated for work-related damages (accidents, occupational diseases, etc.)?',
+      'NhanDienNguoiBanDia':'Have indigenous peoples (if any) affected by forest management activities been identified?',
+      'TaiLieuHoaQuyenLoi':'Are the legal, traditional rights and aspirations of indigenous peoples documented and mapped?',
+      'ThamVanNguoiBanDia':'Are indigenous peoples informed and consulted about forest management activities to protect their rights?',
+      'HoSoThoaThuan':'Are records of binding agreements with indigenous peoples maintained?',
+      'BaoVeDiaDiemVanHoa':'Are sites of special cultural and spiritual significance to indigenous peoples identified and protected?',
+      'NhanDienCongDong':'Have local communities inside and around the Management Unit been identified?',
+      'ThamVanCongDong':'Are local communities informed and consulted about forest management activities?',
+      'BaoVeQuyenLoiCongDong':'Are the legal and traditional rights of local communities respected and not violated?',
+      'GiaiQuyetXamPhamQuyenLoi':'If community rights are violated, is the situation corrected and disputes resolved satisfactorily?',
+      'QuyTrinhGiaiQuyetTranhChap':'Is there a public dispute resolution process developed with community participation?',
+      'XuLyTranhChapCongDong':'Are disputes related to forest management activities responded to and resolved promptly?',
+      'CanCuKhaiThac':'Is timber harvesting based on documented evidence of growth, yield, and ecosystem protection?',
+      'GioiHanKhaiThac':'Does the annual timber harvest ensure it does not exceed forest growth rates?',
+      'NganNguaTacDongXau':'Do management activities prevent negative environmental impacts?',
+      'GiamThieuTacDong':'Where negative impacts occur, are prevention, mitigation, or remediation measures applied?',
+      'BaoVeLoaiQuyHiem':'Are rare and endangered species and their habitats identified and protected?',
+      'NganChanSanBat':'Are measures in place to prevent hunting and harvesting of rare and endangered forest products?',
+      'TuanThuBaoVeDongVat':'Are wildlife protection regulations, including bans on hunting and illegal trade, complied with?',
+      'NganNguoiLaoDongSanBat':'Is it ensured that workers do not participate in hunting prohibited species?',
+      'BaoVeNguonNuoc':'Are measures implemented to protect water sources, riparian areas, and water quality?',
+      'PhucHoiNguonNuoc':'If water sources are not well protected, are restoration activities being carried out?',
+      'KhacPhucHauQuaCu':'Are water sources affected by past activities being restored?',
+      'NganChanSuyThoaiTiepDien':'Are measures in place to prevent ongoing water resource degradation caused by other parties?',
+      'KhongChuyenDoiRungTuNhien':'Is it ensured that natural forests are not converted to plantations or other land uses (except in special permitted cases)?',
+      'ChungChiKhuVucChuyenDoi':'Do areas converted from natural forest after 1994 meet the conditions for certification?',
+      'CongKhaiKeHoach':'Is a summary of the Forest Management Plan (excluding confidential info) publicly available free of charge to stakeholders?',
+      'HeThongTruyXuat':'Is there a system to track and trace the origin of all FSC products?',
+      'TaiLieuHoaSanPham':'Are details of sold products (species name, volume, harvest date, etc.) fully documented?',
+      'LuuTruHoaDon':'Are sales invoices and related documents retained for at least 5 years?',
+      'TrongRungSauKhaiThac':'Is the harvest site replanted within one planting season?',
+      'LoaiCayPhuHop':'Are tree species selected appropriate for the site conditions?',
+      'KiemSoatLoaiXamLan':'Is the list of invasive alien species regularly updated?',
+      'KhongGMO':'Is it ensured that genetically modified organisms (GMOs) are not used?',
+      'BienPhapLamSinh':'Are silvicultural measures appropriate for ecological characteristics and management objectives?',
+      'HanChePhanBonHoaHoc':'Is the use of chemical fertilizers limited or avoided?',
+      'GiamThieuTacHaiPhanBon':'Are measures in place to minimize or remediate environmental damage from chemical fertilizers?',
+      'KhongSuDungThuocCam':'Is it ensured that FSC-prohibited pesticides are not used or stored?',
+      'GhiChepSuDungThuoc':'Are detailed records of pesticide use (name, dosage, location, etc.) maintained?',
+      'AnToanSuDungThuoc':'Does pesticide use comply with ILO safety guidelines?',
+      'GiamThieuLuongThuoc':'Are measures in place to minimize pesticide use while maintaining effectiveness?',
+      'HanCheAnhHuongSucKhoe':'Are measures in place to limit the health and environmental impacts of pesticides?',
+      'DanhMucThuocDuocPhep':'Are only pesticides on the approved list being used correctly?',
+      'KiemSoatSinhHoc':'Are biological control agents regularly updated?',
+      'CanhBaoChayRung':'Is a forest fire warning system established and functioning effectively?',
+      'CapNhatVuChay':'Is information about forest fires regularly updated?',
+      'QuanLyRacThai':'Is it ensured that waste is not littered and pesticide containers are collected properly?',
+      'XuLyRacThai':'Is the waste management system functioning properly?'
+    };
+    function tq(qId, viLabel) {
+      if (currentLang === 'en' && AUDIT_LABEL_EN[qId]) return AUDIT_LABEL_EN[qId];
+      return viLabel;
+    }
+
+    // Module name translations (sidebar & sub-menu)
+    const MODULE_EN = {
+      'Danh sách nhóm':'Group List','Tập huấn':'Training','Khiếu nại':'Complaints',
+      'Tài sản':'Assets','Dụng cụ lao động':'Work Tools',
+      'Kế hoạch hoạt động':'Activity Plan','Đánh giá nội bộ':'Internal Audit',
+      'Hoạt động giám sát':'Monitoring Activities','Quản lý hồ sơ':'Records Management',
+      'Bộ tiêu chuẩn FSC':'FSC Standards','Tham vấn các bên liên quan':'Stakeholder Consultation',
+      'Tổng hợp báo cáo':'Report Summary','Bản đồ quản lý lô rừng':'Forest Plot Map',
+      'Kế hoạch quản lý lô rừng':'Plot Management Plan','Kế hoạch khai thác':'Harvesting Plan',
+      'Kế hoạch trồng rừng':'Reforestation Plan',
+      'Danh sách đơn vị thu mua':'Buyer List','Kế hoạch bán sản phẩm':'Product Sales Plan',
+      'Giá cả thị trường':'Market Prices',
+      'Danh mục thuốc bảo vệ thực vật':'Pesticide Catalog','Danh mục cây trồng':'Plant Catalog',
+      'Danh mục phân bón':'Fertilizer Catalog','Nguồn gốc cây giống':'Seedling Sources',
+      'Quản lý nhân sự':'Staff Management','Phân quyền người dùng':'User Permissions','Trợ giúp':'Help',
+      'Báo cáo giám sát nội bộ':'Internal Monitoring Report','Báo cáo giám sát':'Monitoring Report',
+      'Báo cáo sản lượng':'Production Report','Báo cáo FSC các năm':'Annual FSC Report',
+      'Báo cáo đánh giá rủi ro':'Risk Assessment Report','Báo cáo các chuyên đề':'Thematic Reports',
+      'Cài đặt hệ thống':'System Settings',
+      'Ban Quản lý nhóm':'Group Management Board','Nhóm CCR':'CCR Groups',
+      'Chủ rừng':'Forest Owners','Lô rừng':'Forest Plots',
+      'Biến động lô rừng':'Plot Changes','Nội dung tập huấn':'Training Content',
+      'Loại hoạt động rừng':'Forest Activity Types','Nhân sự':'Staff',
+      'Quản lý Menu':'Menu Management','Dữ liệu Tỉnh/Huyện':'Province/District Data',
+      'Quản lý nhóm':'Group Management'
+    };
+    function tm(moduleName) {
+      if (currentLang === 'en' && MODULE_EN[moduleName]) return MODULE_EN[moduleName];
+      return moduleName;
     }
 
     function toggleLang() {
@@ -1528,6 +1881,13 @@
       if (typeof renderSystemMenu === 'function' && APP_DATA && APP_DATA['Menu']) {
         renderSystemMenu(APP_DATA['Menu']);
       }
+      // Re-render current view if data-view is active (for audit etc.)
+      if ($('#data-view').is(':visible') && typeof renderContent === 'function') {
+        renderContent();
+      }
+      // Update mobile project name
+      const mobName = document.getElementById('navbar-project-name-mobile');
+      if (mobName) mobName.textContent = currentLang === 'en' ? 'FSC FOREST MANAGEMENT' : 'QUẢN LÝ RỪNG FSC';
     }
 
     // Apply language on page load
@@ -2307,15 +2667,8 @@
         titleContainer.addClass('start-50 translate-middle-x').removeClass('start-0').css({'left':'','right':'','transform':''});
       }
 
-      // Secondary logo
-      if (s.logoUrl) {
-        if (!$('#navbar-logo-2').length) {
-          $('<img id="navbar-logo-2" class="ms-2 d-none d-md-inline" style="vertical-align:middle">').insertAfter('#navbar-project-name');
-        }
-        $('#navbar-logo-2').attr('src', s.logoUrl).attr('height', '38');
-      } else {
-        $('#navbar-logo-2').remove();
-      }
+      // Secondary logo (disabled - already in navbar HTML)
+      $('#navbar-logo-2').remove();
 
       const navTxt = s.colorNavbarText || '#FFFFFF';
       const sidebarTxt = s.colorSidebarText || '#FFFFFF';
@@ -2611,12 +2964,12 @@
 
       // 6 Main menu icon cards
       const mainMenus = [
-        { icon: 'fa-users-between-lines', labelKey: 'menu_group_mgmt', color: '#2E7D32', group: 'Quản lý nhóm' },
-        { icon: 'fa-tree', labelKey: 'menu_forest_mgmt', color: '#1565C0', group: 'Quản lý rừng bền vững' },
-        { icon: 'fa-cart-shopping', labelKey: 'menu_trade', color: '#E65100', group: 'Mua bán sản phẩm' },
-        { icon: 'fa-book-open', labelKey: 'menu_docs', color: '#6A1B9A', group: 'Tài liệu tham khảo' },
-        { icon: 'fa-gears', labelKey: 'menu_system', color: '#455A64', group: 'Hệ thống' },
-        { icon: 'fa-chart-pie', labelKey: 'menu_report', color: '#C62828', group: 'Báo cáo' }
+        { icon: 'fa-users-between-lines', labelKey: 'menu_group_mgmt', color: '#1B5E20', group: 'Quản lý nhóm' },
+        { icon: 'fa-tree', labelKey: 'menu_forest_mgmt', color: '#1B5E20', group: 'Quản lý rừng bền vững' },
+        { icon: 'fa-cart-shopping', labelKey: 'menu_trade', color: '#1B5E20', group: 'Mua bán sản phẩm' },
+        { icon: 'fa-book-open', labelKey: 'menu_docs', color: '#1B5E20', group: 'Tài liệu tham khảo' },
+        { icon: 'fa-gears', labelKey: 'menu_system', color: '#1B5E20', group: 'Hệ thống' },
+        { icon: 'fa-chart-pie', labelKey: 'menu_report', color: '#1B5E20', group: 'Báo cáo' }
       ];
 
       const nextLang = currentLang === 'vi' ? 'EN' : 'VI';
@@ -2722,7 +3075,7 @@
       chartDataStore.area = {
         labels: [t('chart_fsc_area'), t('chart_non_fsc'), t('chart_riparian'), t('chart_planted')],
         values: [tongDTFSC.toFixed(1), dtNgoaiFSC.toFixed(1), dtHLVS.toFixed(1), dtTrongRung.toFixed(1)],
-        colors: ['#2E7D32', '#42A5F5', '#FFA726', '#AB47BC']
+        colors: ['#1B5E20', '#43A047', '#81C784', '#C8E6C9']
       };
 
       const labels = groups.map(g => g['Tên nhóm'] || g['Mã nhóm'] || g['ID nhóm']);
@@ -2781,7 +3134,7 @@
               labels: d.labels,
               datasets: [{
                 data: d.areas,
-                backgroundColor: d.labels.map((_, i) => ['#42A5F5', '#66BB6A', '#FFA726', '#AB47BC', '#EF5350', '#26C6DA', '#8D6E63'][i % 7]),
+                backgroundColor: d.labels.map((_, i) => ['#1B5E20', '#2E7D32', '#388E3C', '#43A047', '#4CAF50', '#66BB6A', '#81C784', '#A5D6A7', '#C8E6C9'][i % 9]),
                 borderWidth: 2, borderColor: '#fff',
                 label: 'Diện tích (ha)'
               }]
@@ -2797,8 +3150,8 @@
             data: {
               labels: d.labels,
               datasets: [
-                { label: 'Số hộ', data: d.members, backgroundColor: '#42A5F5', borderColor: '#42A5F5', borderRadius: 4, fill: false },
-                { label: 'Diện tích (ha)', data: d.areas, backgroundColor: '#66BB6A', borderColor: '#66BB6A', borderRadius: 4, fill: false }
+                { label: 'Số hộ', data: d.members, backgroundColor: '#2E7D32', borderColor: '#2E7D32', borderRadius: 4, fill: false },
+                { label: 'Diện tích (ha)', data: d.areas, backgroundColor: '#81C784', borderColor: '#81C784', borderRadius: 4, fill: false }
               ]
             },
             options: {
@@ -2847,12 +3200,12 @@
 
       // Find the parent menu color and icon
       const mainMenus = [
-        { label: 'Quản lý nhóm', color: '#2E7D32', icon: 'fa-users-between-lines' },
-        { label: 'Quản lý rừng bền vững', color: '#1565C0', icon: 'fa-tree' },
-        { label: 'Mua bán sản phẩm', color: '#E65100', icon: 'fa-cart-shopping' },
-        { label: 'Tài liệu tham khảo', color: '#6A1B9A', icon: 'fa-book-open' },
-        { label: 'Hệ thống', color: '#455A64', icon: 'fa-gears' },
-        { label: 'Báo cáo', color: '#C62828', icon: 'fa-chart-pie' }
+        { label: 'Quản lý nhóm', color: '#1B5E20', icon: 'fa-users-between-lines' },
+        { label: 'Quản lý rừng bền vững', color: '#2E7D32', icon: 'fa-tree' },
+        { label: 'Mua bán sản phẩm', color: '#388E3C', icon: 'fa-cart-shopping' },
+        { label: 'Tài liệu tham khảo', color: '#43A047', icon: 'fa-book-open' },
+        { label: 'Hệ thống', color: '#4CAF50', icon: 'fa-gears' },
+        { label: 'Báo cáo', color: '#66BB6A', icon: 'fa-chart-pie' }
       ];
       const parent = mainMenus.find(m => m.label === groupName) || { color: '#2E7D32', icon: 'fa-folder' };
 
@@ -2865,7 +3218,7 @@
           <div class="col">
             <div class="submenu-card" onclick="goHome();loadView('${v}','${m}')" style="border-top: 3px solid ${parent.color}">
               <div class="submenu-icon" style="background: ${parent.color}"><i class="fa-solid ${subIcon}"></i></div>
-              <div class="submenu-label">${i['Module']}</div>
+              <div class="submenu-label">${tm(i['Module'])}</div>
             </div>
           </div>`;
       }).join('');
@@ -2876,16 +3229,24 @@
           <div class="col">
             <div class="submenu-card" onclick="goHome();loadView('CaiDat_HeThong','Cài đặt hệ thống')" style="border-top: 3px solid ${parent.color}">
               <div class="submenu-icon" style="background: ${parent.color}"><i class="fa-solid fa-sliders"></i></div>
-              <div class="submenu-label">Cài đặt hệ thống</div>
+              <div class="submenu-label">${tm('Cài đặt hệ thống')}</div>
             </div>
           </div>`;
       }
 
+      // Translate group heading
+      const GRP_I18N = {
+        'Quản lý nhóm':'grp_group_mgmt','Quản lý rừng bền vững':'grp_forest_mgmt',
+        'Mua bán sản phẩm':'grp_trade','Tài liệu tham khảo':'grp_docs',
+        'Hệ thống':'grp_system','Báo cáo':'grp_report'
+      };
+      const groupLabel = GRP_I18N[groupName] ? t(GRP_I18N[groupName]) : groupName;
+
       const html = `
         <div style="padding: 10px">
           <div class="d-flex align-items-center mb-3">
-            <button class="btn btn-outline-success btn-sm me-2" onclick="goHome()"><i class="fa-solid fa-arrow-left me-1"></i>Quay lại</button>
-            <h5 class="fw-bold mb-0" style="color:${parent.color}"><i class="fa-solid ${parent.icon} me-2"></i>${groupName}</h5>
+            <button class="btn btn-outline-success btn-sm me-2" onclick="goHome()"><i class="fa-solid fa-arrow-left me-1"></i>${t('btn_back')}</button>
+            <h5 class="fw-bold mb-0" style="color:${parent.color}"><i class="fa-solid ${parent.icon} me-2"></i>${groupLabel}</h5>
           </div>
           <div class="row row-cols-2 row-cols-md-4 g-3">${cards}</div>
         </div>`;
@@ -2967,9 +3328,9 @@
             const v = (i['View'] || '').replace(/'/g, "\\'");
             const m = (i['Module'] || '').replace(/'/g, "\\'");
             const mIcon = getSubMenuIcon(m);
-            return `<a href="#" class="menu-sub-link" onclick="loadView('${v}', '${m}')"><i class="fa-solid ${mIcon} me-2" style="width:16px;text-align:center;opacity:0.7"></i>${i['Module']}</a>`;
+            return `<a href="#" class="menu-sub-link" onclick="loadView('${v}', '${m}')"><i class="fa-solid ${mIcon} me-2" style="width:16px;text-align:center"></i>${tm(i['Module'])}</a>`;
           }).join('');
-          accordionHtml += `<div class="accordion-item" data-group-vi="${group}"><h2 class="accordion-header"><button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#${cId}"><i class="fa-solid ${groupIcon} me-2" style="opacity:0.6"></i><span class="fw-bold">${groupLabel}</span></button></h2><div id="${cId}" class="accordion-collapse collapse show"><div class="accordion-body p-0">${sub}</div></div></div>`;
+          accordionHtml += `<div class="accordion-item" data-group-vi="${group}"><h2 class="accordion-header"><button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#${cId}"><i class="fa-solid ${groupIcon} me-2"></i><span class="fw-bold">${groupLabel}</span></button></h2><div id="${cId}" class="accordion-collapse collapse show"><div class="accordion-body p-0">${sub}</div></div></div>`;
         }
         $('#sidebarAccordion').html(accordionHtml);
 
@@ -3188,14 +3549,14 @@
       const btn = document.getElementById('btn-edit-polygon');
       if (mapEditMode) {
         mapInstance.addControl(mapDrawControl);
-        btn.classList.remove('btn-outline-warning');
-        btn.classList.add('btn-warning', 'text-dark');
-        btn.innerHTML = '<i class="fa-solid fa-pen-to-square me-1"></i> Tắt chỉnh sửa';
+        btn.classList.remove('btn-outline-success');
+        btn.classList.add('btn-success', 'text-white');
+        btn.innerHTML = `<i class="fa-solid fa-pen-to-square me-1"></i> ${t('btn_edit_polygon')} ✓`;
       } else {
         mapInstance.removeControl(mapDrawControl);
-        btn.classList.remove('btn-warning', 'text-dark');
-        btn.classList.add('btn-outline-warning');
-        btn.innerHTML = '<i class="fa-solid fa-pen-to-square me-1"></i> Chỉnh sửa';
+        btn.classList.remove('btn-success', 'text-white');
+        btn.classList.add('btn-outline-success');
+        btn.innerHTML = `<i class="fa-solid fa-pen-to-square me-1"></i> ${t('btn_edit_polygon')}`;
       }
     }
 
@@ -4044,10 +4405,10 @@
           <div class="card-header bg-white border-0 pt-4 px-4">
             <ul class="nav nav-tabs card-header-tabs" id="auditTabs" role="tablist">
               <li class="nav-item" role="presentation">
-                <button class="nav-link active fw-bold text-success" id="history-tab" data-bs-toggle="tab" data-bs-target="#history-pane" type="button" role="tab"><i class="fas fa-history me-2"></i>Lịch sử đánh giá</button>
+                <button class="nav-link active fw-bold text-success" id="history-tab" data-bs-toggle="tab" data-bs-target="#history-pane" type="button" role="tab"><i class="fas fa-history me-2"></i>${t('audit_tab_history')}</button>
               </li>
               <li class="nav-item" role="presentation">
-                <button class="nav-link fw-bold text-success" id="new-audit-tab" data-bs-toggle="tab" data-bs-target="#new-audit-pane" type="button" role="tab"><i class="fas fa-plus-circle me-2"></i>Thực hiện đánh giá</button>
+                <button class="nav-link fw-bold text-success" id="new-audit-tab" data-bs-toggle="tab" data-bs-target="#new-audit-pane" type="button" role="tab"><i class="fas fa-plus-circle me-2"></i>${t('audit_tab_new')}</button>
               </li>
             </ul>
           </div>
@@ -4077,7 +4438,7 @@
       const container = $('#audit-history-container');
 
       if (data.length === 0) {
-        container.html('<div class="text-center text-muted py-5"><i class="fas fa-folder-open fa-3x mb-3 opacity-50"></i><br>Chưa có dữ liệu lịch sử đánh giá.</div>');
+        container.html(`<div class="text-center text-muted py-5"><i class="fas fa-folder-open fa-3x mb-3 opacity-50"></i><br>${t('audit_no_history')}</div>`);
         return;
       }
 
@@ -4086,20 +4447,20 @@
 
       let html = `
         <div class="d-flex justify-content-between align-items-center mb-3">
-            <h5 class="text-success fw-bold m-0"><i class="fas fa-list me-2"></i>Danh sách đã đánh giá</h5>
+            <h5 class="text-success fw-bold m-0"><i class="fas fa-list me-2"></i>${t('audit_list_title')}</h5>
             <button class="btn btn-success btn-sm rounded-pill px-3 fw-bold shadow-sm" onclick="$('#new-audit-tab').tab('show')">
-                <i class="fas fa-plus me-1"></i>Thêm mới
+                <i class="fas fa-plus me-1"></i>${t('btn_add')}
             </button>
         </div>
         <div class="table-responsive">
           <table class="table table-hover table-striped align-middle" id="audit-history-table">
             <thead class="table-light text-success">
               <tr>
-                <th>Mã ĐG</th>
-                <th>Đối tượng</th>
-                <th>Ngày đánh giá</th>
-                <th>Người đánh giá</th>
-                <th class="text-center">Chi tiết</th>
+                <th>${t('audit_code')}</th>
+                <th>${t('audit_target')}</th>
+                <th>${t('audit_date')}</th>
+                <th>${t('audit_staff')}</th>
+                <th class="text-center">${t('audit_detail')}</th>
               </tr>
             </thead>
             <tbody>
@@ -4132,7 +4493,7 @@
       // Datatable init
       if ($.fn.DataTable) {
         $('#audit-history-table').DataTable({
-          language: { url: "//cdn.datatables.net/plug-ins/1.13.4/i18n/vi.json" },
+          language: currentLang === 'en' ? {} : { url: "//cdn.datatables.net/plug-ins/1.13.4/i18n/vi.json" },
           pageLength: 10,
           dom: 'ftp', // Simplified DOM
           ordering: false // Disable sorting to keep our Date desc sort
@@ -4148,14 +4509,14 @@
           <div class="card-body py-3">
              <div class="row align-items-center">
                <div class="col-md-4">
-                 <label class="fw-bold text-success mb-1">Chọn loại đối tượng:</label>
+                 <label class="fw-bold text-success mb-1">${t('audit_select_type')}</label>
                  <select class="form-select border-success" id="audit-type-select" onchange="renderAuditCandidateTable(this.value)">
-                   <option value="NhomCCR">Nhóm Chứng Chỉ Rừng (Groups)</option>
-                   <option value="Ban_Quanlynhom">Ban Quản lý (Management Boards)</option>
+                   <option value="NhomCCR">${t('audit_type_group')}</option>
+                   <option value="Ban_Quanlynhom">${t('audit_type_board')}</option>
                  </select>
                </div>
                <div class="col-md-8 text-end">
-                  <small class="text-muted fst-italic"><i class="fas fa-info-circle me-1"></i>Chọn đối tượng để tiến hành đánh giá mới</small>
+                  <small class="text-muted fst-italic"><i class="fas fa-info-circle me-1"></i>${t('audit_select_hint')}</small>
                </div>
              </div>
           </div>
@@ -4173,15 +4534,15 @@
       const data = APP_DATA[type] || [];
 
       if (data.length === 0) {
-        container.html('<div class="alert alert-warning">Chưa có dữ liệu cho loại đối tượng này.</div>');
+        container.html(`<div class="alert alert-warning">${t('audit_no_data')}</div>`);
         return;
       }
 
       let th = '';
       if (type === 'NhomCCR') {
-        th = `<th>Mã Nhóm</th><th>Tên Nhóm</th><th>Diện Tích FSC</th>`;
+        th = `<th>${t('audit_group_code')}</th><th>${t('audit_group_name')}</th><th>${t('audit_fsc_area')}</th>`;
       } else {
-        th = `<th>ID Ban</th><th>Tên Ban Quản lý</th><th>Tổng Diện Tích</th>`;
+        th = `<th>${t('audit_board_id')}</th><th>${t('audit_board_name')}</th><th>${t('audit_total_area')}</th>`;
       }
 
       let html = `
@@ -4190,7 +4551,7 @@
             <thead class="table-light text-success">
               <tr>
                 ${th}
-                <th class="text-center" style="width: 180px;">Hành động</th>
+                <th class="text-center" style="width: 180px;">${t('audit_action')}</th>
               </tr>
             </thead>
             <tbody>
@@ -4219,7 +4580,7 @@
              <td>${col3}</td>
              <td class="text-center">
                <button class="btn btn-sm btn-outline-success fw-bold px-3 rounded-pill" onclick="event.stopPropagation(); showTargetHistory(${safeItem}, '${type}')">
-                 <i class="fas fa-history me-1"></i>Lịch sử & Đánh giá
+                 <i class="fas fa-history me-1"></i>${t('audit_history_btn')}
                </button>
              </td>
            </tr>
@@ -4252,37 +4613,37 @@
         <div class="card shadow-sm border-0 mb-4">
            <div class="card-header bg-success text-white py-3">
               <div class="d-flex justify-content-between align-items-center">
-                 <h5 class="mb-0 fw-bold"><i class="fas fa-clipboard-list me-2"></i>Hồ sơ đánh giá: ${nameVal}</h5>
-                 <button class="btn btn-light btn-sm fw-bold text-success" onclick="renderAuditModule()"><i class="fas fa-arrow-left me-1"></i>Quay lại DS</button>
+                 <h5 class="mb-0 fw-bold"><i class="fas fa-clipboard-list me-2"></i>${t('audit_record_title')}: ${nameVal}</h5>
+                 <button class="btn btn-light btn-sm fw-bold text-success" onclick="renderAuditModule()"><i class="fas fa-arrow-left me-1"></i>${t('audit_back_list')}</button>
               </div>
            </div>
            <div class="card-body">
               <div class="row g-3 mb-4">
                  <div class="col-md-8">
                     <div class="alert alert-info border-0 bg-light text-dark mb-0">
-                       <strong><i class="fas fa-info-circle me-1"></i>Thông tin:</strong> ${nameVal} (${idVal})
+                       <strong><i class="fas fa-info-circle me-1"></i>${t('audit_info')}:</strong> ${nameVal} (${idVal})
                     </div>
                  </div>
                  <div class="col-md-4 text-end">
                     <button class="btn btn-success fw-bold w-100 shadow py-2" onclick="renderAuditFormUI(${safeItem}, '${type}')">
-                       <i class="fas fa-plus-circle me-2"></i>Thực hiện đánh giá mới
+                       <i class="fas fa-plus-circle me-2"></i>${t('audit_new_btn')}
                     </button>
                  </div>
               </div>
 
-              <h6 class="fw-bold text-success border-bottom pb-2 mb-3">LỊCH SỬ ĐÁNH GIÁ (${myHistory.length} bản ghi)</h6>
+              <h6 class="fw-bold text-success border-bottom pb-2 mb-3">${t('audit_history_label')} (${myHistory.length} ${t('audit_records')})</h6>
               <div class="table-responsive">
                 <table class="table table-hover align-middle">
                    <thead class="table-light">
                       <tr>
-                         <th>Mã ĐG</th><th>Ngày đánh giá</th><th>Người thực hiện</th><th>Kết quả</th><th>Hành động</th>
+                         <th>${t('audit_code')}</th><th>${t('audit_date')}</th><th>${t('audit_executor')}</th><th>${t('audit_result')}</th><th>${t('audit_action')}</th>
                       </tr>
                    </thead>
                    <tbody>
       `;
 
       if (myHistory.length === 0) {
-        html += `<tr><td colspan="5" class="text-center py-4 text-muted">Chưa có lịch sử đánh giá nào.</td></tr>`;
+        html += `<tr><td colspan="5" class="text-center py-4 text-muted">${t('audit_no_records')}</td></tr>`;
       } else {
         myHistory.forEach(h => {
           html += `
@@ -4290,8 +4651,8 @@
                    <td class="fw-bold text-primary">${h['ID']}</td>
                    <td>${h['Date']}</td>
                    <td>${h['Staff']}</td>
-                   <td><span class="badge bg-secondary">Đã xong</span></td>
-                   <td><button class="btn btn-sm btn-outline-secondary" onclick="alert('Xem chi tiết: ${h['ID']}')">Chi tiết</button></td>
+                   <td><span class="badge bg-secondary">${t('audit_done')}</span></td>
+                   <td><button class="btn btn-sm btn-outline-secondary" onclick="viewAuditDetail('${h['ID']}')">${t('audit_detail')}</button></td>
                 </tr>
              `;
         });
@@ -4315,8 +4676,8 @@
         <div class="card shadow-sm mb-4 border-0">
           <div class="card-header bg-success text-white fw-bold py-2 audit-sticky-header">
             <div class="d-flex justify-content-between align-items-center">
-               <span><i class="fas fa-edit me-2"></i>PHIẾU ĐÁNH GIÁ: ${nameVal}</span>
-               <button class="btn btn-sm btn-light text-success fw-bold" onclick="showTargetHistory(${safeItem}, '${type}')"><i class="fas fa-arrow-left me-1"></i>Hủy / Quay lại</button>
+               <span><i class="fas fa-edit me-2"></i>${t('audit_form_title')}: ${nameVal}</span>
+               <button class="btn btn-sm btn-light text-success fw-bold" onclick="showTargetHistory(${safeItem}, '${type}')"><i class="fas fa-arrow-left me-1"></i>${t('audit_cancel_back')}</button>
             </div>
           </div>
           <div class="card-body bg-light" style="padding-top:0">
@@ -4325,10 +4686,10 @@
              <input type="hidden" id="audit-target-type" value="${type}">
 
              <div class="row g-2 align-items-center bg-white p-2 rounded shadow-sm mb-3 audit-sticky-context">
-               <div class="col-md-6"><h6 class="m-0 text-muted small">Đối tượng: <strong class="text-dark">${nameVal}</strong> (${idVal})</h6></div>
+               <div class="col-md-6"><h6 class="m-0 text-muted small">${t('audit_subject')}: <strong class="text-dark">${nameVal}</strong> (${idVal})</h6></div>
                <div class="col-md-6 text-md-end">
                   <div class="input-group input-group-sm w-auto d-inline-flex">
-                     <span class="input-group-text fw-bold">Ngày:</span>
+                     <span class="input-group-text fw-bold">${t('audit_date_label')}:</span>
                      <input type="date" class="form-control" id="audit-date" value="${new Date().toISOString().split('T')[0]}">
                   </div>
                </div>
@@ -4342,7 +4703,7 @@
           <div class="accordion-item mb-3 border rounded shadow-sm overflow-hidden">
             <h2 class="accordion-header" id="heading${idx}">
               <button class="accordion-button ${idx > 0 ? 'collapsed' : ''} fw-bold bg-white text-success" type="button" data-bs-toggle="collapse" data-bs-target="#collapse${idx}">
-                ${cat} <span class="badge bg-light text-dark ms-2 border">${questions.length}</span>
+                ${tcat(cat)} <span class="badge bg-light text-dark ms-2 border">${questions.length}</span>
               </button>
             </h2>
             <div id="collapse${idx}" class="accordion-collapse collapse ${idx === 0 ? 'show' : ''}" data-bs-parent="#auditAccordion">
@@ -4356,25 +4717,25 @@
                            <div class="d-flex justify-content-between mb-2">
                               <span class="badge bg-success bg-opacity-10 text-success">${q.index}</span>
                            </div>
-                           <h6 class="fw-bold mb-3" style="font-size: 12px; min-height: 36px;">${q.label}</h6>
-                           
+                           <h6 class="fw-bold mb-3" style="font-size: 12px; min-height: 36px;">${tq(q.id, q.label)}</h6>
+
                            <!-- Answer Buttons -->
                            <input type="hidden" class="audit-result" data-qid="${q.id}" value="NA">
                            <div class="btn-group w-100 mb-3" role="group">
-                              <button type="button" class="btn btn-outline-success btn-sm" onclick="toggleScoreBtn(this, '${q.id}', 'TT')">Tuân thủ</button>
-                              <button type="button" class="btn btn-outline-danger btn-sm" onclick="toggleScoreBtn(this, '${q.id}', 'KTT')">Không TT</button>
+                              <button type="button" class="btn btn-outline-success btn-sm" onclick="toggleScoreBtn(this, '${q.id}', 'TT')">${t('audit_compliant')}</button>
+                              <button type="button" class="btn btn-outline-danger btn-sm" onclick="toggleScoreBtn(this, '${q.id}', 'KTT')">${t('audit_non_compliant')}</button>
                               <button type="button" class="btn btn-secondary btn-sm active" onclick="toggleScoreBtn(this, '${q.id}', 'NA')">N/A</button>
                            </div>
                            
                            <!-- Tools: Note + File -->
                            <div class="bg-light p-2 rounded">
                               <div class="mb-2">
-                                <textarea class="form-control form-control-sm audit-note border-0 bg-white" rows="1" placeholder="Ghi chú chi tiết..." data-qid="${q.id}" style="resize: none;"></textarea>
+                                <textarea class="form-control form-control-sm audit-note border-0 bg-white" rows="1" placeholder="${t('audit_note_ph')}" data-qid="${q.id}" style="resize: none;"></textarea>
                               </div>
                               <div class="input-group input-group-sm">
                                 <label class="input-group-text bg-white border-0"><i class="fas fa-paperclip text-muted"></i></label>
                                 <input type="file" class="form-control form-control-sm border-0 bg-white audit-file" multiple data-qid="${q.id}">
-                                <button class="btn btn-outline-secondary border-0" type="button" onclick="clearFileInput(this, '${q.id}')" title="Hủy file"><i class="fas fa-times"></i></button>
+                                <button class="btn btn-outline-secondary border-0" type="button" onclick="clearFileInput(this, '${q.id}')" title="${t('audit_cancel_file')}"><i class="fas fa-times"></i></button>
                               </div>
                            </div>
 
@@ -4395,7 +4756,7 @@
       html += `
              <div class="mt-4 text-center">
                <button class="btn btn-success btn-lg px-5 fw-bold shadow" onclick="submitAuditWithUpload()">
-                 <i class="fas fa-save me-2"></i>Lưu kết quả đánh giá
+                 <i class="fas fa-save me-2"></i>${t('audit_save_btn')}
                </button>
              </div>
       `;
@@ -4412,7 +4773,7 @@
       const hoiList = APP_DATA['Banghoi_DG_noibo'] || [];
 
       const dgRecord = dgList.find(r => String(r['ID']) === String(idDG));
-      if (!dgRecord) return alert("Không tìm thấy bản ghi đánh giá!");
+      if (!dgRecord) return alert(t('audit_not_found'));
 
       const hoiRecord = hoiList.find(r => String(r['ID_DG']) === String(idDG));
 
@@ -4436,17 +4797,17 @@
         <div class="card shadow-sm mb-4 border-0">
           <div class="card-header bg-primary text-white fw-bold py-3">
              <div class="d-flex justify-content-between align-items-center">
-                <span><i class="fas fa-eye me-2"></i>Chi tiết đánh giá: ${targetName}</span>
-                <button class="btn btn-sm btn-light text-primary fw-bold" onclick="renderAuditModule()"><i class="fas fa-arrow-left me-1"></i>Quay lại</button>
+                <span><i class="fas fa-eye me-2"></i>${t('audit_detail_title')}: ${targetName}</span>
+                <button class="btn btn-sm btn-light text-primary fw-bold" onclick="renderAuditModule()"><i class="fas fa-arrow-left me-1"></i>${t('audit_back')}</button>
              </div>
           </div>
           <div class="card-body bg-light">
              <div class="alert alert-light border shadow-sm mb-4">
                <div class="row">
-                 <div class="col-md-3"><strong>Mã ĐG:</strong> ${dgRecord['ID']}</div>
-                 <div class="col-md-3"><strong>Ngày:</strong> ${dgRecord['Date']}</div>
-                 <div class="col-md-3"><strong>Người ĐG:</strong> ${dgRecord['Staff']}</div>
-                 <div class="col-md-3"><strong>Cập nhật:</strong> ${dgRecord['Update']}</div>
+                 <div class="col-md-3"><strong>${t('audit_code')}:</strong> ${dgRecord['ID']}</div>
+                 <div class="col-md-3"><strong>${t('audit_date_label')}:</strong> ${dgRecord['Date']}</div>
+                 <div class="col-md-3"><strong>${t('audit_auditor')}:</strong> ${dgRecord['Staff']}</div>
+                 <div class="col-md-3"><strong>${t('audit_update')}:</strong> ${dgRecord['Update']}</div>
                </div>
              </div>
              
@@ -4458,7 +4819,7 @@
           <div class="accordion-item mb-3 border rounded shadow-sm overflow-hidden">
             <h2 class="accordion-header" id="headingD${idx}">
               <button class="accordion-button ${idx > 0 ? 'collapsed' : ''} fw-bold bg-white text-primary" type="button" data-bs-toggle="collapse" data-bs-target="#collapseD${idx}">
-                ${cat}
+                ${tcat(cat)}
               </button>
             </h2>
             <div id="collapseD${idx}" class="accordion-collapse collapse ${idx === 0 ? 'show' : ''}" data-bs-parent="#auditDetailAccordion">
@@ -4482,8 +4843,8 @@
           }
 
           let badge = '<span class="badge bg-secondary">N/A</span>';
-          if (ans.r === 'TT') badge = '<span class="badge bg-success">TUÂN THỦ</span>';
-          if (ans.r === 'KTT') badge = '<span class="badge bg-danger">KHÔNG TT</span>';
+          if (ans.r === 'TT') badge = `<span class="badge bg-success">${t('audit_compliant_badge')}</span>`;
+          if (ans.r === 'KTT') badge = `<span class="badge bg-danger">${t('audit_non_compliant_badge')}</span>`;
 
           html += `
              <div class="col">
@@ -4492,7 +4853,7 @@
                     <div class="d-flex justify-content-between mb-2">
                        <span class="badge bg-primary bg-opacity-10 text-primary">${q.index}</span>
                     </div>
-                    <h6 class="fw-bold mb-3 small" style="min-height:40px">${q.label}</h6>
+                    <h6 class="fw-bold mb-3 small" style="min-height:40px">${tq(q.id, q.label)}</h6>
                     <div class="mb-2">${badge}</div>
                     ${ans.n ? `<div class="bg-light p-2 rounded small text-dark mt-2 border"><i class="fas fa-comment-alt me-1 text-muted"></i> ${ans.n}</div>` : ''}
                  </div>
@@ -4618,19 +4979,19 @@
         const safeItem = JSON.stringify(d).replace(/"/g, '&quot;');
         html += `<div class="d-flex gap-1 mb-2 flex-nowrap detail-action-bar">
           <button class="btn btn-success btn-sm fw-bold shadow-sm flex-fill" onclick="loadViewWithFilter('Churung', 'ID nhóm', '${d['ID nhóm']}', 'Hộ dân thuộc ${d['Tên nhóm']}')"><i class="fa-solid fa-users me-1"></i> ${t('dd_hodan')}</button>
-          <button class="btn btn-primary btn-sm fw-bold shadow-sm flex-fill" onclick="showTargetHistory(${safeItem}, 'NhomCCR')"><i class="fa-solid fa-clipboard-check me-1"></i> ${t('dd_danhgia')}</button>
+          <button class="btn btn-outline-success btn-sm fw-bold shadow-sm flex-fill" onclick="showTargetHistory(${safeItem}, 'NhomCCR')"><i class="fa-solid fa-clipboard-check me-1"></i> ${t('dd_danhgia')}</button>
         </div>`;
       } else if (sheetName === 'Churung') {
         html += `<div class="d-flex gap-1 mb-2 flex-nowrap detail-action-bar">
           <button class="btn btn-success btn-sm fw-bold shadow-sm flex-fill" onclick="loadViewWithFilter('Lo_rung', 'ID chủ rừng', '${d['ID chủ rừng']}', 'Lô rừng của ${d['Họ tên chủ rừng']}')"><i class="fa-solid fa-map-location-dot me-1"></i> ${t('dd_lorung')}</button>
-          <button class="btn btn-primary btn-sm fw-bold shadow-sm flex-fill" onclick="loadViewWithFilter('Taphuan', 'ID chủ rừng', '${d['ID chủ rừng']}', 'Tập huấn của ${d['Họ tên chủ rừng']}')"><i class="fa-solid fa-graduation-cap me-1"></i> ${t('dd_taphuan')}</button>
+          <button class="btn btn-outline-success btn-sm fw-bold shadow-sm flex-fill" onclick="loadViewWithFilter('Taphuan', 'ID chủ rừng', '${d['ID chủ rừng']}', 'Tập huấn của ${d['Họ tên chủ rừng']}')"><i class="fa-solid fa-graduation-cap me-1"></i> ${t('dd_taphuan')}</button>
         </div>`;
       } else if (sheetName === 'Lo_rung') {
         html += `<div class="d-flex gap-1 mb-2 flex-nowrap detail-action-bar">
           <button class="btn btn-success btn-sm fw-bold shadow-sm flex-fill" onclick="showOnMap('${d['ID lô rừng']}')"><i class="fa-solid fa-map me-1"></i> ${t('dd_bando')}</button>
-          <button class="btn btn-warning btn-sm fw-bold shadow-sm flex-fill" onclick="loadViewWithFilter('HD_Lorung', 'ID lô rừng', '${d['ID lô rừng']}', 'Hoạt động lô ${d['Mã số lô 2024']}')"><i class="fa-solid fa-clipboard-list me-1"></i> ${t('dd_baocao')}</button>
-          <button class="btn btn-danger btn-sm fw-bold shadow-sm flex-fill" onclick="loadViewWithFilter('KH_QL_Lorung', 'ID lô rừng', '${d['ID lô rừng']}', 'Kế hoạch lô ${d['Mã số lô 2024']}')"><i class="fa-solid fa-calendar-check me-1"></i> ${t('dd_kehoach')}</button>
-          <button class="btn btn-primary btn-sm fw-bold shadow-sm flex-fill" onclick="loadViewWithFilter('Biendong_lorung', 'ID lô rừng', '${d['ID lô rừng']}', 'Giám sát lô ${d['Mã số lô 2024']}')"><i class="fa-solid fa-chart-line me-1"></i> ${t('dd_giamsat')}</button>
+          <button class="btn btn-outline-success btn-sm fw-bold shadow-sm flex-fill" onclick="loadViewWithFilter('HD_Lorung', 'ID lô rừng', '${d['ID lô rừng']}', 'Hoạt động lô ${d['Mã số lô 2024']}')"><i class="fa-solid fa-clipboard-list me-1"></i> ${t('dd_baocao')}</button>
+          <button class="btn btn-outline-success btn-sm fw-bold shadow-sm flex-fill" onclick="loadViewWithFilter('KH_QL_Lorung', 'ID lô rừng', '${d['ID lô rừng']}', 'Kế hoạch lô ${d['Mã số lô 2024']}')"><i class="fa-solid fa-calendar-check me-1"></i> ${t('dd_kehoach')}</button>
+          <button class="btn btn-outline-success btn-sm fw-bold shadow-sm flex-fill" onclick="loadViewWithFilter('Biendong_lorung', 'ID lô rừng', '${d['ID lô rừng']}', 'Giám sát lô ${d['Mã số lô 2024']}')"><i class="fa-solid fa-chart-line me-1"></i> ${t('dd_giamsat')}</button>
         </div>`;
       } else if (sheetName === 'NhanSu') {
         const isAdmin = currentUser && (String(currentUser['Chức vụ']).toLowerCase().includes('admin'));
@@ -4943,7 +5304,7 @@
               <div class="card-header bg-success text-white py-3 d-flex justify-content-between align-items-center">
                 <h5 class="mb-0 fw-bold">${context.title}</h5>${addBtn}
               </div>
-              <div class="card-body p-5 text-center text-muted">Chưa có dữ liệu cho bảng này.</div>
+              <div class="card-body p-5 text-center text-muted">${currentLang==='en'?'No data available for this table.':'Chưa có dữ liệu cho bảng này.'}</div>
             </div>`);
         return;
       }
@@ -4951,7 +5312,7 @@
       // XÁC ĐỊNH CỘT HIỂN THỊ
       const cols = getVisibleColumns(sheetName);
 
-      let th = '<tr>' + cols.map(c => `<th class="text-nowrap">${c}</th>`).join('') + '</tr>';
+      let th = '<tr>' + cols.map(c => `<th class="text-nowrap">${tc(c)}</th>`).join('') + '</tr>';
       let tb = '';
       displayData.forEach((row) => {
         let rowJson = encodeURIComponent(JSON.stringify(row));
@@ -4981,7 +5342,7 @@
       $('#page-content-dynamic').html(html);
       if ($.fn.DataTable) {
         $('#dt-table').DataTable({
-          language: { url: "//cdn.datatables.net/plug-ins/1.13.4/i18n/vi.json" },
+          language: currentLang === 'en' ? {} : { url: "//cdn.datatables.net/plug-ins/1.13.4/i18n/vi.json" },
           pageLength: 20,
           dom: 'frtip'
         });

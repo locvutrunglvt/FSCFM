@@ -50,21 +50,49 @@ async function run() {
   for (const u of USERS) {
     console.log(`\n--- Creating ${u.username} (${u.email}) ---`);
 
-    // Check if auth user exists
-    const existing = await runSQL(`SELECT id FROM auth.users WHERE email='${u.email}';`, `Check ${u.email}`);
+    // Check if auth user exists with correct email
+    let existing = await runSQL(`SELECT id FROM auth.users WHERE email='${u.email}';`, `Check ${u.email}`);
     await sleep(1000);
+
+    // Also check for old misspelled domain (cleaverforestry vs cleverforestry)
+    const oldEmail = u.email.replace('@cleverforestry.com', '@cleaverforestry.com');
+    if ((!existing || existing.length === 0) && oldEmail !== u.email) {
+      const oldExisting = await runSQL(`SELECT id FROM auth.users WHERE email='${oldEmail}';`, `Check old email ${oldEmail}`);
+      await sleep(1000);
+      if (oldExisting && oldExisting.length > 0) {
+        console.log(`  Found user with old email ${oldEmail}, updating to ${u.email}...`);
+        const fixRes = await fetch(`${SUPABASE_URL}/auth/v1/admin/users/${oldExisting[0].id}`, {
+          method: 'PUT',
+          headers: { 'Authorization': `Bearer ${serviceKey}`, 'apikey': serviceKey, 'Content-Type': 'application/json' },
+          body: JSON.stringify({ email: u.email, email_confirm: true })
+        });
+        console.log(`  Email fix: ${fixRes.ok ? 'OK' : (await fixRes.text()).substring(0,200)}`);
+        existing = oldExisting;
+        await sleep(1000);
+      }
+    }
+
+    // Also check by username in profiles table
+    if (!existing || existing.length === 0) {
+      const profByUsername = await runSQL(`SELECT id FROM profiles WHERE username='${u.username}';`, `Check profile by username ${u.username}`);
+      await sleep(1000);
+      if (profByUsername && profByUsername.length > 0) {
+        existing = profByUsername;
+        console.log(`  Found by username in profiles: ${profByUsername[0].id}`);
+      }
+    }
 
     let userId;
     if (existing && existing.length > 0) {
       userId = existing[0].id;
       console.log(`  Already exists in auth.users: ${userId}`);
-      // Update password via admin API
+      // Update password + email via admin API
       const pwRes = await fetch(`${SUPABASE_URL}/auth/v1/admin/users/${userId}`, {
         method: 'PUT',
         headers: { 'Authorization': `Bearer ${serviceKey}`, 'apikey': serviceKey, 'Content-Type': 'application/json' },
-        body: JSON.stringify({ password: u.password, email_confirm: true })
+        body: JSON.stringify({ email: u.email, password: u.password, email_confirm: true })
       });
-      console.log(`  Password update: ${pwRes.ok ? 'OK' : (await pwRes.text()).substring(0,200)}`);
+      console.log(`  Password/email update: ${pwRes.ok ? 'OK' : (await pwRes.text()).substring(0,200)}`);
     } else {
       // Create via admin API (trigger is disabled)
       const createRes = await fetch(`${SUPABASE_URL}/auth/v1/admin/users`, {
