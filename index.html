@@ -4327,8 +4327,11 @@
 
       const buildCard = (v, m, color) => {
         const subIcon = getSubMenuIcon(m);
+        const safeV = v.replace(/'/g, "\\'");
+        const safeM = m.replace(/'/g, "\\'");
+        const safeG = groupName.replace(/'/g, "\\'");
         return `<div class="col">
-          <div class="submenu-card" onclick="goHome();loadView('${v.replace(/'/g, "\\'")}','${m.replace(/'/g, "\\'")}')" style="border-top: 3px solid ${color}">
+          <div class="submenu-card" onclick="loadViewFromGroup('${safeV}','${safeM}','${safeG}')" style="border-top: 3px solid ${color}">
             <div class="submenu-icon" style="background: ${color}"><i class="fa-solid ${subIcon}"></i></div>
             <div class="submenu-label">${tm(m)}</div>
           </div>
@@ -4456,11 +4459,12 @@
           idx++; const cId = `collapseSidebar${idx}`;
           const groupIcon = GROUP_ICONS[group] || 'fa-folder';
           const groupLabel = GROUP_I18N[group] ? t(GROUP_I18N[group]) : group;
+          const safeGroup = group.replace(/'/g, "\\'");
           let sub = items.map(i => {
             const v = (i['View'] || '').replace(/'/g, "\\'");
             const m = (i['Module'] || '').replace(/'/g, "\\'");
             const mIcon = getSubMenuIcon(m);
-            return `<a href="#" class="menu-sub-link" onclick="loadView('${v}', '${m}')"><i class="fa-solid ${mIcon} me-2" style="width:16px;text-align:center"></i>${tm(i['Module'])}</a>`;
+            return `<a href="#" class="menu-sub-link" onclick="loadViewFromGroup('${v}', '${m}', '${safeGroup}')"><i class="fa-solid ${mIcon} me-2" style="width:16px;text-align:center"></i>${tm(i['Module'])}</a>`;
           }).join('');
           accordionHtml += `<div class="accordion-item" data-group-vi="${group}"><h2 class="accordion-header"><button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#${cId}"><i class="fa-solid ${groupIcon} me-2"></i><span class="fw-bold">${groupLabel}</span></button></h2><div id="${cId}" class="accordion-collapse collapse show"><div class="accordion-body p-0">${sub}</div></div></div>`;
         }
@@ -4470,7 +4474,7 @@
         $('#sidebarAccordion .accordion-item').each(function() {
           const grpVi = $(this).attr('data-group-vi');
           if (grpVi && grpVi.trim().toLowerCase() === 'hệ thống') {
-            $(this).find('.accordion-body').append(`<a href="#" class="menu-sub-link" onclick="loadView('CaiDat_HeThong', '${t('menu_settings')}')"><i class="fa-solid fa-sliders me-2"></i>${t('menu_settings')}</a>`);
+            $(this).find('.accordion-body').append(`<a href="#" class="menu-sub-link" onclick="loadViewFromGroup('CaiDat_HeThong', '${t('menu_settings')}', 'Hệ thống')"><i class="fa-solid fa-sliders me-2"></i>${t('menu_settings')}</a>`);
           }
         });
 
@@ -4498,6 +4502,14 @@
         }
       });
     }
+
+    let _parentMenuGroup = null; // Track which group sub-menu we came from
+
+    // Load view from a group sub-menu card (stores parent for back navigation)
+    window.loadViewFromGroup = function(viewName, title, groupName) {
+      _parentMenuGroup = groupName;
+      loadView(viewName, title);
+    };
 
     function loadView(viewName, title) {
       if ($(window).width() < 768) {
@@ -4540,6 +4552,12 @@
       // Xử lý View đặc biệt: Giám sát theo loại (sub-menu items)
       if (MONITORING_VIEW_TYPES[current.viewName]) {
         _monTypeFilter = MONITORING_VIEW_TYPES[current.viewName];
+        // Lo_rung-targeting types: show drill-down Nhóm → Hộ → Lô rừng
+        const LO_RUNG_VIEWS = ['GS_TrongRung', 'GS_KhaiThac', 'GS_MoiTruong'];
+        if (LO_RUNG_VIEWS.includes(current.viewName) || current.mode === 'MON_OWNERS' || current.mode === 'MON_PLOTS') {
+          renderMonDrillDown(current);
+          return;
+        }
         renderMonitoringModule();
         return;
       }
@@ -7115,6 +7133,121 @@ ${gsRecord['Đề xuất'] ? `<div class="proposal-box"><h4>${t('mon_proposal')}
     let _monTypeFilter = null; // null = show all types, or array of typeKeys from menu navigation
 
     // Map monitoring sub-menu view names to type filters
+    // Drill-down view for lo_rung-targeting monitoring: Nhóm → Hộ → Lô rừng
+    function renderMonDrillDown(current) {
+      const container = $('#page-content-dynamic');
+      container.empty();
+      const plots = APP_DATA['Lo_rung'] || [];
+      const groups = APP_DATA['NhomCCR'] || [];
+      const owners = APP_DATA['Churung'] || [];
+      const safeFloat = v => parseFloat(String(v || '0').replace(/,/g, '')) || 0;
+
+      // Check drill-down level from navHistory
+      if (current.mode === 'MON_OWNERS') {
+        // Level 2: show owners of a specific group
+        const gid = current.filter.gid;
+        const groupName = groups.find(g => g['ID nhóm'] === gid)?.['Tên nhóm'] || gid;
+        const groupOwners = owners.filter(o => {
+          return plots.some(p => p['ID chủ rừng'] === o['ID chủ rừng'] && p['ID nhóm'] === gid);
+        });
+        let html = `<h6 class="fw-bold text-success mb-3"><i class="fa-solid fa-users me-2"></i>${groupName} — Danh sách hộ dân</h6>`;
+        html += `<div class="table-responsive"><table class="table table-sm table-hover table-striped small mb-0">
+          <thead class="table-success"><tr><th>#</th><th>Mã hộ</th><th>Họ tên chủ rừng</th><th class="text-end">Số lô</th><th class="text-end">Tổng DT (ha)</th></tr></thead><tbody>`;
+        groupOwners.sort((a, b) => (a['ID chủ rừng'] || '').localeCompare(b['ID chủ rừng'] || ''));
+        groupOwners.forEach((o, i) => {
+          const oid = o['ID chủ rừng'];
+          const oPlots = plots.filter(p => p['ID chủ rừng'] === oid && p['ID nhóm'] === gid);
+          const totalArea = oPlots.reduce((s, p) => s + safeFloat(p['Tổng diện tích']), 0);
+          html += `<tr style="cursor:pointer" onclick="monDrillToPlots('${oid.replace(/'/g,"\\'")}','${gid.replace(/'/g,"\\'")}')">
+            <td>${i + 1}</td><td><strong>${oid}</strong> <i class="fa-solid fa-chevron-right fa-2xs text-muted"></i></td>
+            <td>${o['Họ tên chủ rừng'] || ''}</td>
+            <td class="text-end">${oPlots.length}</td><td class="text-end">${totalArea.toFixed(2)}</td>
+          </tr>`;
+        });
+        html += '</tbody></table></div>';
+        container.html(html);
+        return;
+      }
+
+      if (current.mode === 'MON_PLOTS') {
+        // Level 3: show plots of a specific owner
+        const oid = current.filter.oid;
+        const gid = current.filter.gid;
+        const ownerName = owners.find(o => o['ID chủ rừng'] === oid)?.['Họ tên chủ rừng'] || oid;
+        const oPlots = plots.filter(p => p['ID chủ rừng'] === oid && p['ID nhóm'] === gid);
+        let html = `<h6 class="fw-bold text-success mb-3"><i class="fa-solid fa-user me-2"></i>${ownerName} — Danh sách lô rừng</h6>`;
+        html += `<div class="table-responsive"><table class="table table-sm table-hover table-striped small mb-0">
+          <thead class="table-success"><tr><th>#</th><th>Mã lô rừng</th><th>Tên lô rừng</th><th class="text-end">DT (ha)</th><th>Năm trồng</th><th class="text-center">Bản đồ</th></tr></thead><tbody>`;
+        oPlots.forEach((p, i) => {
+          const pid = p['ID lô rừng'] || '';
+          html += `<tr>
+            <td>${i + 1}</td><td><strong>${p['Mã số lô rừng'] || pid}</strong></td>
+            <td>${p['Tên lô rừng'] || ''}</td>
+            <td class="text-end">${safeFloat(p['Tổng diện tích']).toFixed(2)}</td>
+            <td>${p['Năm trồng'] || ''}</td>
+            <td class="text-center">
+              <button class="btn btn-sm btn-outline-success" onclick="event.stopPropagation();showOnMap('${pid.replace(/'/g,"\\'")}')"><i class="fa-solid fa-map-location-dot"></i></button>
+              <button class="btn btn-sm btn-outline-primary ms-1" onclick="event.stopPropagation();monStartFromPlot('${pid.replace(/'/g,"\\'")}')"><i class="fa-solid fa-clipboard-check"></i></button>
+            </td>
+          </tr>`;
+        });
+        html += '</tbody></table></div>';
+        container.html(html);
+        return;
+      }
+
+      // Level 1: show groups
+      const groupData = {};
+      plots.forEach(p => {
+        const gid = p['ID nhóm'];
+        if (!gid) return;
+        if (!groupData[gid]) groupData[gid] = { name: '', households: new Set(), plotCount: 0, area: 0 };
+        groupData[gid].plotCount++;
+        groupData[gid].area += safeFloat(p['Tổng diện tích']);
+        if (p['ID chủ rừng']) groupData[gid].households.add(p['ID chủ rừng']);
+      });
+      groups.forEach(g => { if (groupData[g['ID nhóm']]) groupData[g['ID nhóm']].name = g['Tên nhóm'] || g['ID nhóm']; });
+
+      const sorted = Object.entries(groupData).sort((a, b) => b[1].area - a[1].area);
+      let html = `<h6 class="fw-bold text-success mb-3"><i class="fa-solid fa-binoculars me-2"></i>${current.title} — Chọn nhóm</h6>`;
+      html += `<div class="table-responsive"><table class="table table-sm table-hover table-striped small mb-0">
+        <thead class="table-success"><tr><th>#</th><th>Mã nhóm</th><th>Tên nhóm</th><th class="text-end">Số hộ</th><th class="text-end">Số lô</th><th class="text-end">Tổng DT (ha)</th></tr></thead><tbody>`;
+      sorted.forEach(([gid, g], i) => {
+        html += `<tr style="cursor:pointer" onclick="monDrillToOwners('${gid.replace(/'/g,"\\'")}')">
+          <td>${i + 1}</td><td><strong>${gid}</strong> <i class="fa-solid fa-chevron-right fa-2xs text-muted"></i></td>
+          <td>${g.name}</td>
+          <td class="text-end">${g.households.size}</td><td class="text-end">${g.plotCount}</td><td class="text-end fw-bold">${g.area.toFixed(2)}</td>
+        </tr>`;
+      });
+      html += '</tbody></table></div>';
+      container.html(html);
+    }
+
+    // Drill navigation helpers
+    window.monDrillToOwners = function(gid) {
+      const current = navHistory[navHistory.length - 1];
+      const groupName = (APP_DATA['NhomCCR'] || []).find(g => g['ID nhóm'] === gid)?.['Tên nhóm'] || gid;
+      navHistory.push({ mode: 'MON_OWNERS', viewName: current.viewName, title: groupName, filter: { gid } });
+      renderBreadcrumb();
+      renderContent();
+    };
+    window.monDrillToPlots = function(oid, gid) {
+      const current = navHistory[navHistory.length - 1];
+      const ownerName = (APP_DATA['Churung'] || []).find(o => o['ID chủ rừng'] === oid)?.['Họ tên chủ rừng'] || oid;
+      navHistory.push({ mode: 'MON_PLOTS', viewName: current.viewName, title: ownerName, filter: { oid, gid } });
+      renderBreadcrumb();
+      renderContent();
+    };
+    window.monStartFromPlot = function(plotId) {
+      const typeFilter = _monTypeFilter;
+      if (!typeFilter || !typeFilter.length) return;
+      const typeKey = typeFilter[0]; // Use first type
+      const plots = APP_DATA['Lo_rung'] || [];
+      const p = plots.find(x => String(x['ID lô rừng']) === String(plotId));
+      const targetName = p ? (p['Mã số lô rừng'] || p['Tên lô rừng'] || plotId) : plotId;
+      renderMonitoringFormUI(typeKey, plotId, targetName);
+    };
+
     const MONITORING_VIEW_TYPES = {
       'GS_Nhom': ['giam_sat_nhom'],
       'GS_TrongRung': ['trong_rung'],
@@ -8130,7 +8263,14 @@ ${gsRecord['Đề xuất'] ? `<div class="proposal-box"><h4>${t('mon_proposal')}
         if (navHistory.length > 1) {
           navHistory.pop();
         } else {
-          // If we are at root or empty, show dashboard to reset
+          // At root: go back to parent group sub-menu if available, else dashboard
+          if (_parentMenuGroup) {
+            const grp = _parentMenuGroup;
+            _parentMenuGroup = null;
+            goHome();
+            openMenuGroup(grp);
+            return;
+          }
           showDashboard();
           return;
         }
