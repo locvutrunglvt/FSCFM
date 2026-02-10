@@ -3886,15 +3886,15 @@
         <!-- KPIs -->
         <h6 class="fw-bold text-secondary mb-2"><i class="fa-solid fa-chart-line me-2"></i>${t('kpi_title')}</h6>
         <div class="row row-cols-3 row-cols-md-9 g-1 g-md-2 mb-2 kpi-grid">
-          <div class="col"><div class="kpi-card h-100"><div class="kpi-value">${soHo}</div><div class="kpi-label">${t('kpi_households')}</div></div></div>
-          <div class="col"><div class="kpi-card blue h-100"><div class="kpi-value">${soFarm}</div><div class="kpi-label">${t('kpi_plots')}</div></div></div>
-          <div class="col"><div class="kpi-card h-100"><div class="kpi-value">${tongDTFSC.toFixed(1)}</div><div class="kpi-label">${t('kpi_fsc_area')}</div></div></div>
+          <div class="col"><div class="kpi-card h-100" style="cursor:pointer" onclick="showKpiDetail('households')"><div class="kpi-value">${soHo}</div><div class="kpi-label">${t('kpi_households')}</div></div></div>
+          <div class="col"><div class="kpi-card blue h-100" style="cursor:pointer" onclick="showKpiDetail('plots')"><div class="kpi-value">${soFarm}</div><div class="kpi-label">${t('kpi_plots')}</div></div></div>
+          <div class="col"><div class="kpi-card h-100" style="cursor:pointer" onclick="showKpiDetail('fsc_area')"><div class="kpi-value">${tongDTFSC.toFixed(1)}</div><div class="kpi-label">${t('kpi_fsc_area')}</div></div></div>
           <div class="col"><div class="kpi-card orange h-100"><div class="kpi-value">${haPerHo}</div><div class="kpi-label">${t('kpi_ha_per_ho')}</div></div></div>
           <div class="col"><div class="kpi-card blue h-100"><div class="kpi-value">${haPerFarm}</div><div class="kpi-label">${t('kpi_ha_per_farm')}</div></div></div>
-          <div class="col"><div class="kpi-card orange h-100"><div class="kpi-value">${dtKhaiThacTT.toFixed(1)}</div><div class="kpi-label">${t('kpi_harvest_actual')}</div></div></div>
-          <div class="col"><div class="kpi-card purple h-100"><div class="kpi-value">${dtTrongRung.toFixed(1)}</div><div class="kpi-label">${t('kpi_plant')}</div></div></div>
-          <div class="col"><div class="kpi-card blue h-100"><div class="kpi-value">${dtKTKeHoach.toFixed(1)}</div><div class="kpi-label">${t('kpi_harvest_plan')}</div></div></div>
-          <div class="col"><div class="kpi-card h-100"><div class="kpi-value">${dtHLVS.toFixed(1)}</div><div class="kpi-label">${t('kpi_hlvs')}</div></div></div>
+          <div class="col"><div class="kpi-card orange h-100" style="cursor:pointer" onclick="showKpiDetail('harvest_actual')"><div class="kpi-value">${dtKhaiThacTT.toFixed(1)}</div><div class="kpi-label">${t('kpi_harvest_actual')}</div></div></div>
+          <div class="col"><div class="kpi-card purple h-100" style="cursor:pointer" onclick="showKpiDetail('plant')"><div class="kpi-value">${dtTrongRung.toFixed(1)}</div><div class="kpi-label">${t('kpi_plant')}</div></div></div>
+          <div class="col"><div class="kpi-card blue h-100" style="cursor:pointer" onclick="showKpiDetail('harvest_plan')"><div class="kpi-value">${dtKTKeHoach.toFixed(1)}</div><div class="kpi-label">${t('kpi_harvest_plan')}</div></div></div>
+          <div class="col"><div class="kpi-card h-100" style="cursor:pointer" onclick="showKpiDetail('hlvs')"><div class="kpi-value">${dtHLVS.toFixed(1)}</div><div class="kpi-label">${t('kpi_hlvs')}</div></div></div>
         </div>
 
         <!-- Charts -->
@@ -4056,6 +4056,167 @@
     function switchChartType(chartKey, newType) {
       buildChart(chartKey, newType);
     }
+
+    // KPI Detail: show list grouped by Nhóm FSC when clicking a KPI
+    window.showKpiDetail = function(kpiType) {
+      const safeFloat = v => parseFloat(String(v || '0').replace(/,/g, '')) || 0;
+      const plots = APP_DATA['Lo_rung'] || [];
+      const groups = APP_DATA['NhomCCR'] || [];
+      const owners = APP_DATA['Churung'] || [];
+      const currentYear = new Date().getFullYear();
+      const prevYear = currentYear - 1;
+
+      // Build group name lookup
+      const groupNameMap = {};
+      groups.forEach(g => { groupNameMap[g['ID nhóm']] = g['Tên nhóm'] || g['Mã nhóm'] || g['ID nhóm']; });
+
+      // Build owner name lookup
+      const ownerNameMap = {};
+      owners.forEach(o => { ownerNameMap[o['ID chủ rừng']] = o['Họ tên chủ rừng'] || o['ID chủ rừng']; });
+
+      // Aggregate data by group based on KPI type
+      const groupData = {};
+      const initGroup = (gid) => {
+        if (!groupData[gid]) groupData[gid] = { name: groupNameMap[gid] || gid, count: 0, area: 0, items: [] };
+      };
+
+      let title = '', colLabel = '';
+      if (kpiType === 'households') {
+        title = t('kpi_households');
+        colLabel = 'Số hộ';
+        const ownersByGroup = {};
+        owners.forEach(o => {
+          const gid = plots.find(p => p['ID chủ rừng'] === o['ID chủ rừng'])?.['ID nhóm'] || '';
+          if (!gid) return;
+          if (!ownersByGroup[gid]) ownersByGroup[gid] = new Set();
+          ownersByGroup[gid].add(o['ID chủ rừng']);
+        });
+        Object.entries(ownersByGroup).forEach(([gid, set]) => {
+          initGroup(gid);
+          groupData[gid].count = set.size;
+        });
+      } else if (kpiType === 'plots') {
+        title = t('kpi_plots');
+        colLabel = 'Số lô rừng';
+        plots.forEach(p => {
+          const gid = p['ID nhóm'];
+          if (!gid) return;
+          initGroup(gid);
+          groupData[gid].count++;
+        });
+      } else if (kpiType === 'fsc_area') {
+        title = t('kpi_fsc_area');
+        colLabel = 'DT FSC (ha)';
+        plots.forEach(p => {
+          const gid = p['ID nhóm'];
+          if (!gid) return;
+          initGroup(gid);
+          groupData[gid].area += safeFloat(p['Diện tích FSC']);
+          groupData[gid].count++;
+        });
+      } else if (kpiType === 'harvest_actual') {
+        title = t('kpi_harvest_actual');
+        colLabel = 'DT khai thác (ha)';
+        plots.forEach(p => {
+          const tgkt = p['Thời gian khai thác'] || '';
+          if (!tgkt || !tgkt.includes('/' + currentYear)) return;
+          const gid = p['ID nhóm'];
+          if (!gid) return;
+          initGroup(gid);
+          groupData[gid].area += safeFloat(p['Tổng diện tích']);
+          groupData[gid].count++;
+          groupData[gid].items.push({ plot: p['Mã số lô rừng'], owner: ownerNameMap[p['ID chủ rừng']] || '', area: safeFloat(p['Tổng diện tích']), time: tgkt });
+        });
+      } else if (kpiType === 'plant') {
+        title = t('kpi_plant');
+        colLabel = 'DT trồng rừng (ha)';
+        plots.forEach(p => {
+          const tgkt = p['Thời gian khai thác'] || '';
+          if (tgkt !== 'T11/' + prevYear && tgkt !== 'T12/' + prevYear) return;
+          const gid = p['ID nhóm'];
+          if (!gid) return;
+          initGroup(gid);
+          groupData[gid].area += safeFloat(p['Tổng diện tích']);
+          groupData[gid].count++;
+          groupData[gid].items.push({ plot: p['Mã số lô rừng'], owner: ownerNameMap[p['ID chủ rừng']] || '', area: safeFloat(p['Tổng diện tích']), time: tgkt });
+        });
+      } else if (kpiType === 'harvest_plan') {
+        title = t('kpi_harvest_plan');
+        colLabel = 'DT KT kế hoạch (ha)';
+        plots.forEach(p => {
+          const yr = parseInt(p['Năm trồng']);
+          if (!yr || (currentYear - yr) <= 5) return;
+          const gid = p['ID nhóm'];
+          if (!gid) return;
+          initGroup(gid);
+          groupData[gid].area += safeFloat(p['Tổng diện tích']);
+          groupData[gid].count++;
+        });
+      } else if (kpiType === 'hlvs') {
+        title = t('kpi_hlvs');
+        colLabel = 'DT HLVS (ha)';
+        plots.forEach(p => {
+          const hlvs = safeFloat(p['Diện tích HLVS']);
+          if (hlvs <= 0) return;
+          const gid = p['ID nhóm'];
+          if (!gid) return;
+          initGroup(gid);
+          groupData[gid].area += hlvs;
+          groupData[gid].count++;
+        });
+      }
+
+      // Sort groups by area descending (or count if no area)
+      const sorted = Object.entries(groupData).sort((a, b) => (b[1].area || b[1].count) - (a[1].area || a[1].count));
+      const totalArea = sorted.reduce((s, [, g]) => s + g.area, 0);
+      const totalCount = sorted.reduce((s, [, g]) => s + g.count, 0);
+
+      // Build modal HTML
+      const hasArea = ['fsc_area', 'harvest_actual', 'plant', 'harvest_plan', 'hlvs'].includes(kpiType);
+      const hasItems = ['harvest_actual', 'plant'].includes(kpiType);
+
+      let html = `<div class="modal fade" id="kpiDetailModal" tabindex="-1"><div class="modal-dialog modal-lg modal-dialog-scrollable">
+        <div class="modal-content"><div class="modal-header py-2" style="background:var(--forest-primary);color:#fff">
+          <h6 class="modal-title fw-bold"><i class="fa-solid fa-chart-line me-2"></i>${title}</h6>
+          <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+        </div><div class="modal-body p-2">
+          <table class="table table-sm table-striped table-hover small mb-0">
+            <thead class="table-success"><tr>
+              <th>#</th><th>Mã nhóm</th><th>Tên nhóm</th>
+              <th class="text-end">Số lô</th>
+              ${hasArea ? '<th class="text-end">' + colLabel + '</th>' : ''}
+            </tr></thead><tbody>`;
+
+      sorted.forEach(([gid, g], i) => {
+        html += `<tr>
+          <td>${i + 1}</td><td><strong>${gid}</strong></td><td>${g.name}</td>
+          <td class="text-end">${g.count}</td>
+          ${hasArea ? '<td class="text-end fw-bold">' + g.area.toFixed(2) + '</td>' : ''}
+        </tr>`;
+        // Show detail items if available
+        if (hasItems && g.items && g.items.length > 0) {
+          g.items.forEach(item => {
+            html += `<tr class="table-light" style="font-size:11px">
+              <td></td><td colspan="2" class="ps-4 text-muted">${item.plot} — ${item.owner}</td>
+              <td class="text-end text-muted">${item.time}</td>
+              <td class="text-end">${item.area.toFixed(2)}</td>
+            </tr>`;
+          });
+        }
+      });
+
+      html += `</tbody><tfoot class="table-success fw-bold"><tr>
+        <td colspan="3">Tổng</td>
+        <td class="text-end">${totalCount}</td>
+        ${hasArea ? '<td class="text-end">' + totalArea.toFixed(2) + '</td>' : ''}
+      </tr></tfoot></table>
+        </div></div></div></div>`;
+
+      // Remove old modal and show new
+      $('#kpiDetailModal').remove();
+      $('body').append(html);
+      new bootstrap.Modal(document.getElementById('kpiDetailModal')).show();
+    };
 
     // Icon mapping for sub-menu items based on keywords
     const SUB_MENU_ICONS = {
