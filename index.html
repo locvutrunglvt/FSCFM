@@ -1156,6 +1156,9 @@
                     <li><a class="dropdown-item small" href="#" onclick="zoomToAllData();return false"><i class="fa-solid fa-globe me-1"></i> <span data-i18n="btn_all_layers">Tất cả lớp</span></a></li>
                   </ul>
                 </div>
+                <button type="button" class="btn btn-outline-success btn-sm" id="btn-toggle-labels" onclick="togglePlotLabels()">
+                  <i class="fa-solid fa-tag me-1"></i> Nhãn
+                </button>
                 <button type="button" class="btn btn-outline-success btn-sm" onclick="openGeoJSONRepo()">
                   <i class="fa-solid fa-database me-1"></i> <span data-i18n="btn_geo_repo">Kho bản đồ</span>
                 </button>
@@ -4703,29 +4706,52 @@
         });
       });
 
-      mapPlotLabels = L.layerGroup(); // Don't add to map yet — shown only at zoom >= 17
+      mapPlotLabels = L.layerGroup(); // Labels shown only at zoom >= 18 and within viewport
       mapLayers['Nhãn lô rừng'] = mapPlotLabels;
 
-      // Show/hide plot labels based on zoom level (~1:2000 = zoom 17+)
-      mapInstance.on('zoomend', function() {
-        const z = mapInstance.getZoom();
-        if (z >= 17 && !mapInstance.hasLayer(mapPlotLabels)) {
-          mapInstance.addLayer(mapPlotLabels);
-        } else if (z < 17 && mapInstance.hasLayer(mapPlotLabels)) {
-          mapInstance.removeLayer(mapPlotLabels);
-        }
+      // Auto-update labels on zoom/pan (debounced, viewport-only, zoom >= 18 ~ 1:1000)
+      let _labelTimer = null;
+      mapInstance.on('moveend zoomend', function() {
+        clearTimeout(_labelTimer);
+        _labelTimer = setTimeout(updateViewportLabels, 200);
       });
 
       loadStoredGeoJSON().then(() => {
-        createPlotLabels();
         setTimeout(() => { zoomToAllData(); updateZoomLayerMenu(); renderMapLayerPanel(); }, 300);
       });
       renderMapLayerPanel();
     }
 
-    function createPlotLabels() {
-      if (!mapPlotLabels || !mapInstance) return;
+    let _labelsEnabled = false; // Labels off by default for speed
+    const LABEL_ZOOM_MIN = 18; // ~1:1000 scale
+
+    // Toggle labels on/off
+    window.togglePlotLabels = function() {
+      _labelsEnabled = !_labelsEnabled;
+      const btn = document.getElementById('btn-toggle-labels');
+      if (_labelsEnabled) {
+        btn.classList.remove('btn-outline-success');
+        btn.classList.add('btn-success', 'text-white');
+        updateViewportLabels();
+      } else {
+        btn.classList.remove('btn-success', 'text-white');
+        btn.classList.add('btn-outline-success');
+        if (mapPlotLabels) { mapPlotLabels.clearLayers(); mapInstance.removeLayer(mapPlotLabels); }
+      }
+    };
+
+    // Build labels only for polygons visible in current viewport at high zoom
+    function updateViewportLabels() {
+      if (!mapPlotLabels || !mapInstance || !_labelsEnabled) return;
       mapPlotLabels.clearLayers();
+      const z = mapInstance.getZoom();
+      if (z < LABEL_ZOOM_MIN) {
+        if (mapInstance.hasLayer(mapPlotLabels)) mapInstance.removeLayer(mapPlotLabels);
+        return;
+      }
+      if (!mapInstance.hasLayer(mapPlotLabels)) mapInstance.addLayer(mapPlotLabels);
+
+      const bounds = mapInstance.getBounds();
       const loRungData = APP_DATA['Lo_rung'] || [];
       const churungData = APP_DATA['Churung'] || [];
       const ownerMap = {};
@@ -4734,6 +4760,9 @@
       mapDrawnItems.eachLayer(function(layer) {
         if (!layer.getBounds && !layer.getLatLng) return;
         const center = layer.getBounds ? layer.getBounds().getCenter() : layer.getLatLng();
+        // Skip polygons outside current viewport
+        if (!bounds.contains(center)) return;
+
         let plotCode = '', ownerName = '', area = '';
         if (layer.loRungId) {
           const lr = loRungData.find(r => String(r['ID lô rừng']) === String(layer.loRungId));
@@ -4752,13 +4781,9 @@
         if (!plotCode && !ownerName) return;
 
         const labelText = [plotCode, ownerName, area ? area + ' ha' : ''].filter(Boolean).join('\n');
-        const tooltip = L.tooltip({
-          permanent: true,
-          direction: 'center',
-          className: 'plot-label',
-          offset: [0, 0]
-        }).setContent(labelText.replace(/\n/g, '<br>')).setLatLng(center);
-        mapPlotLabels.addLayer(tooltip);
+        mapPlotLabels.addLayer(L.tooltip({
+          permanent: true, direction: 'center', className: 'plot-label', offset: [0, 0]
+        }).setContent(labelText.replace(/\n/g, '<br>')).setLatLng(center));
       });
     }
 
@@ -4873,7 +4898,7 @@
           }
           updateZoomLayerMenu();
           renderMapLayerPanel();
-          createPlotLabels();
+          updateViewportLabels();
 
           var msg = 'Tải GeoJSON thành công: "' + layerName + '" (v' + nextVersion + ')';
           if (linkedCount > 0) msg += '\nTự động liên kết ' + linkedCount + ' polygon với lô rừng.';
@@ -5259,7 +5284,7 @@
         html += `<label><input type="radio" name="map-basemap" ${checked} onchange="switchBasemap('${safeName}')" class="me-1"> ${name}</label>`;
       }
       html += '<hr class="my-2"><h6 class="fw-bold mb-2 small">Dữ liệu</h6>';
-      const dataLayers = ['Lô rừng (GeoJSON)', 'Nhãn lô rừng', 'Ghi chú'];
+      const dataLayers = ['Lô rừng (GeoJSON)', 'Ghi chú'];
       for (const name of dataLayers) {
         const layer = mapLayers[name];
         if (!layer) continue;
