@@ -680,12 +680,12 @@
       }
       table.dataTable thead th {
         padding: 4px 6px !important;
-        font-size: 10px !important;
+        font-size: 11px !important;
         font-weight: 700 !important;
       }
       table.dataTable tbody td {
         padding: 3px 6px !important;
-        font-size: 10px !important;
+        font-size: 11px !important;
       }
       /* Card headers on mobile */
       .card-header.bg-success {
@@ -833,17 +833,17 @@
         display: flex;
         flex-direction: column;
         justify-content: space-evenly;
-        padding-bottom: 8px;
+        padding-bottom: 4px;
       }
-      #dashboard-view h5 { font-size: 13px !important; margin-bottom: 0 !important; }
-      #dashboard-view h6 { font-size: 11px !important; margin-bottom: 2px !important; }
-      #dashboard-view .icon-3d-wrapper { width: 36px !important; height: 36px !important; font-size: 0.9rem !important; border-radius: 10px !important; margin-bottom: 4px !important; }
-      #dashboard-view .card-title-3d { font-size: 9.5px !important; font-weight: 700 !important; }
-      #dashboard-view .kpi-value { font-size: 1rem !important; font-weight: 800 !important; }
-      #dashboard-view .kpi-label { font-size: 8px !important; letter-spacing: 0; text-transform: none; }
-      #dashboard-view .kpi-card { padding: 8px 6px !important; border-radius: 10px !important; text-align: center; }
+      #dashboard-view h5 { font-size: 14px !important; margin-bottom: 0 !important; }
+      #dashboard-view h6 { font-size: 12px !important; margin-bottom: 2px !important; }
+      #dashboard-view .icon-3d-wrapper { width: 42px !important; height: 42px !important; font-size: 1.05rem !important; border-radius: 12px !important; margin-bottom: 5px !important; }
+      #dashboard-view .card-title-3d { font-size: 10px !important; font-weight: 700 !important; line-height: 1.25 !important; }
+      #dashboard-view .kpi-value { font-size: 1.1rem !important; font-weight: 800 !important; }
+      #dashboard-view .kpi-label { font-size: 8.5px !important; letter-spacing: 0; text-transform: none; }
+      #dashboard-view .kpi-card { padding: 10px 8px !important; border-radius: 12px !important; text-align: center; }
       #dashboard-view .kpi-grid { margin-bottom: 0 !important; }
-      #dashboard-view .dashboard-card-3d { padding: 10px 4px 8px !important; border-radius: 10px !important; }
+      #dashboard-view .dashboard-card-3d { padding: 12px 6px 10px !important; border-radius: 12px !important; }
       #dashboard-view .row.g-3 { --bs-gutter-x: 0.5rem; --bs-gutter-y: 0.5rem; }
       .dash-charts { padding: 12px 0 20px; }
       .dash-charts .card { margin-bottom: 12px; }
@@ -1002,6 +1002,32 @@
       padding: 0 !important;
     }
     .plot-label::before { display: none !important; }
+
+    /* GPS & Coordinate overlay */
+    .coords-overlay {
+      position: absolute; bottom: 10px; left: 10px; z-index: 1000;
+      background: rgba(0,0,0,0.75); color: #fff; padding: 6px 12px;
+      border-radius: 8px; font-size: 11px; font-family: monospace;
+      pointer-events: auto; max-width: 320px;
+    }
+    .coords-overlay select {
+      background: rgba(255,255,255,0.15); color: #fff; border: 1px solid rgba(255,255,255,0.3);
+      border-radius: 4px; font-size: 10px; padding: 2px 4px; margin-left: 6px;
+    }
+    .coords-overlay option { color: #333; background: #fff; }
+    .gps-pulse {
+      width: 16px; height: 16px; border-radius: 50%; background: #2196F3;
+      border: 3px solid #fff; box-shadow: 0 0 8px rgba(33,150,243,0.6);
+      animation: gpsPulse 2s ease-in-out infinite;
+    }
+    @keyframes gpsPulse {
+      0%, 100% { box-shadow: 0 0 4px rgba(33,150,243,0.4); }
+      50% { box-shadow: 0 0 16px rgba(33,150,243,0.8); }
+    }
+    .gps-accuracy {
+      border: 2px solid rgba(33,150,243,0.4);
+      background: rgba(33,150,243,0.1);
+    }
 
     /* Handbook content styles */
     .handbook-content { font-size: 15px; line-height: 1.7; color: #333; padding: 10px 0; }
@@ -1233,6 +1259,18 @@
                 <button type="button" class="btn btn-outline-success btn-sm" id="btn-toggle-labels" onclick="togglePlotLabels()">
                   <i class="fa-solid fa-tag me-1"></i> Nhãn
                 </button>
+                <button type="button" class="btn btn-outline-info btn-sm" id="btn-gps-track" onclick="toggleGpsTracking()">
+                  <i class="fa-solid fa-location-crosshairs me-1"></i> <span data-i18n="gps_tracking">Vị trí</span>
+                </button>
+                <button type="button" class="btn btn-outline-warning btn-sm" id="btn-gps-record" onclick="toggleGpsRecord()">
+                  <i class="fa-solid fa-route me-1"></i> <span data-i18n="gps_record">Vẽ vùng GPS</span>
+                </button>
+                <button type="button" class="btn btn-outline-secondary btn-sm" id="btn-gps-coords" onclick="toggleCoordsDisplay()">
+                  <i class="fa-solid fa-crosshairs me-1"></i> <span data-i18n="gps_coords">Tọa độ</span>
+                </button>
+                <button type="button" class="btn btn-outline-success btn-sm" id="btn-tile-cache" onclick="cacheTilesForOffline()">
+                  <i class="fa-solid fa-download me-1"></i> <span data-i18n="tile_cache">Tải BĐ offline</span>
+                </button>
                 <button type="button" class="btn btn-outline-success btn-sm" onclick="openGeoJSONRepo()">
                   <i class="fa-solid fa-database me-1"></i> <span data-i18n="btn_geo_repo">Kho bản đồ</span>
                 </button>
@@ -1286,6 +1324,7 @@
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet.draw/1.0.4/leaflet.draw.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/proj4@2.9.2/dist/proj4.min.js"></script>
 
   <script>
     // === SERVICE WORKER REGISTRATION (PWA Offline) ===
@@ -1513,6 +1552,20 @@
         sync_error: 'Lỗi đồng bộ',
         sync_saved_offline: 'Đã lưu offline — sẽ đồng bộ khi có mạng',
         sync_panel_title: 'Hàng đợi đồng bộ',
+
+        // GPS & Map tools
+        gps_tracking: 'Vị trí',
+        gps_record: 'Vẽ vùng GPS',
+        gps_record_start: 'Bắt đầu ghi lại đường đi để tạo vùng',
+        gps_record_stop: 'Dừng ghi và tạo vùng',
+        gps_record_saved: 'Đã lưu vùng GPS',
+        gps_record_min_points: 'Cần ít nhất 3 điểm để tạo vùng',
+        gps_coords: 'Tọa độ',
+        gps_no_support: 'Trình duyệt không hỗ trợ định vị GPS',
+        gps_denied: 'Quyền truy cập GPS bị từ chối',
+        tile_cache: 'Tải BĐ offline',
+        tile_caching: 'Đang tải tile...',
+        tile_cached: 'Đã tải xong tile offline',
 
         // Settings
         settings_title: 'Cài đặt hệ thống',
@@ -1874,6 +1927,19 @@
         sync_error: 'Sync error',
         sync_saved_offline: 'Saved offline — will sync when online',
         sync_panel_title: 'Sync Queue',
+
+        gps_tracking: 'Location',
+        gps_record: 'GPS Draw',
+        gps_record_start: 'Start recording track to draw area',
+        gps_record_stop: 'Stop recording and create polygon',
+        gps_record_saved: 'GPS polygon saved',
+        gps_record_min_points: 'Need at least 3 points to create polygon',
+        gps_coords: 'Coordinates',
+        gps_no_support: 'Browser does not support GPS',
+        gps_denied: 'GPS access denied',
+        tile_cache: 'Cache tiles',
+        tile_caching: 'Caching tiles...',
+        tile_cached: 'Offline tiles cached',
 
         settings_title: 'System Settings',
         settings_save: 'Save',
@@ -6226,6 +6292,229 @@
       _pendingMapTarget = String(loRungId);
       loadView('Bando_lorung', 'Bản đồ quản lý lô rừng');
     };
+
+    // ── GPS Tracking & Real-time Location ──────────────────────
+    let _gpsWatchId = null;
+    let _gpsMarker = null;
+    let _gpsAccuracyCircle = null;
+    let _gpsTracking = false;
+
+    window.toggleGpsTracking = function() {
+      if (_gpsTracking) { stopGpsTracking(); return; }
+      if (!navigator.geolocation) { alert(t('gps_no_support')); return; }
+      _gpsTracking = true;
+      const btn = document.getElementById('btn-gps-track');
+      if (btn) { btn.classList.remove('btn-outline-info'); btn.classList.add('btn-info', 'text-white'); }
+
+      _gpsWatchId = navigator.geolocation.watchPosition(
+        pos => {
+          const { latitude: lat, longitude: lng, accuracy } = pos.coords;
+          if (!mapInstance) return;
+          if (!_gpsMarker) {
+            _gpsMarker = L.marker([lat, lng], {
+              icon: L.divIcon({ className: '', html: '<div class="gps-pulse"></div>', iconSize: [16, 16], iconAnchor: [8, 8] }),
+              zIndexOffset: 1000
+            }).addTo(mapInstance);
+            _gpsAccuracyCircle = L.circle([lat, lng], { radius: accuracy, className: 'gps-accuracy', interactive: false }).addTo(mapInstance);
+            mapInstance.setView([lat, lng], 16);
+          } else {
+            _gpsMarker.setLatLng([lat, lng]);
+            _gpsAccuracyCircle.setLatLng([lat, lng]).setRadius(accuracy);
+          }
+          // Update coordinate display if visible
+          if (_coordsOverlay) _updateCoordsDisplay(lat, lng, accuracy);
+          // Update GPS record track
+          if (_gpsRecording) _addGpsRecordPoint(lat, lng);
+        },
+        err => {
+          console.warn('GPS error:', err);
+          if (err.code === 1) alert(t('gps_denied'));
+        },
+        { enableHighAccuracy: true, maximumAge: 3000, timeout: 10000 }
+      );
+    };
+
+    function stopGpsTracking() {
+      _gpsTracking = false;
+      if (_gpsWatchId !== null) { navigator.geolocation.clearWatch(_gpsWatchId); _gpsWatchId = null; }
+      if (_gpsMarker) { mapInstance.removeLayer(_gpsMarker); _gpsMarker = null; }
+      if (_gpsAccuracyCircle) { mapInstance.removeLayer(_gpsAccuracyCircle); _gpsAccuracyCircle = null; }
+      const btn = document.getElementById('btn-gps-track');
+      if (btn) { btn.classList.remove('btn-info', 'text-white'); btn.classList.add('btn-outline-info'); }
+    }
+
+    // ── GPS Record (auto-draw polygon by movement) ─────────────
+    let _gpsRecording = false;
+    let _gpsRecordPoints = [];
+    let _gpsRecordPolyline = null;
+
+    window.toggleGpsRecord = function() {
+      if (_gpsRecording) { stopGpsRecord(); return; }
+      // Start GPS tracking first if not active
+      if (!_gpsTracking) toggleGpsTracking();
+      _gpsRecording = true;
+      _gpsRecordPoints = [];
+      if (_gpsRecordPolyline) { mapInstance.removeLayer(_gpsRecordPolyline); _gpsRecordPolyline = null; }
+      _gpsRecordPolyline = L.polyline([], { color: '#ff5722', weight: 3, dashArray: '8,6' }).addTo(mapInstance);
+      const btn = document.getElementById('btn-gps-record');
+      if (btn) { btn.classList.remove('btn-outline-warning'); btn.classList.add('btn-warning', 'text-white'); btn.title = t('gps_record_stop'); }
+    };
+
+    function _addGpsRecordPoint(lat, lng) {
+      _gpsRecordPoints.push([lat, lng]);
+      if (_gpsRecordPolyline) _gpsRecordPolyline.addLatLng([lat, lng]);
+    }
+
+    function stopGpsRecord() {
+      _gpsRecording = false;
+      const btn = document.getElementById('btn-gps-record');
+      if (btn) { btn.classList.remove('btn-warning', 'text-white'); btn.classList.add('btn-outline-warning'); btn.title = t('gps_record_start'); }
+
+      if (_gpsRecordPoints.length < 3) {
+        alert(t('gps_record_min_points'));
+        if (_gpsRecordPolyline) { mapInstance.removeLayer(_gpsRecordPolyline); _gpsRecordPolyline = null; }
+        return;
+      }
+      // Close the polygon and add to map
+      const pts = [..._gpsRecordPoints, _gpsRecordPoints[0]]; // close ring
+      if (_gpsRecordPolyline) { mapInstance.removeLayer(_gpsRecordPolyline); _gpsRecordPolyline = null; }
+      const polygon = L.polygon(pts, { color: '#ff5722', weight: 2, fillColor: '#ff5722', fillOpacity: 0.15 }).addTo(mapInstance);
+      mapDrawnItems.addLayer(polygon);
+      // Prompt to link to a forest plot
+      promptLinkPolygonToLoRung(polygon);
+      _gpsRecordPoints = [];
+    }
+
+    // ── Coordinate Display (multi-CRS) ─────────────────────────
+    let _coordsOverlay = null;
+    let _coordsCRS = 'EPSG:4326';
+
+    // Define VN-2000 / UTM projections with proj4
+    const CRS_DEFS = {
+      'EPSG:4326':  { label: 'WGS84 (Lat/Lng)', proj: null },
+      'EPSG:32648': { label: 'UTM 48N', proj: '+proj=utm +zone=48 +datum=WGS84 +units=m +no_defs' },
+      'EPSG:32649': { label: 'UTM 49N', proj: '+proj=utm +zone=49 +datum=WGS84 +units=m +no_defs' },
+      'EPSG:3405':  { label: 'VN-2000 UTM 48N', proj: '+proj=utm +zone=48 +ellps=WGS84 +towgs84=-191.90441429,-39.30318279,-111.45032835,0.00928836,-0.01975479,0.00427372,0.252906278 +units=m +no_defs' },
+      'EPSG:3406':  { label: 'VN-2000 UTM 49N', proj: '+proj=utm +zone=49 +ellps=WGS84 +towgs84=-191.90441429,-39.30318279,-111.45032835,0.00928836,-0.01975479,0.00427372,0.252906278 +units=m +no_defs' },
+      'VN2000_3':   { label: 'VN-2000 múi 3°', proj: null } // Auto-computed
+    };
+
+    // VN-2000 3-degree zone: auto-detect central meridian from longitude
+    function _getVN2000_3deg(lng) {
+      // Common central meridians for Vietnamese provinces
+      const cms = [103, 104, 104.5, 104.75, 105, 105.5, 105.75, 106, 106.25, 106.5, 107, 107.25, 107.5, 107.75, 108, 108.25, 108.5];
+      let cm = cms.reduce((best, c) => Math.abs(c - lng) < Math.abs(best - lng) ? c : best, cms[0]);
+      return `+proj=tmerc +lat_0=0 +lon_0=${cm} +k=0.9999 +x_0=500000 +y_0=0 +ellps=WGS84 +towgs84=-191.90441429,-39.30318279,-111.45032835,0.00928836,-0.01975479,0.00427372,0.252906278 +units=m +no_defs`;
+    }
+
+    function _transformCoords(lat, lng, crsKey) {
+      if (crsKey === 'EPSG:4326') return { x: lng, y: lat, fmt: `${lat.toFixed(6)}, ${lng.toFixed(6)}` };
+      if (typeof proj4 === 'undefined') return { x: lng, y: lat, fmt: `${lat.toFixed(6)}, ${lng.toFixed(6)} (proj4 not loaded)` };
+      let projStr;
+      if (crsKey === 'VN2000_3') {
+        projStr = _getVN2000_3deg(lng);
+      } else {
+        projStr = CRS_DEFS[crsKey]?.proj;
+      }
+      if (!projStr) return { x: lng, y: lat, fmt: `${lat.toFixed(6)}, ${lng.toFixed(6)}` };
+      try {
+        const [x, y] = proj4(projStr, [lng, lat]);
+        return { x, y, fmt: `E ${x.toFixed(2)}, N ${y.toFixed(2)}` };
+      } catch (e) {
+        return { x: lng, y: lat, fmt: `Error: ${e.message}` };
+      }
+    }
+
+    function _updateCoordsDisplay(lat, lng, accuracy) {
+      const el = document.getElementById('coords-text');
+      if (!el) return;
+      const r = _transformCoords(lat, lng, _coordsCRS);
+      el.textContent = r.fmt + (accuracy ? ` (±${accuracy.toFixed(0)}m)` : '');
+    }
+
+    window.toggleCoordsDisplay = function() {
+      if (_coordsOverlay) {
+        _coordsOverlay.remove();
+        _coordsOverlay = null;
+        const btn = document.getElementById('btn-gps-coords');
+        if (btn) { btn.classList.remove('btn-secondary', 'text-white'); btn.classList.add('btn-outline-secondary'); }
+        return;
+      }
+      if (!mapInstance) return;
+      const btn = document.getElementById('btn-gps-coords');
+      if (btn) { btn.classList.remove('btn-outline-secondary'); btn.classList.add('btn-secondary', 'text-white'); }
+
+      const div = document.createElement('div');
+      div.className = 'coords-overlay';
+      div.innerHTML = `
+        <div class="d-flex align-items-center gap-1">
+          <i class="fa-solid fa-crosshairs" style="font-size:10px"></i>
+          <span id="coords-text" style="flex:1">--</span>
+          <select id="coords-crs-select" onchange="window._onCrsChange(this.value)">
+            ${Object.keys(CRS_DEFS).map(k => `<option value="${k}" ${k === _coordsCRS ? 'selected' : ''}>${CRS_DEFS[k].label}</option>`).join('')}
+          </select>
+        </div>`;
+      document.getElementById('map-container').appendChild(div);
+      _coordsOverlay = div;
+
+      // Also show map center coords on move
+      mapInstance.on('mousemove', _onMapMouseMove);
+      mapInstance.on('move', _onMapMove);
+      // Show current center immediately
+      const c = mapInstance.getCenter();
+      _updateCoordsDisplay(c.lat, c.lng);
+    };
+
+    window._onCrsChange = function(val) { _coordsCRS = val; const c = mapInstance.getCenter(); _updateCoordsDisplay(c.lat, c.lng); };
+    function _onMapMouseMove(e) { _updateCoordsDisplay(e.latlng.lat, e.latlng.lng); }
+    function _onMapMove() { if (!_gpsTracking) { const c = mapInstance.getCenter(); _updateCoordsDisplay(c.lat, c.lng); } }
+
+    // ── Offline Tile Caching ───────────────────────────────────
+    window.cacheTilesForOffline = async function() {
+      if (!mapDrawnItems || mapDrawnItems.getLayers().length === 0) { alert('Chưa có dữ liệu lô rừng trên bản đồ'); return; }
+      const bounds = mapDrawnItems.getBounds();
+      const btn = document.getElementById('btn-tile-cache');
+      if (btn) { btn.disabled = true; btn.innerHTML = `<i class="fa-solid fa-spinner fa-spin me-1"></i>${t('tile_caching')}`; }
+
+      const TILE_CACHE = 'fscfm-tiles-v1';
+      const cache = await caches.open(TILE_CACHE);
+      const ZOOM_MIN = 13, ZOOM_MAX = 17;
+      let total = 0, cached = 0;
+
+      // Calculate tile coordinates for each zoom level
+      for (let z = ZOOM_MIN; z <= ZOOM_MAX; z++) {
+        const nw = bounds.getNorthWest();
+        const se = bounds.getSouthEast();
+        const minTile = _latLngToTile(se.lat, nw.lng, z);
+        const maxTile = _latLngToTile(nw.lat, se.lng, z);
+        for (let x = minTile.x; x <= maxTile.x; x++) {
+          for (let y = minTile.y; y <= maxTile.y; y++) {
+            total++;
+            const url = `https://mt1.google.com/vt/lyrs=s&x=${x}&y=${y}&z=${z}`;
+            try {
+              const existing = await cache.match(url);
+              if (!existing) {
+                const resp = await fetch(url, { mode: 'cors' });
+                if (resp.ok) await cache.put(url, resp);
+              }
+              cached++;
+            } catch (e) { /* skip failed tiles */ }
+          }
+        }
+      }
+
+      if (btn) { btn.disabled = false; btn.innerHTML = `<i class="fa-solid fa-download me-1"></i>${t('tile_cache')}`; }
+      alert(`${t('tile_cached')}: ${cached}/${total} tiles (zoom ${ZOOM_MIN}-${ZOOM_MAX})`);
+    };
+
+    function _latLngToTile(lat, lng, zoom) {
+      const n = Math.pow(2, zoom);
+      const x = Math.floor((lng + 180) / 360 * n);
+      const latRad = lat * Math.PI / 180;
+      const y = Math.floor((1 - Math.log(Math.tan(latRad) + 1 / Math.cos(latRad)) / Math.PI) / 2 * n);
+      return { x: Math.max(0, x), y: Math.max(0, y) };
+    }
+
     // ── Map Search ──────────────────────────────────────────────
     let _mapSearchIndex = null;
     let _mapSearchTimer = null;

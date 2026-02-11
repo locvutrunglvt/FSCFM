@@ -1,5 +1,5 @@
-const CACHE_NAME = 'fscfm-v1';
-const CDN_CACHE = 'fscfm-cdn-v1';
+const CACHE_NAME = 'fscfm-v2';
+const CDN_CACHE = 'fscfm-cdn-v2';
 const DATA_CACHE = 'fscfm-data-v1';
 
 // Core app files
@@ -23,7 +23,8 @@ const CDN_FILES = [
   'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2',
   'https://unpkg.com/leaflet@1.9.4/dist/leaflet.js',
   'https://cdnjs.cloudflare.com/ajax/libs/leaflet.draw/1.0.4/leaflet.draw.js',
-  'https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js'
+  'https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js',
+  'https://cdn.jsdelivr.net/npm/proj4@2.9.2/dist/proj4.min.js'
 ];
 
 // Install: cache all core resources
@@ -44,7 +45,7 @@ self.addEventListener('install', event => {
 self.addEventListener('activate', event => {
   event.waitUntil(
     caches.keys().then(keys =>
-      Promise.all(keys.filter(k => k !== CACHE_NAME && k !== CDN_CACHE && k !== DATA_CACHE).map(k => caches.delete(k)))
+      Promise.all(keys.filter(k => k !== CACHE_NAME && k !== CDN_CACHE && k !== DATA_CACHE && k !== 'fscfm-tiles-v1').map(k => caches.delete(k)))
     ).then(() => self.clients.claim())
   );
 });
@@ -63,6 +64,22 @@ self.addEventListener('fetch', event => {
           }
           return response;
         }).catch(() => cache.match(event.request))
+      )
+    );
+    return;
+  }
+
+  // Map tiles: cache-first for offline (Google, Esri, OSM tiles)
+  if (url.hostname.match(/^mt\d\.google\.com$/) || url.hostname.includes('arcgisonline.com') || url.hostname.includes('tile.openstreetmap.org')) {
+    event.respondWith(
+      caches.open('fscfm-tiles-v1').then(cache =>
+        cache.match(event.request).then(cached => {
+          if (cached) return cached;
+          return fetch(event.request).then(response => {
+            if (response.ok) cache.put(event.request, response.clone());
+            return response;
+          }).catch(() => cached || new Response('', { status: 404 }));
+        })
       )
     );
     return;
