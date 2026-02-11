@@ -1664,6 +1664,7 @@
         offline: 'Ngoại tuyến',
         language: 'Ngôn ngữ',
         confirm_delete: 'Bạn có chắc chắn muốn xóa?',
+        no_permission: 'Bạn không có quyền thực hiện thao tác này.',
         saved_ok: 'Đã lưu cài đặt thành công!',
         reset_ok: 'Đã khôi phục cài đặt mặc định.',
         no_network: 'Không có kết nối mạng và không có dữ liệu được lưu trước đó.',
@@ -2052,6 +2053,7 @@
         offline: 'Offline',
         language: 'Language',
         confirm_delete: 'Are you sure you want to delete?',
+        no_permission: 'You do not have permission to perform this action.',
         saved_ok: 'Settings saved successfully!',
         reset_ok: 'Settings have been reset to defaults.',
         no_network: 'No internet connection and no cached data available.',
@@ -5369,10 +5371,15 @@
       renderContent(); // Vẽ lại để cập nhật bảng
     }
 
+    function _isAdmin() {
+      return currentUser && String(currentUser['Chức vụ'] || '').toLowerCase().includes('admin');
+    }
+
     function hasPermission(moduleName, action) {
+      // Non-admin: block Edit (Sửa) and Delete (Xóa) globally
+      if (!_isAdmin() && (action === 'Sửa' || action === 'Xóa')) return false;
       if (!APP_DATA['Menu']) return true;
       const menu = APP_DATA['Menu'].find(m => m['Module'] === moduleName || m['View'] === moduleName);
-      console.log(`Checking permission for ${moduleName}/${action}:`, menu ? menu[action] : 'Menu not found');
       if (!menu) return true;
       // action = 'Xem' | 'Thêm' | 'Sửa' | 'Xóa'
       const p = String(menu[action]).toLowerCase();
@@ -5873,7 +5880,7 @@
       if (linked) {
         popupHtml += `<button class="btn btn-outline-success btn-sm w-100 mb-1" onclick="viewLoRungFromMap('${layer.loRungId}')"><i class="fa-solid fa-edit me-1"></i>${t('edit_attributes')}</button>`;
       }
-      popupHtml += `<button class="btn btn-outline-danger btn-sm w-100" onclick="deletePolygonFromEdit()" id="btn-delete-edit-polygon"><i class="fa-solid fa-trash me-1"></i>${t('btn_delete')}</button>`;
+      if (_isAdmin()) popupHtml += `<button class="btn btn-outline-danger btn-sm w-100" onclick="deletePolygonFromEdit()" id="btn-delete-edit-polygon"><i class="fa-solid fa-trash me-1"></i>${t('btn_delete')}</button>`;
       popupHtml += `</div>`;
 
       const popup = L.popup({ maxWidth: 280 }).setLatLng(e.latlng).setContent(popupHtml).openOn(mapInstance);
@@ -5882,6 +5889,7 @@
 
     // Delete polygon from edit mode
     window.deletePolygonFromEdit = async function() {
+      if (!_isAdmin()) { alert(t('no_permission')); return; }
       const layer = window._editingPolygonLayer;
       if (!layer) return;
       if (!confirm(t('confirm_delete_polygon'))) return;
@@ -6141,6 +6149,7 @@
     };
 
     window.unlinkPolygon = async function(loRungId) {
+      if (!_isAdmin()) { alert(t('no_permission')); return; }
       if (!confirm('Xác nhận hủy liên kết polygon này với lô rừng?')) return;
       try {
         const { error } = await sb.from('lo_rung_geojson').delete().eq('id_lo_rung', loRungId);
@@ -6438,7 +6447,7 @@
                 <button class="btn btn-outline-success btn-sm" style="font-size:10px;padding:2px 6px" onclick="loadKhoLayer(${row.id})" title="${t('btn_layers')}"><i class="fa-solid fa-eye"></i></button>
                 <button class="btn btn-outline-info btn-sm" style="font-size:10px;padding:2px 6px" onclick="exportKhoLayer(${row.id},'${safeName}')" title="${t('btn_export_geojson')}"><i class="fa-solid fa-download"></i></button>
                 <button class="btn btn-outline-primary btn-sm" style="font-size:10px;padding:2px 6px" onclick="zoomKhoLayer('${safeName}')" title="Zoom"><i class="fa-solid fa-expand"></i></button>
-                <button class="btn btn-outline-danger btn-sm" style="font-size:10px;padding:2px 6px" onclick="deleteKhoLayer(${row.id}, '${safeName}')" title="${t('btn_delete')}"><i class="fa-solid fa-trash"></i></button>
+                ${_isAdmin() ? `<button class="btn btn-outline-danger btn-sm" style="font-size:10px;padding:2px 6px" onclick="deleteKhoLayer(${row.id}, '${safeName}')" title="${t('btn_delete')}"><i class="fa-solid fa-trash"></i></button>` : ''}
               </div>
             </div>`;
         });
@@ -6496,6 +6505,7 @@
     };
 
     window.deleteKhoLayer = async function(id, name) {
+      if (!_isAdmin()) { alert(t('no_permission')); return; }
       if (!confirm(t('geo_repo_confirm_delete'))) return;
       const { error } = await sb.from('geojson_kho').delete().eq('id', id);
       if (error) { alert('Lỗi: ' + error.message); return; }
@@ -8073,9 +8083,9 @@
               return `<td class="text-center small" style="background:${cellColor}; cursor:pointer" onclick="editPlanCell('${row['ID']}', '${m}')" title="${val || 'Click để nhập'}">${val}</td>`;
             }).join('')}
             <td class="small">${row['Ghi chú'] || ''}</td>
-            <td class="text-center">
+            ${_isAdmin() ? `<td class="text-center">
               <button class="btn btn-sm btn-outline-danger" onclick="deletePlanRow('${row['ID']}')"><i class="fas fa-trash-alt"></i></button>
-            </td>
+            </td>` : '<td></td>'}
           </tr>`;
         });
       }
@@ -8139,6 +8149,7 @@
     }
 
     async function editPlanCell(rowId, monthKey) {
+      if (!_isAdmin()) { alert(t('no_permission')); return; }
       const planData = APP_DATA['KH_GiamSat_Nhom'] || [];
       const row = planData.find(r => r['ID'] === rowId);
       if (!row) return;
@@ -8168,6 +8179,7 @@
     }
 
     async function deletePlanRow(rowId) {
+      if (!_isAdmin()) { alert(t('no_permission')); return; }
       if (!confirm(t('mon_confirm_save'))) return;
       try {
         if (navigator.onLine) {
@@ -9543,6 +9555,7 @@ ${gsRecord['Đề xuất'] ? `<div class="proposal-box"><h4>${t('mon_proposal')}
     }
 
     async function closeConsultationSession(idDot) {
+      if (!_isAdmin()) { alert(t('no_permission')); return; }
       if (!confirm('Đóng đợt tham vấn này? Sẽ không nhận phản hồi mới.')) return;
       if (navigator.onLine) {
         const { error } = await sb.from('dot_tham_van').update({ trang_thai: 'Đã đóng' }).eq('id', idDot);
@@ -10806,6 +10819,7 @@ ${gsRecord['Đề xuất'] ? `<div class="proposal-box"><h4>${t('mon_proposal')}
 
     let currentAction = '', currentSheetTarget = '';
     function openModal(action, sheetName, rowJson = null) {
+      if (!_isAdmin() && action === 'UPDATE') { alert(t('no_permission')); return; }
       currentAction = action;
       currentSheetTarget = (sheetName === 'PhanQuyen') ? 'NhanSu' : sheetName;
       $('#modalTitle').text(action === 'CREATE' ? t('modal_add') : t('modal_update'));
@@ -11018,6 +11032,7 @@ ${gsRecord['Đề xuất'] ? `<div class="proposal-box"><h4>${t('mon_proposal')}
     }
 
     async function deleteRow(sheetName, rowJson) {
+      if (!_isAdmin()) { alert(t('no_permission')); return; }
       if (!confirm(t('confirm_delete'))) return;
       const rowData = JSON.parse(decodeURIComponent(rowJson));
       const idCol = Object.keys(rowData)[0];
