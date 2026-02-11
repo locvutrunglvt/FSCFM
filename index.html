@@ -966,14 +966,16 @@
     }
     @media (max-width: 767px) {
       #map-container {
-        height: calc(100dvh - 280px);
-        border-radius: 8px;
+        height: calc(100dvh - 155px);
+        border-radius: 6px;
       }
       /* Hide verbose attribution on mobile to free bottom space */
       #map-container .leaflet-control-attribution { font-size: 0; line-height: 0; padding: 0; height: 0; overflow: hidden; }
       /* Compact toolbar: icon-only buttons, single scrollable row */
-      .map-toolbar { padding: 4px 8px; margin-bottom: 4px; }
+      .map-toolbar { padding: 3px 6px; margin-bottom: 2px; }
       .map-toolbar > div:first-child { display: none !important; } /* hide title on mobile */
+      /* Hide breadcrumb + back button on map view mobile to maximize map area */
+      .d-flex.align-items-center.mb-3:has(#breadcrumb-container) { display: none !important; }
       .map-toolbar .d-flex.gap-2 {
         gap: 4px !important;
         flex-wrap: nowrap !important;
@@ -1013,11 +1015,11 @@
       box-shadow: none !important;
       font-size: 11px !important;
       line-height: 1.2 !important;
-      color: #1a1a1a;
-      font-weight: 600;
+      color: #FFD600;
+      font-weight: 700;
       text-align: center;
       white-space: nowrap;
-      text-shadow: 1px 1px 2px #fff, -1px -1px 2px #fff, 1px -1px 2px #fff, -1px 1px 2px #fff;
+      text-shadow: 1px 1px 3px #000, -1px -1px 3px #000, 1px -1px 3px #000, -1px 1px 3px #000, 0 0 6px rgba(0,0,0,0.8);
       padding: 0 !important;
     }
     .plot-label::before { display: none !important; }
@@ -1318,16 +1320,13 @@
                   </ul>
                 </div>
                 <button type="button" class="btn btn-outline-success btn-sm" id="btn-toggle-labels" onclick="togglePlotLabels()">
-                  <i class="fa-solid fa-tag me-1"></i> Nhãn
+                  <i class="fa-solid fa-tag me-1"></i> <span data-i18n="btn_labels">Nhãn</span>
                 </button>
                 <button type="button" class="btn btn-outline-success btn-sm" id="btn-tile-cache" onclick="cacheTilesForOffline()">
                   <i class="fa-solid fa-download me-1"></i> <span data-i18n="tile_cache">Tải BĐ offline</span>
                 </button>
                 <button type="button" class="btn btn-outline-success btn-sm" onclick="openGeoJSONRepo()">
                   <i class="fa-solid fa-database me-1"></i> <span data-i18n="btn_geo_repo">Kho bản đồ</span>
-                </button>
-                <button type="button" class="btn btn-success btn-sm" onclick="goHome()">
-                  <i class="fa-solid fa-house me-1"></i> <span data-i18n="btn_home">Trang chủ</span>
                 </button>
               </div>
             </div>
@@ -1638,6 +1637,22 @@
         tile_cache: 'Tải BĐ offline',
         tile_caching: 'Đang tải tile...',
         tile_cached: 'Đã tải xong tile offline',
+        polygon_unnamed: 'Đa giác chưa đặt tên',
+        vertices: 'đỉnh',
+        edit_attributes: 'Sửa thông tin',
+        confirm_delete_polygon: 'Xác nhận xóa đa giác này?',
+        save_as_layer: 'Lưu vào kho bản đồ',
+        layer_name_prompt: 'Đặt tên cho lớp bản đồ:',
+        layer_saved: 'Đã lưu vào kho bản đồ',
+        geo_repo_title: 'Kho bản đồ GeoJSON',
+        geo_repo_empty: 'Chưa có bản đồ nào được lưu.',
+        geo_repo_confirm_delete: 'Xác nhận xóa bản đồ khỏi kho?',
+        geo_repo_not_loaded: 'Lớp chưa được hiển thị trên bản đồ.',
+        btn_export_geojson: 'Xuất GeoJSON',
+        hand_draw: 'Vẽ tay',
+        btn_labels: 'Nhãn',
+        layer_basemap: 'Lớp bản đồ nền',
+        layer_data: 'Dữ liệu',
 
         // Settings
         settings_title: 'Cài đặt hệ thống',
@@ -2012,6 +2027,22 @@
         tile_cache: 'Cache tiles',
         tile_caching: 'Caching tiles...',
         tile_cached: 'Offline tiles cached',
+        polygon_unnamed: 'Unnamed polygon',
+        vertices: 'vertices',
+        edit_attributes: 'Edit attributes',
+        confirm_delete_polygon: 'Delete this polygon?',
+        save_as_layer: 'Save to map repository',
+        layer_name_prompt: 'Enter layer name:',
+        layer_saved: 'Saved to map repository',
+        geo_repo_title: 'GeoJSON Map Repository',
+        geo_repo_empty: 'No maps saved yet.',
+        geo_repo_confirm_delete: 'Delete this map from repository?',
+        geo_repo_not_loaded: 'Layer not loaded on map yet.',
+        btn_export_geojson: 'Export GeoJSON',
+        hand_draw: 'Hand draw',
+        btn_labels: 'Labels',
+        layer_basemap: 'Base Maps',
+        layer_data: 'Data Layers',
 
         settings_title: 'System Settings',
         settings_save: 'Save',
@@ -2593,9 +2624,26 @@
       if ($('#data-view').is(':visible') && typeof renderContent === 'function') {
         renderContent();
       }
-      // Update mobile project name
+      // Update project name on both desktop and mobile navbar
+      const s = getSettings();
+      const deskName = document.getElementById('navbar-project-name');
+      if (deskName) deskName.textContent = s.projectName;
       const mobName = document.getElementById('navbar-project-name-mobile');
-      if (mobName) { const s = getSettings(); mobName.textContent = s.projectName; }
+      if (mobName) mobName.textContent = s.projectName;
+      // Refresh map toolbar buttons that use t() dynamically
+      if ($('#map-view').is(':visible')) {
+        const editBtn = document.getElementById('btn-edit-polygon');
+        if (editBtn) {
+          const isActive = mapEditMode;
+          editBtn.innerHTML = `<i class="fa-solid fa-pen-to-square me-1"></i> ${t('btn_edit_polygon')}${isActive ? ' ✓' : ''}`;
+        }
+        if (typeof renderMapLayerPanel === 'function') renderMapLayerPanel();
+      }
+      // Update data-i18n-placeholder attributes
+      document.querySelectorAll('[data-i18n-placeholder]').forEach(el => {
+        const key = el.getAttribute('data-i18n-placeholder');
+        if (LANG[currentLang][key]) el.placeholder = LANG[currentLang][key];
+      });
     }
 
     // Apply language on page load
@@ -5649,6 +5697,7 @@
 
       mapInstance.on(L.Draw.Event.EDITED, function(e) {
         e.layers.eachLayer(function(layer) {
+          layer.edited = true;
           if (layer.loRungId) savePolygonGeometry(layer);
         });
       });
@@ -5661,6 +5710,10 @@
       mapInstance.on('moveend zoomend', function() {
         clearTimeout(_labelTimer);
         _labelTimer = setTimeout(updateViewportLabels, 200);
+        // Auto-cache visible satellite tiles in background
+        _autoCacheVisibleTiles();
+        // Auto-detect UTM zone for coords panel
+        _autoDetectUTMZone();
       });
 
       loadStoredGeoJSON().then(() => {
@@ -5751,13 +5804,94 @@
         btn.classList.remove('btn-outline-success');
         btn.classList.add('btn-success', 'text-white');
         btn.innerHTML = `<i class="fa-solid fa-pen-to-square me-1"></i> ${t('btn_edit_polygon')} ✓`;
+        // Enable vertex editing on all polygons
+        _enableAllPolygonEditing(true);
       } else {
+        // Save any edited polygons, then disable editing
+        _saveEditedPolygons();
+        _enableAllPolygonEditing(false);
         mapInstance.removeControl(mapDrawControl);
         btn.classList.remove('btn-success', 'text-white');
         btn.classList.add('btn-outline-success');
         btn.innerHTML = `<i class="fa-solid fa-pen-to-square me-1"></i> ${t('btn_edit_polygon')}`;
       }
     }
+
+    // Enable/disable vertex editing on all polygons in mapDrawnItems
+    function _enableAllPolygonEditing(enable) {
+      if (!mapDrawnItems) return;
+      mapDrawnItems.eachLayer(layer => {
+        if (layer instanceof L.Polygon || layer instanceof L.Polyline) {
+          if (enable) {
+            layer.editing && layer.editing.enable();
+            layer.on('click', _onPolygonEditClick);
+          } else {
+            layer.editing && layer.editing.disable();
+            layer.off('click', _onPolygonEditClick);
+          }
+        }
+      });
+    }
+
+    // Save geometry of polygons that were edited via vertex dragging
+    function _saveEditedPolygons() {
+      if (!mapDrawnItems) return;
+      mapDrawnItems.eachLayer(layer => {
+        if ((layer instanceof L.Polygon) && layer.edited && layer.loRungId) {
+          savePolygonGeometry(layer);
+          layer.edited = false;
+        }
+      });
+    }
+
+    // Click handler for polygon in edit mode — show attribute edit popup
+    function _onPolygonEditClick(e) {
+      L.DomEvent.stopPropagation(e);
+      const layer = e.target;
+      const loRungData = APP_DATA['Lo_rung'] || [];
+      const linked = layer.loRungId ? loRungData.find(lr => String(lr['ID lô rừng']) === String(layer.loRungId)) : null;
+
+      let areaHa = '';
+      try {
+        const latlngs = layer.getLatLngs()[0];
+        let area = 0;
+        for (let i = 0; i < latlngs.length; i++) {
+          const j = (i + 1) % latlngs.length;
+          area += latlngs[i].lng * latlngs[j].lat;
+          area -= latlngs[j].lng * latlngs[i].lat;
+        }
+        areaHa = (Math.abs(area) / 2 * 111320 * 111320 * Math.cos(latlngs[0].lat * Math.PI / 180) / 10000).toFixed(4);
+      } catch(ex) {}
+
+      const name = linked ? (linked['Mã số lô rừng'] || linked['Tên lô rừng'] || layer.loRungId) : (layer.layerName || t('polygon_unnamed'));
+      const vertexCount = layer.getLatLngs()[0] ? layer.getLatLngs()[0].length : 0;
+
+      let popupHtml = `<div style="min-width:220px">
+        <div class="fw-bold small mb-1" style="color:#1B5E20"><i class="fa-solid fa-draw-polygon me-1"></i>${name}</div>
+        ${areaHa ? `<div class="small text-muted mb-1"><i class="fa-solid fa-ruler-combined me-1"></i>${areaHa} ha | ${vertexCount} ${t('vertices')}</div>` : ''}`;
+
+      if (linked) {
+        popupHtml += `<button class="btn btn-outline-success btn-sm w-100 mb-1" onclick="viewLoRungFromMap('${layer.loRungId}')"><i class="fa-solid fa-edit me-1"></i>${t('edit_attributes')}</button>`;
+      }
+      popupHtml += `<button class="btn btn-outline-danger btn-sm w-100" onclick="deletePolygonFromEdit()" id="btn-delete-edit-polygon"><i class="fa-solid fa-trash me-1"></i>${t('btn_delete')}</button>`;
+      popupHtml += `</div>`;
+
+      const popup = L.popup({ maxWidth: 280 }).setLatLng(e.latlng).setContent(popupHtml).openOn(mapInstance);
+      window._editingPolygonLayer = layer;
+    }
+
+    // Delete polygon from edit mode
+    window.deletePolygonFromEdit = async function() {
+      const layer = window._editingPolygonLayer;
+      if (!layer) return;
+      if (!confirm(t('confirm_delete_polygon'))) return;
+      if (layer.loRungId) {
+        try { await sb.from('lo_rung_geojson').delete().eq('lo_rung_id', layer.loRungId); } catch(e) {}
+      }
+      mapDrawnItems.removeLayer(layer);
+      mapInstance.closePopup();
+      window._editingPolygonLayer = null;
+    };
 
     function zoomToAllData() {
       if (!mapInstance) return;
@@ -5911,8 +6045,12 @@
               <label class="small fw-bold text-muted mb-1">Hoặc tạo lô rừng mới:</label>
               <input type="text" class="form-control form-control-sm" id="map-new-plot-code" placeholder="Nhập mã số lô mới (VD: LR_001)">
             </div>
-            <button class="btn btn-primary btn-sm w-100" onclick="createNewPlotFromPolygon()">
+            <button class="btn btn-primary btn-sm w-100 mb-2" onclick="createNewPlotFromPolygon()">
               <i class="fa-solid fa-plus me-1"></i>Tạo lô mới & Nhập thông tin
+            </button>
+            <hr class="my-1">
+            <button class="btn btn-outline-secondary btn-sm w-100" onclick="savePolygonAsNamedLayer()">
+              <i class="fa-solid fa-database me-1"></i>${t('save_as_layer')}
             </button>
           </div>
         `)
@@ -6038,6 +6176,56 @@
         console.error('Save polygon error:', e);
       }
     }
+
+    // Save drawn polygon as a named GeoJSON layer in the repository
+    window.savePolygonAsNamedLayer = async function() {
+      const popup = mapInstance._popup;
+      if (!popup || !popup._linkedLayer) return;
+      const layer = popup._linkedLayer;
+      const defaultName = 'Layer_' + new Date().toISOString().slice(0,16).replace(/[T:]/g, '_');
+      const layerName = prompt(t('layer_name_prompt'), defaultName);
+      if (!layerName) return;
+
+      const geojson = layer.toGeoJSON();
+      const featureCollection = {
+        type: 'FeatureCollection',
+        features: [geojson]
+      };
+
+      try {
+        const { error } = await sb.from('geojson_kho').insert({
+          ten_lop: layerName,
+          geojson_data: featureCollection,
+          ghi_chu: `${new Date().toLocaleString()}`,
+          version: 1,
+          created_by: currentUser ? currentUser['ID nhân viên'] : null
+        });
+        if (error) { alert('Error: ' + error.message); return; }
+        layer.layerName = layerName;
+        mapInstance.closePopup();
+        alert(t('layer_saved') + ': ' + layerName);
+      } catch(e) { alert('Error: ' + e.message); }
+    };
+
+    // Export a named layer or all drawn items as GeoJSON file
+    window.exportGeoJSON = function(layerName) {
+      let featureCollection;
+      if (layerName && geoJsonNamedLayers[layerName]) {
+        const features = [];
+        geoJsonNamedLayers[layerName].eachLayer(l => { if (l.toGeoJSON) features.push(l.toGeoJSON()); });
+        featureCollection = { type: 'FeatureCollection', features };
+      } else if (mapDrawnItems) {
+        const features = [];
+        mapDrawnItems.eachLayer(l => { if (l.toGeoJSON) features.push(l.toGeoJSON()); });
+        featureCollection = { type: 'FeatureCollection', features };
+      }
+      if (!featureCollection || featureCollection.features.length === 0) return;
+      const blob = new Blob([JSON.stringify(featureCollection, null, 2)], { type: 'application/geo+json' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url; a.download = (layerName || 'export') + '.geojson'; a.click();
+      URL.revokeObjectURL(url);
+    };
 
     // Add GeoJSON data to map with a named layer group
     function addGeoJSONToMap(geojson, layerName) {
@@ -6224,20 +6412,21 @@
         .select('id, ten_lop, ghi_chu, version, created_at')
         .order('created_at', { ascending: false });
 
-      if (error) { alert('Lỗi tải kho bản đồ: ' + error.message); return; }
+      if (error) { alert('Error: ' + error.message); return; }
 
       let html = `<div class="card shadow border-0" style="position:absolute;top:10px;right:10px;z-index:1100;width:380px;max-height:80vh;overflow-y:auto">
         <div class="card-header bg-white border-bottom d-flex justify-content-between align-items-center py-2">
-          <strong class="small"><i class="fa-solid fa-database me-1" style="color:#7B1FA2"></i>Kho bản đồ GeoJSON</strong>
+          <strong class="small"><i class="fa-solid fa-database me-1" style="color:#7B1FA2"></i>${t('geo_repo_title')}</strong>
           <button type="button" class="btn-close btn-close-sm" onclick="closeGeoJSONRepo()"></button>
         </div>
         <div class="card-body p-2">`;
 
       if (!data || data.length === 0) {
-        html += '<div class="text-center text-muted py-3 small">Chưa có bản đồ nào được lưu.</div>';
+        html += `<div class="text-center text-muted py-3 small">${t('geo_repo_empty')}</div>`;
       } else {
         data.forEach(row => {
-          const date = new Date(row.created_at).toLocaleDateString('vi-VN', { day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit' });
+          const date = new Date(row.created_at).toLocaleDateString(currentLang === 'vi' ? 'vi-VN' : 'en-US', { day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit' });
+          const safeName = row.ten_lop.replace(/'/g, "\\'");
           html += `
             <div class="border rounded p-2 mb-2 bg-light d-flex justify-content-between align-items-start">
               <div class="flex-grow-1">
@@ -6246,9 +6435,10 @@
                 ${row.ghi_chu ? `<div class="text-muted" style="font-size:10px">${row.ghi_chu}</div>` : ''}
               </div>
               <div class="d-flex gap-1 flex-shrink-0 ms-2">
-                <button class="btn btn-outline-success btn-sm" style="font-size:10px;padding:2px 6px" onclick="loadKhoLayer(${row.id})" title="Hiển thị"><i class="fa-solid fa-eye"></i></button>
-                <button class="btn btn-outline-primary btn-sm" style="font-size:10px;padding:2px 6px" onclick="zoomKhoLayer('${row.ten_lop.replace(/'/g,"\\'")}')" title="Zoom"><i class="fa-solid fa-expand"></i></button>
-                <button class="btn btn-outline-danger btn-sm" style="font-size:10px;padding:2px 6px" onclick="deleteKhoLayer(${row.id}, '${row.ten_lop.replace(/'/g,"\\'")}')" title="Xóa"><i class="fa-solid fa-trash"></i></button>
+                <button class="btn btn-outline-success btn-sm" style="font-size:10px;padding:2px 6px" onclick="loadKhoLayer(${row.id})" title="${t('btn_layers')}"><i class="fa-solid fa-eye"></i></button>
+                <button class="btn btn-outline-info btn-sm" style="font-size:10px;padding:2px 6px" onclick="exportKhoLayer(${row.id},'${safeName}')" title="${t('btn_export_geojson')}"><i class="fa-solid fa-download"></i></button>
+                <button class="btn btn-outline-primary btn-sm" style="font-size:10px;padding:2px 6px" onclick="zoomKhoLayer('${safeName}')" title="Zoom"><i class="fa-solid fa-expand"></i></button>
+                <button class="btn btn-outline-danger btn-sm" style="font-size:10px;padding:2px 6px" onclick="deleteKhoLayer(${row.id}, '${safeName}')" title="${t('btn_delete')}"><i class="fa-solid fa-trash"></i></button>
               </div>
             </div>`;
         });
@@ -6288,12 +6478,25 @@
       if (geoJsonNamedLayers[name]) {
         mapInstance.fitBounds(geoJsonNamedLayers[name].getBounds().pad(0.05));
       } else {
-        alert('Lớp "' + name + '" chưa được hiển thị trên bản đồ.');
+        alert(t('geo_repo_not_loaded'));
+      }
+    };
+
+    window.exportKhoLayer = async function(id, name) {
+      if (geoJsonNamedLayers[name]) {
+        exportGeoJSON(name);
+      } else {
+        const { data, error } = await sb.from('geojson_kho').select('geojson_data').eq('id', id).single();
+        if (error || !data) { alert('Error'); return; }
+        const blob = new Blob([JSON.stringify(data.geojson_data, null, 2)], { type: 'application/geo+json' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a'); a.href = url; a.download = name + '.geojson'; a.click();
+        URL.revokeObjectURL(url);
       }
     };
 
     window.deleteKhoLayer = async function(id, name) {
-      if (!confirm(`Xác nhận xóa bản đồ "${name}" khỏi kho?`)) return;
+      if (!confirm(t('geo_repo_confirm_delete'))) return;
       const { error } = await sb.from('geojson_kho').delete().eq('id', id);
       if (error) { alert('Lỗi: ' + error.message); return; }
       // Remove from map if displayed
@@ -6324,23 +6527,25 @@
     }
 
     function renderMapLayerPanel() {
-      let html = '<h6 class="fw-bold mb-2 small">Lớp bản đồ nền</h6>';
+      let html = `<h6 class="fw-bold mb-2 small">${t('layer_basemap')}</h6>`;
       const baseLayers = ['OpenStreetMap', 'Vệ tinh (Esri)', 'Google Satellite'];
+      const baseLabels = { 'OpenStreetMap': 'OpenStreetMap', 'Vệ tinh (Esri)': currentLang === 'en' ? 'Satellite (Esri)' : 'Vệ tinh (Esri)', 'Google Satellite': 'Google Satellite' };
       for (const name of baseLayers) {
         const layer = mapLayers[name];
         if (!layer) continue;
         const checked = mapInstance.hasLayer(layer) ? 'checked' : '';
         const safeName = name.replace(/'/g, "\\'");
-        html += `<label><input type="radio" name="map-basemap" ${checked} onchange="switchBasemap('${safeName}')" class="me-1"> ${name}</label>`;
+        html += `<label><input type="radio" name="map-basemap" ${checked} onchange="switchBasemap('${safeName}')" class="me-1"> ${baseLabels[name] || name}</label>`;
       }
-      html += '<hr class="my-2"><h6 class="fw-bold mb-2 small">Dữ liệu</h6>';
+      html += `<hr class="my-2"><h6 class="fw-bold mb-2 small">${t('layer_data')}</h6>`;
       const dataLayers = ['Lô rừng (GeoJSON)', 'Ghi chú'];
+      const dataLabels = { 'Lô rừng (GeoJSON)': currentLang === 'en' ? 'Forest Plots (GeoJSON)' : 'Lô rừng (GeoJSON)', 'Ghi chú': t('map_notes') };
       for (const name of dataLayers) {
         const layer = mapLayers[name];
         if (!layer) continue;
         const checked = mapInstance.hasLayer(layer) ? 'checked' : '';
         const safeName = name.replace(/'/g, "\\'");
-        html += `<label><input type="checkbox" ${checked} onchange="toggleLayer('${safeName}', this.checked)" class="me-1"> ${name}</label>`;
+        html += `<label><input type="checkbox" ${checked} onchange="toggleLayer('${safeName}', this.checked)" class="me-1"> ${dataLabels[name] || name}</label>`;
       }
       $('#map-layer-panel').html(html);
     }
@@ -6615,12 +6820,17 @@
     window.toggleHandDraw = function() {
       const btn = document.getElementById('btn-hand-draw');
       if (_handDrawActive) {
-        // Cancel drawing
-        if (_handDrawHandler) { _handDrawHandler.disable(); _handDrawHandler = null; }
-        _handDrawActive = false;
-        if (btn) btn.classList.remove('active-draw');
-        const guide = document.getElementById('gps-record-guide');
-        if (guide) guide.classList.add('d-none');
+        // Complete the drawing (not cancel) — trigger completeShape
+        if (_handDrawHandler) {
+          try { _handDrawHandler.completeShape(); } catch(e) {
+            // If completeShape fails (not enough points), disable
+            _handDrawHandler.disable(); _handDrawHandler = null;
+            _handDrawActive = false;
+            if (btn) btn.classList.remove('active-draw');
+            const guide = document.getElementById('gps-record-guide');
+            if (guide) { guide.classList.add('d-none'); guide.style.background = ''; }
+          }
+        }
         return;
       }
       if (!mapInstance) return;
@@ -6629,7 +6839,7 @@
       // Show guide
       const guide = document.getElementById('gps-record-guide');
       if (guide) {
-        guide.innerHTML = `<i class="fa-solid fa-draw-polygon"></i> Chạm để đặt các đỉnh đa giác<br><small>Chạm đỉnh đầu hoặc bấm "Hoàn thành" để kết thúc</small>`;
+        guide.innerHTML = `<i class="fa-solid fa-draw-polygon"></i> Chạm để đặt các đỉnh. Bấm lại <i class="fa-solid fa-draw-polygon"></i> để hoàn thành`;
         guide.style.background = 'rgba(76,175,80,0.92)';
         guide.classList.remove('d-none');
       }
@@ -6749,10 +6959,12 @@
 
       const TILE_CACHE = 'fscfm-tiles-v1';
       const cache = await caches.open(TILE_CACHE);
-      const ZOOM_MIN = 13, ZOOM_MAX = 17;
-      let total = 0, cached = 0;
+      const ZOOM_MIN = 13, ZOOM_MAX = 18;
+      let total = 0, cached = 0, failed = 0;
+      const BATCH = 6; // concurrent fetches
 
-      // Calculate tile coordinates for each zoom level
+      // Collect all tile URLs first
+      const tileUrls = [];
       for (let z = ZOOM_MIN; z <= ZOOM_MAX; z++) {
         const nw = bounds.getNorthWest();
         const se = bounds.getSouthEast();
@@ -6760,23 +6972,73 @@
         const maxTile = _latLngToTile(nw.lat, se.lng, z);
         for (let x = minTile.x; x <= maxTile.x; x++) {
           for (let y = minTile.y; y <= maxTile.y; y++) {
-            total++;
-            const url = `https://mt1.google.com/vt/lyrs=s&x=${x}&y=${y}&z=${z}`;
-            try {
-              const existing = await cache.match(url);
-              if (!existing) {
-                const resp = await fetch(url, { mode: 'cors' });
-                if (resp.ok) await cache.put(url, resp);
-              }
-              cached++;
-            } catch (e) { /* skip failed tiles */ }
+            tileUrls.push(`https://mt${(x + y) % 4}.google.com/vt/lyrs=s&x=${x}&y=${y}&z=${z}`);
           }
         }
       }
+      total = tileUrls.length;
+
+      // Fetch in batches
+      for (let i = 0; i < tileUrls.length; i += BATCH) {
+        const batch = tileUrls.slice(i, i + BATCH);
+        await Promise.allSettled(batch.map(async url => {
+          try {
+            const existing = await cache.match(url);
+            if (existing) { cached++; return; }
+            const resp = await fetch(url, { mode: 'no-cors' });
+            if (resp.type === 'opaque' || resp.ok) { await cache.put(url, resp); cached++; }
+            else failed++;
+          } catch (e) { failed++; }
+        }));
+        // Update progress
+        if (btn) btn.innerHTML = `<i class="fa-solid fa-spinner fa-spin me-1"></i>${Math.round((i + BATCH) / total * 100)}%`;
+      }
 
       if (btn) { btn.disabled = false; btn.innerHTML = `<i class="fa-solid fa-download me-1"></i>${t('tile_cache')}`; }
-      alert(`${t('tile_cached')}: ${cached}/${total} tiles (zoom ${ZOOM_MIN}-${ZOOM_MAX})`);
+      alert(`${t('tile_cached')}: ${cached}/${total} tiles (zoom ${ZOOM_MIN}-${ZOOM_MAX})${failed ? ', ' + failed + ' failed' : ''}`);
     };
+
+    // Auto-cache visible tiles when map is panned/zoomed (background caching)
+    let _autoCacheTimer = null;
+    function _autoCacheVisibleTiles() {
+      clearTimeout(_autoCacheTimer);
+      _autoCacheTimer = setTimeout(async () => {
+        if (!mapInstance || !navigator.onLine) return;
+        try {
+          const cache = await caches.open('fscfm-tiles-v1');
+          const bounds = mapInstance.getBounds();
+          const z = mapInstance.getZoom();
+          if (z < 10 || z > 18) return;
+          const nw = bounds.getNorthWest(), se = bounds.getSouthEast();
+          const minT = _latLngToTile(se.lat, nw.lng, z), maxT = _latLngToTile(nw.lat, se.lng, z);
+          for (let x = minT.x; x <= maxT.x; x++) {
+            for (let y = minT.y; y <= maxT.y; y++) {
+              const url = `https://mt${(x + y) % 4}.google.com/vt/lyrs=s&x=${x}&y=${y}&z=${z}`;
+              const existing = await cache.match(url);
+              if (!existing) { fetch(url, { mode: 'no-cors' }).then(r => { if (r.type === 'opaque' || r.ok) cache.put(url, r); }).catch(() => {}); }
+            }
+          }
+        } catch(e) { /* silent */ }
+      }, 3000);
+    }
+
+    // Auto-detect UTM zone based on map center longitude
+    function _autoDetectUTMZone() {
+      if (!_coordsEnabled || !mapInstance) return;
+      const lng = (_gpsLastPos ? _gpsLastPos.lng : mapInstance.getCenter().lng);
+      // Vietnam: zone 48 (102°-108°E), zone 49 (108°-114°E)
+      const isZone48 = lng < 108;
+      let bestCRS = _coordsCRS;
+      // Auto-switch only if current selection is a UTM/VN2000 zone variant
+      if (_coordsCRS === 'EPSG:32648' || _coordsCRS === 'EPSG:32649') {
+        bestCRS = isZone48 ? 'EPSG:32648' : 'EPSG:32649';
+      } else if (_coordsCRS === 'EPSG:3405' || _coordsCRS === 'EPSG:3406') {
+        bestCRS = isZone48 ? 'EPSG:3405' : 'EPSG:3406';
+      }
+      if (bestCRS !== _coordsCRS) {
+        window._selectCRS(bestCRS);
+      }
+    }
 
     function _latLngToTile(lat, lng, zoom) {
       const n = Math.pow(2, zoom);
