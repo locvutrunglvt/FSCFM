@@ -818,7 +818,7 @@
     }
     #dashboard-view h5 { margin-bottom: 8px !important; font-size: 15px; }
     #dashboard-view h6 { margin-bottom: 6px !important; font-size: 12px; }
-    #dashboard-view .kpi-card { padding: 14px 16px; }
+    #dashboard-view .kpi-card { padding: 12px 10px; }
     #dashboard-view .kpi-value { font-size: 1.5rem; }
     #dashboard-view .kpi-label { font-size: 11px; }
     #dashboard-view .dashboard-card-3d { padding: 18px 10px 14px; }
@@ -915,7 +915,7 @@
     .kpi-card {
       background: white;
       border-radius: 14px;
-      padding: 14px 16px;
+      padding: 12px 10px;
       box-shadow: 0 2px 10px rgba(0,0,0,0.05);
       border-left: 4px solid #1B5E20;
       transition: all 0.25s ease;
@@ -934,15 +934,15 @@
       pointer-events: none;
     }
     .kpi-card:hover { transform: translateY(-3px); box-shadow: 0 6px 16px rgba(0,0,0,0.1); }
-    .kpi-card-inner { display: flex; align-items: center; gap: 12px; position: relative; z-index: 1; }
+    .kpi-card-inner { display: flex; flex-direction: column; align-items: center; text-align: center; gap: 6px; position: relative; z-index: 1; }
     .kpi-body { min-width: 0; }
     .kpi-value { font-size: 1.5rem; font-weight: 800; color: #1B5E20; letter-spacing: -0.5px; line-height: 1.2; }
     .kpi-label { font-size: 11px; color: #666; font-weight: 600; letter-spacing: 0.2px; margin-top: 2px; }
     .kpi-unit { font-size: 0.7rem; font-weight: 600; color: #999; margin-left: 2px; }
     .kpi-icon-circle {
-      width: 42px; height: 42px; border-radius: 12px;
+      width: 36px; height: 36px; border-radius: 10px;
       display: flex; align-items: center; justify-content: center;
-      font-size: 1rem; color: white; background: #1B5E20; flex-shrink: 0;
+      font-size: 0.9rem; color: white; background: #1B5E20; flex-shrink: 0;
     }
     .kpi-card.blue { border-left-color: #0277BD; --kpi-accent: #0277BD; }
     .kpi-card.blue .kpi-value { color: #0277BD; }
@@ -2299,7 +2299,7 @@
       'Ngày tham gia':'Join Date','Ngày rời nhóm':'Leave Date',
       'Số lô rừng':'Number of Plots','Người nhập dữ liệu':'Data Entry By',
       // Lo_rung
-      'ID lô rừng':'Plot ID','Mã số lô rừng':'Plot Code','Mã số lô 2023':'Plot Code 2023',
+      'ID lô rừng':'Plot ID','Mã số lô rừng':'Plot Code','Mã số lô':'Plot Code Alt',
       'Tên lô rừng':'Plot Name','Số sổ đỏ':'Land Title No.','Tờ bản đồ':'Map Sheet',
       'Thửa đất':'Land Parcel','Tiểu khu':'Sub-zone','Khoảnh':'Compartment',
       'Tọa độ tâm lô':'Plot Center Coordinates','Khoảng cách tới nhà':'Distance to House',
@@ -3023,7 +3023,7 @@
       }},
       'Lo_rung': { table: 'lo_rung', cols: {
         id:'ID lô rừng', id_nhom:'ID nhóm', id_chu_rung:'ID chủ rừng',
-        ma_so_lo_rung:'Mã số lô rừng', ma_so_lo_2023:'Mã số lô 2023', qr_code:'QR code', ten_lo_rung:'Tên lô rừng',
+        ma_so_lo_rung:'Mã số lô rừng', ma_so_lo:'Mã số lô', qr_code:'QR code', ten_lo_rung:'Tên lô rừng',
         so_so_do:'Số sổ đỏ', to_ban_do:'Tờ bản đồ', thua_dat:'Thửa đất', tieu_khu:'Tiểu khu', khoanh:'Khoảnh',
         toa_do_tam_lo:'Tọa độ tâm lô', khoang_cach_toi_nha:'Khoảng cách tới nhà', dia_chi_lo:'Địa chỉ lô',
         tinh_trang_so_do:'Tình trạng sổ đỏ', ngay_tham_gia_fsc:'Ngày tham gia FSC',
@@ -3197,7 +3197,7 @@
           'Diện tích rừng tự nhiên', 'Diện tích vùng đệm', 'Sản lượng dự kiến năm',
           'Diện tích trồng rừng năm', 'Loài cây trồng chính'
         ],
-        main: ['ID ban quản lý', 'Tên ban quản lý', 'Người đại diện', 'Tổng diện tích', 'Diện tích FSC']
+        main: ['Tên ban quản lý', 'Người đại diện', 'Tổng diện tích', 'Diện tích FSC']
       },
       'NhomCCR': {
         columns: [
@@ -3206,7 +3206,7 @@
           'Diện tích rừng tự nhiên', 'Diện tích vùng đệm', 'Tổng diện tích', 'Sản lượng dự kiến năm', 'Diện tích trồng rừng năm',
           'Số thành viên', 'Ngày cập nhật', 'Người cập nhật', 'Đường dẫn file'
         ],
-        main: ['ID nhóm', 'Tên nhóm', 'Người đại diện', 'Số thành viên', 'Tổng diện tích', 'Diện tích FSC']
+        main: ['Tên nhóm', 'Mã nhóm', 'Người đại diện', 'Số thành viên', 'Tổng diện tích', 'Diện tích FSC']
       },
       'Churung': {
         columns: [
@@ -3217,11 +3217,11 @@
           'Tổng diện tích', 'Diện tích FSC', 'Diện tích rừng tự nhiên', 'Diện tích vùng đệm', 'Sản lượng dự kiến năm', 'Diện tích trồng rừng năm',
           'Thông tin hệ thống', 'Người nhập dữ liệu', 'Cập nhật', 'Đường dẫn file'
         ],
-        main: ['ID chủ rừng', 'Họ tên chủ rừng', 'Số điện thoại', 'Tổng diện tích', 'Diện tích FSC']
+        main: ['Họ tên chủ rừng', 'Số điện thoại', 'Tổng diện tích', 'Diện tích FSC']
       },
       'Lo_rung': {
         columns: [
-          'ID nhóm', 'ID chủ rừng', 'ID lô rừng', 'Mã số lô rừng', 'Mã số lô 2023', 'QR code', 'Tên lô rừng',
+          'ID nhóm', 'ID chủ rừng', 'ID lô rừng', 'Mã số lô rừng', 'Mã số lô', 'QR code', 'Tên lô rừng',
           '2. Thông tin địa lý – pháp lý', 'Số sổ đỏ', 'Tờ bản đồ', 'Thửa đất', 'Tiểu khu', 'Khoảnh', 'Số hiệu lô',
           'Tọa độ tâm lô', 'Kinh độ', 'Vĩ độ', 'Khoảng cách tới nhà', 'Địa chỉ lô',
           'Địa danh', 'Tên tỉnh', 'Tên huyện', 'Tên xã', 'Tên xã mới',
@@ -3241,7 +3241,7 @@
           'Kỹ thuật trước trồng', 'Kỹ thuật chăm sóc', 'Cuốc hố bằng máy', 'Bón phân', 'Loại phân bón',
           'Định lượng phân bón', 'Kiểm soát dịch bệnh', 'Tình hình sâu bệnh', 'Thuốc sử dụng', 'Phòng cháy chữa cháy'
         ],
-        main: ['ID lô rừng', 'Mã số lô rừng', 'Tổng diện tích', 'Diện tích FSC']
+        main: ['Mã số lô rừng', 'Mã số lô', 'Tổng diện tích', 'Diện tích FSC']
       },
       'Taphuan': { columns: ['ID tập huấn', 'ID chủ rừng', 'Loại tập huấn', 'Ngày tập huấn', 'Địa điểm', 'Giảng viên', 'Số lượng tham dự'] },
       'Noidung_taphuan': { columns: ['ID tập huấn', 'Tên lớp tập huấn', 'Loại tập huấn', 'Ghi chú'] },
@@ -5389,11 +5389,14 @@
       $('#dashboard-view').html(html);
     }
 
+    // IDs hidden from display (tables, detail views) — still used internally for data operations
+    const HIDDEN_DISPLAY_COLS = ['ID nhóm', 'ID chủ rừng', 'ID lô rừng', 'ID ban quản lý'];
+
     function getVisibleColumns(sheetName) {
       const saved = localStorage.getItem(`vcols_${sheetName}`);
-      if (saved) return JSON.parse(saved);
-      // Mặc định trả về 'main' nếu có, không thì tất cả
-      return TABLE_CONFIG[sheetName] && TABLE_CONFIG[sheetName].main ? TABLE_CONFIG[sheetName].main : TABLE_CONFIG[sheetName].columns;
+      let cols = saved ? JSON.parse(saved) :
+        (TABLE_CONFIG[sheetName] && TABLE_CONFIG[sheetName].main ? TABLE_CONFIG[sheetName].main : TABLE_CONFIG[sheetName].columns);
+      return cols.filter(c => !HIDDEN_DISPLAY_COLS.includes(c));
     }
 
     function toggleColumnVisibility(sheetName, colName) {
@@ -5977,7 +5980,7 @@
                   const match = loRungData.find(lr =>
                     String(lr['ID lô rừng']).trim() === vStr ||
                     String(lr['Mã số lô rừng']).trim() === vStr ||
-                    String(lr['Mã số lô 2023']).trim() === vStr ||
+                    String(lr['Mã số lô']).trim() === vStr ||
                     String(lr['Tên lô rừng']).trim() === vStr
                   );
                   if (match) { linkedId = match['ID lô rừng']; break; }
@@ -6289,7 +6292,7 @@
               const match = loRungData.find(lr =>
                 String(lr['ID lô rừng']).trim() === vStr ||
                 String(lr['Mã số lô rừng']).trim() === vStr ||
-                String(lr['Mã số lô 2023']).trim() === vStr ||
+                String(lr['Mã số lô']).trim() === vStr ||
                 String(lr['Tên lô rừng']).trim() === vStr
               );
               if (match) { linkedId = match['ID lô rừng']; break; }
@@ -10849,7 +10852,7 @@ ${gsRecord['Đề xuất'] ? `<div class="proposal-box"><h4>${t('mon_proposal')}
       const _sections = [];
       let _curSec = { title: '', fields: [] };
       allCols.forEach(k => {
-        if (mainCols.includes(k)) return;
+        if (mainCols.includes(k) || HIDDEN_DISPLAY_COLS.includes(k)) return;
         const v = d[k] || '';
         const vStr = String(v).trim();
         // Detect section headers
@@ -11218,57 +11221,69 @@ ${gsRecord['Đề xuất'] ? `<div class="proposal-box"><h4>${t('mon_proposal')}
         return;
       }
 
-      // NhomCCR: card-based view for group list
+      // NhomCCR: compact collapsible cards with search
       if (sheetName === 'NhomCCR') {
         const safeFloat = v => parseFloat(String(v || 0).replace(/,/g, '')) || 0;
-        let cardHtml = `<div class="d-flex justify-content-between align-items-center mb-3">
+        let cardHtml = `<div class="d-flex justify-content-between align-items-center mb-2">
           <h5 class="fw-bold text-success m-0"><i class="fa-solid fa-layer-group me-2"></i>${context.title}
             <span class="badge bg-success bg-opacity-10 text-success ms-2" style="font-size:12px">${displayData.length}</span>
           </h5>${addBtn}
-        </div><div class="row g-3">`;
-        displayData.forEach(row => {
+        </div>
+        <div class="input-group input-group-sm mb-2 shadow-sm" style="max-width:400px">
+          <span class="input-group-text bg-white border-end-0"><i class="fa-solid fa-magnifying-glass text-muted"></i></span>
+          <input type="text" class="form-control border-start-0" id="nhomccr-search" placeholder="${currentLang==='en'?'Search groups...':'Tìm kiếm nhóm...'}" oninput="_filterNhomCCR(this.value)">
+        </div>
+        <div class="list-group" id="nhomccr-list">`;
+        displayData.forEach((row, idx) => {
           const rowJson = encodeURIComponent(JSON.stringify(row));
           const members = safeFloat(row['Số thành viên']);
           const totalArea = safeFloat(row['Tổng diện tích']);
           const fscArea = safeFloat(row['Diện tích FSC']);
+          const groupName = row['Tên nhóm'] || row['Mã nhóm'] || '-';
+          const groupCode = row['Mã nhóm'] || '';
           cardHtml += `
-          <div class="col-md-4 col-12">
-            <div class="card border-0 shadow-sm rounded-3 h-100 group-stat-card" style="cursor:pointer"
-                 onclick='handleRowClick("NhomCCR","${rowJson}")'>
-              <div class="card-body p-3">
-                <div class="d-flex align-items-center mb-3">
-                  <div class="rounded-3 p-2 me-3" style="background:rgba(27,94,32,0.08)">
-                    <i class="fa-solid fa-users text-success" style="font-size:1.3rem"></i>
-                  </div>
-                  <div class="min-width-0">
-                    <h6 class="fw-bold mb-0 text-dark text-truncate">${row['Tên nhóm'] || row['Mã nhóm'] || '-'}</h6>
-                    <small class="text-muted">${row['ID nhóm'] || ''}</small>
-                  </div>
+          <div class="nhomccr-item mb-1" data-search="${groupName} ${groupCode} ${row['Người đại diện']||''} ${row['Địa chỉ']||''}">
+            <div class="list-group-item border-0 shadow-sm rounded-3 p-0 overflow-hidden">
+              <div class="d-flex align-items-center px-3 py-2" style="cursor:pointer" onclick="$('#nhomccr-detail-${idx}').slideToggle(200);$(this).find('.fa-chevron-down,.fa-chevron-up').toggleClass('fa-chevron-down fa-chevron-up')">
+                <div class="rounded-3 p-2 me-3 flex-shrink-0" style="background:rgba(27,94,32,0.08)">
+                  <i class="fa-solid fa-users text-success"></i>
                 </div>
+                <div class="flex-grow-1 min-width-0">
+                  <span class="fw-bold text-dark">${groupName}</span>
+                  ${groupCode ? `<span class="text-muted ms-2 small">${groupCode}</span>` : ''}
+                </div>
+                <span class="badge rounded-pill me-2" style="background:#E3F2FD;color:#0277BD;font-size:11px"><i class="fa-solid fa-users me-1" style="font-size:9px"></i>${members}</span>
+                <span class="badge rounded-pill me-2" style="background:#E8F5E9;color:#1B5E20;font-size:11px">${totalArea.toFixed(1)} ha</span>
+                <i class="fa-solid fa-chevron-down text-muted ms-1" style="font-size:11px;transition:transform 0.2s"></i>
+              </div>
+              <div id="nhomccr-detail-${idx}" style="display:none" class="px-3 pb-3 pt-1 bg-light bg-opacity-50">
                 <div class="row g-2 text-center mb-2">
                   <div class="col-4">
-                    <div class="rounded-3 p-2" style="background:#E3F2FD">
+                    <div class="rounded-3 p-2 bg-white shadow-sm">
                       <div class="fw-bold" style="color:#0277BD;font-size:1.1rem">${members}</div>
                       <div class="text-muted" style="font-size:9px;font-weight:600">${t('kpi_households')}</div>
                     </div>
                   </div>
                   <div class="col-4">
-                    <div class="rounded-3 p-2" style="background:#E8F5E9">
+                    <div class="rounded-3 p-2 bg-white shadow-sm">
                       <div class="fw-bold" style="color:#1B5E20;font-size:1.1rem">${totalArea.toFixed(1)}</div>
                       <div class="text-muted" style="font-size:9px;font-weight:600">${currentLang==='en'?'Total ha':'Tổng DT'}</div>
                     </div>
                   </div>
                   <div class="col-4">
-                    <div class="rounded-3 p-2" style="background:#FFF3E0">
+                    <div class="rounded-3 p-2 bg-white shadow-sm">
                       <div class="fw-bold" style="color:#E65100;font-size:1.1rem">${fscArea.toFixed(1)}</div>
                       <div class="text-muted" style="font-size:9px;font-weight:600">FSC ha</div>
                     </div>
                   </div>
                 </div>
-                <div class="border-top pt-2">
+                <div class="d-flex justify-content-between align-items-center">
                   <small class="text-muted"><i class="fa-solid fa-user me-1"></i>${row['Người đại diện'] || '-'}</small>
-                  ${row['Địa chỉ'] ? `<small class="text-muted float-end"><i class="fa-solid fa-location-dot me-1"></i>${row['Địa chỉ']}</small>` : ''}
+                  ${row['Địa chỉ'] ? `<small class="text-muted"><i class="fa-solid fa-location-dot me-1"></i>${row['Địa chỉ']}</small>` : ''}
                 </div>
+                <button class="btn btn-success btn-sm w-100 mt-2 fw-bold" onclick='handleRowClick("NhomCCR","${rowJson}")'>
+                  <i class="fa-solid fa-arrow-right me-1"></i>${currentLang==='en'?'View details':'Xem chi tiết'}
+                </button>
               </div>
             </div>
           </div>`;
@@ -11316,6 +11331,14 @@ ${gsRecord['Đề xuất'] ? `<div class="proposal-box"><h4>${t('mon_proposal')}
           dom: 'frtip'
         });
       }
+    }
+
+    function _filterNhomCCR(query) {
+      const q = query.toLowerCase().trim();
+      document.querySelectorAll('.nhomccr-item').forEach(item => {
+        const text = (item.getAttribute('data-search') || '').toLowerCase();
+        item.style.display = !q || text.includes(q) ? '' : 'none';
+      });
     }
 
     function fGroup(d, fields) {

@@ -192,7 +192,7 @@ CREATE TABLE lo_rung (
   id_nhom TEXT REFERENCES nhom_ccr(id) ON DELETE SET NULL,
   id_chu_rung TEXT REFERENCES chu_rung(id) ON DELETE SET NULL,
   ma_so_lo_2024 TEXT,
-  ma_so_lo_2023 TEXT,
+  ma_so_lo TEXT,
   qr_code TEXT,
   ten_lo_rung TEXT,
   -- Thong tin dia ly phap ly
