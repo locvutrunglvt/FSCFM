@@ -953,6 +953,10 @@
     .kpi-card.purple { border-left-color: #6A1B9A; --kpi-accent: #6A1B9A; }
     .kpi-card.purple .kpi-value { color: #6A1B9A; }
     .kpi-card.purple .kpi-icon-circle { background: #6A1B9A; }
+    .kpi-sm .kpi-icon-circle { width: 28px; height: 28px; font-size: 0.7rem; border-radius: 8px; }
+    .kpi-sm .kpi-value { font-size: 1.15rem; }
+    .kpi-sm .kpi-label { font-size: 10px; }
+    .kpi-sm { padding: 10px 8px; }
     /* Detail sections */
     .detail-summary-card { background: linear-gradient(135deg, #f8fdf8 0%, #fff 100%); }
     .detail-summary-card .detail-stat { border-right: 1px solid #e8f5e9; padding: 8px 12px; }
@@ -4830,18 +4834,20 @@
             `).join('')}
           </div>
 
-          <!-- KPIs -->
+          <!-- KPIs: Row 1 = 3 main, Row 2 = 6 secondary -->
           <h6 class="fw-bold text-secondary"><i class="fa-solid fa-chart-line me-2"></i>${t('kpi_title')}</h6>
-          <div class="row row-cols-3 g-2 kpi-grid">
-            <div class="col"><div class="kpi-card h-100" style="cursor:pointer" onclick="showKpiDetail('households')"><div class="kpi-card-inner"><div class="kpi-icon-circle"><i class="fa-solid fa-house-chimney"></i></div><div class="kpi-body"><div class="kpi-value">${soHo}</div><div class="kpi-label">${t('kpi_households')}</div></div></div></div></div>
-            <div class="col"><div class="kpi-card blue h-100" style="cursor:pointer" onclick="showKpiDetail('plots')"><div class="kpi-card-inner"><div class="kpi-icon-circle"><i class="fa-solid fa-tree"></i></div><div class="kpi-body"><div class="kpi-value">${soFarm}</div><div class="kpi-label">${t('kpi_plots')}</div></div></div></div></div>
-            <div class="col"><div class="kpi-card h-100" style="cursor:pointer" onclick="showKpiDetail('fsc_area')"><div class="kpi-card-inner"><div class="kpi-icon-circle"><i class="fa-solid fa-certificate"></i></div><div class="kpi-body"><div class="kpi-value">${tongDTFSC.toFixed(1)}<span class="kpi-unit">ha</span></div><div class="kpi-label">${t('kpi_fsc_area')}</div></div></div></div></div>
-            <div class="col"><div class="kpi-card orange h-100"><div class="kpi-card-inner"><div class="kpi-icon-circle"><i class="fa-solid fa-scale-balanced"></i></div><div class="kpi-body"><div class="kpi-value">${haPerHo}<span class="kpi-unit">ha</span></div><div class="kpi-label">${t('kpi_ha_per_ho')}</div></div></div></div></div>
-            <div class="col"><div class="kpi-card blue h-100"><div class="kpi-card-inner"><div class="kpi-icon-circle"><i class="fa-solid fa-chart-simple"></i></div><div class="kpi-body"><div class="kpi-value">${haPerFarm}<span class="kpi-unit">ha</span></div><div class="kpi-label">${t('kpi_ha_per_farm')}</div></div></div></div></div>
-            <div class="col"><div class="kpi-card orange h-100" style="cursor:pointer" onclick="showKpiDetail('harvest_actual')"><div class="kpi-card-inner"><div class="kpi-icon-circle"><i class="fa-solid fa-truck-ramp-box"></i></div><div class="kpi-body"><div class="kpi-value">${dtKhaiThacTT.toFixed(1)}<span class="kpi-unit">ha</span></div><div class="kpi-label">${t('kpi_harvest_actual')}</div></div></div></div></div>
-            <div class="col"><div class="kpi-card purple h-100" style="cursor:pointer" onclick="showKpiDetail('plant')"><div class="kpi-card-inner"><div class="kpi-icon-circle"><i class="fa-solid fa-seedling"></i></div><div class="kpi-body"><div class="kpi-value">${dtTrongRung.toFixed(1)}<span class="kpi-unit">ha</span></div><div class="kpi-label">${t('kpi_plant')}</div></div></div></div></div>
-            <div class="col"><div class="kpi-card blue h-100" style="cursor:pointer" onclick="showKpiDetail('harvest_plan')"><div class="kpi-card-inner"><div class="kpi-icon-circle"><i class="fa-solid fa-calendar-check"></i></div><div class="kpi-body"><div class="kpi-value">${dtKTKeHoach.toFixed(1)}<span class="kpi-unit">ha</span></div><div class="kpi-label">${t('kpi_harvest_plan')}</div></div></div></div></div>
-            <div class="col"><div class="kpi-card h-100" style="cursor:pointer" onclick="showKpiDetail('hlvs')"><div class="kpi-card-inner"><div class="kpi-icon-circle"><i class="fa-solid fa-water"></i></div><div class="kpi-body"><div class="kpi-value">${dtHLVS.toFixed(1)}<span class="kpi-unit">ha</span></div><div class="kpi-label">${t('kpi_hlvs')}</div></div></div></div></div>
+          <div class="row g-2 kpi-grid mb-1">
+            <div class="col-4"><div class="kpi-card h-100" style="cursor:pointer" onclick="showKpiDetail('households')"><div class="kpi-card-inner"><div class="kpi-icon-circle"><i class="fa-solid fa-house-chimney"></i></div><div class="kpi-body"><div class="kpi-value">${soHo}</div><div class="kpi-label">${t('kpi_households')}</div></div></div></div></div>
+            <div class="col-4"><div class="kpi-card blue h-100" style="cursor:pointer" onclick="showKpiDetail('plots')"><div class="kpi-card-inner"><div class="kpi-icon-circle"><i class="fa-solid fa-tree"></i></div><div class="kpi-body"><div class="kpi-value">${soFarm}</div><div class="kpi-label">${t('kpi_plots')}</div></div></div></div></div>
+            <div class="col-4"><div class="kpi-card h-100" style="cursor:pointer" onclick="showKpiDetail('fsc_area')"><div class="kpi-card-inner"><div class="kpi-icon-circle"><i class="fa-solid fa-certificate"></i></div><div class="kpi-body"><div class="kpi-value">${tongDTFSC.toFixed(1)}<span class="kpi-unit">ha</span></div><div class="kpi-label">${t('kpi_fsc_area')}</div></div></div></div></div>
+          </div>
+          <div class="row row-cols-3 row-cols-md-6 g-2 kpi-grid">
+            <div class="col"><div class="kpi-card orange h-100 kpi-sm"><div class="kpi-card-inner"><div class="kpi-icon-circle"><i class="fa-solid fa-scale-balanced"></i></div><div class="kpi-body"><div class="kpi-value">${haPerHo}<span class="kpi-unit">ha</span></div><div class="kpi-label">${t('kpi_ha_per_ho')}</div></div></div></div></div>
+            <div class="col"><div class="kpi-card blue h-100 kpi-sm"><div class="kpi-card-inner"><div class="kpi-icon-circle"><i class="fa-solid fa-chart-simple"></i></div><div class="kpi-body"><div class="kpi-value">${haPerFarm}<span class="kpi-unit">ha</span></div><div class="kpi-label">${t('kpi_ha_per_farm')}</div></div></div></div></div>
+            <div class="col"><div class="kpi-card orange h-100 kpi-sm" style="cursor:pointer" onclick="showKpiDetail('harvest_actual')"><div class="kpi-card-inner"><div class="kpi-icon-circle"><i class="fa-solid fa-truck-ramp-box"></i></div><div class="kpi-body"><div class="kpi-value">${dtKhaiThacTT.toFixed(1)}<span class="kpi-unit">ha</span></div><div class="kpi-label">${t('kpi_harvest_actual')}</div></div></div></div></div>
+            <div class="col"><div class="kpi-card purple h-100 kpi-sm" style="cursor:pointer" onclick="showKpiDetail('plant')"><div class="kpi-card-inner"><div class="kpi-icon-circle"><i class="fa-solid fa-seedling"></i></div><div class="kpi-body"><div class="kpi-value">${dtTrongRung.toFixed(1)}<span class="kpi-unit">ha</span></div><div class="kpi-label">${t('kpi_plant')}</div></div></div></div></div>
+            <div class="col"><div class="kpi-card blue h-100 kpi-sm" style="cursor:pointer" onclick="showKpiDetail('harvest_plan')"><div class="kpi-card-inner"><div class="kpi-icon-circle"><i class="fa-solid fa-calendar-check"></i></div><div class="kpi-body"><div class="kpi-value">${dtKTKeHoach.toFixed(1)}<span class="kpi-unit">ha</span></div><div class="kpi-label">${t('kpi_harvest_plan')}</div></div></div></div></div>
+            <div class="col"><div class="kpi-card h-100 kpi-sm" style="cursor:pointer" onclick="showKpiDetail('hlvs')"><div class="kpi-card-inner"><div class="kpi-icon-circle"><i class="fa-solid fa-water"></i></div><div class="kpi-body"><div class="kpi-value">${dtHLVS.toFixed(1)}<span class="kpi-unit">ha</span></div><div class="kpi-label">${t('kpi_hlvs')}</div></div></div></div></div>
           </div>
         </div>
 
@@ -11233,7 +11239,7 @@ ${gsRecord['Đề xuất'] ? `<div class="proposal-box"><h4>${t('mon_proposal')}
           <span class="input-group-text bg-white border-end-0"><i class="fa-solid fa-magnifying-glass text-muted"></i></span>
           <input type="text" class="form-control border-start-0" id="nhomccr-search" placeholder="${currentLang==='en'?'Search groups...':'Tìm kiếm nhóm...'}" oninput="_filterNhomCCR(this.value)">
         </div>
-        <div class="list-group" id="nhomccr-list">`;
+        <div class="row g-2" id="nhomccr-list">`;
         displayData.forEach((row, idx) => {
           const rowJson = encodeURIComponent(JSON.stringify(row));
           const members = safeFloat(row['Số thành viên']);
@@ -11242,46 +11248,29 @@ ${gsRecord['Đề xuất'] ? `<div class="proposal-box"><h4>${t('mon_proposal')}
           const groupName = row['Tên nhóm'] || row['Mã nhóm'] || '-';
           const groupCode = row['Mã nhóm'] || '';
           cardHtml += `
-          <div class="nhomccr-item mb-1" data-search="${groupName} ${groupCode} ${row['Người đại diện']||''} ${row['Địa chỉ']||''}">
-            <div class="list-group-item border-0 shadow-sm rounded-3 p-0 overflow-hidden">
+          <div class="col-md-4 col-12 nhomccr-item" data-search="${groupName} ${groupCode} ${row['Người đại diện']||''} ${row['Địa chỉ']||''}">
+            <div class="card border-0 shadow-sm rounded-3 h-100 overflow-hidden">
               <div class="d-flex align-items-center px-3 py-2" style="cursor:pointer" onclick="$('#nhomccr-detail-${idx}').slideToggle(200);$(this).find('.fa-chevron-down,.fa-chevron-up').toggleClass('fa-chevron-down fa-chevron-up')">
-                <div class="rounded-3 p-2 me-3 flex-shrink-0" style="background:rgba(27,94,32,0.08)">
+                <div class="rounded-3 p-2 me-2 flex-shrink-0" style="background:rgba(27,94,32,0.08)">
                   <i class="fa-solid fa-users text-success"></i>
                 </div>
                 <div class="flex-grow-1 min-width-0">
-                  <span class="fw-bold text-dark">${groupName}</span>
-                  ${groupCode ? `<span class="text-muted ms-2 small">${groupCode}</span>` : ''}
+                  <div class="fw-bold text-dark text-truncate" style="font-size:13px">${groupName}</div>
+                  <div class="d-flex gap-1 mt-1">
+                    <span class="badge rounded-pill" style="background:#E3F2FD;color:#0277BD;font-size:10px"><i class="fa-solid fa-users me-1" style="font-size:8px"></i>${members}</span>
+                    <span class="badge rounded-pill" style="background:#E8F5E9;color:#1B5E20;font-size:10px">${totalArea.toFixed(1)} ha</span>
+                    <span class="badge rounded-pill" style="background:#FFF3E0;color:#E65100;font-size:10px">FSC ${fscArea.toFixed(1)}</span>
+                  </div>
                 </div>
-                <span class="badge rounded-pill me-2" style="background:#E3F2FD;color:#0277BD;font-size:11px"><i class="fa-solid fa-users me-1" style="font-size:9px"></i>${members}</span>
-                <span class="badge rounded-pill me-2" style="background:#E8F5E9;color:#1B5E20;font-size:11px">${totalArea.toFixed(1)} ha</span>
-                <i class="fa-solid fa-chevron-down text-muted ms-1" style="font-size:11px;transition:transform 0.2s"></i>
+                <i class="fa-solid fa-chevron-down text-muted ms-1 flex-shrink-0" style="font-size:11px;transition:transform 0.2s"></i>
               </div>
-              <div id="nhomccr-detail-${idx}" style="display:none" class="px-3 pb-3 pt-1 bg-light bg-opacity-50">
-                <div class="row g-2 text-center mb-2">
-                  <div class="col-4">
-                    <div class="rounded-3 p-2 bg-white shadow-sm">
-                      <div class="fw-bold" style="color:#0277BD;font-size:1.1rem">${members}</div>
-                      <div class="text-muted" style="font-size:9px;font-weight:600">${t('kpi_households')}</div>
-                    </div>
-                  </div>
-                  <div class="col-4">
-                    <div class="rounded-3 p-2 bg-white shadow-sm">
-                      <div class="fw-bold" style="color:#1B5E20;font-size:1.1rem">${totalArea.toFixed(1)}</div>
-                      <div class="text-muted" style="font-size:9px;font-weight:600">${currentLang==='en'?'Total ha':'Tổng DT'}</div>
-                    </div>
-                  </div>
-                  <div class="col-4">
-                    <div class="rounded-3 p-2 bg-white shadow-sm">
-                      <div class="fw-bold" style="color:#E65100;font-size:1.1rem">${fscArea.toFixed(1)}</div>
-                      <div class="text-muted" style="font-size:9px;font-weight:600">FSC ha</div>
-                    </div>
-                  </div>
-                </div>
-                <div class="d-flex justify-content-between align-items-center">
+              <div id="nhomccr-detail-${idx}" style="display:none" class="px-3 pb-3 pt-1 border-top">
+                <div class="d-flex justify-content-between align-items-center mb-2 mt-1">
                   <small class="text-muted"><i class="fa-solid fa-user me-1"></i>${row['Người đại diện'] || '-'}</small>
                   ${row['Địa chỉ'] ? `<small class="text-muted"><i class="fa-solid fa-location-dot me-1"></i>${row['Địa chỉ']}</small>` : ''}
                 </div>
-                <button class="btn btn-success btn-sm w-100 mt-2 fw-bold" onclick='handleRowClick("NhomCCR","${rowJson}")'>
+                ${groupCode ? `<small class="text-muted d-block mb-2"><i class="fa-solid fa-hashtag me-1"></i>${groupCode}</small>` : ''}
+                <button class="btn btn-success btn-sm w-100 fw-bold" onclick='handleRowClick("NhomCCR","${rowJson}")'>
                   <i class="fa-solid fa-arrow-right me-1"></i>${currentLang==='en'?'View details':'Xem chi tiết'}
                 </button>
               </div>
