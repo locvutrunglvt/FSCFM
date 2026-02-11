@@ -846,7 +846,7 @@
       #dashboard-view .kpi-grid { margin-bottom: 0 !important; }
       #dashboard-view .dashboard-card-3d { padding: 14px 6px 10px !important; border-radius: 12px !important; }
       #dashboard-view .row.g-3 { --bs-gutter-x: 0.5rem; --bs-gutter-y: 0.5rem; }
-      .dash-charts { padding: 8px 0 20px; }
+      .dash-charts { flex: none !important; min-height: auto !important; overflow: visible !important; padding: 8px 0 20px; }
       .dash-charts .card { margin-bottom: 12px; }
     }
 
@@ -5873,22 +5873,53 @@
         `<option value="${lr['ID lô rừng']}">${lr['Mã số lô rừng'] || lr['Tên lô rừng'] || lr['ID lô rừng']}</option>`
       ).join('');
 
-      const popup = L.popup()
-        .setLatLng(layer.getBounds().getCenter())
+      // Calculate area from polygon (hectares)
+      let areaHa = '';
+      try {
+        if (typeof L.GeometryUtil !== 'undefined') {
+          areaHa = (L.GeometryUtil.geodesicArea(layer.getLatLngs()[0]) / 10000).toFixed(4);
+        } else {
+          const latlngs = layer.getLatLngs()[0];
+          let area = 0;
+          for (let i = 0; i < latlngs.length; i++) {
+            const j = (i + 1) % latlngs.length;
+            area += latlngs[i].lng * latlngs[j].lat;
+            area -= latlngs[j].lng * latlngs[i].lat;
+          }
+          areaHa = (Math.abs(area) / 2 * 111320 * 111320 * Math.cos(latlngs[0].lat * Math.PI / 180) / 10000).toFixed(4);
+        }
+      } catch(e) { /* ignore */ }
+
+      const center = layer.getBounds().getCenter();
+      const popup = L.popup({ maxWidth: 300 })
+        .setLatLng(center)
         .setContent(`
-          <div style="min-width:220px">
-            <label class="fw-bold small mb-1">Liên kết với lô rừng:</label>
-            <select class="form-select form-select-sm mb-2" id="map-link-select">
-              <option value="">-- Chọn lô rừng --</option>
-              ${options}
-            </select>
-            <button class="btn btn-success btn-sm w-100" onclick="linkPolygonConfirm()">
+          <div style="min-width:260px">
+            <div class="fw-bold small mb-2" style="color:#1B5E20"><i class="fa-solid fa-draw-polygon me-1"></i>Đa giác mới${areaHa ? ' (~' + areaHa + ' ha)' : ''}</div>
+            <div class="mb-2">
+              <label class="small fw-bold text-muted mb-1">Liên kết lô rừng có sẵn:</label>
+              <select class="form-select form-select-sm" id="map-link-select">
+                <option value="">-- Chọn lô rừng --</option>
+                ${options}
+              </select>
+            </div>
+            <button class="btn btn-success btn-sm w-100 mb-2" onclick="linkPolygonConfirm()">
               <i class="fa-solid fa-link me-1"></i>Liên kết & Lưu
+            </button>
+            <hr class="my-1">
+            <div class="mb-2">
+              <label class="small fw-bold text-muted mb-1">Hoặc tạo lô rừng mới:</label>
+              <input type="text" class="form-control form-control-sm" id="map-new-plot-code" placeholder="Nhập mã số lô mới (VD: LR_001)">
+            </div>
+            <button class="btn btn-primary btn-sm w-100" onclick="createNewPlotFromPolygon()">
+              <i class="fa-solid fa-plus me-1"></i>Tạo lô mới & Nhập thông tin
             </button>
           </div>
         `)
         .openOn(mapInstance);
       popup._linkedLayer = layer;
+      popup._polygonCenter = center;
+      popup._polygonArea = areaHa;
     }
 
     window.linkPolygonConfirm = async function() {
@@ -5912,6 +5943,63 @@
       }
       mapInstance.closePopup();
       alert('Đã liên kết và lưu thành công!');
+    };
+
+    // Create a new Lo_rung record from drawn polygon and open form
+    window.createNewPlotFromPolygon = function() {
+      const input = document.getElementById('map-new-plot-code');
+      const plotCode = input ? input.value.trim() : '';
+      if (!plotCode) { alert('Vui lòng nhập mã số lô rừng mới'); input && input.focus(); return; }
+
+      const popup = mapInstance._popup;
+      if (!popup || !popup._linkedLayer) return;
+      const layer = popup._linkedLayer;
+      const center = popup._polygonCenter;
+      const areaHa = popup._polygonArea || '';
+
+      // Generate a temporary ID for the new plot
+      const tempId = 'LR_' + Date.now();
+      layer.loRungId = tempId;
+
+      mapInstance.closePopup();
+
+      // Pre-fill data for the new Lo_rung record
+      const prefill = {
+        'ID lô rừng': tempId,
+        'Mã số lô rừng': plotCode,
+        'Tổng diện tích': areaHa,
+        'Kinh độ': center ? center.lng.toFixed(6) : '',
+        'Vĩ độ': center ? center.lat.toFixed(6) : '',
+        'Tọa độ tâm lô': center ? `${center.lat.toFixed(6)}, ${center.lng.toFixed(6)}` : '',
+        'Ngày cập nhật': new Date().toLocaleDateString('vi-VN'),
+        'Người cập nhật': (currentUser && (currentUser['Họ và tên'] || currentUser['Email'])) || ''
+      };
+
+      // Auto-fill FK from navigation history if available
+      const lastHist = navHistory[navHistory.length - 1];
+      if (lastHist && lastHist.filter) {
+        prefill[lastHist.filter.key] = lastHist.filter.value;
+      }
+
+      // Open the form modal for Lo_rung with prefilled data
+      currentAction = 'CREATE';
+      currentSheetTarget = 'Lo_rung';
+      $('#modalTitle').text('Tạo lô rừng mới — ' + plotCode);
+      const form = $('#dynamic-form'); form.empty();
+      const columns = TABLE_CONFIG['Lo_rung'] ? TABLE_CONFIG['Lo_rung'].columns : (APP_DATA['Lo_rung'] && APP_DATA['Lo_rung'][0] ? Object.keys(APP_DATA['Lo_rung'][0]) : []);
+
+      columns.forEach(col => {
+        let val = prefill[col] || '';
+        const isKey = col.toLowerCase().includes('id') || col.toLowerCase().includes('mã');
+        const inputHtml = `<input type="text" class="form-control${isKey && val ? ' bg-light' : ''}" name="${col}" value="${val}" ${isKey && val ? 'readonly' : ''}>`;
+        form.append(`<div class="col-md-6"><label class="form-label small fw-bold text-muted">${col}</label>${inputHtml}</div>`);
+      });
+
+      // Store the layer reference for saving geometry after form submit
+      window._pendingNewPlotLayer = layer;
+      window._pendingNewPlotId = tempId;
+
+      new bootstrap.Modal(document.getElementById('dataModal')).show();
     };
 
     window.unlinkPolygon = async function(loRungId) {
@@ -6365,23 +6453,67 @@
       loadView('Bando_lorung', 'Bản đồ quản lý lô rừng');
     };
 
-    // ── GPS Tracking & Real-time Location ──────────────────────
+    // ── GPS Tracking & Real-time Location (with position smoothing) ──
     let _gpsWatchId = null;
     let _gpsMarker = null;
     let _gpsAccuracyCircle = null;
     let _gpsTracking = false;
     let _gpsLastPos = null; // { lat, lng, accuracy }
 
+    // GPS position smoother — reduces jitter for stable coordinates & polygon drawing
+    const _gpsSmooth = {
+      _buf: [],           // ring buffer of recent positions
+      _maxBuf: 5,         // average over last 5 readings
+      _maxAccuracy: 30,   // reject readings with accuracy > 30m
+      _minDistance: 0.5,   // min distance (m) to count as movement for recording
+      _lastRecordPos: null,
+
+      reset() { this._buf = []; this._lastRecordPos = null; },
+
+      // Add new reading, return smoothed position or null if rejected
+      add(lat, lng, accuracy) {
+        // Reject very inaccurate readings
+        if (accuracy > this._maxAccuracy && this._buf.length > 0) return null;
+        this._buf.push({ lat, lng, accuracy, ts: Date.now() });
+        if (this._buf.length > this._maxBuf) this._buf.shift();
+        // Weighted average: more recent + more accurate = higher weight
+        let sumLat = 0, sumLng = 0, sumW = 0, minAcc = Infinity;
+        this._buf.forEach((p, i) => {
+          const w = (i + 1) / (p.accuracy || 1); // recency + accuracy weight
+          sumLat += p.lat * w;
+          sumLng += p.lng * w;
+          sumW += w;
+          minAcc = Math.min(minAcc, p.accuracy);
+        });
+        return { lat: sumLat / sumW, lng: sumLng / sumW, accuracy: minAcc, raw: { lat, lng, accuracy } };
+      },
+
+      // Check if position moved enough to record a new polygon point
+      shouldRecord(lat, lng) {
+        if (!this._lastRecordPos) { this._lastRecordPos = { lat, lng }; return true; }
+        const dlat = (lat - this._lastRecordPos.lat) * 111320;
+        const dlng = (lng - this._lastRecordPos.lng) * 111320 * Math.cos(lat * Math.PI / 180);
+        const dist = Math.sqrt(dlat * dlat + dlng * dlng);
+        if (dist >= this._minDistance) { this._lastRecordPos = { lat, lng }; return true; }
+        return false;
+      }
+    };
+
     window.toggleGpsTracking = function() {
       if (_gpsTracking) { stopGpsTracking(); return; }
       if (!navigator.geolocation) { alert(t('gps_no_support')); return; }
       _gpsTracking = true;
+      _gpsSmooth.reset();
       const btn = document.getElementById('btn-gps-track');
       if (btn) btn.classList.add('active');
 
       _gpsWatchId = navigator.geolocation.watchPosition(
         pos => {
-          const { latitude: lat, longitude: lng, accuracy } = pos.coords;
+          const { latitude: rawLat, longitude: rawLng, accuracy: rawAcc } = pos.coords;
+          // Apply position smoothing
+          const smoothed = _gpsSmooth.add(rawLat, rawLng, rawAcc);
+          if (!smoothed) return; // rejected (too inaccurate)
+          const { lat, lng, accuracy } = smoothed;
           _gpsLastPos = { lat, lng, accuracy };
           if (!mapInstance) return;
           if (!_gpsMarker) {
@@ -6397,20 +6529,21 @@
           }
           // Update coords panel if visible
           if (_coordsEnabled) _updateCoordsPanel(lat, lng, accuracy);
-          // Update GPS record track
-          if (_gpsRecording) _addGpsRecordPoint(lat, lng);
+          // Update GPS record track (with minimum distance filter)
+          if (_gpsRecording && _gpsSmooth.shouldRecord(lat, lng)) _addGpsRecordPoint(lat, lng);
         },
         err => {
           console.warn('GPS error:', err);
           if (err.code === 1) alert(t('gps_denied'));
         },
-        { enableHighAccuracy: true, maximumAge: 3000, timeout: 10000 }
+        { enableHighAccuracy: true, maximumAge: 1000, timeout: 15000 }
       );
     };
 
     function stopGpsTracking() {
       _gpsTracking = false;
       _gpsLastPos = null;
+      _gpsSmooth.reset();
       if (_gpsWatchId !== null) { navigator.geolocation.clearWatch(_gpsWatchId); _gpsWatchId = null; }
       if (_gpsMarker) { mapInstance.removeLayer(_gpsMarker); _gpsMarker = null; }
       if (_gpsAccuracyCircle) { mapInstance.removeLayer(_gpsAccuracyCircle); _gpsAccuracyCircle = null; }
@@ -6429,6 +6562,7 @@
       if (!_gpsTracking) toggleGpsTracking();
       _gpsRecording = true;
       _gpsRecordPoints = [];
+      _gpsSmooth._lastRecordPos = null; // reset distance filter for new recording
       if (_gpsRecordPolyline) { mapInstance.removeLayer(_gpsRecordPolyline); _gpsRecordPolyline = null; }
       _gpsRecordPolyline = L.polyline([], { color: '#ff5722', weight: 3, dashArray: '8,6' }).addTo(mapInstance);
       const btn = document.getElementById('btn-gps-record');
@@ -6436,7 +6570,8 @@
       // Show guide banner
       const guide = document.getElementById('gps-record-guide');
       if (guide) {
-        guide.innerHTML = `<i class="fa-solid fa-person-walking"></i>${t('gps_record_start')}<br><small>Bấm lại nút <i class="fa-solid fa-route"></i> để dừng và tạo vùng</small>`;
+        const accText = _gpsLastPos ? ` (±${_gpsLastPos.accuracy.toFixed(0)}m)` : '';
+        guide.innerHTML = `<i class="fa-solid fa-person-walking"></i> ${t('gps_record_start')}${accText}<br><small>Di chuyển quanh khu vực. Bấm <i class="fa-solid fa-route"></i> để dừng và tạo vùng</small>`;
         guide.classList.remove('d-none');
       }
     };
@@ -6444,10 +6579,11 @@
     function _addGpsRecordPoint(lat, lng) {
       _gpsRecordPoints.push([lat, lng]);
       if (_gpsRecordPolyline) _gpsRecordPolyline.addLatLng([lat, lng]);
-      // Update guide with point count
+      // Update guide with point count + accuracy
       const guide = document.getElementById('gps-record-guide');
       if (guide && !guide.classList.contains('d-none')) {
-        guide.innerHTML = `<i class="fa-solid fa-route"></i> Đang ghi: <b>${_gpsRecordPoints.length}</b> điểm — Di chuyển quanh khu vực`;
+        const accText = _gpsLastPos ? ` · ±${_gpsLastPos.accuracy.toFixed(0)}m` : '';
+        guide.innerHTML = `<i class="fa-solid fa-route"></i> Đang ghi: <b>${_gpsRecordPoints.length}</b> điểm${accText} — Di chuyển quanh khu vực`;
       }
     }
 
@@ -10594,6 +10730,18 @@ ${gsRecord['Đề xuất'] ? `<div class="proposal-box"><h4>${t('mon_proposal')}
         }
 
         bootstrap.Modal.getInstance(document.getElementById('dataModal')).hide();
+
+        // If this was a new plot created from polygon drawing, save the geometry
+        if (window._pendingNewPlotLayer && currentSheetTarget === 'Lo_rung' && currentAction === 'CREATE') {
+          const realId = dbData.id || dataObj['ID lô rừng'];
+          if (realId) {
+            window._pendingNewPlotLayer.loRungId = realId;
+            try { await savePolygonGeometry(window._pendingNewPlotLayer); } catch(e) { console.warn('Polygon save error:', e); }
+          }
+          window._pendingNewPlotLayer = null;
+          window._pendingNewPlotId = null;
+        }
+
         await cacheTableToIDB(currentSheetTarget);
         performAggregation();
         renderContent();
