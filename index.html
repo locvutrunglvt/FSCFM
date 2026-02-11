@@ -968,6 +968,8 @@
         height: calc(100vh - 200px);
         border-radius: 8px;
       }
+      /* Hide verbose attribution on mobile to free bottom space */
+      #map-container .leaflet-control-attribution { font-size: 0; line-height: 0; padding: 0; height: 0; overflow: hidden; }
     }
 
     /* Map search */
@@ -992,7 +994,7 @@
       background: transparent !important;
       border: none !important;
       box-shadow: none !important;
-      font-size: 9px !important;
+      font-size: 11px !important;
       line-height: 1.2 !important;
       color: #1a1a1a;
       font-weight: 600;
@@ -1008,13 +1010,13 @@
 
     /* Floating action buttons (bottom-right stack) */
     .map-fab-stack {
-      position: absolute; bottom: 20px; right: 14px; z-index: 1000;
+      position: absolute; bottom: 36px; right: 14px; z-index: 1000;
       display: flex; flex-direction: column; gap: 10px; align-items: center;
     }
     .map-fab {
-      width: 44px; height: 44px; border-radius: 50%; border: none;
+      width: 46px; height: 46px; border-radius: 50%; border: none;
       display: flex; align-items: center; justify-content: center;
-      font-size: 18px; cursor: pointer; transition: all 0.2s;
+      font-size: 20px; cursor: pointer; transition: all 0.2s;
       background: #fff; color: #555; box-shadow: 0 2px 8px rgba(0,0,0,0.25);
     }
     .map-fab:hover { transform: scale(1.1); box-shadow: 0 4px 12px rgba(0,0,0,0.3); }
@@ -1022,37 +1024,39 @@
     .map-fab-primary:hover { background: #1976D2; }
     .map-fab.active { background: #2196F3; color: #fff; }
     .map-fab.active-record { background: #ff5722; color: #fff; animation: fabPulse 1.5s infinite; }
+    .map-fab.active-draw { background: #4CAF50; color: #fff; }
     @keyframes fabPulse { 0%,100%{ box-shadow:0 2px 8px rgba(255,87,34,0.3); } 50%{ box-shadow:0 2px 16px rgba(255,87,34,0.7); } }
 
     /* Coordinate panel (bottom-left) */
     .coords-panel {
-      position: absolute; bottom: 12px; left: 10px; z-index: 1000;
-      background: rgba(0,0,0,0.8); color: #fff; padding: 8px 12px;
-      border-radius: 10px; font-size: 11px; font-family: 'Courier New', monospace;
-      max-width: 260px; pointer-events: auto;
+      position: absolute; bottom: 36px; left: 10px; z-index: 1000;
+      background: rgba(0,0,0,0.82); color: #fff; padding: 10px 14px;
+      border-radius: 12px; font-size: 13px; font-family: 'Courier New', monospace;
+      max-width: 280px; pointer-events: auto;
     }
     .coords-panel .coords-crs-list {
-      display: flex; flex-wrap: wrap; gap: 4px; margin-bottom: 6px;
+      display: flex; flex-wrap: wrap; gap: 5px; margin-bottom: 8px;
     }
     .coords-panel .crs-chip {
-      padding: 3px 8px; border-radius: 12px; font-size: 9px; cursor: pointer;
+      padding: 4px 10px; border-radius: 12px; font-size: 11px; cursor: pointer;
       background: rgba(255,255,255,0.15); color: #ccc; border: 1px solid rgba(255,255,255,0.2);
       transition: all 0.15s; white-space: nowrap;
     }
     .coords-panel .crs-chip:hover { background: rgba(255,255,255,0.25); }
     .coords-panel .crs-chip.active { background: #2196F3; color: #fff; border-color: #2196F3; }
-    .coords-panel .coords-value { font-size: 12px; font-weight: 700; letter-spacing: 0.5px; }
-    .coords-panel .coords-accuracy { font-size: 9px; color: #aaa; margin-top: 2px; }
+    .coords-panel .coords-value { font-size: 14px; font-weight: 700; letter-spacing: 0.5px; }
+    .coords-panel .coords-accuracy { font-size: 11px; color: #aaa; margin-top: 3px; }
 
     /* GPS record guide banner */
     .gps-record-guide {
       position: absolute; top: 10px; left: 50%; transform: translateX(-50%); z-index: 1000;
-      background: rgba(255,87,34,0.9); color: #fff; padding: 8px 16px;
-      border-radius: 20px; font-size: 12px; font-weight: 600;
+      background: rgba(255,87,34,0.92); color: #fff; padding: 10px 18px;
+      border-radius: 20px; font-size: 14px; font-weight: 600;
       box-shadow: 0 2px 12px rgba(255,87,34,0.4); text-align: center;
       max-width: 90%; pointer-events: auto;
     }
     .gps-record-guide i { margin-right: 6px; }
+    .gps-record-guide small { font-size: 12px; }
 
     /* GPS pulse marker */
     .gps-pulse {
@@ -1316,7 +1320,10 @@
                 <button type="button" class="map-fab" id="btn-gps-coords" onclick="toggleCoordsDisplay()" aria-label="Tọa độ" title="Tọa độ">
                   <i class="fa-solid fa-crosshairs"></i><span class="visually-hidden">Tọa độ</span>
                 </button>
-                <button type="button" class="map-fab" id="btn-gps-record" onclick="toggleGpsRecord()" aria-label="Vẽ vùng GPS" title="Vẽ vùng GPS">
+                <button type="button" class="map-fab" id="btn-hand-draw" onclick="toggleHandDraw()" aria-label="Vẽ tay" title="Vẽ đa giác bằng tay">
+                  <i class="fa-solid fa-draw-polygon"></i><span class="visually-hidden">Vẽ tay</span>
+                </button>
+                <button type="button" class="map-fab" id="btn-gps-record" onclick="toggleGpsRecord()" aria-label="Vẽ vùng GPS" title="Vẽ vùng GPS theo di chuyển">
                   <i class="fa-solid fa-route"></i><span class="visually-hidden">Vẽ vùng GPS</span>
                 </button>
                 <button type="button" class="map-fab map-fab-primary" id="btn-gps-track" onclick="toggleGpsTracking()" aria-label="Vị trí" title="Vị trí điểm đứng">
@@ -6447,6 +6454,54 @@
       promptLinkPolygonToLoRung(polygon);
       _gpsRecordPoints = [];
     }
+
+    // ── Hand Draw Polygon (manual draw on map) ────────────────
+    let _handDrawHandler = null;
+    let _handDrawActive = false;
+
+    window.toggleHandDraw = function() {
+      const btn = document.getElementById('btn-hand-draw');
+      if (_handDrawActive) {
+        // Cancel drawing
+        if (_handDrawHandler) { _handDrawHandler.disable(); _handDrawHandler = null; }
+        _handDrawActive = false;
+        if (btn) btn.classList.remove('active-draw');
+        const guide = document.getElementById('gps-record-guide');
+        if (guide) guide.classList.add('d-none');
+        return;
+      }
+      if (!mapInstance) return;
+      _handDrawActive = true;
+      if (btn) btn.classList.add('active-draw');
+      // Show guide
+      const guide = document.getElementById('gps-record-guide');
+      if (guide) {
+        guide.innerHTML = `<i class="fa-solid fa-draw-polygon"></i> Chạm để đặt các đỉnh đa giác<br><small>Chạm đỉnh đầu hoặc bấm "Hoàn thành" để kết thúc</small>`;
+        guide.style.background = 'rgba(76,175,80,0.92)';
+        guide.classList.remove('d-none');
+      }
+      // Use Leaflet.Draw polygon handler directly
+      _handDrawHandler = new L.Draw.Polygon(mapInstance, {
+        allowIntersection: false,
+        shapeOptions: { color: '#4CAF50', weight: 2, fillColor: '#4CAF50', fillOpacity: 0.15 }
+      });
+      _handDrawHandler.enable();
+      // Listen for completion — layer is added by the permanent draw:created handler in renderMapView
+      function _onHandDrawCreated() { _resetHandDraw(); }
+      function _onHandDrawStop() { _resetHandDraw(); }
+      function _resetHandDraw() {
+        mapInstance.off(L.Draw.Event.CREATED, _onHandDrawCreated);
+        mapInstance.off('draw:drawstop', _onHandDrawStop);
+        _handDrawActive = false;
+        _handDrawHandler = null;
+        const b = document.getElementById('btn-hand-draw');
+        if (b) b.classList.remove('active-draw');
+        const g = document.getElementById('gps-record-guide');
+        if (g) { g.classList.add('d-none'); g.style.background = ''; }
+      }
+      mapInstance.once(L.Draw.Event.CREATED, _onHandDrawCreated);
+      mapInstance.once('draw:drawstop', _onHandDrawStop);
+    };
 
     // ── Coordinate Display (multi-CRS) — bottom-left panel ─────
     let _coordsEnabled = false;
