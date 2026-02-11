@@ -5369,6 +5369,8 @@
     let geoJsonNamedLayers = {}; // { layerName: L.FeatureGroup }
     let mapPlotLabels = null; // L.LayerGroup for plot labels (shown at high zoom only)
 
+    let _pendingMapTarget = null; // Set by showOnMap to skip zoomToAllData
+
     function renderMapView() {
       $('#page-content-dynamic').addClass('d-none');
       $('#map-view').removeClass('d-none');
@@ -5376,7 +5378,8 @@
       if (mapInstance) {
         setTimeout(() => {
           mapInstance.invalidateSize();
-          zoomToAllData();
+          // Skip zoomToAllData if we're about to fly to a specific plot
+          if (!_pendingMapTarget) zoomToAllData();
         }, 100);
         return;
       }
@@ -5440,7 +5443,10 @@
       });
 
       loadStoredGeoJSON().then(() => {
-        setTimeout(() => { zoomToAllData(); updateZoomLayerMenu(); renderMapLayerPanel(); }, 300);
+        setTimeout(() => {
+          if (!_pendingMapTarget) zoomToAllData();
+          updateZoomLayerMenu(); renderMapLayerPanel();
+        }, 300);
       });
       renderMapLayerPanel();
       initMapSearch();
@@ -6069,12 +6075,14 @@
     };
 
     window.showOnMap = function(loRungId) {
+      _pendingMapTarget = String(loRungId); // Prevent zoomToAllData override
       loadView('Bando_lorung', 'Bản đồ quản lý lô rừng');
       const PLOT_ZOOM = 18; // ~1:1000 scale
+      const targetId = String(loRungId);
 
       // Retry mechanism: GeoJSON loads async, so we try multiple times
       let attempts = 0;
-      const maxAttempts = 10;
+      const maxAttempts = 15;
       const tryFlyTo = () => {
         attempts++;
         if (!mapInstance) { if (attempts < maxAttempts) setTimeout(tryFlyTo, 500); return; }
@@ -6088,7 +6096,7 @@
             if (layer.eachLayer) {
               layer.eachLayer(sub => {
                 if (found) return;
-                if (sub.loRungId === loRungId) {
+                if (String(sub.loRungId) === targetId) {
                   found = true;
                   if (sub.getBounds) mapInstance.flyTo(sub.getBounds().getCenter(), PLOT_ZOOM, { duration: 0.8 });
                   setTimeout(() => { if (sub.openPopup) sub.openPopup(); }, 900);
@@ -6100,7 +6108,7 @@
                 }
               });
             }
-            if (!found && layer.loRungId === loRungId) {
+            if (!found && String(layer.loRungId) === targetId) {
               found = true;
               if (layer.getBounds) mapInstance.flyTo(layer.getBounds().getCenter(), PLOT_ZOOM, { duration: 0.8 });
               else if (layer.getLatLng) mapInstance.flyTo(layer.getLatLng(), PLOT_ZOOM, { duration: 0.8 });
@@ -6113,6 +6121,8 @@
             }
           });
         }
+
+        if (found) { _pendingMapTarget = null; return; } // Clear flag once found
 
         // 2. Fallback: use coordinates from Lo_rung data (kinh_do/vi_do or toa_do_tam_lo)
         if (!found) {
@@ -6128,16 +6138,21 @@
               if (coords) { const parts = String(coords).split(',').map(s => parseFloat(s.trim())); if (parts.length === 2) { lat = parts[0]; lng = parts[1]; } }
             }
             if (lat && lng && !isNaN(lat) && !isNaN(lng)) {
-              mapInstance.setView([lat, lng], PLOT_ZOOM);
+              mapInstance.flyTo([lat, lng], PLOT_ZOOM, { duration: 0.8 });
               found = true;
+              _pendingMapTarget = null;
             }
           }
         }
 
         // 3. If still not found and GeoJSON might still be loading, retry
-        if (!found && attempts < maxAttempts) setTimeout(tryFlyTo, 500);
+        if (!found && attempts < maxAttempts) {
+          setTimeout(tryFlyTo, 500);
+        } else {
+          _pendingMapTarget = null; // Clear flag after max attempts
+        }
       };
-      setTimeout(tryFlyTo, 600);
+      setTimeout(tryFlyTo, 300); // Start quickly (was 600ms)
     };
     // ── Map Search ──────────────────────────────────────────────
     let _mapSearchIndex = null;
