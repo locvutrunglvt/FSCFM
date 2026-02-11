@@ -812,6 +812,11 @@
       height: calc(100vh - 76px);
       overflow: hidden;
     }
+    .dash-charts {
+      flex: 1 1 0;
+      min-height: 0;
+      overflow: hidden;
+    }
     #dashboard-view h5 { margin-bottom: 8px !important; font-size: 15px; }
     #dashboard-view h6 { margin-bottom: 6px !important; font-size: 12px; }
     #dashboard-view .kpi-card { padding: 8px 12px; }
@@ -821,17 +826,27 @@
     #dashboard-view .icon-3d-wrapper { width: 44px; height: 44px; font-size: 1.15rem; margin-bottom: 8px; border-radius: 13px; }
     #dashboard-view .card-title-3d { font-size: 12px; font-weight: 700; }
     @media (max-width: 767px) {
-      #dashboard-view { height: auto; min-height: calc(100vh - 110px); overflow-y: auto; }
-      #dashboard-view h5 { font-size: 13px !important; margin-bottom: 6px !important; }
-      #dashboard-view h6 { font-size: 10px !important; margin-bottom: 4px !important; }
-      #dashboard-view .icon-3d-wrapper { width: 30px !important; height: 30px !important; font-size: 0.8rem !important; border-radius: 8px !important; margin-bottom: 3px !important; }
-      #dashboard-view .card-title-3d { font-size: 9px !important; }
-      #dashboard-view .kpi-value { font-size: 0.9rem !important; }
+      #dashboard-view { height: auto; overflow-y: auto; }
+      .dash-above-fold {
+        min-height: calc(100vh - 120px);
+        min-height: calc(100dvh - 120px);
+        display: flex;
+        flex-direction: column;
+        justify-content: space-evenly;
+        padding-bottom: 8px;
+      }
+      #dashboard-view h5 { font-size: 13px !important; margin-bottom: 0 !important; }
+      #dashboard-view h6 { font-size: 11px !important; margin-bottom: 2px !important; }
+      #dashboard-view .icon-3d-wrapper { width: 36px !important; height: 36px !important; font-size: 0.9rem !important; border-radius: 10px !important; margin-bottom: 4px !important; }
+      #dashboard-view .card-title-3d { font-size: 9.5px !important; font-weight: 700 !important; }
+      #dashboard-view .kpi-value { font-size: 1rem !important; font-weight: 800 !important; }
       #dashboard-view .kpi-label { font-size: 8px !important; letter-spacing: 0; text-transform: none; }
-      #dashboard-view .kpi-card { padding: 6px 6px !important; border-radius: 8px !important; text-align: center; }
-      #dashboard-view .kpi-grid { margin-bottom: 6px !important; }
-      #dashboard-view .dashboard-card-3d { padding: 8px 4px 6px !important; border-radius: 8px !important; }
+      #dashboard-view .kpi-card { padding: 8px 6px !important; border-radius: 10px !important; text-align: center; }
+      #dashboard-view .kpi-grid { margin-bottom: 0 !important; }
+      #dashboard-view .dashboard-card-3d { padding: 10px 4px 8px !important; border-radius: 10px !important; }
       #dashboard-view .row.g-3 { --bs-gutter-x: 0.5rem; --bs-gutter-y: 0.5rem; }
+      .dash-charts { padding: 12px 0 20px; }
+      .dash-charts .card { margin-bottom: 12px; }
     }
 
     /* Sub-menu Screen Cards */
@@ -4497,8 +4512,9 @@
       $('#data-view').addClass('d-none');
       $('#dashboard-view').removeClass('d-none');
       navHistory = [];
-      // Lock scroll on dashboard
-      $('#page-content-wrapper').css('overflow', 'hidden');
+      // On mobile allow scroll (charts below fold), on desktop lock scroll
+      const isMobile = $(window).width() < 768;
+      $('#page-content-wrapper').css('overflow', isMobile ? 'auto' : 'hidden');
       renderDashboardContent();
     }
 
@@ -4555,66 +4571,103 @@
 
       const nextLang = currentLang === 'vi' ? 'EN' : 'VI';
       let html = `
-        <div class="d-flex align-items-center mb-2">
-          <div class="me-auto">
-            <h5 class="fw-bold mb-0" style="color:var(--forest-primary)"><i class="fa-solid fa-gauge-high me-2"></i>${t('dashboard_title')}</h5>
+        <div class="dash-above-fold">
+          <div class="d-flex align-items-center mb-2">
+            <div class="me-auto">
+              <h5 class="fw-bold mb-0" style="color:var(--forest-primary)"><i class="fa-solid fa-gauge-high me-2"></i>${t('dashboard_title')}</h5>
+            </div>
+            <button class="btn btn-sm btn-outline-secondary rounded-pill px-2 me-1" onclick="openMenuGroup('Hệ thống')" style="font-size:11px;font-weight:600">
+              <i class="fa-solid fa-gears me-1"></i>${t('menu_system')}
+            </button>
+            <button class="btn btn-sm btn-outline-success rounded-pill px-2" onclick="toggleLang()" style="font-size:11px;font-weight:600" id="lang-toggle-dash">
+              <i class="fa-solid fa-globe me-1"></i><span id="lang-label-dash">${nextLang}</span>
+            </button>
           </div>
-          <button class="btn btn-sm btn-outline-secondary rounded-pill px-2 me-1" onclick="openMenuGroup('Hệ thống')" style="font-size:11px;font-weight:600">
-            <i class="fa-solid fa-gears me-1"></i>${t('menu_system')}
-          </button>
-          <button class="btn btn-sm btn-outline-success rounded-pill px-2" onclick="toggleLang()" style="font-size:11px;font-weight:600" id="lang-toggle-dash">
-            <i class="fa-solid fa-globe me-1"></i><span id="lang-label-dash">${nextLang}</span>
-          </button>
+
+          <!-- Smart Search -->
+          <div class="position-relative mb-2">
+            <div class="input-group input-group-sm shadow-sm" style="max-width:100%">
+              <span class="input-group-text bg-white border-end-0"><i class="fa-solid fa-magnifying-glass text-muted"></i></span>
+              <input type="text" class="form-control border-start-0" id="smart-search-input" placeholder="${t('search_placeholder')}" autocomplete="off" oninput="smartSearch(this.value)">
+              <button class="btn btn-outline-secondary border-start-0" type="button" onclick="$('#smart-search-input').val('');$('#smart-search-results').addClass('d-none')"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+            <div id="smart-search-results" class="d-none position-absolute w-100 bg-white border rounded shadow mt-1" style="z-index:1050;max-height:350px;overflow-y:auto"></div>
+          </div>
+
+          <!-- 6 Main Menu Cards -->
+          <div class="row row-cols-3 row-cols-md-6 g-2 mb-2">
+            ${mainMenus.map(m => `
+              <div class="col">
+                <div class="dashboard-card-3d" style="--card-accent:${m.color}" onclick="openMenuGroup('${m.group}')">
+                  <div class="icon-3d-wrapper" style="background:${m.color}"><i class="fa-solid ${m.icon}"></i></div>
+                  <div class="card-title-3d">${t(m.labelKey)}</div>
+                </div>
+              </div>
+            `).join('')}
+          </div>
+
+          <!-- KPIs -->
+          <h6 class="fw-bold text-secondary"><i class="fa-solid fa-chart-line me-2"></i>${t('kpi_title')}</h6>
+          <div class="row row-cols-3 row-cols-md-9 g-1 g-md-2 kpi-grid">
+            <div class="col"><div class="kpi-card h-100" style="cursor:pointer" onclick="showKpiDetail('households')"><div class="kpi-value">${soHo}</div><div class="kpi-label">${t('kpi_households')}</div></div></div>
+            <div class="col"><div class="kpi-card blue h-100" style="cursor:pointer" onclick="showKpiDetail('plots')"><div class="kpi-value">${soFarm}</div><div class="kpi-label">${t('kpi_plots')}</div></div></div>
+            <div class="col"><div class="kpi-card h-100" style="cursor:pointer" onclick="showKpiDetail('fsc_area')"><div class="kpi-value">${tongDTFSC.toFixed(1)}</div><div class="kpi-label">${t('kpi_fsc_area')}</div></div></div>
+            <div class="col"><div class="kpi-card orange h-100"><div class="kpi-value">${haPerHo}</div><div class="kpi-label">${t('kpi_ha_per_ho')}</div></div></div>
+            <div class="col"><div class="kpi-card blue h-100"><div class="kpi-value">${haPerFarm}</div><div class="kpi-label">${t('kpi_ha_per_farm')}</div></div></div>
+            <div class="col"><div class="kpi-card orange h-100" style="cursor:pointer" onclick="showKpiDetail('harvest_actual')"><div class="kpi-value">${dtKhaiThacTT.toFixed(1)}</div><div class="kpi-label">${t('kpi_harvest_actual')}</div></div></div>
+            <div class="col"><div class="kpi-card purple h-100" style="cursor:pointer" onclick="showKpiDetail('plant')"><div class="kpi-value">${dtTrongRung.toFixed(1)}</div><div class="kpi-label">${t('kpi_plant')}</div></div></div>
+            <div class="col"><div class="kpi-card blue h-100" style="cursor:pointer" onclick="showKpiDetail('harvest_plan')"><div class="kpi-value">${dtKTKeHoach.toFixed(1)}</div><div class="kpi-label">${t('kpi_harvest_plan')}</div></div></div>
+            <div class="col"><div class="kpi-card h-100" style="cursor:pointer" onclick="showKpiDetail('hlvs')"><div class="kpi-value">${dtHLVS.toFixed(1)}</div><div class="kpi-label">${t('kpi_hlvs')}</div></div></div>
+          </div>
         </div>
 
-        <!-- Smart Search -->
-        <div class="position-relative mb-3">
-          <div class="input-group input-group-sm shadow-sm" style="max-width:100%">
-            <span class="input-group-text bg-white border-end-0"><i class="fa-solid fa-magnifying-glass text-muted"></i></span>
-            <input type="text" class="form-control border-start-0" id="smart-search-input" placeholder="${t('search_placeholder')}" autocomplete="off" oninput="smartSearch(this.value)">
-            <button class="btn btn-outline-secondary border-start-0" type="button" onclick="$('#smart-search-input').val('');$('#smart-search-results').addClass('d-none')"><i class="fa-solid fa-xmark"></i></button>
-          </div>
-          <div id="smart-search-results" class="d-none position-absolute w-100 bg-white border rounded shadow mt-1" style="z-index:1050;max-height:350px;overflow-y:auto"></div>
-        </div>
-
-        <!-- 6 Main Menu Cards -->
-        <div class="row row-cols-3 row-cols-md-6 g-2 mb-3">
-          ${mainMenus.map(m => `
-            <div class="col">
-              <div class="dashboard-card-3d" style="--card-accent:${m.color}" onclick="openMenuGroup('${m.group}')">
-                <div class="icon-3d-wrapper" style="background:${m.color}"><i class="fa-solid ${m.icon}"></i></div>
-                <div class="card-title-3d">${t(m.labelKey)}</div>
+        <!-- Charts (scroll to view on mobile) -->
+        <div class="dash-charts">
+          <div class="row g-3">
+            <div class="col-md-6">
+              <div class="card border-0 shadow-sm">
+                <div class="card-body p-2 p-md-3 d-flex flex-column">
+                  <div class="d-flex justify-content-between align-items-center mb-2">
+                    <h6 class="fw-bold text-success mb-0" style="font-size:12px"><i class="fa-solid fa-chart-pie me-1"></i>${t('chart_area')}</h6>
+                    <select class="form-select form-select-sm" style="width:auto;font-size:11px;padding:2px 24px 2px 8px" onchange="switchChartType('area', this.value)">
+                      <option value="doughnut" selected>Doughnut</option>
+                      <option value="pie">Pie</option>
+                      <option value="bar">Bar</option>
+                      <option value="polarArea">Polar Area</option>
+                      <option value="radar">Radar</option>
+                    </select>
+                  </div>
+                  <div style="position:relative;min-height:250px"><canvas id="chart-area"></canvas></div>
+                </div>
               </div>
             </div>
-          `).join('')}
-        </div>
-
-        <!-- KPIs -->
-        <h6 class="fw-bold text-secondary mb-2"><i class="fa-solid fa-chart-line me-2"></i>${t('kpi_title')}</h6>
-        <div class="row row-cols-3 row-cols-md-9 g-1 g-md-2 mb-2 kpi-grid">
-          <div class="col"><div class="kpi-card h-100" style="cursor:pointer" onclick="showKpiDetail('households')"><div class="kpi-value">${soHo}</div><div class="kpi-label">${t('kpi_households')}</div></div></div>
-          <div class="col"><div class="kpi-card blue h-100" style="cursor:pointer" onclick="showKpiDetail('plots')"><div class="kpi-value">${soFarm}</div><div class="kpi-label">${t('kpi_plots')}</div></div></div>
-          <div class="col"><div class="kpi-card h-100" style="cursor:pointer" onclick="showKpiDetail('fsc_area')"><div class="kpi-value">${tongDTFSC.toFixed(1)}</div><div class="kpi-label">${t('kpi_fsc_area')}</div></div></div>
-          <div class="col"><div class="kpi-card orange h-100"><div class="kpi-value">${haPerHo}</div><div class="kpi-label">${t('kpi_ha_per_ho')}</div></div></div>
-          <div class="col"><div class="kpi-card blue h-100"><div class="kpi-value">${haPerFarm}</div><div class="kpi-label">${t('kpi_ha_per_farm')}</div></div></div>
-          <div class="col"><div class="kpi-card orange h-100" style="cursor:pointer" onclick="showKpiDetail('harvest_actual')"><div class="kpi-value">${dtKhaiThacTT.toFixed(1)}</div><div class="kpi-label">${t('kpi_harvest_actual')}</div></div></div>
-          <div class="col"><div class="kpi-card purple h-100" style="cursor:pointer" onclick="showKpiDetail('plant')"><div class="kpi-value">${dtTrongRung.toFixed(1)}</div><div class="kpi-label">${t('kpi_plant')}</div></div></div>
-          <div class="col"><div class="kpi-card blue h-100" style="cursor:pointer" onclick="showKpiDetail('harvest_plan')"><div class="kpi-value">${dtKTKeHoach.toFixed(1)}</div><div class="kpi-label">${t('kpi_harvest_plan')}</div></div></div>
-          <div class="col"><div class="kpi-card h-100" style="cursor:pointer" onclick="showKpiDetail('hlvs')"><div class="kpi-value">${dtHLVS.toFixed(1)}</div><div class="kpi-label">${t('kpi_hlvs')}</div></div></div>
-        </div>
-
-        <!-- Charts button -->
-        <div class="text-center mt-2">
-          <button class="btn btn-outline-success btn-sm rounded-pill px-3" onclick="renderChartsPage()">
-            <i class="fa-solid fa-chart-pie me-1"></i>${t('btn_view_charts')}
-          </button>
+            <div class="col-md-6">
+              <div class="card border-0 shadow-sm">
+                <div class="card-body p-2 p-md-3 d-flex flex-column">
+                  <div class="d-flex justify-content-between align-items-center mb-2">
+                    <h6 class="fw-bold text-success mb-0" style="font-size:12px"><i class="fa-solid fa-chart-bar me-1"></i>${t('chart_groups')}</h6>
+                    <select class="form-select form-select-sm" style="width:auto;font-size:11px;padding:2px 24px 2px 8px" onchange="switchChartType('groups', this.value)">
+                      <option value="bar" selected>Bar</option>
+                      <option value="line">Line</option>
+                      <option value="radar">Radar</option>
+                      <option value="pie">Pie</option>
+                      <option value="doughnut">Doughnut</option>
+                      <option value="polarArea">Polar Area</option>
+                    </select>
+                  </div>
+                  <div style="position:relative;min-height:250px"><canvas id="chart-groups"></canvas></div>
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
       `;
 
       $('#dashboard-view').html(html);
 
-      // Store chart params for lazy rendering on charts page
+      // Render charts after DOM is ready
       _chartParams = { groups, plots, tongDT, tongDTFSC, dtTrongRung, dtHLVS, dtKhaiThacTT, dtKTKeHoach };
+      setTimeout(() => renderDashboardCharts(groups, plots, tongDT, tongDTFSC, dtTrongRung, dtHLVS, dtKhaiThacTT, dtKTKeHoach), 200);
     }
 
     let _chartParams = null;
