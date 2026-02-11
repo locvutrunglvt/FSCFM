@@ -957,9 +957,9 @@
 
     /* Map search */
     .map-search-wrap { width: 220px; }
-    .map-search-wrap input { padding-left: 30px; font-size: 12px; height: 31px; border-color: #a5d6a7; }
+    .map-search-wrap input { padding-left: 10px; padding-right: 28px; font-size: 12px; height: 31px; border-color: #a5d6a7; }
     .map-search-wrap input:focus { border-color: #2e7d32; box-shadow: 0 0 0 2px rgba(46,125,50,0.15); }
-    .map-search-icon { position: absolute; left: 9px; top: 50%; transform: translateY(-50%); color: #999; font-size: 12px; pointer-events: none; }
+    .map-search-icon { position: absolute; right: 8px; left: auto; top: 50%; transform: translateY(-50%); color: #999; font-size: 12px; pointer-events: none; }
     .map-search-dropdown { position: absolute; top: 100%; left: 0; right: 0; z-index: 1060; background: white; border: 1px solid #c8e6c9; border-top: none; border-radius: 0 0 8px 8px; max-height: 300px; overflow-y: auto; box-shadow: 0 4px 12px rgba(0,0,0,0.12); }
     .map-search-item { padding: 8px 12px; cursor: pointer; border-bottom: 1px solid #f0f0f0; font-size: 12px; }
     .map-search-item:last-child { border-bottom: none; }
@@ -968,8 +968,8 @@
     .map-search-item .plot-info { color: #666; font-size: 11px; }
     .map-search-item .search-match { background: #fff9c4; padding: 0 1px; border-radius: 2px; }
     @media (max-width: 767px) {
-      .map-search-wrap { width: 160px; }
-      .map-search-wrap input { font-size: 11px; height: 28px; }
+      .map-search-wrap { width: 150px; }
+      .map-search-wrap input { font-size: 11px; height: 28px; padding-left: 8px; padding-right: 26px; }
     }
 
     /* Plot label tooltips on map (visible at high zoom only) */
@@ -1355,6 +1355,8 @@
         kpi_hlvs: 'DT HLVS (ha)',
         chart_area: 'Phân bổ diện tích',
         chart_groups: 'Thống kê theo nhóm',
+        btn_view_charts: 'Biểu đồ',
+        charts_page_title: 'Biểu đồ thống kê',
         no_results: 'Không tìm thấy kết quả cho',
 
         // Main menus
@@ -1727,6 +1729,8 @@
         kpi_hlvs: 'Riparian (ha)',
         chart_area: 'Area Distribution',
         chart_groups: 'Statistics by Group',
+        btn_view_charts: 'Charts',
+        charts_page_title: 'Statistical Charts',
         no_results: 'No results found for',
 
         menu_group_mgmt: 'Group Management',
@@ -4599,51 +4603,21 @@
           <div class="col"><div class="kpi-card h-100" style="cursor:pointer" onclick="showKpiDetail('hlvs')"><div class="kpi-value">${dtHLVS.toFixed(1)}</div><div class="kpi-label">${t('kpi_hlvs')}</div></div></div>
         </div>
 
-        <!-- Charts -->
-        <div class="row g-3 flex-grow-1" style="min-height:0">
-          <div class="col-md-6 d-flex">
-            <div class="card border-0 shadow-sm flex-grow-1">
-              <div class="card-body p-2 p-md-3 d-flex flex-column">
-                <div class="d-flex justify-content-between align-items-center mb-2">
-                  <h6 class="fw-bold text-success mb-0" style="font-size:12px"><i class="fa-solid fa-chart-pie me-1"></i>${t('chart_area')}</h6>
-                  <select class="form-select form-select-sm" style="width:auto;font-size:11px;padding:2px 24px 2px 8px" onchange="switchChartType('area', this.value)">
-                    <option value="doughnut" selected>Doughnut</option>
-                    <option value="pie">Pie</option>
-                    <option value="bar">Bar</option>
-                    <option value="polarArea">Polar Area</option>
-                    <option value="radar">Radar</option>
-                  </select>
-                </div>
-                <div class="flex-grow-1" style="position:relative;min-height:0"><canvas id="chart-area"></canvas></div>
-              </div>
-            </div>
-          </div>
-          <div class="col-md-6 d-flex">
-            <div class="card border-0 shadow-sm flex-grow-1">
-              <div class="card-body p-2 p-md-3 d-flex flex-column">
-                <div class="d-flex justify-content-between align-items-center mb-2">
-                  <h6 class="fw-bold text-success mb-0" style="font-size:12px"><i class="fa-solid fa-chart-bar me-1"></i>${t('chart_groups')}</h6>
-                  <select class="form-select form-select-sm" style="width:auto;font-size:11px;padding:2px 24px 2px 8px" onchange="switchChartType('groups', this.value)">
-                    <option value="bar" selected>Bar</option>
-                    <option value="line">Line</option>
-                    <option value="radar">Radar</option>
-                    <option value="pie">Pie</option>
-                    <option value="doughnut">Doughnut</option>
-                    <option value="polarArea">Polar Area</option>
-                  </select>
-                </div>
-                <div class="flex-grow-1" style="position:relative;min-height:0"><canvas id="chart-groups"></canvas></div>
-              </div>
-            </div>
-          </div>
+        <!-- Charts button -->
+        <div class="text-center mt-2">
+          <button class="btn btn-outline-success btn-sm rounded-pill px-3" onclick="renderChartsPage()">
+            <i class="fa-solid fa-chart-pie me-1"></i>${t('btn_view_charts')}
+          </button>
         </div>
       `;
 
       $('#dashboard-view').html(html);
 
-      // Render charts after DOM is ready
-      setTimeout(() => renderDashboardCharts(groups, plots, tongDT, tongDTFSC, dtTrongRung, dtHLVS, dtKhaiThacTT, dtKTKeHoach), 200);
+      // Store chart params for lazy rendering on charts page
+      _chartParams = { groups, plots, tongDT, tongDTFSC, dtTrongRung, dtHLVS, dtKhaiThacTT, dtKTKeHoach };
     }
+
+    let _chartParams = null;
 
     let chartInstances = {};
     let chartDataStore = {};
@@ -4757,6 +4731,58 @@
 
     function switchChartType(chartKey, newType) {
       buildChart(chartKey, newType);
+    }
+
+    function renderChartsPage() {
+      const p = _chartParams;
+      if (!p) return;
+      const html = `
+        <div style="padding:10px">
+          <div class="d-flex align-items-center mb-3">
+            <button class="btn btn-outline-success btn-sm me-2 rounded-pill" onclick="goHome()"><i class="fa-solid fa-arrow-left me-1"></i>${t('btn_back')}</button>
+            <h5 class="fw-bold mb-0" style="color:var(--forest-primary)"><i class="fa-solid fa-chart-pie me-2"></i>${t('charts_page_title')}</h5>
+          </div>
+          <div class="row g-3">
+            <div class="col-md-6">
+              <div class="card border-0 shadow-sm">
+                <div class="card-body p-2 p-md-3 d-flex flex-column">
+                  <div class="d-flex justify-content-between align-items-center mb-2">
+                    <h6 class="fw-bold text-success mb-0" style="font-size:13px"><i class="fa-solid fa-chart-pie me-1"></i>${t('chart_area')}</h6>
+                    <select class="form-select form-select-sm" style="width:auto;font-size:11px;padding:2px 24px 2px 8px" onchange="switchChartType('area', this.value)">
+                      <option value="doughnut" selected>Doughnut</option>
+                      <option value="pie">Pie</option>
+                      <option value="bar">Bar</option>
+                      <option value="polarArea">Polar Area</option>
+                      <option value="radar">Radar</option>
+                    </select>
+                  </div>
+                  <div style="position:relative;min-height:280px"><canvas id="chart-area"></canvas></div>
+                </div>
+              </div>
+            </div>
+            <div class="col-md-6">
+              <div class="card border-0 shadow-sm">
+                <div class="card-body p-2 p-md-3 d-flex flex-column">
+                  <div class="d-flex justify-content-between align-items-center mb-2">
+                    <h6 class="fw-bold text-success mb-0" style="font-size:13px"><i class="fa-solid fa-chart-bar me-1"></i>${t('chart_groups')}</h6>
+                    <select class="form-select form-select-sm" style="width:auto;font-size:11px;padding:2px 24px 2px 8px" onchange="switchChartType('groups', this.value)">
+                      <option value="bar" selected>Bar</option>
+                      <option value="line">Line</option>
+                      <option value="radar">Radar</option>
+                      <option value="pie">Pie</option>
+                      <option value="doughnut">Doughnut</option>
+                      <option value="polarArea">Polar Area</option>
+                    </select>
+                  </div>
+                  <div style="position:relative;min-height:280px"><canvas id="chart-groups"></canvas></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      `;
+      $('#dashboard-view').html(html);
+      setTimeout(() => renderDashboardCharts(p.groups, p.plots, p.tongDT, p.tongDTFSC, p.dtTrongRung, p.dtHLVS, p.dtKhaiThacTT, p.dtKTKeHoach), 100);
     }
 
     // KPI Detail: show list grouped by Nhóm FSC with drill-down
@@ -5378,8 +5404,12 @@
       if (mapInstance) {
         setTimeout(() => {
           mapInstance.invalidateSize();
-          // Skip zoomToAllData if we're about to fly to a specific plot
-          if (!_pendingMapTarget) zoomToAllData();
+          if (_pendingMapTarget) {
+            _flyToTarget(_pendingMapTarget);
+            _pendingMapTarget = null;
+          } else {
+            zoomToAllData();
+          }
         }, 100);
         return;
       }
@@ -5444,7 +5474,12 @@
 
       loadStoredGeoJSON().then(() => {
         setTimeout(() => {
-          if (!_pendingMapTarget) zoomToAllData();
+          if (_pendingMapTarget) {
+            _flyToTarget(_pendingMapTarget);
+            _pendingMapTarget = null;
+          } else {
+            zoomToAllData();
+          }
           updateZoomLayerMenu(); renderMapLayerPanel();
         }, 300);
       });
@@ -6074,85 +6109,69 @@
       }
     };
 
-    window.showOnMap = function(loRungId) {
-      _pendingMapTarget = String(loRungId); // Prevent zoomToAllData override
-      loadView('Bando_lorung', 'Bản đồ quản lý lô rừng');
-      const PLOT_ZOOM = 18; // ~1:1000 scale
-      const targetId = String(loRungId);
+    // Fly to a specific plot on the map (used by showOnMap and GeoJSON load callback)
+    function _flyToTarget(targetId) {
+      if (!mapInstance) return false;
+      const PLOT_ZOOM = 18;
+      const tid = String(targetId);
+      let found = false;
 
-      // Retry mechanism: GeoJSON loads async, so we try multiple times
-      let attempts = 0;
-      const maxAttempts = 15;
-      const tryFlyTo = () => {
-        attempts++;
-        if (!mapInstance) { if (attempts < maxAttempts) setTimeout(tryFlyTo, 500); return; }
-
-        // 1. Try to find polygon in drawn items (stored GeoJSON)
-        let found = false;
-        if (mapDrawnItems) {
-          mapDrawnItems.eachLayer(layer => {
-            if (found) return;
-            // Check nested layers (L.geoJSON creates layer groups)
-            if (layer.eachLayer) {
-              layer.eachLayer(sub => {
-                if (found) return;
-                if (String(sub.loRungId) === targetId) {
-                  found = true;
-                  if (sub.getBounds) mapInstance.flyTo(sub.getBounds().getCenter(), PLOT_ZOOM, { duration: 0.8 });
-                  setTimeout(() => { if (sub.openPopup) sub.openPopup(); }, 900);
-                  if (sub.setStyle) {
-                    const orig = { color: '#FFFF00', weight: 1.5, fillColor: '#2E7D32', fillOpacity: 0.12 };
-                    sub.setStyle({ color: '#ff5722', weight: 3, fillColor: '#ff5722', fillOpacity: 0.3 });
-                    setTimeout(() => sub.setStyle(orig), 2500);
-                  }
+      if (mapDrawnItems) {
+        mapDrawnItems.eachLayer(layer => {
+          if (found) return;
+          if (layer.eachLayer) {
+            layer.eachLayer(sub => {
+              if (found) return;
+              if (String(sub.loRungId) === tid) {
+                found = true;
+                if (sub.getBounds) mapInstance.flyTo(sub.getBounds().getCenter(), PLOT_ZOOM, { duration: 0.8 });
+                setTimeout(() => { if (sub.openPopup) sub.openPopup(); }, 900);
+                if (sub.setStyle) {
+                  const orig = { color: '#FFFF00', weight: 1.5, fillColor: '#2E7D32', fillOpacity: 0.12 };
+                  sub.setStyle({ color: '#ff5722', weight: 3, fillColor: '#ff5722', fillOpacity: 0.3 });
+                  setTimeout(() => sub.setStyle(orig), 2500);
                 }
-              });
-            }
-            if (!found && String(layer.loRungId) === targetId) {
-              found = true;
-              if (layer.getBounds) mapInstance.flyTo(layer.getBounds().getCenter(), PLOT_ZOOM, { duration: 0.8 });
-              else if (layer.getLatLng) mapInstance.flyTo(layer.getLatLng(), PLOT_ZOOM, { duration: 0.8 });
-              setTimeout(() => { if (layer.openPopup) layer.openPopup(); }, 900);
-              if (layer.setStyle) {
-                const orig = { color: '#FFFF00', weight: 1.5, fillColor: '#2E7D32', fillOpacity: 0.12 };
-                layer.setStyle({ color: '#ff5722', weight: 3, fillColor: '#ff5722', fillOpacity: 0.3 });
-                setTimeout(() => layer.setStyle(orig), 2500);
               }
-            }
-          });
-        }
-
-        if (found) { _pendingMapTarget = null; return; } // Clear flag once found
-
-        // 2. Fallback: use coordinates from Lo_rung data (kinh_do/vi_do or toa_do_tam_lo)
-        if (!found) {
-          const loRungData = APP_DATA['Lo_rung'] || [];
-          const lr = loRungData.find(r => String(r['ID lô rừng']) === String(loRungId));
-          if (lr) {
-            let lat, lng;
-            const kd = parseFloat(lr['Kinh độ']);
-            const vd = parseFloat(lr['Vĩ độ']);
-            if (!isNaN(vd) && !isNaN(kd)) { lat = vd; lng = kd; }
-            else {
-              const coords = lr['Tọa độ tâm lô'];
-              if (coords) { const parts = String(coords).split(',').map(s => parseFloat(s.trim())); if (parts.length === 2) { lat = parts[0]; lng = parts[1]; } }
-            }
-            if (lat && lng && !isNaN(lat) && !isNaN(lng)) {
-              mapInstance.flyTo([lat, lng], PLOT_ZOOM, { duration: 0.8 });
-              found = true;
-              _pendingMapTarget = null;
+            });
+          }
+          if (!found && String(layer.loRungId) === tid) {
+            found = true;
+            if (layer.getBounds) mapInstance.flyTo(layer.getBounds().getCenter(), PLOT_ZOOM, { duration: 0.8 });
+            else if (layer.getLatLng) mapInstance.flyTo(layer.getLatLng(), PLOT_ZOOM, { duration: 0.8 });
+            setTimeout(() => { if (layer.openPopup) layer.openPopup(); }, 900);
+            if (layer.setStyle) {
+              const orig = { color: '#FFFF00', weight: 1.5, fillColor: '#2E7D32', fillOpacity: 0.12 };
+              layer.setStyle({ color: '#ff5722', weight: 3, fillColor: '#ff5722', fillOpacity: 0.3 });
+              setTimeout(() => layer.setStyle(orig), 2500);
             }
           }
-        }
+        });
+      }
 
-        // 3. If still not found and GeoJSON might still be loading, retry
-        if (!found && attempts < maxAttempts) {
-          setTimeout(tryFlyTo, 500);
-        } else {
-          _pendingMapTarget = null; // Clear flag after max attempts
+      // Fallback: use coordinates from Lo_rung data
+      if (!found) {
+        const loRungData = APP_DATA['Lo_rung'] || [];
+        const lr = loRungData.find(r => String(r['ID lô rừng']) === tid);
+        if (lr) {
+          let lat, lng;
+          const kd = parseFloat(lr['Kinh độ']); const vd = parseFloat(lr['Vĩ độ']);
+          if (!isNaN(vd) && !isNaN(kd)) { lat = vd; lng = kd; }
+          else {
+            const coords = lr['Tọa độ tâm lô'];
+            if (coords) { const parts = String(coords).split(',').map(s => parseFloat(s.trim())); if (parts.length === 2) { lat = parts[0]; lng = parts[1]; } }
+          }
+          if (lat && lng && !isNaN(lat) && !isNaN(lng)) {
+            mapInstance.flyTo([lat, lng], PLOT_ZOOM, { duration: 0.8 });
+            found = true;
+          }
         }
-      };
-      setTimeout(tryFlyTo, 300); // Start quickly (was 600ms)
+      }
+      return found;
+    }
+
+    window.showOnMap = function(loRungId) {
+      _pendingMapTarget = String(loRungId);
+      loadView('Bando_lorung', 'Bản đồ quản lý lô rừng');
     };
     // ── Map Search ──────────────────────────────────────────────
     let _mapSearchIndex = null;
