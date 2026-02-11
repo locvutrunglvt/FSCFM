@@ -584,15 +584,18 @@
       }
       /* KPI cards mobile */
       .kpi-card {
-        padding: 4px 6px !important;
-        border-radius: 8px !important;
+        padding: 8px 8px !important;
+        border-radius: 10px !important;
       }
+      .kpi-card-inner { flex-direction: column; text-align: center; gap: 4px; }
+      .kpi-icon-circle { width: 28px !important; height: 28px !important; font-size: 0.7rem !important; border-radius: 8px !important; }
       .kpi-value {
-        font-size: 0.85rem !important;
+        font-size: 1.1rem !important;
       }
       .kpi-label {
-        font-size: 8px !important;
+        font-size: 9px !important;
       }
+      .kpi-unit { font-size: 0.6rem !important; }
       /* Charts mobile */
       #dashboard-view .card {
         margin-bottom: 6px;
@@ -639,16 +642,12 @@
         padding: 6px 10px !important;
       }
       /* Detail view mobile */
-      .detail-card .col-md-4 {
-        flex: 0 0 100% !important;
-        max-width: 100% !important;
-      }
-      .detail-card .col-md-4 label {
-        font-size: 10px !important;
-      }
-      .detail-card .col-md-4 .fw-medium {
-        font-size: 11px !important;
-      }
+      .detail-field label { font-size: 9px !important; }
+      .detail-field .detail-val { font-size: 12px !important; }
+      .detail-summary-card .detail-stat { padding: 6px 8px !important; }
+      .detail-summary-card .detail-stat div:last-child { font-size: 13px !important; }
+      .accordion-button { font-size: 12px !important; padding: 8px 10px !important; }
+      .accordion-body { padding: 8px !important; }
       /* Header bar detail mobile */
       .border-start.border-4 .d-flex {
         flex-wrap: wrap;
@@ -819,8 +818,8 @@
     }
     #dashboard-view h5 { margin-bottom: 8px !important; font-size: 15px; }
     #dashboard-view h6 { margin-bottom: 6px !important; font-size: 12px; }
-    #dashboard-view .kpi-card { padding: 8px 12px; }
-    #dashboard-view .kpi-value { font-size: 1.15rem; }
+    #dashboard-view .kpi-card { padding: 14px 16px; }
+    #dashboard-view .kpi-value { font-size: 1.5rem; }
     #dashboard-view .kpi-label { font-size: 11px; }
     #dashboard-view .dashboard-card-3d { padding: 18px 10px 14px; }
     #dashboard-view .icon-3d-wrapper { width: 44px; height: 44px; font-size: 1.15rem; margin-bottom: 8px; border-radius: 13px; }
@@ -840,9 +839,11 @@
       #dashboard-view h6 { font-size: 13px !important; margin-bottom: 2px !important; }
       #dashboard-view .icon-3d-wrapper { width: 44px !important; height: 44px !important; font-size: 1.1rem !important; border-radius: 12px !important; margin-bottom: 5px !important; }
       #dashboard-view .card-title-3d { font-size: 11px !important; font-weight: 700 !important; line-height: 1.25 !important; }
-      #dashboard-view .kpi-value { font-size: 1.4rem !important; font-weight: 800 !important; }
-      #dashboard-view .kpi-label { font-size: 10.5px !important; letter-spacing: 0; text-transform: none; }
-      #dashboard-view .kpi-card { padding: 10px 6px !important; border-radius: 12px !important; text-align: center; }
+      #dashboard-view .kpi-value { font-size: 1.15rem !important; font-weight: 800 !important; }
+      #dashboard-view .kpi-label { font-size: 9.5px !important; letter-spacing: 0; text-transform: none; }
+      #dashboard-view .kpi-card { padding: 10px 8px !important; border-radius: 12px !important; }
+      #dashboard-view .kpi-card-inner { flex-direction: column; text-align: center; gap: 4px; }
+      #dashboard-view .kpi-icon-circle { width: 30px; height: 30px; font-size: 0.75rem; border-radius: 8px; }
       #dashboard-view .kpi-grid { margin-bottom: 0 !important; }
       #dashboard-view .dashboard-card-3d { padding: 14px 6px 10px !important; border-radius: 12px !important; }
       #dashboard-view .row.g-3 { --bs-gutter-x: 0.5rem; --bs-gutter-y: 0.5rem; }
@@ -913,21 +914,53 @@
     /* KPI Cards */
     .kpi-card {
       background: white;
-      border-radius: 12px;
-      padding: 10px 12px;
+      border-radius: 14px;
+      padding: 14px 16px;
       box-shadow: 0 2px 10px rgba(0,0,0,0.05);
       border-left: 4px solid #1B5E20;
       transition: all 0.25s ease;
+      position: relative;
+      overflow: hidden;
+    }
+    .kpi-card::after {
+      content: '';
+      position: absolute;
+      top: 0; right: 0;
+      width: 80px; height: 80px;
+      border-radius: 50%;
+      background: var(--kpi-accent, #1B5E20);
+      opacity: 0.05;
+      transform: translate(20px, -20px);
+      pointer-events: none;
     }
     .kpi-card:hover { transform: translateY(-3px); box-shadow: 0 6px 16px rgba(0,0,0,0.1); }
-    .kpi-value { font-size: 1.3rem; font-weight: 800; color: #1B5E20 !important; letter-spacing: -0.5px; }
-    .kpi-label { font-size: 11px; color: #777; font-weight: 600; letter-spacing: 0.3px; }
-    .kpi-card.blue { border-left-color: #1B5E20; }
-    .kpi-card.blue .kpi-value { color: #1B5E20; }
-    .kpi-card.orange { border-left-color: #1B5E20; }
-    .kpi-card.orange .kpi-value { color: #1B5E20; }
-    .kpi-card.purple { border-left-color: #1B5E20; }
-    .kpi-card.purple .kpi-value { color: #1B5E20; }
+    .kpi-card-inner { display: flex; align-items: center; gap: 12px; position: relative; z-index: 1; }
+    .kpi-body { min-width: 0; }
+    .kpi-value { font-size: 1.5rem; font-weight: 800; color: #1B5E20; letter-spacing: -0.5px; line-height: 1.2; }
+    .kpi-label { font-size: 11px; color: #666; font-weight: 600; letter-spacing: 0.2px; margin-top: 2px; }
+    .kpi-unit { font-size: 0.7rem; font-weight: 600; color: #999; margin-left: 2px; }
+    .kpi-icon-circle {
+      width: 42px; height: 42px; border-radius: 12px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1rem; color: white; background: #1B5E20; flex-shrink: 0;
+    }
+    .kpi-card.blue { border-left-color: #0277BD; --kpi-accent: #0277BD; }
+    .kpi-card.blue .kpi-value { color: #0277BD; }
+    .kpi-card.blue .kpi-icon-circle { background: #0277BD; }
+    .kpi-card.orange { border-left-color: #E65100; --kpi-accent: #E65100; }
+    .kpi-card.orange .kpi-value { color: #E65100; }
+    .kpi-card.orange .kpi-icon-circle { background: #E65100; }
+    .kpi-card.purple { border-left-color: #6A1B9A; --kpi-accent: #6A1B9A; }
+    .kpi-card.purple .kpi-value { color: #6A1B9A; }
+    .kpi-card.purple .kpi-icon-circle { background: #6A1B9A; }
+    /* Detail sections */
+    .detail-summary-card { background: linear-gradient(135deg, #f8fdf8 0%, #fff 100%); }
+    .detail-summary-card .detail-stat { border-right: 1px solid #e8f5e9; padding: 8px 12px; }
+    .detail-summary-card .detail-stat:last-child { border-right: none; }
+    .detail-field label { font-size: 10px; font-weight: 700; color: #888; text-transform: uppercase; letter-spacing: 0.3px; }
+    .detail-field .detail-val { font-size: 13px; color: #333; padding: 2px 0; border-bottom: 1px solid #f0f0f0; }
+    .group-stat-card { transition: all 0.2s ease; }
+    .group-stat-card:hover { transform: translateY(-3px); box-shadow: 0 6px 16px rgba(0,0,0,0.1) !important; }
 
     /* Map Styles */
     #map-container {
@@ -1607,6 +1640,7 @@
 
         // Detail view
         detail_title: 'Chi tiết',
+        detail_general_info: 'Thông tin chung',
         detail_show_table: 'Hiện ở bảng danh sách',
 
         // Map toolbar
@@ -2000,6 +2034,7 @@
         modal_save: 'Save',
 
         detail_title: 'Details',
+        detail_general_info: 'General Information',
         detail_show_table: 'Show in table list',
 
         map_notes: 'Notes',
@@ -4455,7 +4490,8 @@
         .detail-table td, .detail-table th, .detail-card .form-label, .detail-card td { font-size: ${s.fontSizeDetail}px !important; }
         #dashboard-view .icon-3d-wrapper { width: ${s.iconMenuSize}px !important; height: ${s.iconMenuSize}px !important; font-size: ${Math.round(s.iconMenuSize * 0.45)}px !important; }
         #dashboard-view .kpi-value { font-size: ${s.fontSizeKPI}px !important; }
-        .kpi-card i { font-size: ${s.iconKPISize}px !important; }
+        .kpi-icon-circle { width: ${s.iconKPISize + 24}px !important; height: ${s.iconKPISize + 24}px !important; }
+        .kpi-icon-circle i { font-size: ${s.iconKPISize}px !important; }
         #sidebar-wrapper { width: ${s.sidebarWidth}px; }
         @media (min-width: 992px) {
           #page-content-wrapper { margin-left: ${s.sidebarWidth}px; }
@@ -4796,16 +4832,16 @@
 
           <!-- KPIs -->
           <h6 class="fw-bold text-secondary"><i class="fa-solid fa-chart-line me-2"></i>${t('kpi_title')}</h6>
-          <div class="row row-cols-3 row-cols-md-9 g-1 g-md-2 kpi-grid">
-            <div class="col"><div class="kpi-card h-100" style="cursor:pointer" onclick="showKpiDetail('households')"><div class="kpi-value">${soHo}</div><div class="kpi-label">${t('kpi_households')}</div></div></div>
-            <div class="col"><div class="kpi-card blue h-100" style="cursor:pointer" onclick="showKpiDetail('plots')"><div class="kpi-value">${soFarm}</div><div class="kpi-label">${t('kpi_plots')}</div></div></div>
-            <div class="col"><div class="kpi-card h-100" style="cursor:pointer" onclick="showKpiDetail('fsc_area')"><div class="kpi-value">${tongDTFSC.toFixed(1)}</div><div class="kpi-label">${t('kpi_fsc_area')}</div></div></div>
-            <div class="col"><div class="kpi-card orange h-100"><div class="kpi-value">${haPerHo}</div><div class="kpi-label">${t('kpi_ha_per_ho')}</div></div></div>
-            <div class="col"><div class="kpi-card blue h-100"><div class="kpi-value">${haPerFarm}</div><div class="kpi-label">${t('kpi_ha_per_farm')}</div></div></div>
-            <div class="col"><div class="kpi-card orange h-100" style="cursor:pointer" onclick="showKpiDetail('harvest_actual')"><div class="kpi-value">${dtKhaiThacTT.toFixed(1)}</div><div class="kpi-label">${t('kpi_harvest_actual')}</div></div></div>
-            <div class="col"><div class="kpi-card purple h-100" style="cursor:pointer" onclick="showKpiDetail('plant')"><div class="kpi-value">${dtTrongRung.toFixed(1)}</div><div class="kpi-label">${t('kpi_plant')}</div></div></div>
-            <div class="col"><div class="kpi-card blue h-100" style="cursor:pointer" onclick="showKpiDetail('harvest_plan')"><div class="kpi-value">${dtKTKeHoach.toFixed(1)}</div><div class="kpi-label">${t('kpi_harvest_plan')}</div></div></div>
-            <div class="col"><div class="kpi-card h-100" style="cursor:pointer" onclick="showKpiDetail('hlvs')"><div class="kpi-value">${dtHLVS.toFixed(1)}</div><div class="kpi-label">${t('kpi_hlvs')}</div></div></div>
+          <div class="row row-cols-3 g-2 kpi-grid">
+            <div class="col"><div class="kpi-card h-100" style="cursor:pointer" onclick="showKpiDetail('households')"><div class="kpi-card-inner"><div class="kpi-icon-circle"><i class="fa-solid fa-house-chimney"></i></div><div class="kpi-body"><div class="kpi-value">${soHo}</div><div class="kpi-label">${t('kpi_households')}</div></div></div></div></div>
+            <div class="col"><div class="kpi-card blue h-100" style="cursor:pointer" onclick="showKpiDetail('plots')"><div class="kpi-card-inner"><div class="kpi-icon-circle"><i class="fa-solid fa-tree"></i></div><div class="kpi-body"><div class="kpi-value">${soFarm}</div><div class="kpi-label">${t('kpi_plots')}</div></div></div></div></div>
+            <div class="col"><div class="kpi-card h-100" style="cursor:pointer" onclick="showKpiDetail('fsc_area')"><div class="kpi-card-inner"><div class="kpi-icon-circle"><i class="fa-solid fa-certificate"></i></div><div class="kpi-body"><div class="kpi-value">${tongDTFSC.toFixed(1)}<span class="kpi-unit">ha</span></div><div class="kpi-label">${t('kpi_fsc_area')}</div></div></div></div></div>
+            <div class="col"><div class="kpi-card orange h-100"><div class="kpi-card-inner"><div class="kpi-icon-circle"><i class="fa-solid fa-scale-balanced"></i></div><div class="kpi-body"><div class="kpi-value">${haPerHo}<span class="kpi-unit">ha</span></div><div class="kpi-label">${t('kpi_ha_per_ho')}</div></div></div></div></div>
+            <div class="col"><div class="kpi-card blue h-100"><div class="kpi-card-inner"><div class="kpi-icon-circle"><i class="fa-solid fa-chart-simple"></i></div><div class="kpi-body"><div class="kpi-value">${haPerFarm}<span class="kpi-unit">ha</span></div><div class="kpi-label">${t('kpi_ha_per_farm')}</div></div></div></div></div>
+            <div class="col"><div class="kpi-card orange h-100" style="cursor:pointer" onclick="showKpiDetail('harvest_actual')"><div class="kpi-card-inner"><div class="kpi-icon-circle"><i class="fa-solid fa-truck-ramp-box"></i></div><div class="kpi-body"><div class="kpi-value">${dtKhaiThacTT.toFixed(1)}<span class="kpi-unit">ha</span></div><div class="kpi-label">${t('kpi_harvest_actual')}</div></div></div></div></div>
+            <div class="col"><div class="kpi-card purple h-100" style="cursor:pointer" onclick="showKpiDetail('plant')"><div class="kpi-card-inner"><div class="kpi-icon-circle"><i class="fa-solid fa-seedling"></i></div><div class="kpi-body"><div class="kpi-value">${dtTrongRung.toFixed(1)}<span class="kpi-unit">ha</span></div><div class="kpi-label">${t('kpi_plant')}</div></div></div></div></div>
+            <div class="col"><div class="kpi-card blue h-100" style="cursor:pointer" onclick="showKpiDetail('harvest_plan')"><div class="kpi-card-inner"><div class="kpi-icon-circle"><i class="fa-solid fa-calendar-check"></i></div><div class="kpi-body"><div class="kpi-value">${dtKTKeHoach.toFixed(1)}<span class="kpi-unit">ha</span></div><div class="kpi-label">${t('kpi_harvest_plan')}</div></div></div></div></div>
+            <div class="col"><div class="kpi-card h-100" style="cursor:pointer" onclick="showKpiDetail('hlvs')"><div class="kpi-card-inner"><div class="kpi-icon-circle"><i class="fa-solid fa-water"></i></div><div class="kpi-body"><div class="kpi-value">${dtHLVS.toFixed(1)}<span class="kpi-unit">ha</span></div><div class="kpi-label">${t('kpi_hlvs')}</div></div></div></div></div>
           </div>
         </div>
 
@@ -10793,26 +10829,74 @@ ${gsRecord['Đề xuất'] ? `<div class="proposal-box"><h4>${t('mon_proposal')}
         }
       }
 
-      html += `<div class="card p-2 shadow border-0 overflow-hidden"><div class="row g-2">`;
-
-      // Lấy tất cả các cột khả dụng cho bảng này
       const allCols = TABLE_CONFIG[sheetName] ? TABLE_CONFIG[sheetName].columns : Object.keys(d);
+      const mainCols = (TABLE_CONFIG[sheetName] && TABLE_CONFIG[sheetName].main) ? TABLE_CONFIG[sheetName].main : [];
 
-      allCols.forEach(k => {
-        const v = d[k] || '';
-        const isVisible = vcols.includes(k);
-        html += `
-          <div class="col-md-4 mb-2">
-            <div class="d-flex justify-content-between align-items-center mb-1">
-               <label class="text-muted small fw-bold m-0">${k}</label>
-               <div class="form-check form-switch" title="${t('detail_show_table')}">
-                 <input class="form-check-input" type="checkbox" style="width: 1.5em; height: 0.8em;" ${isVisible ? 'checked' : ''} onclick="toggleColumnVisibility('${sheetName}', '${k}')">
-               </div>
-            </div>
-            <div class="fw-medium border-bottom pb-1 small">${v}</div>
+      // Summary card with main fields
+      if (mainCols.length > 0) {
+        html += `<div class="card p-3 shadow-sm border-0 rounded-3 mb-2 detail-summary-card"><div class="row g-2">`;
+        mainCols.forEach(k => {
+          const v = d[k] || '-';
+          html += `<div class="col-6 col-md-3 detail-stat">
+            <div class="text-muted text-uppercase" style="font-size:10px;font-weight:700;letter-spacing:0.3px">${k}</div>
+            <div class="fw-bold" style="font-size:15px;color:#1B5E20">${v}</div>
           </div>`;
+        });
+        html += `</div></div>`;
+      }
+
+      // Group fields into sections
+      const _sections = [];
+      let _curSec = { title: '', fields: [] };
+      allCols.forEach(k => {
+        if (mainCols.includes(k)) return;
+        const v = d[k] || '';
+        const vStr = String(v).trim();
+        // Detect section headers
+        if ((!vStr) && (/^\d+\.\s/.test(k) || /^Thông tin /.test(k))) {
+          if (_curSec.fields.length > 0 || _sections.length > 0) _sections.push(_curSec);
+          _curSec = { title: k, fields: [] };
+        } else {
+          _curSec.fields.push({ key: k, value: v });
+        }
       });
-      html += `</div></div>`;
+      if (_curSec.fields.length > 0) _sections.push(_curSec);
+
+      if (_sections.length > 1) {
+        // Multiple sections: accordion
+        html += `<div class="accordion" id="detail-accordion">`;
+        _sections.forEach((sec, i) => {
+          const collapsed = i > 0 ? 'collapsed' : '';
+          const show = i === 0 ? 'show' : '';
+          const secIcon = i === 0 ? 'fa-info-circle' : 'fa-folder-open';
+          html += `<div class="accordion-item border-0 mb-1 rounded-3 overflow-hidden shadow-sm">
+            <h2 class="accordion-header"><button class="accordion-button ${collapsed} py-2 px-3" type="button" data-bs-toggle="collapse" data-bs-target="#detail-sec-${i}">
+              <i class="fa-solid ${secIcon} me-2 text-success"></i><span class="fw-bold small">${sec.title || t('detail_general_info')}</span>
+              <span class="badge bg-light text-muted ms-2" style="font-size:9px">${sec.fields.length}</span>
+            </button></h2>
+            <div id="detail-sec-${i}" class="accordion-collapse collapse ${show}" data-bs-parent="#detail-accordion">
+              <div class="accordion-body p-2"><div class="row g-1">`;
+          sec.fields.forEach(f => {
+            html += `<div class="col-6 col-md-4 mb-1 detail-field">
+              <label class="d-block text-muted">${f.key}</label>
+              <div class="detail-val">${f.value || '-'}</div>
+            </div>`;
+          });
+          html += `</div></div></div></div>`;
+        });
+        html += `</div>`;
+      } else {
+        // Single section: clean flat card
+        const fields = _sections[0] ? _sections[0].fields : allCols.map(k => ({ key: k, value: d[k] || '' }));
+        html += `<div class="card p-2 shadow border-0 overflow-hidden rounded-3"><div class="row g-1">`;
+        fields.forEach(f => {
+          html += `<div class="col-6 col-md-4 mb-1 detail-field">
+            <label class="d-block text-muted">${f.key}</label>
+            <div class="detail-val">${f.value || '-'}</div>
+          </div>`;
+        });
+        html += `</div></div>`;
+      }
 
       $('#page-content-dynamic').html(html);
     }
@@ -11131,6 +11215,66 @@ ${gsRecord['Đề xuất'] ? `<div class="proposal-box"><h4>${t('mon_proposal')}
               </div>
               <div class="card-body p-5 text-center text-muted">${currentLang==='en'?'No data available for this table.':'Chưa có dữ liệu cho bảng này.'}</div>
             </div>`);
+        return;
+      }
+
+      // NhomCCR: card-based view for group list
+      if (sheetName === 'NhomCCR') {
+        const safeFloat = v => parseFloat(String(v || 0).replace(/,/g, '')) || 0;
+        let cardHtml = `<div class="d-flex justify-content-between align-items-center mb-3">
+          <h5 class="fw-bold text-success m-0"><i class="fa-solid fa-layer-group me-2"></i>${context.title}
+            <span class="badge bg-success bg-opacity-10 text-success ms-2" style="font-size:12px">${displayData.length}</span>
+          </h5>${addBtn}
+        </div><div class="row g-3">`;
+        displayData.forEach(row => {
+          const rowJson = encodeURIComponent(JSON.stringify(row));
+          const members = safeFloat(row['Số thành viên']);
+          const totalArea = safeFloat(row['Tổng diện tích']);
+          const fscArea = safeFloat(row['Diện tích FSC']);
+          cardHtml += `
+          <div class="col-md-4 col-12">
+            <div class="card border-0 shadow-sm rounded-3 h-100 group-stat-card" style="cursor:pointer"
+                 onclick='handleRowClick("NhomCCR","${rowJson}")'>
+              <div class="card-body p-3">
+                <div class="d-flex align-items-center mb-3">
+                  <div class="rounded-3 p-2 me-3" style="background:rgba(27,94,32,0.08)">
+                    <i class="fa-solid fa-users text-success" style="font-size:1.3rem"></i>
+                  </div>
+                  <div class="min-width-0">
+                    <h6 class="fw-bold mb-0 text-dark text-truncate">${row['Tên nhóm'] || row['Mã nhóm'] || '-'}</h6>
+                    <small class="text-muted">${row['ID nhóm'] || ''}</small>
+                  </div>
+                </div>
+                <div class="row g-2 text-center mb-2">
+                  <div class="col-4">
+                    <div class="rounded-3 p-2" style="background:#E3F2FD">
+                      <div class="fw-bold" style="color:#0277BD;font-size:1.1rem">${members}</div>
+                      <div class="text-muted" style="font-size:9px;font-weight:600">${t('kpi_households')}</div>
+                    </div>
+                  </div>
+                  <div class="col-4">
+                    <div class="rounded-3 p-2" style="background:#E8F5E9">
+                      <div class="fw-bold" style="color:#1B5E20;font-size:1.1rem">${totalArea.toFixed(1)}</div>
+                      <div class="text-muted" style="font-size:9px;font-weight:600">${currentLang==='en'?'Total ha':'Tổng DT'}</div>
+                    </div>
+                  </div>
+                  <div class="col-4">
+                    <div class="rounded-3 p-2" style="background:#FFF3E0">
+                      <div class="fw-bold" style="color:#E65100;font-size:1.1rem">${fscArea.toFixed(1)}</div>
+                      <div class="text-muted" style="font-size:9px;font-weight:600">FSC ha</div>
+                    </div>
+                  </div>
+                </div>
+                <div class="border-top pt-2">
+                  <small class="text-muted"><i class="fa-solid fa-user me-1"></i>${row['Người đại diện'] || '-'}</small>
+                  ${row['Địa chỉ'] ? `<small class="text-muted float-end"><i class="fa-solid fa-location-dot me-1"></i>${row['Địa chỉ']}</small>` : ''}
+                </div>
+              </div>
+            </div>
+          </div>`;
+        });
+        cardHtml += `</div>`;
+        $('#page-content-dynamic').html(cardHtml);
         return;
       }
 
