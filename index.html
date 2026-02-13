@@ -2587,6 +2587,7 @@
     let currentUser = null;
     let APP_DATA = {};
     let navHistory = [];
+    let _authInitInProgress = false;
 
     // === IndexedDB Wrapper (fscDB) ===
     const fscDB = {
@@ -4343,18 +4344,17 @@
       sb.auth.onAuthStateChange(async (event, session) => {
         console.log("Auth state changed:", event, session?.user?.email);
         if (event === 'SIGNED_IN' || event === 'TOKEN_REFRESHED' || event === 'INITIAL_SESSION') {
-          if (session && !currentUser) {
+          if (session && !currentUser && !_authInitInProgress) {
+            _authInitInProgress = true;
             console.log("Restoring session for:", session.user.email);
-            await initUserSession(session.user);
+            try { await initUserSession(session.user); } finally { _authInitInProgress = false; }
           }
         } else if (event === 'SIGNED_OUT') {
           currentUser = null;
           APP_DATA = {};
-          $('#login-screen').show();
-          $('#app-content').hide();
-          $('#sidebar').hide();
-          $('#topbar').hide();
-          $('#bottomBar').hide();
+          _authInitInProgress = false;
+          $('#main-app').removeClass('d-flex').addClass('d-none');
+          $('#login-screen').removeClass('d-none').addClass('d-flex').show();
         }
       });
     });
@@ -4498,7 +4498,11 @@
           return;
         }
 
-        await initUserSession(data.user);
+        // onAuthStateChange will handle initUserSession via SIGNED_IN event
+        // Only call directly if onAuthStateChange hasn't fired yet (fallback)
+        if (!currentUser && !_authInitInProgress) {
+          await initUserSession(data.user);
+        }
 
       } catch (error) {
         console.error("Login Error:", error);
@@ -4572,7 +4576,10 @@
         }
 
         if (data.session) {
-          await initUserSession(data.user);
+          // onAuthStateChange handles session init; fallback if it hasn't fired
+          if (!currentUser && !_authInitInProgress) {
+            await initUserSession(data.user);
+          }
         } else {
           alert(t('reg_success'));
           toggleAuth('LOGIN');
@@ -5925,22 +5932,37 @@
       }
     }
 
-    function goHome() {
+    async function goHome() {
       navHistory = [];
       $('#data-view').addClass('d-none');
       $('#map-view').addClass('d-none');
       $('#dashboard-view').removeClass('d-none');
+      // Close sidebar on mobile
+      if ($(window).width() < 768) {
+        $('#sidebar-wrapper').removeClass('show-sidebar');
+        $('#sidebar-overlay').removeClass('active');
+      }
+      // Refresh data from server
+      if (navigator.onLine && currentUser) {
+        try {
+          const homeIcon = $('#sidebar-home-btn .home-icon i');
+          homeIcon.removeClass('fa-house').addClass('fa-arrows-rotate fa-spin');
+          await loadAllData();
+          if (APP_DATA['Menu']) {
+            computeGroupStats();
+            aggregateManagementBoardData();
+          }
+          homeIcon.removeClass('fa-arrows-rotate fa-spin').addClass('fa-house');
+        } catch(e) {
+          console.warn('Refresh failed:', e);
+          $('#sidebar-home-btn .home-icon i').removeClass('fa-arrows-rotate fa-spin').addClass('fa-house');
+        }
+      }
       renderDashboardContent();
       // Re-render full system menu in sidebar
       if (APP_DATA['Menu']) {
         $('#sidebarAccordion').empty();
         renderSystemMenu(APP_DATA['Menu']);
-      }
-      // sidebar home icon (no text)
-      // Close sidebar on mobile
-      if ($(window).width() < 768) {
-        $('#sidebar-wrapper').removeClass('show-sidebar');
-        $('#sidebar-overlay').removeClass('active');
       }
     }
 
