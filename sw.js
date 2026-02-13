@@ -1,6 +1,6 @@
-const CACHE_NAME = 'fscfm-v2';
-const CDN_CACHE = 'fscfm-cdn-v2';
-const DATA_CACHE = 'fscfm-data-v1';
+const CACHE_NAME = 'fscfm-v3';
+const CDN_CACHE = 'fscfm-cdn-v3';
+const DATA_CACHE = 'fscfm-data-v2';
 
 // Core app files
 const APP_FILES = [

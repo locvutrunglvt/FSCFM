@@ -4236,6 +4236,14 @@
               }
               return obj;
             });
+          } else if (r.sheetName === 'Banghoi_EUDR') {
+            APP_DATA[r.sheetName] = (r.data || []).map(row => {
+              const obj = { 'ID_hoi': row.id, 'ID_DG': row.id_dg };
+              if (row.answers && typeof row.answers === 'object') {
+                Object.assign(obj, row.answers);
+              }
+              return obj;
+            });
           } else if (r.sheetName === 'PhanHoiThamVan') {
             APP_DATA[r.sheetName] = (r.data || []).map(row => {
               const obj = {
@@ -5927,37 +5935,19 @@
       }
     }
 
-    async function goHome() {
+    function goHome() {
       navHistory = [];
       $('#data-view').addClass('d-none');
       $('#map-view').addClass('d-none');
       $('#dashboard-view').removeClass('d-none');
-      // Close sidebar on mobile
-      if ($(window).width() < 768) {
-        $('#sidebar-wrapper').removeClass('show-sidebar');
-        $('#sidebar-overlay').removeClass('active');
-      }
-      // Refresh data from server
-      if (navigator.onLine && currentUser) {
-        try {
-          const homeIcon = $('#sidebar-home-btn .home-icon i');
-          homeIcon.removeClass('fa-house').addClass('fa-arrows-rotate fa-spin');
-          await loadAllData();
-          if (APP_DATA['Menu']) {
-            computeGroupStats();
-            aggregateManagementBoardData();
-          }
-          homeIcon.removeClass('fa-arrows-rotate fa-spin').addClass('fa-house');
-        } catch(e) {
-          console.warn('Refresh failed:', e);
-          $('#sidebar-home-btn .home-icon i').removeClass('fa-arrows-rotate fa-spin').addClass('fa-house');
-        }
-      }
       renderDashboardContent();
-      // Re-render full system menu in sidebar
       if (APP_DATA['Menu']) {
         $('#sidebarAccordion').empty();
         renderSystemMenu(APP_DATA['Menu']);
+      }
+      if ($(window).width() < 768) {
+        $('#sidebar-wrapper').removeClass('show-sidebar');
+        $('#sidebar-overlay').removeClass('active');
       }
     }
 
