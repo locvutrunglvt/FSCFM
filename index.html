@@ -18,12 +18,49 @@
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet.draw/1.0.4/leaflet.draw.css" />
   <style>
     :root {
+      /* === Color System === */
       --forest-primary: #1B5E20;
+      --forest-secondary: #2E7D32;
+      --forest-light: #E8F5E9;
       --forest-gradient: linear-gradient(135deg, #2E7D32 0%, #1B5E20 100%);
-      --gold-gradient: linear-gradient(135deg, #FBC02D 0%, #F57F17 100%);
-      --blue-gradient: linear-gradient(135deg, #42A5F5 0%, #1565C0 100%);
-      --bg-light: #F8F9FA;
+      --bg-light: #F5F7F5;
+      --bg-white: #ffffff;
       --text-main: #2c3e50;
+      --text-secondary: #666;
+      --text-muted: #999;
+      --border-color: #e8e8e8;
+      --border-light: #f0f0f0;
+
+      /* === Spacing Scale (4px base) === */
+      --sp-1: 4px;
+      --sp-2: 8px;
+      --sp-3: 12px;
+      --sp-4: 16px;
+      --sp-5: 20px;
+      --sp-6: 24px;
+      --sp-8: 32px;
+
+      /* === Typography Scale === */
+      --fs-xs: 10px;
+      --fs-sm: 12px;
+      --fs-base: 13px;
+      --fs-md: 14px;
+      --fs-lg: 16px;
+      --fs-xl: 20px;
+
+      /* === Border Radius === */
+      --radius-sm: 6px;
+      --radius-md: 10px;
+      --radius-lg: 14px;
+      --radius-pill: 30px;
+
+      /* === Shadows (2 levels only) === */
+      --shadow-sm: 0 2px 8px rgba(0,0,0,0.06);
+      --shadow-md: 0 4px 16px rgba(0,0,0,0.10);
+
+      /* === Transitions === */
+      --transition-fast: 0.2s ease;
+      --transition-normal: 0.3s ease;
     }
 
     body {
@@ -31,173 +68,142 @@
       background-color: var(--bg-light);
       color: var(--text-main);
       overflow: hidden;
-      font-size: 13px;
-      line-height: normal;
+      font-size: var(--fs-base);
+      line-height: 1.5;
     }
 
     #login-screen {
-      background: linear-gradient(135deg, #1B5E20 0%, #2E7D32 40%, #43A047 100%);
+      background: var(--forest-gradient);
       position: fixed;
-      top: 0; left: 0; right: 0; bottom: 0;
+      inset: 0;
       z-index: 9999;
       overflow-y: auto;
       -webkit-overflow-scrolling: touch;
     }
     .login-card {
-      background: #fff;
-      border-radius: 20px;
+      background: var(--bg-white);
+      border-radius: var(--radius-lg);
       box-shadow: 0 20px 60px rgba(0,0,0,0.3);
       width: 100%;
       max-width: 380px;
-      margin: 0 16px;
+      margin: 0 var(--sp-4);
       overflow: hidden;
     }
     .login-header {
-      background: linear-gradient(135deg, #1B5E20, #2E7D32);
-      padding: 28px 24px 22px;
+      background: var(--forest-gradient);
+      padding: var(--sp-6) var(--sp-6) var(--sp-5);
       text-align: center;
     }
-    .login-body { padding: 24px 24px 20px; }
+    .login-body { padding: var(--sp-6); }
     .login-input-group {
       display: flex;
       align-items: center;
-      gap: 10px;
-      margin-bottom: 14px;
+      gap: var(--sp-3);
+      margin-bottom: var(--sp-3);
     }
     .login-input-group i.input-icon {
-      color: #2E7D32; font-size: 18px; flex-shrink: 0; width: 22px; text-align: center;
+      color: var(--forest-secondary); font-size: 18px; flex-shrink: 0; width: 22px; text-align: center;
     }
     .login-input-group .input-wrap {
       position: relative; flex: 1;
     }
     .login-input-group .form-control {
-      padding: 14px 40px 14px 14px;
-      border-radius: 10px;
-      border: 1.5px solid #e0e0e0;
+      padding: var(--sp-3) 40px var(--sp-3) var(--sp-3);
+      border-radius: var(--radius-md);
+      border: 1.5px solid var(--border-color);
       font-size: 15px;
-      transition: border-color 0.2s, box-shadow 0.2s;
+      transition: border-color var(--transition-fast), box-shadow var(--transition-fast);
       width: 100%;
     }
     .login-input-group .form-control:focus {
-      border-color: #2E7D32;
+      border-color: var(--forest-secondary);
       box-shadow: 0 0 0 3px rgba(46,125,50,0.12);
     }
     .login-input-group .toggle-pass {
-      position: absolute; right: 12px; top: 50%; transform: translateY(-50%);
-      background: none; border: none; color: #999; cursor: pointer; z-index: 2;
+      position: absolute; right: var(--sp-3); top: 50%; transform: translateY(-50%);
+      background: none; border: none; color: var(--text-muted); cursor: pointer; z-index: 2;
     }
     .btn-login-main {
-      background: linear-gradient(135deg, #2E7D32, #1B5E20);
-      color: #fff; border: none; border-radius: 10px;
-      padding: 14px; font-size: 16px; font-weight: 600;
-      width: 100%; transition: all 0.2s;
-      box-shadow: 0 4px 12px rgba(27,94,32,0.3);
+      background: var(--forest-gradient);
+      color: #fff; border: none; border-radius: var(--radius-md);
+      padding: var(--sp-3); font-size: var(--fs-lg); font-weight: 600;
+      width: 100%; transition: all var(--transition-fast);
+      box-shadow: var(--shadow-md);
     }
-    .btn-login-main:hover { transform: translateY(-1px); box-shadow: 0 6px 20px rgba(27,94,32,0.4); background: linear-gradient(135deg, #388E3C, #2E7D32); color: #fff; }
+    .btn-login-main:hover { transform: translateY(-1px); box-shadow: var(--shadow-md); color: #fff; }
     .btn-login-main:active { transform: translateY(0); }
     .btn-register-main {
-      background: linear-gradient(135deg, #43A047, #2E7D32);
-      color: #fff; border: none; border-radius: 10px;
-      padding: 14px; font-size: 16px; font-weight: 600;
-      width: 100%; transition: all 0.2s;
-      box-shadow: 0 4px 12px rgba(46,125,50,0.3);
+      background: var(--forest-gradient);
+      color: #fff; border: none; border-radius: var(--radius-md);
+      padding: var(--sp-3); font-size: var(--fs-lg); font-weight: 600;
+      width: 100%; transition: all var(--transition-fast);
+      box-shadow: var(--shadow-md);
     }
     .btn-register-main:hover { transform: translateY(-1px); color: #fff; }
     @media (max-width: 767px) {
-      .login-card { max-width: 100%; margin: 0 12px; border-radius: 16px; }
-      .login-header { padding: 22px 20px 18px; }
-      .login-header img { height: 56px !important; }
-      .login-header h5 { font-size: 15px !important; }
-      .login-body { padding: 20px 18px 16px; }
-      .login-input-group i.input-icon { font-size: 18px; }
-      .login-input-group .form-control { padding: 14px 40px 14px 14px; font-size: 15px; }
-      .btn-login-main, .btn-register-main { padding: 14px; font-size: 16px; }
+      .login-card { max-width: 100%; margin: 0 var(--sp-3); border-radius: var(--radius-lg); }
+      .login-header { padding: var(--sp-5) var(--sp-5) var(--sp-4); }
+      .login-body { padding: var(--sp-5) var(--sp-4) var(--sp-4); }
     }
     @media (max-width: 374px) {
-      .login-card { margin: 0 8px; }
-      .login-header { padding: 18px 14px 14px; }
-      .login-header img { height: 48px !important; }
-      .login-body { padding: 16px 14px 12px; }
-      .login-input-group .form-control { padding: 12px 36px 12px 12px; font-size: 14px; }
+      .login-card { margin: 0 var(--sp-2); }
+      .login-header { padding: var(--sp-4) var(--sp-3); }
+      .login-body { padding: var(--sp-4) var(--sp-3); }
     }
 
     #sidebar-wrapper {
       position: fixed;
-      top: 0;
-      left: 0;
-      bottom: 0;
+      top: 0; left: 0; bottom: 0;
       width: 270px;
-      background: #fff;
-      border-right: 1px solid #eaeaea;
-      transition: transform 0.3s ease-in-out;
+      background: var(--bg-white);
+      border-right: 1px solid var(--border-color);
+      transition: transform var(--transition-normal);
       z-index: 1050;
       transform: translateX(-100%);
-      /* Default hidden on mobile */
     }
-
-    /* PC Mode: Sidebar Visible by default */
     @media (min-width: 992px) {
       #sidebar-wrapper {
         transform: translateX(0);
         box-shadow: none;
-        transition: transform 0.3s ease;
       }
       #page-content-wrapper {
         margin-left: 270px;
-        transition: margin-left 0.3s ease;
+        transition: margin-left var(--transition-normal);
       }
-      /* PC sidebar hidden */
-      #sidebar-wrapper.pc-hidden {
-        transform: translateX(-100%);
-      }
-      #page-content-wrapper.sidebar-collapsed {
-        margin-left: 0;
-      }
+      #sidebar-wrapper.pc-hidden { transform: translateX(-100%); }
+      #page-content-wrapper.sidebar-collapsed { margin-left: 0; }
     }
-
-    /* Mobile/Tablet Mode: Sidebar Toggled */
     #sidebar-wrapper.show-sidebar {
       transform: translateX(0);
-      box-shadow: 0 0 15px rgba(0, 0, 0, 0.2);
+      box-shadow: var(--shadow-md);
     }
-
-    /* Overlay for mobile */
     #sidebar-overlay {
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      background: rgba(0, 0, 0, 0.5);
+      position: fixed; inset: 0;
+      background: rgba(0,0,0,0.5);
       z-index: 1040;
       display: none;
     }
-
-    #sidebar-overlay.active {
-      display: block;
-    }
+    #sidebar-overlay.active { display: block; }
 
     .sidebar-header {
-      padding: 10px;
+      padding: var(--sp-3);
       background: var(--forest-gradient);
       color: white;
       font-weight: 700;
       text-align: center;
       flex-shrink: 0;
-      font-size: 20px;
-      transition: all 0.3s ease;
-    }
-    .sidebar-header:hover {
-      background: linear-gradient(135deg, #388E3C 0%, #1B5E20 100%);
+      font-size: var(--fs-xl);
+      transition: all var(--transition-normal);
+      cursor: pointer;
     }
     .sidebar-header .home-icon {
       width: 36px; height: 36px;
-      border-radius: 10px;
+      border-radius: var(--radius-md);
       background: rgba(255,255,255,0.15);
       display: inline-flex;
       align-items: center;
       justify-content: center;
-      transition: all 0.3s ease;
+      transition: all var(--transition-normal);
     }
     .sidebar-header:hover .home-icon {
       background: rgba(255,255,255,0.25);
@@ -205,97 +211,73 @@
     }
 
     .accordion-button {
-      font-size: 12px;
+      font-size: var(--fs-sm);
       font-weight: 700;
-      padding: 8px 12px;
+      padding: var(--sp-2) var(--sp-3);
       color: #444;
     }
-
     .accordion-button:not(.collapsed) {
       color: var(--forest-primary);
-      background-color: #E8F5E9;
+      background-color: var(--forest-light);
       box-shadow: inset 3px 0 0 var(--forest-primary);
     }
-
-    .accordion-button:focus {
-      box-shadow: none;
-    }
+    .accordion-button:focus { box-shadow: none; }
 
     .menu-sub-link {
       display: block;
-      padding: 6px 14px 6px 20px;
+      padding: var(--sp-2) var(--sp-3) var(--sp-2) var(--sp-5);
       color: #555;
       text-decoration: none;
-      font-size: 12px;
+      font-size: var(--fs-sm);
       font-weight: 500;
-      transition: all 0.2s;
-      border-left: 4px solid transparent;
+      transition: all var(--transition-fast);
+      border-left: 3px solid transparent;
     }
-
     .menu-sub-link:hover {
       background-color: #f0f7f1;
       color: var(--forest-primary);
-      border-left: 4px solid var(--forest-primary);
+      border-left-color: var(--forest-primary);
     }
     .menu-sub-link.active {
-      background-color: #E8F5E9;
+      background-color: var(--forest-light);
       color: var(--forest-primary);
-      border-left: 4px solid var(--forest-primary);
+      border-left-color: var(--forest-primary);
       font-weight: 700;
     }
-    /* All sidebar icons dark green */
     .accordion-button i,
     .menu-sub-link i {
-      color: #1B5E20 !important;
-      opacity: 1 !important;
+      color: var(--forest-primary);
     }
-    .accordion-button:not(.collapsed) i {
-      color: #1B5E20 !important;
-    }
-    .search-result-item:hover { background-color: #E8F5E9 !important; }
+    .search-result-item:hover { background-color: var(--forest-light); }
 
-    /* Detail action bar - drill-down buttons */
+    /* Detail action bar */
     .detail-action-bar {
       overflow-x: auto;
       -webkit-overflow-scrolling: touch;
     }
     .detail-action-bar .btn {
       white-space: nowrap;
-      font-size: 11px;
-      padding: 5px 10px;
-      border-radius: 20px;
+      font-size: var(--fs-sm);
+      padding: var(--sp-1) var(--sp-3);
+      border-radius: var(--radius-pill);
     }
 
-    /* Audit form: sticky header + compact file area */
-    .audit-sticky-header {
-      position: sticky;
-      top: 0;
-      z-index: 20;
-    }
-    .audit-sticky-context {
-      position: sticky;
-      top: 52px;
-      z-index: 19;
-    }
-    .audit-card .bg-light.p-2.rounded {
-      padding: 4px 6px !important;
-    }
-    .audit-card .audit-file {
-      font-size: 10px !important;
-      padding: 2px 4px !important;
-    }
-    .audit-card .input-group-sm .input-group-text {
-      padding: 2px 6px !important;
-    }
+    /* Audit form */
+    .audit-sticky-header { position: sticky; top: 0; z-index: 20; }
+    .audit-sticky-context { position: sticky; top: 52px; z-index: 19; }
+    .audit-card .bg-light.p-2.rounded { padding: var(--sp-1) var(--sp-2); }
+    .audit-card .audit-file { font-size: var(--fs-xs); padding: 2px var(--sp-1); }
+    .audit-card .input-group-sm .input-group-text { padding: 2px var(--sp-2); }
 
+    /* Dashboard Menu Cards */
     .dashboard-card-3d {
-      background: #ffffff;
-      border-radius: 16px;
-      padding: 20px 12px 16px;
+      background: var(--bg-white);
+      border-radius: var(--radius-lg);
+      padding: var(--sp-4) var(--sp-3);
       text-align: center;
       cursor: pointer;
-      transition: all 0.35s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-      box-shadow: 0 2px 12px rgba(0, 0, 0, 0.06);
+      transition: all var(--transition-normal);
+      box-shadow: var(--shadow-sm);
       border: none;
       height: 100%;
       position: relative;
@@ -306,169 +288,138 @@
       position: absolute;
       top: 0; left: 0; right: 0;
       height: 3px;
-      background: var(--card-accent, var(--forest-gradient));
-      border-radius: 16px 16px 0 0;
+      background: var(--forest-gradient);
+      border-radius: var(--radius-lg) var(--radius-lg) 0 0;
     }
-
     .dashboard-card-3d:hover {
-      transform: translateY(-6px);
-      box-shadow: 0 12px 28px rgba(0, 0, 0, 0.12);
+      transform: translateY(-4px);
+      box-shadow: var(--shadow-md);
     }
-    .dashboard-card-3d:active {
-      transform: translateY(-2px);
-    }
+    .dashboard-card-3d:active { transform: translateY(-2px); }
 
     .icon-3d-wrapper {
-      width: 48px;
-      height: 48px;
-      margin: 0 auto 10px auto;
-      border-radius: 14px;
+      width: 44px;
+      height: 44px;
+      margin: 0 auto var(--sp-2) auto;
+      border-radius: var(--radius-md);
       display: flex;
       align-items: center;
       justify-content: center;
       color: white;
-      font-size: 1.25rem;
+      font-size: 1.15rem;
       background: var(--forest-gradient);
-      box-shadow: 0 6px 16px rgba(0, 0, 0, 0.18);
-      transition: transform 0.3s ease;
+      box-shadow: var(--shadow-sm);
+      transition: transform var(--transition-normal);
     }
-    .dashboard-card-3d:hover .icon-3d-wrapper {
-      transform: scale(1.1);
-    }
+    .dashboard-card-3d:hover .icon-3d-wrapper { transform: scale(1.08); }
 
     .card-title-3d {
       font-weight: 700;
-      color: #333;
-      font-size: 12px;
+      color: var(--text-main);
+      font-size: var(--fs-sm);
       letter-spacing: 0.2px;
       line-height: 1.3;
     }
 
     .nav-pills {
-      gap: 8px;
-      padding-bottom: 8px;
-      border-bottom: 1px solid #e0e0e0;
-      margin-bottom: 12px;
+      gap: var(--sp-2);
+      padding-bottom: var(--sp-2);
+      border-bottom: 1px solid var(--border-color);
+      margin-bottom: var(--sp-3);
     }
-
     .nav-pills .nav-link {
-      border-radius: 30px;
-      padding: 6px 14px;
+      border-radius: var(--radius-pill);
+      padding: var(--sp-2) var(--sp-3);
       font-weight: 600;
       color: var(--forest-primary);
-      background: #fff;
-      border: 2px solid #E8F5E9;
-      transition: all 0.3s ease;
-      font-size: 12px;
-      letter-spacing: 0.5px;
+      background: var(--bg-white);
+      border: 2px solid var(--forest-light);
+      transition: all var(--transition-fast);
+      font-size: var(--fs-sm);
     }
-
     .nav-pills .nav-link:hover {
-      background-color: #E8F5E9;
-      transform: translateY(-2px);
+      background-color: var(--forest-light);
     }
-
     .nav-pills .nav-link.active {
-      background: var(--forest-gradient) !important;
-      color: white !important;
+      background: var(--forest-gradient);
+      color: white;
       border-color: transparent;
-      box-shadow: 0 4px 12px rgba(27, 94, 32, 0.4);
-      transform: scale(1.05);
+      box-shadow: var(--shadow-sm);
     }
 
     .fsc-breadcrumb {
-      background: white;
-      padding: 6px 14px;
-      border-radius: 8px;
-      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.04);
-      margin-bottom: 12px;
+      background: var(--bg-white);
+      padding: var(--sp-2) var(--sp-3);
+      border-radius: var(--radius-sm);
+      box-shadow: var(--shadow-sm);
+      margin-bottom: var(--sp-3);
       display: flex;
       align-items: center;
-      font-size: 12px;
-      border: 1px solid #eee;
+      font-size: var(--fs-sm);
+      border: 1px solid var(--border-color);
     }
-
     .breadcrumb-item {
       cursor: pointer;
       color: var(--forest-primary);
       font-weight: 600;
     }
-
-    .breadcrumb-item:hover {
-      text-decoration: underline;
-    }
-
-    .breadcrumb-item.active {
-      color: #777;
-      cursor: default;
-      text-decoration: none;
-    }
-
-    .breadcrumb-separator {
-      margin: 0 6px;
-      color: #ccc;
-      font-size: 11px;
-    }
+    .breadcrumb-item:hover { text-decoration: underline; }
+    .breadcrumb-item.active { color: var(--text-muted); cursor: default; text-decoration: none; }
+    .breadcrumb-separator { margin: 0 var(--sp-2); color: #ccc; font-size: var(--fs-sm); }
 
     table.dataTable {
-      border-collapse: separate !important;
+      border-collapse: separate;
       border-spacing: 0;
-      width: 100% !important;
+      width: 100%;
     }
-
     table.dataTable thead th {
-      background-color: #f1f3f5 !important;
-      color: #333;
-      padding: 6px 10px !important;
-      font-size: 13px;
-      border-bottom: 2px solid #ccc !important;
+      background-color: #f1f3f5;
+      color: var(--text-main);
+      padding: var(--sp-2) var(--sp-3);
+      font-size: var(--fs-base);
+      border-bottom: 2px solid #ccc;
       font-weight: 700;
       position: sticky;
       top: 0;
       z-index: 10;
     }
-
     .table-responsive {
       max-height: calc(100vh - 280px);
       overflow-y: auto;
     }
-
     table.dataTable tbody td {
-      padding: 6px 10px !important;
-      font-size: 13px;
+      padding: var(--sp-2) var(--sp-3);
+      font-size: var(--fs-base);
       vertical-align: middle;
-      border-bottom: 1px solid #eee;
+      border-bottom: 1px solid var(--border-light);
     }
-
     .clickable-row {
       cursor: pointer;
-      transition: background-color 0.1s;
+      transition: background-color var(--transition-fast);
     }
-
     .clickable-row:hover {
-      background-color: #f1f8e9 !important;
-      color: #1B5E20;
+      background-color: #f1f8e9;
+      color: var(--forest-primary);
     }
 
     .form-control,
     .form-select {
-      font-size: 13px;
-      padding: 6px 14px;
-      border-radius: 8px;
+      font-size: var(--fs-base);
+      padding: var(--sp-2) var(--sp-3);
+      border-radius: var(--radius-sm);
       border: 1px solid #ddd;
     }
-
     .form-control:focus,
     .form-select:focus {
-      border-color: #2E7D32;
-      box-shadow: 0 0 0 0.2rem rgba(46, 125, 50, 0.25);
+      border-color: var(--forest-secondary);
+      box-shadow: 0 0 0 0.2rem rgba(46,125,50,0.2);
     }
 
     .btn {
-      font-size: 12px;
-      font-weight: 700;
-      padding: 6px 14px;
-      border-radius: 30px;
+      font-size: var(--fs-sm);
+      font-weight: 600;
+      padding: var(--sp-2) var(--sp-3);
+      border-radius: var(--radius-pill);
     }
 
     .logo-bounce {
@@ -495,8 +446,8 @@
     }
 
     ::-webkit-scrollbar {
-      width: 8px;
-      height: 8px;
+      width: 6px;
+      height: 6px;
     }
 
     ::-webkit-scrollbar-track {
@@ -512,271 +463,126 @@
       background: #999;
     }
 
-    /* Mobile Responsive */
+    /* ====== Mobile Responsive (consolidated) ====== */
     @media (max-width: 767px) {
-      body {
-        font-size: 12px !important;
-        -webkit-text-size-adjust: 100%;
+      :root {
+        --fs-xs: 9px;
+        --fs-sm: 11px;
+        --fs-base: 12px;
+        --fs-md: 13px;
+        --fs-lg: 14px;
+        --sp-2: 6px;
+        --sp-3: 10px;
+        --sp-4: 12px;
+        --sp-5: 16px;
+        --sp-6: 20px;
+        --radius-lg: 10px;
       }
-      /* Navbar mobile */
-      .navbar {
-        padding: 4px 8px !important;
-        min-height: 44px !important;
-      }
-      .navbar .position-absolute {
-        position: relative !important;
-        transform: none !important;
-        left: auto !important;
-        flex: 1;
-        min-width: 0;
-      }
-      .navbar > .d-flex:last-child {
-        flex-shrink: 0;
-      }
-      .navbar .fw-bold[style*="font-size: 25px"] {
-        font-size: 13px !important;
-        letter-spacing: 0 !important;
-      }
-      #navbar-project-name {
-        font-size: 13px !important;
-        white-space: nowrap;
-        overflow: hidden;
-        text-overflow: ellipsis;
-        max-width: 140px;
-        display: inline-block !important;
-        vertical-align: middle;
-      }
-      .navbar img[height="42"] {
-        height: 28px !important;
-        margin-right: 6px !important;
-      }
-      /* Sidebar menu */
-      .sidebar-header {
-        font-size: 12px !important;
-        padding: 10px !important;
-      }
-      #sidebarAccordion .accordion-button {
-        font-size: 12px !important;
-        padding: 6px 10px !important;
-      }
-      .menu-sub-link {
-        font-size: 12px !important;
-        padding: 5px 10px 5px 28px !important;
-      }
-      .menu-sub-link i {
-        font-size: 10px !important;
-      }
+      body { -webkit-text-size-adjust: 100%; }
+
+      /* Navbar */
+      .navbar { padding: var(--sp-1) var(--sp-2); min-height: 44px; }
+      .navbar .position-absolute { position: relative; transform: none; left: auto; flex: 1; min-width: 0; }
+      .navbar > .d-flex:last-child { flex-shrink: 0; }
+      #navbar-project-name { font-size: var(--fs-base); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 140px; display: inline-block; vertical-align: middle; }
+
+      /* Sidebar */
+      .sidebar-header { font-size: var(--fs-sm); padding: var(--sp-3); }
+      #sidebarAccordion .accordion-button { font-size: var(--fs-sm); padding: var(--sp-2) var(--sp-3); }
+      .menu-sub-link { font-size: var(--fs-sm); padding: var(--sp-1) var(--sp-3) var(--sp-1) var(--sp-6); }
+      .menu-sub-link i { font-size: var(--fs-xs); }
+
       /* Dashboard cards */
-      .dashboard-card-3d {
-        padding: 10px 6px 8px !important;
-        border-radius: 10px !important;
-      }
-      .icon-3d-wrapper {
-        width: 32px !important;
-        height: 32px !important;
-        font-size: 0.85rem !important;
-        border-radius: 8px !important;
-        margin-bottom: 4px !important;
-      }
-      .card-title-3d {
-        font-size: 9px !important;
-        line-height: 1.2 !important;
-      }
-      /* KPI cards mobile */
-      .kpi-card {
-        padding: 8px 8px !important;
-        border-radius: 10px !important;
-      }
-      .kpi-card-inner { flex-direction: column; text-align: center; gap: 4px; }
-      .kpi-icon-circle { width: 28px !important; height: 28px !important; font-size: 0.7rem !important; border-radius: 8px !important; }
-      .kpi-value {
-        font-size: 1.1rem !important;
-      }
-      .kpi-label {
-        font-size: 9px !important;
-      }
-      .kpi-unit { font-size: 0.6rem !important; }
-      /* Charts mobile */
-      #dashboard-view .card {
-        margin-bottom: 6px;
-      }
-      #dashboard-view .card-body {
-        padding: 6px !important;
-      }
-      #dashboard-view .card-body h6 {
-        font-size: 10px !important;
-      }
-      #dashboard-view .form-select-sm {
-        font-size: 9px !important;
-        padding: 1px 16px 1px 4px !important;
-      }
+      .dashboard-card-3d { padding: var(--sp-3) var(--sp-2) var(--sp-2); }
+      .icon-3d-wrapper { width: 36px; height: 36px; font-size: 0.9rem; border-radius: var(--radius-sm); margin-bottom: var(--sp-1); }
+      .card-title-3d { font-size: var(--fs-xs); line-height: 1.2; }
+
+      /* KPI cards */
+      .kpi-card { padding: var(--sp-2); }
+      .kpi-card-inner { flex-direction: column; text-align: center; gap: var(--sp-1); }
+      .kpi-icon-circle { width: 28px; height: 28px; font-size: 0.7rem; border-radius: var(--radius-sm); }
+      .kpi-value { font-size: 1.1rem; }
+      .kpi-label { font-size: var(--fs-xs); }
+      .kpi-unit { font-size: 0.6rem; }
+
+      /* Charts */
+      #dashboard-view .card { margin-bottom: var(--sp-2); }
+      #dashboard-view .card-body { padding: var(--sp-2); }
+      #dashboard-view .card-body h6 { font-size: var(--fs-xs); }
+      #dashboard-view .form-select-sm { font-size: var(--fs-xs); padding: 1px var(--sp-4) 1px var(--sp-1); }
+
       /* Audit Form */
-      .audit-card {
-        font-size: 11px !important;
-      }
-      .audit-card .card-body {
-        padding: 6px !important;
-      }
-      .audit-card h6 {
-        font-size: 11px !important;
-        min-height: 30px !important;
-        margin-bottom: 4px !important;
-      }
-      .audit-card .badge {
-        font-size: 10px !important;
-      }
-      .audit-card .btn-group .btn {
-        font-size: 10px !important;
-        padding: 3px 5px !important;
-      }
-      .audit-card .form-control-sm {
-        font-size: 11px !important;
-        padding: 3px 5px !important;
-      }
-      .audit-card .input-group-text {
-        font-size: 11px !important;
-        padding: 3px 5px !important;
-      }
-      #auditAccordion .accordion-button {
-        font-size: 11px !important;
-        padding: 6px 10px !important;
-      }
-      /* Detail view mobile */
-      .detail-field label { font-size: 9px !important; }
-      .detail-field .detail-val { font-size: 12px !important; }
-      .detail-summary-card .detail-stat { padding: 6px 8px !important; }
-      .detail-summary-card .detail-stat div:last-child { font-size: 13px !important; }
-      .accordion-button { font-size: 12px !important; padding: 8px 10px !important; }
-      .accordion-body { padding: 8px !important; }
-      /* Header bar detail mobile */
-      .border-start.border-4 .d-flex {
-        flex-wrap: wrap;
-        gap: 4px;
-      }
-      .border-start.border-4 h6 {
-        font-size: 12px !important;
-      }
-      /* Lo_rung action buttons mobile */
-      .d-flex.gap-2.mb-2.flex-wrap .btn {
-        font-size: 10px !important;
-        padding: 4px 6px !important;
-        flex: 1 1 calc(50% - 4px) !important;
-        max-width: calc(50% - 4px);
-      }
-      /* Forms */
-      .form-control, .form-select {
-        font-size: 11px !important;
-        padding: 5px 8px !important;
-      }
+      .audit-card { font-size: var(--fs-sm); }
+      .audit-card .card-body { padding: var(--sp-2); }
+      .audit-card h6 { font-size: var(--fs-sm); min-height: 30px; margin-bottom: var(--sp-1); }
+      .audit-card .badge { font-size: var(--fs-xs); }
+      .audit-card .btn-group .btn { font-size: var(--fs-xs); padding: 3px 5px; }
+      .audit-card .form-control-sm { font-size: var(--fs-sm); padding: 3px 5px; }
+      .audit-card .input-group-text { font-size: var(--fs-sm); padding: 3px 5px; }
+      #auditAccordion .accordion-button { font-size: var(--fs-sm); padding: var(--sp-2) var(--sp-3); }
+
+      /* Detail view */
+      .detail-field label { font-size: var(--fs-xs); }
+      .detail-field .detail-val { font-size: var(--fs-sm); }
+      .detail-summary-card .detail-stat { padding: var(--sp-2); }
+      .accordion-button { font-size: var(--fs-sm); padding: var(--sp-2) var(--sp-3); }
+      .accordion-body { padding: var(--sp-2); }
+      .border-start.border-4 .d-flex { flex-wrap: wrap; gap: var(--sp-1); }
+      .border-start.border-4 h6 { font-size: var(--fs-sm); }
+
+      /* Action buttons */
+      .d-flex.gap-2.mb-2.flex-wrap .btn { font-size: var(--fs-xs); padding: var(--sp-1) var(--sp-2); flex: 1 1 calc(50% - 4px); max-width: calc(50% - 4px); }
+
       /* Tables */
-      .table-responsive {
-        max-height: calc(100vh - 220px) !important;
-        overflow-x: auto !important;
-        -webkit-overflow-scrolling: touch;
-      }
-      table.dataTable {
-        white-space: nowrap;
-      }
-      table.dataTable thead th {
-        padding: 4px 6px !important;
-        font-size: 11px !important;
-        font-weight: 700 !important;
-      }
-      table.dataTable tbody td {
-        padding: 3px 6px !important;
-        font-size: 11px !important;
-      }
-      /* Card headers on mobile */
-      .card-header.bg-success {
-        padding: 8px 10px !important;
-      }
-      .card-header h5 {
-        font-size: 12px !important;
-      }
-      /* Buttons */
-      .btn {
-        font-size: 11px !important;
-        padding: 4px 10px !important;
-      }
-      /* Breadcrumb mobile */
-      .fsc-breadcrumb {
-        padding: 4px 8px !important;
-        font-size: 10px !important;
-        margin-bottom: 6px !important;
-      }
-      #data-view > .d-flex:first-child {
-        margin-bottom: 6px !important;
-      }
-      #data-view > .d-flex:first-child .btn {
-        font-size: 10px !important;
-        padding: 3px 8px !important;
-      }
-      /* Sub-menu cards mobile */
-      .submenu-card {
-        padding: 10px 6px !important;
-        border-radius: 8px !important;
-      }
-      .submenu-icon {
-        width: 36px !important;
-        height: 36px !important;
-        font-size: 1rem !important;
-        margin-bottom: 6px !important;
-      }
-      .submenu-label {
-        font-size: 10px !important;
-      }
-      /* Modal mobile */
-      .modal-dialog {
-        margin: 8px !important;
-      }
-      .modal-body {
-        padding: 10px !important;
-      }
-      .modal-header {
-        padding: 8px 12px !important;
-      }
-      .modal-title {
-        font-size: 13px !important;
-      }
-      /* Settings mobile */
-      .settings-col-pc, .settings-col-mobile {
-        flex: 0 0 100% !important;
-        max-width: 100% !important;
-      }
+      .table-responsive { max-height: calc(100vh - 220px); overflow-x: auto; -webkit-overflow-scrolling: touch; }
+      table.dataTable { white-space: nowrap; }
+      table.dataTable thead th { padding: var(--sp-1) var(--sp-2); font-weight: 700; }
+      table.dataTable tbody td { padding: 3px var(--sp-2); }
+
+      /* Card headers */
+      .card-header.bg-success { padding: var(--sp-2) var(--sp-3); }
+      .card-header h5 { font-size: var(--fs-sm); }
+
+      /* Breadcrumb */
+      .fsc-breadcrumb { padding: var(--sp-1) var(--sp-2); margin-bottom: var(--sp-2); }
+      #data-view > .d-flex:first-child { margin-bottom: var(--sp-2); }
+      #data-view > .d-flex:first-child .btn { font-size: var(--fs-xs); padding: 3px var(--sp-2); }
+
+      /* Sub-menu cards */
+      .submenu-card { padding: var(--sp-3) var(--sp-2); }
+      .submenu-icon { width: 36px; height: 36px; font-size: 1rem; margin-bottom: var(--sp-2); }
+      .submenu-label { font-size: var(--fs-xs); }
+
+      /* Modal */
+      .modal-dialog { margin: var(--sp-2); }
+      .modal-body { padding: var(--sp-3); }
+      .modal-header { padding: var(--sp-2) var(--sp-3); }
+      .modal-title { font-size: var(--fs-base); }
+
+      /* Settings */
+      .settings-col-pc, .settings-col-mobile { flex: 0 0 100%; max-width: 100%; }
+
       /* Page content */
-      #page-content-wrapper {
-        padding: 6px !important;
-        padding-bottom: 60px !important;
-      }
-      /* Map toolbar mobile */
-      .map-toolbar {
-        padding: 4px 6px !important;
-      }
-      .map-toolbar .btn {
-        font-size: 9px !important;
-        padding: 3px 6px !important;
-      }
-      .map-toolbar span.fw-bold {
-        font-size: 10px !important;
-      }
-      /* Logout button mobile - keep compact */
-      .btn-logout {
-        font-size: 10px !important;
-        padding: 3px 8px !important;
-      }
+      #page-content-wrapper { padding: var(--sp-2); padding-bottom: 60px; }
+
+      /* Map toolbar */
+      .map-toolbar { padding: var(--sp-1) var(--sp-2); }
+      .map-toolbar .btn { font-size: var(--fs-xs); padding: 3px var(--sp-2); }
+      .map-toolbar span.fw-bold { font-size: var(--fs-xs); }
+
+      /* Logout */
+      .btn-logout { font-size: var(--fs-xs); padding: 3px var(--sp-2); }
     }
 
     /* Mobile Bottom Navigation Bar */
     #mobile-home-bar {
       position: fixed;
-      bottom: 0;
-      left: 0;
-      right: 0;
+      bottom: 0; left: 0; right: 0;
       z-index: 1060;
       background: rgba(255,255,255,0.97);
-      border-top: 1px solid #e0e0e0;
-      box-shadow: 0 -2px 10px rgba(0,0,0,0.08);
-      padding: 6px 0 env(safe-area-inset-bottom, 6px) 0;
+      border-top: 1px solid var(--border-color);
+      box-shadow: 0 -2px 8px rgba(0,0,0,0.06);
+      padding: var(--sp-2) 0 env(safe-area-inset-bottom, var(--sp-2)) 0;
       display: flex;
       justify-content: space-around;
       align-items: center;
@@ -787,20 +593,20 @@
       align-items: center;
       background: none;
       border: none;
-      color: #1B5E20;
-      font-size: 10px;
-      padding: 4px 12px;
+      color: var(--forest-primary);
+      font-size: var(--fs-xs);
+      padding: var(--sp-1) var(--sp-3);
       cursor: pointer;
-      transition: color 0.2s;
+      transition: color var(--transition-fast);
     }
     #mobile-home-bar .mob-nav-btn i {
       font-size: 1.2rem;
       margin-bottom: 2px;
-      color: #1B5E20;
+      color: var(--forest-primary);
     }
     #mobile-home-bar .mob-nav-btn.active,
     #mobile-home-bar .mob-nav-btn:active {
-      color: #1B5E20;
+      color: var(--forest-primary);
       font-weight: 700;
     }
 
@@ -816,14 +622,12 @@
       min-height: 0;
       overflow: hidden;
     }
-    #dashboard-view h5 { margin-bottom: 8px !important; font-size: 15px; }
-    #dashboard-view h6 { margin-bottom: 6px !important; font-size: 12px; }
-    #dashboard-view .kpi-card { padding: 12px 10px; }
+    #dashboard-view h5 { margin-bottom: var(--sp-2); font-size: 15px; }
+    #dashboard-view h6 { margin-bottom: var(--sp-2); font-size: var(--fs-sm); }
+    #dashboard-view .kpi-card { padding: var(--sp-3) var(--sp-3); }
     #dashboard-view .kpi-value { font-size: 1.5rem; }
-    #dashboard-view .kpi-label { font-size: 11px; }
-    #dashboard-view .dashboard-card-3d { padding: 18px 10px 14px; }
-    #dashboard-view .icon-3d-wrapper { width: 44px; height: 44px; font-size: 1.15rem; margin-bottom: 8px; border-radius: 13px; }
-    #dashboard-view .card-title-3d { font-size: 12px; font-weight: 700; }
+    #dashboard-view .kpi-label { font-size: var(--fs-sm); }
+    #dashboard-view .card-title-3d { font-size: var(--fs-sm); font-weight: 700; }
     @media (max-width: 767px) {
       #dashboard-view { height: auto; overflow-y: auto; padding-bottom: 60px; }
       .dash-above-fold {
@@ -833,92 +637,89 @@
         flex-direction: column;
         justify-content: space-evenly;
         padding-bottom: 0;
-        gap: 4px;
+        gap: var(--sp-1);
       }
-      #dashboard-view h5 { font-size: 15px !important; margin-bottom: 0 !important; }
-      #dashboard-view h6 { font-size: 13px !important; margin-bottom: 2px !important; }
-      #dashboard-view .icon-3d-wrapper { width: 44px !important; height: 44px !important; font-size: 1.1rem !important; border-radius: 12px !important; margin-bottom: 5px !important; }
-      #dashboard-view .card-title-3d { font-size: 11px !important; font-weight: 700 !important; line-height: 1.25 !important; }
-      #dashboard-view .kpi-value { font-size: 1.15rem !important; font-weight: 800 !important; }
-      #dashboard-view .kpi-label { font-size: 9.5px !important; letter-spacing: 0; text-transform: none; }
-      #dashboard-view .kpi-card { padding: 10px 8px !important; border-radius: 12px !important; }
-      #dashboard-view .kpi-card-inner { flex-direction: column; text-align: center; gap: 4px; }
-      #dashboard-view .kpi-icon-circle { width: 30px; height: 30px; font-size: 0.75rem; border-radius: 8px; }
-      #dashboard-view .kpi-grid { margin-bottom: 0 !important; }
-      #dashboard-view .dashboard-card-3d { padding: 14px 6px 10px !important; border-radius: 12px !important; }
+      #dashboard-view h5 { font-size: 15px; margin-bottom: 0; }
+      #dashboard-view h6 { font-size: var(--fs-md); margin-bottom: 2px; }
+      #dashboard-view .icon-3d-wrapper { width: 40px; height: 40px; font-size: 1.1rem; margin-bottom: var(--sp-1); }
+      #dashboard-view .card-title-3d { font-size: var(--fs-sm); font-weight: 700; line-height: 1.25; }
+      #dashboard-view .kpi-value { font-size: 1.15rem; font-weight: 800; }
+      #dashboard-view .kpi-label { font-size: var(--fs-xs); }
+      #dashboard-view .kpi-card-inner { flex-direction: column; text-align: center; gap: var(--sp-1); }
+      #dashboard-view .kpi-icon-circle { width: 28px; height: 28px; font-size: 0.75rem; border-radius: var(--radius-sm); }
+      #dashboard-view .kpi-grid { margin-bottom: 0; }
       #dashboard-view .row.g-3 { --bs-gutter-x: 0.5rem; --bs-gutter-y: 0.5rem; }
-      .dash-charts { flex: none !important; min-height: auto !important; overflow: visible !important; padding: 8px 0 20px; }
-      .dash-charts .card { margin-bottom: 12px; }
+      .dash-charts { flex: none; min-height: auto; overflow: visible; padding: var(--sp-2) 0 var(--sp-5); }
+      .dash-charts .card { margin-bottom: var(--sp-3); }
     }
 
     /* Sub-menu Screen Cards */
     .submenu-card {
-      background: #fff;
-      border-radius: 12px;
-      padding: 18px 12px;
+      background: var(--bg-white);
+      border-radius: var(--radius-lg);
+      padding: var(--sp-4) var(--sp-3);
       text-align: center;
       cursor: pointer;
-      transition: all 0.3s ease;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+      transition: all var(--transition-normal);
+      box-shadow: var(--shadow-sm);
       height: 100%;
     }
     .submenu-card:hover {
-      transform: translateY(-4px);
-      box-shadow: 0 8px 20px rgba(0,0,0,0.12);
+      transform: translateY(-3px);
+      box-shadow: var(--shadow-md);
     }
     .submenu-icon {
-      width: 48px; height: 48px;
-      margin: 0 auto 10px auto;
-      border-radius: 14px;
+      width: 44px; height: 44px;
+      margin: 0 auto var(--sp-2) auto;
+      border-radius: var(--radius-md);
       display: flex; align-items: center; justify-content: center;
       color: white; font-size: 1.2rem;
-      box-shadow: 0 4px 10px rgba(0,0,0,0.15);
+      box-shadow: var(--shadow-sm);
     }
     .submenu-label {
-      font-weight: 600; font-size: 12px; color: #333;
+      font-weight: 600; font-size: var(--fs-sm); color: var(--text-main);
     }
 
-    /* Dashboard Sub-menu Popup (legacy) */
+    /* Dashboard Sub-menu Popup */
     .dash-submenu {
       position: absolute;
-      top: 100%;
-      left: 50%;
+      top: 100%; left: 50%;
       transform: translateX(-50%);
       z-index: 100;
-      background: #fff;
-      border-radius: 10px;
+      background: var(--bg-white);
+      border-radius: var(--radius-md);
       min-width: 220px;
-      padding: 6px 0;
-      border: 1px solid #e8e8e8;
+      padding: var(--sp-2) 0;
+      border: 1px solid var(--border-color);
       animation: fadeInUp 0.15s ease;
     }
     .dash-submenu-link {
       display: block;
-      padding: 6px 14px;
-      color: #333;
+      padding: var(--sp-2) var(--sp-3);
+      color: var(--text-main);
       text-decoration: none;
-      font-size: 12px;
+      font-size: var(--fs-sm);
       font-weight: 500;
       white-space: nowrap;
       transition: background 0.15s;
     }
     .dash-submenu-link:hover {
-      background: #E8F5E9;
-      color: #1B5E20;
+      background: var(--forest-light);
+      color: var(--forest-primary);
     }
     @keyframes fadeInUp {
       from { opacity: 0; transform: translateX(-50%) translateY(6px); }
       to   { opacity: 1; transform: translateX(-50%) translateY(0); }
     }
 
-    /* KPI Cards */
+    /* KPI Cards — unified color scheme */
     .kpi-card {
-      background: white;
-      border-radius: 14px;
-      padding: 12px 10px;
-      box-shadow: 0 2px 10px rgba(0,0,0,0.05);
-      border-left: 4px solid #1B5E20;
-      transition: all 0.25s ease;
+      background: var(--bg-white);
+      border-radius: var(--radius-lg);
+      padding: var(--sp-3);
+      box-shadow: var(--shadow-sm);
+      border-left: 4px solid var(--forest-primary);
+      transition: all var(--transition-fast);
       position: relative;
       overflow: hidden;
     }
@@ -926,71 +727,81 @@
       content: '';
       position: absolute;
       top: 0; right: 0;
-      width: 80px; height: 80px;
+      width: 60px; height: 60px;
       border-radius: 50%;
-      background: var(--kpi-accent, #1B5E20);
-      opacity: 0.05;
-      transform: translate(20px, -20px);
+      background: var(--forest-primary);
+      opacity: 0.04;
+      transform: translate(15px, -15px);
       pointer-events: none;
     }
-    .kpi-card:hover { transform: translateY(-3px); box-shadow: 0 6px 16px rgba(0,0,0,0.1); }
-    .kpi-card-inner { display: flex; flex-direction: column; align-items: center; text-align: center; gap: 6px; position: relative; z-index: 1; }
+    .kpi-card:hover { transform: translateY(-2px); box-shadow: var(--shadow-md); }
+    .kpi-card-inner { display: flex; flex-direction: column; align-items: center; text-align: center; gap: var(--sp-2); position: relative; z-index: 1; }
     .kpi-body { min-width: 0; }
-    .kpi-value { font-size: 1.5rem; font-weight: 800; color: #1B5E20; letter-spacing: -0.5px; line-height: 1.2; }
-    .kpi-label { font-size: 11px; color: #666; font-weight: 600; letter-spacing: 0.2px; margin-top: 2px; }
-    .kpi-unit { font-size: 0.7rem; font-weight: 600; color: #999; margin-left: 2px; }
+    .kpi-value { font-size: 1.5rem; font-weight: 800; color: var(--forest-primary); letter-spacing: -0.5px; line-height: 1.2; }
+    .kpi-label { font-size: var(--fs-sm); color: var(--text-secondary); font-weight: 600; margin-top: 2px; }
+    .kpi-unit { font-size: 0.7rem; font-weight: 600; color: var(--text-muted); margin-left: 2px; }
     .kpi-icon-circle {
-      width: 36px; height: 36px; border-radius: 10px;
+      width: 34px; height: 34px; border-radius: var(--radius-md);
       display: flex; align-items: center; justify-content: center;
-      font-size: 0.9rem; color: white; background: #1B5E20; flex-shrink: 0;
+      font-size: 0.85rem; color: white; background: var(--forest-primary); flex-shrink: 0;
     }
-    .kpi-card.blue { border-left-color: #0277BD; --kpi-accent: #0277BD; }
-    .kpi-card.blue .kpi-value { color: #0277BD; }
-    .kpi-card.blue .kpi-icon-circle { background: #0277BD; }
-    .kpi-card.orange { border-left-color: #E65100; --kpi-accent: #E65100; }
-    .kpi-card.orange .kpi-value { color: #E65100; }
-    .kpi-card.orange .kpi-icon-circle { background: #E65100; }
-    .kpi-card.purple { border-left-color: #6A1B9A; --kpi-accent: #6A1B9A; }
-    .kpi-card.purple .kpi-value { color: #6A1B9A; }
-    .kpi-card.purple .kpi-icon-circle { background: #6A1B9A; }
-    .kpi-sm .kpi-icon-circle { width: 28px; height: 28px; font-size: 0.7rem; border-radius: 8px; }
+    /* KPI color variants — subtle, same green family */
+    .kpi-card.blue { border-left-color: var(--forest-secondary); }
+    .kpi-card.blue .kpi-icon-circle { background: var(--forest-secondary); }
+    .kpi-card.orange { border-left-color: #558B2F; }
+    .kpi-card.orange .kpi-icon-circle { background: #558B2F; }
+    .kpi-card.purple { border-left-color: #33691E; }
+    .kpi-card.purple .kpi-icon-circle { background: #33691E; }
+    /* All KPI values use same green color for clean look */
+    .kpi-card.blue .kpi-value,
+    .kpi-card.orange .kpi-value,
+    .kpi-card.purple .kpi-value { color: var(--forest-primary); }
+
+    .kpi-sm .kpi-icon-circle { width: 28px; height: 28px; font-size: 0.7rem; border-radius: var(--radius-sm); }
     .kpi-sm .kpi-value { font-size: 1.15rem; }
-    .kpi-sm .kpi-label { font-size: 10px; }
-    .kpi-sm { padding: 10px 8px; }
+    .kpi-sm .kpi-label { font-size: var(--fs-xs); }
+    .kpi-sm { padding: var(--sp-2); }
+
     /* Detail sections */
     .detail-summary-card { background: linear-gradient(135deg, #f8fdf8 0%, #fff 100%); }
-    .detail-summary-card .detail-stat { border-right: 1px solid #e8f5e9; padding: 8px 12px; }
+    .detail-summary-card .detail-stat { border-right: 1px solid var(--forest-light); padding: var(--sp-2) var(--sp-3); }
     .detail-summary-card .detail-stat:last-child { border-right: none; }
-    .detail-field label { font-size: 10px; font-weight: 700; color: #888; text-transform: uppercase; letter-spacing: 0.3px; }
-    .detail-field .detail-val { font-size: 13px; color: #333; padding: 2px 0; border-bottom: 1px solid #f0f0f0; }
-    .group-stat-card { transition: all 0.2s ease; }
-    .group-stat-card:hover { transform: translateY(-3px); box-shadow: 0 6px 16px rgba(0,0,0,0.1) !important; }
+    .detail-field label { font-size: var(--fs-xs); font-weight: 700; color: #888; text-transform: uppercase; letter-spacing: 0.3px; }
+    .detail-field .detail-val { font-size: var(--fs-base); color: var(--text-main); padding: 2px 0; border-bottom: 1px solid var(--border-light); }
+    .group-stat-card { transition: all var(--transition-fast); }
+    .group-stat-card:hover { transform: translateY(-2px); box-shadow: var(--shadow-md); }
 
     /* Map Styles */
+    #map-view {
+      display: flex;
+      flex-direction: column;
+      height: calc(100vh - 140px);
+      overflow: hidden;
+    }
     #map-container {
       width: 100%;
-      height: calc(100vh - 160px);
-      border-radius: 12px;
+      flex: 1 1 0;
+      min-height: 0;
+      border-radius: var(--radius-md);
       overflow: hidden;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+      box-shadow: var(--shadow-md);
       position: relative;
     }
     .map-toolbar {
-      background: white;
-      border-radius: 8px;
-      padding: 6px 14px;
-      box-shadow: 0 2px 6px rgba(0,0,0,0.1);
-      margin-bottom: 6px;
+      background: var(--bg-white);
+      border-radius: var(--radius-sm);
+      padding: var(--sp-2) var(--sp-3);
+      box-shadow: var(--shadow-sm);
+      margin-bottom: var(--sp-2);
     }
     .map-layer-control {
       position: absolute;
-      top: 70px;
-      right: 20px;
-      z-index: 1000;
-      background: white;
-      border-radius: 8px;
-      padding: 10px;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+      top: 10px; right: 10px;
+      z-index: 1070;
+      background: var(--bg-white);
+      border-radius: var(--radius-sm);
+      padding: var(--sp-3);
+      box-shadow: var(--shadow-md);
       max-height: 300px;
       overflow-y: auto;
       min-width: 180px;
@@ -999,50 +810,48 @@
       display: block;
       cursor: pointer;
       padding: 3px 0;
-      font-size: 12px;
+      font-size: var(--fs-sm);
     }
     @media (max-width: 767px) {
-      #map-container {
-        height: calc(100dvh - 155px);
-        border-radius: 6px;
-      }
-      /* Hide verbose attribution on mobile to free bottom space */
+      #map-view { height: calc(100dvh - 60px); }
+      #map-container { border-radius: var(--radius-sm); }
       #map-container .leaflet-control-attribution { font-size: 0; line-height: 0; padding: 0; height: 0; overflow: hidden; }
-      /* Compact toolbar: icon-only buttons, single scrollable row */
-      .map-toolbar { padding: 3px 6px; margin-bottom: 2px; }
-      .map-toolbar > div:first-child { display: none !important; } /* hide title on mobile */
-      /* Hide breadcrumb + back button on map view mobile to maximize map area */
-      .d-flex.align-items-center.mb-3:has(#breadcrumb-container) { display: none !important; }
+      .map-toolbar { padding: 3px var(--sp-2); margin-bottom: 2px; }
+      .map-toolbar > div:first-child { display: none; }
+      .d-flex.align-items-center.mb-3:has(#breadcrumb-container) { display: none; }
       .map-toolbar .d-flex.gap-2 {
-        gap: 4px !important;
-        flex-wrap: nowrap !important;
+        gap: var(--sp-1);
+        flex-wrap: nowrap;
         overflow-x: auto;
         -webkit-overflow-scrolling: touch;
         scrollbar-width: none;
         padding-bottom: 2px;
       }
       .map-toolbar .d-flex.gap-2::-webkit-scrollbar { display: none; }
-      .map-toolbar .btn-sm { padding: 4px 8px; font-size: 12px; white-space: nowrap; }
-      .map-toolbar .btn-sm span[data-i18n] { display: none; } /* icon-only on mobile */
-      .map-toolbar .btn-sm .me-1 { margin-right: 0 !important; }
+      .map-toolbar .btn-sm { padding: var(--sp-1) var(--sp-2); font-size: var(--fs-sm); white-space: nowrap; }
+      .map-toolbar .btn-sm span[data-i18n] { display: none; }
+      .map-toolbar .btn-sm .me-1 { margin-right: 0; }
       .map-toolbar .map-search-wrap { flex-shrink: 0; }
+      .map-fab-stack { bottom: 80px; }
+      .coords-panel { bottom: 80px; }
+      .map-layer-control { top: 10px; right: 10px; max-height: 250px; min-width: 160px; }
     }
 
     /* Map search */
     .map-search-wrap { width: 220px; }
-    .map-search-wrap input { padding-left: 10px; padding-right: 28px; font-size: 12px; height: 31px; border-color: #a5d6a7; }
-    .map-search-wrap input:focus { border-color: #2e7d32; box-shadow: 0 0 0 2px rgba(46,125,50,0.15); }
-    .map-search-icon { position: absolute; right: 8px; left: auto; top: 50%; transform: translateY(-50%); color: #999; font-size: 12px; pointer-events: none; }
-    .map-search-dropdown { position: absolute; top: 100%; left: 0; right: 0; z-index: 1060; background: white; border: 1px solid #c8e6c9; border-top: none; border-radius: 0 0 8px 8px; max-height: 300px; overflow-y: auto; box-shadow: 0 4px 12px rgba(0,0,0,0.12); }
-    .map-search-item { padding: 8px 12px; cursor: pointer; border-bottom: 1px solid #f0f0f0; font-size: 12px; }
+    .map-search-wrap input { padding-left: var(--sp-3); padding-right: 28px; font-size: var(--fs-sm); height: 31px; border-color: #a5d6a7; }
+    .map-search-wrap input:focus { border-color: var(--forest-secondary); box-shadow: 0 0 0 2px rgba(46,125,50,0.15); }
+    .map-search-icon { position: absolute; right: var(--sp-2); left: auto; top: 50%; transform: translateY(-50%); color: var(--text-muted); font-size: var(--fs-sm); pointer-events: none; }
+    .map-search-dropdown { position: absolute; top: 100%; left: 0; right: 0; z-index: 1060; background: var(--bg-white); border: 1px solid #c8e6c9; border-top: none; border-radius: 0 0 var(--radius-sm) var(--radius-sm); max-height: 300px; overflow-y: auto; box-shadow: var(--shadow-md); }
+    .map-search-item { padding: var(--sp-2) var(--sp-3); cursor: pointer; border-bottom: 1px solid var(--border-light); font-size: var(--fs-sm); }
     .map-search-item:last-child { border-bottom: none; }
-    .map-search-item:hover, .map-search-item.active { background: #e8f5e9; }
-    .map-search-item .plot-code { font-weight: 700; color: #2e7d32; }
-    .map-search-item .plot-info { color: #666; font-size: 11px; }
+    .map-search-item:hover, .map-search-item.active { background: var(--forest-light); }
+    .map-search-item .plot-code { font-weight: 700; color: var(--forest-secondary); }
+    .map-search-item .plot-info { color: var(--text-secondary); font-size: var(--fs-sm); }
     .map-search-item .search-match { background: #fff9c4; padding: 0 1px; border-radius: 2px; }
     @media (max-width: 767px) {
       .map-search-wrap { width: 150px; }
-      .map-search-wrap input { font-size: 11px; height: 28px; padding-left: 8px; padding-right: 26px; }
+      .map-search-wrap input { font-size: var(--fs-sm); height: 28px; padding-left: var(--sp-2); padding-right: 26px; }
     }
 
     /* Plot label tooltips on map (visible at high zoom only) */
@@ -1061,58 +870,55 @@
     }
     .plot-label::before { display: none !important; }
 
-    /* Map container relative positioning for overlays */
     .map-container-relative { position: relative; }
 
-    /* Floating action buttons (bottom-right stack) */
+    /* Map floating action buttons */
     .map-fab-stack {
-      position: absolute; bottom: 16px; right: 14px; z-index: 1000;
-      display: flex; flex-direction: column; gap: 10px; align-items: center;
+      position: absolute; bottom: var(--sp-4); right: var(--sp-3); z-index: 1070;
+      display: flex; flex-direction: column; gap: var(--sp-2); align-items: center;
     }
     .map-fab {
-      width: 46px; height: 46px; border-radius: 50%; border: none;
+      width: 44px; height: 44px; border-radius: 50%; border: none;
       display: flex; align-items: center; justify-content: center;
-      font-size: 20px; cursor: pointer; transition: all 0.2s;
-      background: #fff; color: #555; box-shadow: 0 2px 8px rgba(0,0,0,0.25);
+      font-size: 18px; cursor: pointer; transition: all var(--transition-fast);
+      background: var(--bg-white); color: #555; box-shadow: var(--shadow-md);
     }
-    .map-fab:hover { transform: scale(1.1); box-shadow: 0 4px 12px rgba(0,0,0,0.3); }
+    .map-fab:hover { transform: scale(1.08); }
     .map-fab-primary { background: #2196F3; color: #fff; }
     .map-fab-primary:hover { background: #1976D2; }
     .map-fab.active { background: #2196F3; color: #fff; }
     .map-fab.active-record { background: #ff5722; color: #fff; animation: fabPulse 1.5s infinite; }
     .map-fab.active-draw { background: #4CAF50; color: #fff; }
-    @keyframes fabPulse { 0%,100%{ box-shadow:0 2px 8px rgba(255,87,34,0.3); } 50%{ box-shadow:0 2px 16px rgba(255,87,34,0.7); } }
+    @keyframes fabPulse { 0%,100%{ box-shadow: var(--shadow-sm); } 50%{ box-shadow: 0 2px 16px rgba(255,87,34,0.7); } }
 
-    /* Coordinate panel (bottom-left) */
+    /* Coordinate panel */
     .coords-panel {
-      position: absolute; bottom: 16px; left: 10px; z-index: 1000;
-      background: rgba(0,0,0,0.82); color: #fff; padding: 10px 14px;
-      border-radius: 12px; font-size: 13px; font-family: 'Courier New', monospace;
+      position: absolute; bottom: var(--sp-4); left: var(--sp-3); z-index: 1070;
+      background: rgba(0,0,0,0.82); color: #fff; padding: var(--sp-3);
+      border-radius: var(--radius-md); font-size: var(--fs-base); font-family: 'Courier New', monospace;
       max-width: 280px; pointer-events: auto;
     }
-    .coords-panel .coords-crs-list {
-      display: flex; flex-wrap: wrap; gap: 5px; margin-bottom: 8px;
-    }
+    .coords-panel .coords-crs-list { display: flex; flex-wrap: wrap; gap: var(--sp-1); margin-bottom: var(--sp-2); }
     .coords-panel .crs-chip {
-      padding: 4px 10px; border-radius: 12px; font-size: 11px; cursor: pointer;
+      padding: var(--sp-1) var(--sp-3); border-radius: var(--radius-md); font-size: var(--fs-sm); cursor: pointer;
       background: rgba(255,255,255,0.15); color: #ccc; border: 1px solid rgba(255,255,255,0.2);
       transition: all 0.15s; white-space: nowrap;
     }
     .coords-panel .crs-chip:hover { background: rgba(255,255,255,0.25); }
     .coords-panel .crs-chip.active { background: #2196F3; color: #fff; border-color: #2196F3; }
-    .coords-panel .coords-value { font-size: 14px; font-weight: 700; letter-spacing: 0.5px; }
-    .coords-panel .coords-accuracy { font-size: 11px; color: #aaa; margin-top: 3px; }
+    .coords-panel .coords-value { font-size: var(--fs-md); font-weight: 700; letter-spacing: 0.5px; }
+    .coords-panel .coords-accuracy { font-size: var(--fs-sm); color: #aaa; margin-top: 3px; }
 
-    /* GPS record guide banner */
+    /* GPS record guide */
     .gps-record-guide {
-      position: absolute; top: 10px; left: 50%; transform: translateX(-50%); z-index: 1000;
-      background: rgba(255,87,34,0.92); color: #fff; padding: 10px 18px;
-      border-radius: 20px; font-size: 14px; font-weight: 600;
-      box-shadow: 0 2px 12px rgba(255,87,34,0.4); text-align: center;
+      position: absolute; top: var(--sp-3); left: 50%; transform: translateX(-50%); z-index: 1000;
+      background: rgba(255,87,34,0.92); color: #fff; padding: var(--sp-3) var(--sp-4);
+      border-radius: var(--radius-pill); font-size: var(--fs-md); font-weight: 600;
+      box-shadow: var(--shadow-md); text-align: center;
       max-width: 90%; pointer-events: auto;
     }
-    .gps-record-guide i { margin-right: 6px; }
-    .gps-record-guide small { font-size: 12px; }
+    .gps-record-guide i { margin-right: var(--sp-2); }
+    .gps-record-guide small { font-size: var(--fs-sm); }
 
     /* GPS pulse marker */
     .gps-pulse {
@@ -1183,29 +989,85 @@
     .fsc-std-dropdown-item .dd-snippet mark { background: #fff9c4; padding: 0 1px; border-radius: 2px; }
     .fsc-std-highlight { animation: fscHighlight 2s ease-out; }
     @keyframes fscHighlight { 0% { background: #fff9c4; box-shadow: 0 0 0 3px #ffc107; } 100% { background: inherit; box-shadow: none; } }
-    .fsc-std-badge { font-size: 0.7rem; padding: 3px 8px; }
+    .fsc-std-badge { font-size: 0.7rem; padding: 3px var(--sp-2); }
     @media (max-width: 576px) {
-      .fsc-std-accordion .accordion-button { font-size: 0.85rem; padding: 10px 12px; }
-      .fsc-std-criterion { padding: 10px 12px; }
+      .fsc-std-accordion .accordion-button { font-size: 0.85rem; padding: var(--sp-3); }
+      .fsc-std-criterion { padding: var(--sp-3); }
       .fsc-std-search { max-width: 100%; }
     }
+
+    /* === Utility classes (replacing inline styles) === */
+    .login-header-rel { position: relative; }
+    .lang-toggle-btn {
+      position: absolute; top: var(--sp-3); right: var(--sp-3);
+      background: rgba(255,255,255,0.15); color: #fff;
+      border: 1px solid rgba(255,255,255,0.3);
+      border-radius: var(--radius-pill);
+      padding: 3px var(--sp-3); font-size: var(--fs-sm); font-weight: 600;
+    }
+    .lang-toggle-btn:hover { background: rgba(255,255,255,0.3); color: #fff; }
+    .login-logos { display: flex; align-items: center; justify-content: center; gap: var(--sp-3); margin-bottom: var(--sp-3); }
+    .login-logo-img { border-radius: var(--radius-sm); background: #fff; padding: 2px; }
+    .login-title { color: #fff; font-weight: 700; font-size: 15px; margin: 0; letter-spacing: 0.3px; }
+    .login-subtitle { color: rgba(255,255,255,0.7); font-size: var(--fs-sm); margin-top: var(--sp-1); }
+    .login-links { margin-top: -2px; }
+    .login-link-register { font-size: var(--fs-base); }
+    .login-link-forgot { font-size: var(--fs-sm); }
+    .login-error { display: none; }
+    .login-footer {
+      background: var(--bg-light); border-top: 1px solid var(--border-color);
+      font-size: var(--fs-sm); color: var(--text-muted);
+    }
+
+    /* Navbar utility classes */
+    .navbar-main {
+      background: var(--forest-gradient); min-height: 56px;
+    }
+    .navbar-title-desktop { gap: var(--sp-3); }
+    .navbar-project-title { font-size: var(--fs-xl); letter-spacing: 0.5px; text-transform: uppercase; }
+    .navbar-logo-img { border-radius: var(--radius-sm); }
+    .navbar-mobile-center { gap: var(--sp-2); }
+    .navbar-mobile-title { font-size: var(--fs-sm); line-height: 1; letter-spacing: 0.3px; }
+    .navbar-mobile-logo { border-radius: var(--sp-1); }
+    .navbar-clock-wrap { line-height: 1.2; }
+    .navbar-clock { font-size: var(--fs-md); color: #fff; letter-spacing: 0.5px; }
+    .navbar-date { font-size: var(--fs-sm); opacity: 0.8; color: #fff; }
+    .navbar-user { opacity: 0.85; }
+    .badge-offline { font-size: var(--fs-xs); }
+    .badge-sync { font-size: var(--fs-xs); cursor: pointer; }
+    .btn-logout {
+      background: rgba(255,255,255,0.15); color: #fff;
+      border: 1px solid rgba(255,255,255,0.3); white-space: nowrap;
+    }
+    .btn-logout:hover { background: rgba(255,255,255,0.3); color: #fff; }
+
+    /* Chart section */
+    .chart-heading { font-size: var(--fs-sm); }
+    .chart-select { width: auto; font-size: var(--fs-sm); padding: 2px var(--sp-6) 2px var(--sp-2); }
+    .chart-canvas-wrap { position: relative; min-height: 250px; }
+
+    /* Dashboard header buttons */
+    .dash-header-btn { font-size: var(--fs-sm); font-weight: 600; }
+
+    /* Smart search */
+    .smart-search-results { z-index: 1050; max-height: 350px; overflow-y: auto; }
   </style>
 </head>
 
-<body style="font-family: 'Be Vietnam Pro', sans-serif; background-color: #F8F9FA;">
+<body>
 
-  <div id="login-screen" class="d-flex align-items-center justify-content-center" style="min-height:100vh;min-height:100dvh">
+  <div id="login-screen" class="d-flex align-items-center justify-content-center min-vh-100">
     <div class="login-card">
-      <div class="login-header" style="position:relative">
-        <button type="button" class="btn btn-sm" onclick="toggleLang()" style="position:absolute;top:10px;right:10px;background:rgba(255,255,255,0.15);color:#fff;border:1px solid rgba(255,255,255,0.3);border-radius:20px;padding:3px 10px;font-size:11px;font-weight:600" id="lang-toggle-login">
+      <div class="login-header login-header-rel">
+        <button type="button" class="btn btn-sm lang-toggle-btn" onclick="toggleLang()" id="lang-toggle-login" aria-label="Toggle language">
           <i class="fa-solid fa-globe me-1"></i><span id="lang-label-login">EN</span>
         </button>
-        <div class="d-flex align-items-center justify-content-center" style="gap:12px;margin-bottom:10px">
-          <img src="Logo Clever forestry.png" height="52" alt="Clever Forestry" style="border-radius:8px;background:#fff;padding:2px" onerror="this.style.display='none'">
-          <img id="login-logo-custom" src="data:," height="52" alt="" style="border-radius:8px;background:#fff;padding:2px;display:none">
+        <div class="login-logos">
+          <img src="Logo Clever forestry.png" height="52" alt="Clever Forestry" class="login-logo-img" onerror="this.style.display='none'">
+          <img id="login-logo-custom" src="data:," height="52" alt="" class="login-logo-img d-none">
         </div>
-        <h5 style="color:#fff;font-weight:700;font-size:15px;margin:0;letter-spacing:0.3px" data-i18n="login_title">He thong Quan ly Rung FSC</h5>
-        <div style="color:rgba(255,255,255,0.7);font-size:11px;margin-top:4px" data-i18n="login_subtitle">Forest Stewardship Council</div>
+        <h5 class="login-title" data-i18n="login_title">He thong Quan ly Rung FSC</h5>
+        <div class="login-subtitle" data-i18n="login_subtitle">Forest Stewardship Council</div>
       </div>
 
       <div class="login-body">
@@ -1223,9 +1085,9 @@
               <button type="button" class="toggle-pass" onclick="togglePasswordVis(this)" tabindex="-1"><i class="fa-solid fa-eye"></i></button>
             </div>
           </div>
-          <div class="d-flex justify-content-between align-items-center mb-3" style="margin-top:-2px">
-            <a href="javascript:void(0)" class="text-decoration-none text-success fw-semibold" style="font-size:13px" onclick="toggleAuth('REGISTER')" data-i18n="register_new">Dang ky moi</a>
-            <a href="javascript:void(0)" class="text-decoration-none text-muted" style="font-size:12px" onclick="handleForgotPassword()" data-i18n="forgot_pass">Quen mat khau?</a>
+          <div class="d-flex justify-content-between align-items-center mb-3 login-links">
+            <a href="javascript:void(0)" class="text-decoration-none text-success fw-semibold login-link-register" onclick="toggleAuth('REGISTER')" data-i18n="register_new">Dang ky moi</a>
+            <a href="javascript:void(0)" class="text-decoration-none text-muted login-link-forgot" onclick="handleForgotPassword()" data-i18n="forgot_pass">Quen mat khau?</a>
           </div>
           <button type="submit" class="btn btn-login-main" id="btn-login"><i class="fa-solid fa-right-to-bracket me-2"></i><span data-i18n="btn_login">Dang nhap</span></button>
         </form>
@@ -1260,46 +1122,43 @@
           </div>
           <button type="submit" class="btn btn-register-main mb-3" id="btn-register"><i class="fa-solid fa-user-plus me-2"></i><span data-i18n="btn_register">Dang ky</span></button>
           <div class="text-center">
-            <a href="javascript:void(0)" class="text-decoration-none text-success fw-semibold" style="font-size:13px" onclick="toggleAuth('LOGIN')"><i class="fa-solid fa-arrow-left me-1"></i><span data-i18n="back_login">Quay lai Dang nhap</span></a>
+            <a href="javascript:void(0)" class="text-decoration-none text-success fw-semibold login-link-register" onclick="toggleAuth('LOGIN')"><i class="fa-solid fa-arrow-left me-1"></i><span data-i18n="back_login">Quay lai Dang nhap</span></a>
           </div>
         </form>
 
-        <div id="login-error" class="text-danger mt-2 small fw-bold text-center" style="display:none"></div>
+        <div id="login-error" class="text-danger mt-2 small fw-bold text-center login-error"></div>
       </div>
 
-      <div class="text-center py-3" style="background:#f8f9fa;border-top:1px solid #eee;font-size:11px;color:#999">
-        <i class="fa-solid fa-code me-1"></i> <span data-i18n="developed_by">Lộc Vũ Trung, Cty tư vấn CleverForestry</span>
+      <div class="text-center py-3 login-footer">
+        <i class="fa-solid fa-code me-1"></i> <span data-i18n="developed_by">Phát triển bởi Lộc Vũ Trung - Công ty tư vấn CleverForestry</span>
       </div>
     </div>
   </div>
 
   <div id="main-app" class="d-none d-flex flex-column vh-100">
-    <nav class="navbar navbar-dark bg-success shadow px-2 px-md-3 d-flex align-items-center"
-      style="background: linear-gradient(135deg, #2E7D32 0%, #1B5E20 100%) !important; min-height: 56px;">
-      <button class="btn text-white flex-shrink-0 d-none d-lg-inline-block" id="sidebarToggle"><i class="fa-solid fa-bars"></i></button>
-      <div class="navbar-title-area position-absolute start-50 translate-middle-x text-center d-none d-md-flex align-items-center" style="gap:12px">
-        <img src="Logo Clever forestry.png" height="40" alt="Clever Forestry" style="border-radius:6px" onerror="this.style.display='none'">
-        <span class="text-white fw-bold" style="font-size:20px;letter-spacing:0.5px;text-transform:uppercase" id="navbar-project-name">Quan ly rung ben vung FSC</span>
-        <img id="navbar-logo-custom" src="data:," height="40" alt="" style="border-radius:6px;display:none">
+    <nav class="navbar navbar-dark shadow px-2 px-md-3 d-flex align-items-center navbar-main">
+      <button class="btn text-white flex-shrink-0 d-none d-lg-inline-block" id="sidebarToggle" aria-label="Toggle sidebar"><i class="fa-solid fa-bars"></i></button>
+      <div class="navbar-title-area position-absolute start-50 translate-middle-x text-center d-none d-md-flex align-items-center navbar-title-desktop">
+        <img src="Logo Clever forestry.png" height="40" alt="Clever Forestry" class="navbar-logo-img" onerror="this.style.display='none'">
+        <span class="text-white fw-bold navbar-project-title" id="navbar-project-name">Quan ly rung ben vung FSC</span>
+        <img id="navbar-logo-custom" src="data:," height="40" alt="" class="navbar-logo-img d-none">
       </div>
-      <div class="d-md-none d-flex align-items-center justify-content-center flex-grow-1 min-w-0 ms-1" style="gap:6px">
-        <img src="Logo Clever forestry.png" height="28" class="flex-shrink-0" alt="CF" style="border-radius:4px">
-        <span class="text-white fw-bold text-center text-nowrap" id="navbar-project-name-mobile" style="font-size:12px;line-height:1;letter-spacing:0.3px">QUẢN LÝ RỪNG FSC</span>
-        <img id="navbar-logo-custom-mobile" src="data:," height="28" class="flex-shrink-0" alt="" style="border-radius:4px;display:none">
+      <div class="d-md-none d-flex align-items-center justify-content-center flex-grow-1 min-w-0 ms-1 navbar-mobile-center">
+        <img src="Logo Clever forestry.png" height="28" class="flex-shrink-0 navbar-mobile-logo" alt="CF">
+        <span class="text-white fw-bold text-center text-nowrap navbar-mobile-title" id="navbar-project-name-mobile">QUẢN LÝ RỪNG FSC</span>
+        <img id="navbar-logo-custom-mobile" src="data:," height="28" class="flex-shrink-0 navbar-mobile-logo d-none" alt="">
       </div>
       <div class="d-flex align-items-center gap-1 gap-md-2 ms-auto flex-shrink-0">
-        <div class="text-end d-none d-md-block" style="line-height:1.2">
-          <div class="fw-bold" id="navbar-clock" style="font-size:14px;color:#fff;letter-spacing:0.5px"></div>
-          <div style="font-size:11px;opacity:0.8;color:#fff" id="navbar-date"></div>
+        <div class="text-end d-none d-md-block navbar-clock-wrap">
+          <div class="fw-bold navbar-clock" id="navbar-clock"></div>
+          <div class="navbar-date" id="navbar-date"></div>
         </div>
-        <span class="text-white me-1 small d-none d-md-block" id="user-display-name" style="opacity:0.85">User</span>
-        <span id="offline-badge" class="badge bg-warning text-dark d-none" style="font-size:10px"><i class="fa-solid fa-wifi-slash me-1"></i>Offline</span>
-        <span id="sync-badge" class="badge bg-info text-white d-none" style="font-size:10px;cursor:pointer" onclick="showSyncPanel()" title="Pending sync">
+        <span class="text-white me-1 small d-none d-md-block navbar-user" id="user-display-name">User</span>
+        <span id="offline-badge" class="badge bg-warning text-dark d-none badge-offline"><i class="fa-solid fa-wifi-slash me-1"></i>Offline</span>
+        <span id="sync-badge" class="badge bg-info text-white d-none badge-sync" onclick="showSyncPanel()" title="Pending sync">
           <i class="fa-solid fa-arrows-rotate me-1"></i><span id="sync-count">0</span>
         </span>
-        <button type="button" class="btn btn-sm btn-logout fw-bold rounded-pill px-2 px-md-3 shadow-sm"
-          style="background:rgba(255,255,255,0.15);color:#fff;border:1px solid rgba(255,255,255,0.3);white-space:nowrap"
-          onmouseenter="this.style.background='rgba(255,255,255,0.3)'" onmouseleave="this.style.background='rgba(255,255,255,0.15)'"
+        <button type="button" class="btn btn-sm btn-logout fw-bold rounded-pill px-2 px-md-3"
           onclick="logout()"><i class="fa-solid fa-right-from-bracket me-1"></i><span class="d-none d-sm-inline" data-i18n="btn_logout">Thoát</span></button>
       </div>
     </nav>
@@ -1307,7 +1166,7 @@
     <div class="d-flex flex-grow-1 overflow-hidden">
       <div id="sidebar-overlay" onclick="toggleSidebar()"></div>
       <div id="sidebar-wrapper" class="bg-white border-end shadow-sm">
-        <div class="sidebar-header d-flex align-items-center justify-content-center" style="cursor:pointer" onclick="goHome()" id="sidebar-home-btn">
+        <div class="sidebar-header d-flex align-items-center justify-content-center" role="button" onclick="goHome()" id="sidebar-home-btn">
           <span class="home-icon"><i class="fa-solid fa-house"></i></span>
         </div>
         <div class="accordion accordion-flush overflow-auto h-100" id="sidebarAccordion"></div>
@@ -1387,8 +1246,8 @@
               <div id="coords-panel" class="coords-panel d-none"></div>
               <!-- GPS record guide -->
               <div id="gps-record-guide" class="gps-record-guide d-none"></div>
+              <div id="map-layer-panel" class="map-layer-control d-none"></div>
             </div>
-            <div id="map-layer-panel" class="map-layer-control d-none"></div>
           </div>
         </div>
       </div>
@@ -1487,7 +1346,7 @@
         btn_login: 'Đăng nhập',
         btn_register: 'Đăng ký',
         back_login: 'Quay lại Đăng nhập',
-        developed_by: 'Lộc Vũ Trung, Cty Tư vấn CleverForestry',
+        developed_by: 'Phát triển bởi Lộc Vũ Trung - Công ty tư vấn CleverForestry',
         processing: 'Đang xử lý...',
         registering: 'Đang đăng ký...',
         username_not_found: 'Không tìm thấy username này',
@@ -1571,6 +1430,14 @@
         st_nhansu: 'Nhân sự',
         st_taphuan: 'Tập huấn',
         st_danhgia: 'Đánh giá nội bộ',
+        st_khieunai: 'Khiếu nại',
+        st_taisan: 'Tài sản',
+        st_dungcu: 'Dụng cụ lao động',
+        st_eudr: 'Đánh giá EUDR',
+        st_thuocbvtv: 'Thuốc BVTV',
+        st_caytrong: 'Cây trồng',
+        st_phanbon: 'Phân bón',
+        st_nguongoc: 'Nguồn gốc giống',
 
         // Detail drill-down
         dd_nhom: 'Nhóm',
@@ -1583,6 +1450,7 @@
         dd_kehoach: 'Kế hoạch',
         dd_giamsat: 'Giám sát',
         dd_pheduyet: 'Phê duyệt',
+        dd_eudr: 'EUDR',
 
         // App functions (smart search)
         fn_gis_map: 'Bản đồ GIS',
@@ -1607,6 +1475,12 @@
         grp_report: 'Báo cáo',
         grp_other: 'Khác',
         grp_consultation: 'Tham vấn các bên liên quan',
+        grp_eudr: 'Tuân thủ EUDR',
+        grp_reference: 'Tài liệu tham khảo',
+        grp_plans: 'Kế hoạch hoạt động',
+        eudr_form_title: 'Đánh giá tuân thủ EUDR',
+        eudr_doc_title: 'Tài liệu tham khảo EUDR',
+        eudr_report_title: 'Báo cáo tuân thủ EUDR',
         // Consultation Report
         rpt_title: 'Báo cáo phân tích tham vấn',
         rpt_select_session: 'Chọn đợt tham vấn',
@@ -1894,7 +1768,7 @@
         btn_login: 'Sign in',
         btn_register: 'Register',
         back_login: 'Back to Sign in',
-        developed_by: 'Developed by Loc Vu Trung, CleverForestry Consulting',
+        developed_by: 'Developed by Loc Vu Trung - CleverForestry Consulting',
         processing: 'Processing...',
         registering: 'Registering...',
         username_not_found: 'Username not found',
@@ -1971,6 +1845,14 @@
         st_nhansu: 'Staff',
         st_taphuan: 'Training',
         st_danhgia: 'Internal Audit',
+        st_khieunai: 'Complaints',
+        st_taisan: 'Assets',
+        st_dungcu: 'Tools & Equipment',
+        st_eudr: 'EUDR Assessment',
+        st_thuocbvtv: 'Pesticides',
+        st_caytrong: 'Crops',
+        st_phanbon: 'Fertilizers',
+        st_nguongoc: 'Seedling Origins',
 
         dd_nhom: 'Groups',
         dd_hodan: 'Households',
@@ -1982,6 +1864,7 @@
         dd_kehoach: 'Plan',
         dd_giamsat: 'Monitor',
         dd_pheduyet: 'Approve',
+        dd_eudr: 'EUDR',
 
         fn_gis_map: 'GIS Map',
         fn_internal_audit: 'Internal Audit',
@@ -2004,6 +1887,12 @@
         grp_report: 'Reports',
         grp_other: 'Other',
         grp_consultation: 'Stakeholder Consultation',
+        grp_eudr: 'EUDR Compliance',
+        grp_reference: 'Reference Documents',
+        grp_plans: 'Activity Plans',
+        eudr_form_title: 'EUDR Compliance Assessment',
+        eudr_doc_title: 'EUDR Reference Documents',
+        eudr_report_title: 'EUDR Compliance Report',
         // Consultation Report
         rpt_title: 'Consultation Analysis Report',
         rpt_select_session: 'Select consultation session',
@@ -3138,6 +3027,98 @@
         id:'ID', id_dot:'ID đợt', id_ben_lien_quan:'ID BLQ', nguoi_tra_loi:'Người trả lời',
         dia_chi:'Địa chỉ', dien_thoai:'Điện thoại', ngay_phan_hoi:'Ngày phản hồi',
         answers:'answers'
+      }},
+      'LopTaphuan': { table: 'lop_tap_huan', cols: {
+        id:'ID', id_nhom:'ID nhóm', ten_lop:'Tên lớp', noi_dung:'Nội dung',
+        giang_vien:'Giảng viên', dia_diem:'Địa điểm', ngay_bat_dau:'Ngày bắt đầu',
+        ngay_ket_thuc:'Ngày kết thúc', so_buoi:'Số buổi', so_nguoi_tham_gia:'Số người tham gia',
+        kinh_phi:'Kinh phí', ket_qua:'Kết quả', tai_lieu:'Tài liệu', nam:'Năm',
+        tai_lieu_url:'Tài liệu (file)', hinh_anh_url:'Hình ảnh', bao_cao_url:'Báo cáo (file)', ghi_chu:'Ghi chú'
+      }},
+      'DSHocVien': { table: 'ds_hoc_vien', cols: {
+        id:'ID', id_lop_tap_huan:'ID lớp tập huấn', id_chu_rung:'ID chủ rừng',
+        ho_ten:'Họ tên', gioi_tinh:'Giới tính', danh_gia:'Đánh giá', ghi_chu:'Ghi chú'
+      }},
+      'KhieuNai': { table: 'khieu_nai', cols: {
+        id:'ID', id_nhom:'ID nhóm', nguoi_khieu_nai:'Người khiếu nại', dia_chi:'Địa chỉ',
+        dien_thoai:'Điện thoại', email:'Email', ngay_tiep_nhan:'Ngày tiếp nhận',
+        noi_dung:'Nội dung', phan_loai:'Phân loại', muc_do:'Mức độ',
+        nguoi_xu_ly:'Người xử lý', ngay_xu_ly:'Ngày xử lý', bien_phap:'Biện pháp',
+        ket_qua:'Kết quả', trang_thai:'Trạng thái',
+        tai_lieu_url:'Tài liệu (file)', hinh_anh_url:'Hình ảnh', ghi_chu:'Ghi chú'
+      }},
+      'TaiSan': { table: 'tai_san', cols: {
+        id:'ID', id_nhom:'ID nhóm', ten_tai_san:'Tên tài sản', loai_tai_san:'Loại tài sản',
+        so_luong:'Số lượng', don_vi:'Đơn vị', gia_tri:'Giá trị', ngay_mua:'Ngày mua',
+        nguon_goc:'Nguồn gốc', tinh_trang:'Tình trạng', vi_tri_luu_tru:'Vị trí lưu trữ',
+        nguoi_quan_ly:'Người quản lý', tai_lieu_url:'Tài liệu (file)', hinh_anh_url:'Hình ảnh', ghi_chu:'Ghi chú'
+      }},
+      'DungCu': { table: 'dung_cu_lao_dong', cols: {
+        id:'ID', id_nhom:'ID nhóm', ten_dung_cu:'Tên dụng cụ', loai_dung_cu:'Loại dụng cụ',
+        so_luong_tong:'Số lượng tổng', so_luong_con_lai:'Số lượng còn lại',
+        don_vi:'Đơn vị', tinh_trang:'Tình trạng', vi_tri_luu_tru:'Vị trí lưu trữ',
+        tai_lieu_url:'Tài liệu (file)', hinh_anh_url:'Hình ảnh', ghi_chu:'Ghi chú'
+      }},
+      'MuonTraDC': { table: 'muon_tra_dung_cu', cols: {
+        id:'ID', id_dung_cu:'ID dụng cụ', id_chu_rung:'ID chủ rừng',
+        nguoi_muon:'Người mượn', so_luong_muon:'Số lượng mượn',
+        ngay_muon:'Ngày mượn', ngay_hen_tra:'Ngày hẹn trả', ngay_tra_thuc_te:'Ngày trả thực tế',
+        tinh_trang_tra:'Tình trạng trả', trang_thai:'Trạng thái', ghi_chu:'Ghi chú'
+      }},
+      'EUDR_DotDG': { table: 'dot_dg_eudr', cols: {
+        id:'ID', id_lo_rung:'ID lô rừng', id_nhom:'ID nhóm', id_chu_rung:'ID chủ rừng',
+        ngay_danh_gia:'Ngày đánh giá', nguoi_danh_gia:'Người đánh giá',
+        diem_so:'Điểm số', trang_thai:'Trạng thái', ghi_chu:'Ghi chú', updated_at:'Cập nhật'
+      }},
+      'Banghoi_EUDR': { table: 'bang_hoi_eudr', cols: {
+        id:'ID_hoi', id_dg:'ID_DG', answers:'answers'
+      }},
+      'DM_ThuocBVTV': { table: 'danh_muc_thuoc_bvtv', cols: {
+        id:'ID', ten_thuong_mai:'Tên thương mại', hoat_chat:'Hoạt chất', nhom_thuoc:'Nhóm thuốc',
+        doi_tuong_phong_tru:'Đối tượng phòng trừ', lieu_luong:'Liều lượng', cach_su_dung:'Cách sử dụng',
+        thoi_gian_cach_ly:'Thời gian cách ly', doc_tinh:'Độc tính', ghi_chu:'Ghi chú', trang_thai:'Trạng thái'
+      }},
+      'DM_CayTrong': { table: 'danh_muc_cay_trong', cols: {
+        id:'ID', ten_tieng_viet:'Tên tiếng Việt', ten_khoa_hoc:'Tên khoa học', ho_thuc_vat:'Họ thực vật',
+        nhom_cay:'Nhóm cây', vung_phan_bo:'Vùng phân bố', dac_diem:'Đặc điểm',
+        cong_dung:'Công dụng', ghi_chu:'Ghi chú', trang_thai:'Trạng thái'
+      }},
+      'DM_PhanBon': { table: 'danh_muc_phan_bon', cols: {
+        id:'ID', ten_phan_bon:'Tên phân bón', loai_phan:'Loại phân', thanh_phan:'Thành phần',
+        ham_luong:'Hàm lượng', cach_su_dung:'Cách sử dụng', lieu_luong:'Liều lượng',
+        nha_san_xuat:'Nhà sản xuất', ghi_chu:'Ghi chú', trang_thai:'Trạng thái'
+      }},
+      'NguonGocGiong': { table: 'nguon_goc_cay_giong', cols: {
+        id:'ID', ten_giong:'Tên giống', loai_cay:'Loài cây', xuat_xu:'Xuất xứ',
+        nha_cung_cap:'Nhà cung cấp', dia_chi_ncc:'Địa chỉ NCC', giay_chung_nhan:'Giấy chứng nhận',
+        nam_cung_cap:'Năm cung cấp', chat_luong:'Chất lượng', ghi_chu:'Ghi chú', trang_thai:'Trạng thái'
+      }},
+      'KH_TrongRung': { table: 'kh_trong_rung', cols: {
+        id:'ID', id_nhom:'ID nhóm', id_lo_rung:'ID lô rừng', id_chu_rung:'ID chủ rừng',
+        nam:'Năm', loai_cay:'Loài cây', giong:'Giống', dien_tich:'Diện tích (ha)',
+        mat_do:'Mật độ (cây/ha)', so_cay:'Số cây', thoi_diem_trong:'Thời điểm trồng',
+        phuong_phap:'Phương pháp', kinh_phi:'Kinh phí', nguon_giong:'Nguồn giống',
+        trang_thai:'Trạng thái', nguoi_lap:'Người lập', ghi_chu:'Ghi chú', updated_at:'Cập nhật'
+      }},
+      'KH_KhaiThac': { table: 'kh_khai_thac', cols: {
+        id:'ID', id_nhom:'ID nhóm', id_lo_rung:'ID lô rừng', id_chu_rung:'ID chủ rừng',
+        nam:'Năm', loai_khai_thac:'Loại khai thác', dien_tich:'Diện tích (ha)',
+        san_luong_du_kien:'Sản lượng dự kiến (m³)', thoi_gian_bat_dau:'Bắt đầu',
+        thoi_gian_ket_thuc:'Kết thúc', phuong_phap:'Phương pháp', don_vi_khai_thac:'Đơn vị khai thác',
+        kinh_phi:'Kinh phí', trang_thai:'Trạng thái', nguoi_lap:'Người lập', ghi_chu:'Ghi chú', updated_at:'Cập nhật'
+      }},
+      'KH_TaphuanPlan': { table: 'kh_tap_huan', cols: {
+        id:'ID', id_nhom:'ID nhóm', nam:'Năm', ten_khoa:'Tên khóa', noi_dung:'Nội dung',
+        doi_tuong:'Đối tượng', so_nguoi_du_kien:'Số người dự kiến', thoi_gian_du_kien:'Thời gian dự kiến',
+        dia_diem:'Địa điểm', giang_vien:'Giảng viên', kinh_phi:'Kinh phí',
+        trang_thai:'Trạng thái', nguoi_lap:'Người lập', ghi_chu:'Ghi chú', updated_at:'Cập nhật'
+      }},
+      'KH_CayGiongPlan': { table: 'kh_cay_giong', cols: {
+        id:'ID', id_nhom:'ID nhóm', nam:'Năm', loai_cay:'Loài cây', giong:'Giống',
+        so_luong_cay:'Số lượng cây', nha_cung_cap:'Nhà cung cấp', dia_chi_ncc:'Địa chỉ NCC',
+        thoi_gian_cung_cap:'Thời gian cung cấp', yeu_cau_chat_luong:'Yêu cầu chất lượng',
+        co_chung_nhan:'Có chứng nhận', kinh_phi:'Kinh phí',
+        trang_thai:'Trạng thái', nguoi_lap:'Người lập', ghi_chu:'Ghi chú', updated_at:'Cập nhật'
       }}
     };
 
@@ -3280,6 +3261,66 @@
       },
       'Banghoi_DG_noibo': {
         columns: ['ID_hoi', 'ID_DG', 'RanhGioiRoRang', 'NopThuePhiDayDu', 'GiamSatNoiBo', 'XuLyViPham', 'GiaiQuyetTranhChapNgoaiToa', 'HoSoTranhChap', 'NgungHoatDongKhiTranhChap', 'TuDoThamGiaToChuc', 'KhongLaoDongCuongBuc', 'TraLuongCongBang', 'PhuongThucTraLuongNu', 'NghiThaiSan', 'TrangBiBaoHo', 'BatBuocDungBaoHo', 'HoSoAnToanLaoDong', 'CaiThienAnToanSauSuCo', 'MucLuongToiThieu', 'TraLuongDungHan', 'DaoTaoNguoiLaoDong', 'HoSoDaoTao', 'GiaiQuyetKhieuNai', 'BoiThuongThietHai', 'NhanDienNguoiBanDia', 'TaiLieuHoaQuyenLoi', 'ThamVanNguoiBanDia', 'HoSoThoaThuan', 'BaoVeDiaDiemVanHoa', 'NhanDienCongDong', 'ThamVanCongDong', 'BaoVeQuyenLoiCongDong', 'GiaiQuyetXamPhamQuyenLoi', 'QuyTrinhGiaiQuyetTranhChap', 'XuLyTranhChapCongDong', 'CanCuKhaiThac', 'GioiHanKhaiThac', 'NganNguaTacDongXau', 'GiamThieuTacDong', 'BaoVeLoaiQuyHiem', 'NganChanSanBat', 'TuanThuBaoVeDongVat', 'NganNguoiLaoDongSanBat', 'BaoVeNguonNuoc', 'PhucHoiNguonNuoc', 'KhacPhucHauQuaCu', 'NganChanSuyThoaiTiepDien', 'KhongChuyenDoiRungTuNhien', 'ChungChiKhuVucChuyenDoi', 'CongKhaiKeHoach', 'HeThongTruyXuat', 'TaiLieuHoaSanPham', 'LuuTruHoaDon', 'TrongRungSauKhaiThac', 'LoaiCayPhuHop', 'KiemSoatLoaiXamLan', 'KhongGMO', 'BienPhapLamSinh', 'HanChePhanBonHoaHoc', 'GiamThieuTacHaiPhanBon', 'KhongSuDungThuocCam', 'GhiChepSuDungThuoc', 'AnToanSuDungThuoc', 'GiamThieuLuongThuoc', 'HanCheAnhHuongSucKhoe', 'DanhMucThuocDuocPhep', 'KiemSoatSinhHoc', 'CanhBaoChayRung', 'CapNhatVuChay', 'QuanLyRacThai', 'XuLyRacThai']
+      },
+      'LopTaphuan': {
+        columns: ['ID', 'ID nhóm', 'Tên lớp', 'Nội dung', 'Giảng viên', 'Địa điểm', 'Ngày bắt đầu', 'Ngày kết thúc', 'Số buổi', 'Số người tham gia', 'Kinh phí', 'Kết quả', 'Tài liệu', 'Năm', 'Tài liệu (file)', 'Hình ảnh', 'Báo cáo (file)', 'Ghi chú'],
+        main: ['Tên lớp', 'Giảng viên', 'Ngày bắt đầu', 'Ngày kết thúc', 'Số người tham gia', 'Năm']
+      },
+      'DSHocVien': {
+        columns: ['ID', 'ID lớp tập huấn', 'ID chủ rừng', 'Họ tên', 'Giới tính', 'Đánh giá', 'Ghi chú'],
+        main: ['Họ tên', 'Giới tính', 'Đánh giá']
+      },
+      'KhieuNai': {
+        columns: ['ID', 'ID nhóm', 'Người khiếu nại', 'Địa chỉ', 'Điện thoại', 'Email', 'Ngày tiếp nhận', 'Nội dung', 'Phân loại', 'Mức độ', 'Người xử lý', 'Ngày xử lý', 'Biện pháp', 'Kết quả', 'Trạng thái', 'Tài liệu (file)', 'Hình ảnh', 'Ghi chú'],
+        main: ['Người khiếu nại', 'Ngày tiếp nhận', 'Phân loại', 'Mức độ', 'Trạng thái']
+      },
+      'TaiSan': {
+        columns: ['ID', 'ID nhóm', 'Tên tài sản', 'Loại tài sản', 'Số lượng', 'Đơn vị', 'Giá trị', 'Ngày mua', 'Nguồn gốc', 'Tình trạng', 'Vị trí lưu trữ', 'Người quản lý', 'Tài liệu (file)', 'Hình ảnh', 'Ghi chú'],
+        main: ['Tên tài sản', 'Loại tài sản', 'Số lượng', 'Giá trị', 'Tình trạng']
+      },
+      'DungCu': {
+        columns: ['ID', 'ID nhóm', 'Tên dụng cụ', 'Loại dụng cụ', 'Số lượng tổng', 'Số lượng còn lại', 'Đơn vị', 'Tình trạng', 'Vị trí lưu trữ', 'Tài liệu (file)', 'Hình ảnh', 'Ghi chú'],
+        main: ['Tên dụng cụ', 'Loại dụng cụ', 'Số lượng tổng', 'Số lượng còn lại', 'Tình trạng']
+      },
+      'MuonTraDC': {
+        columns: ['ID', 'ID dụng cụ', 'ID chủ rừng', 'Người mượn', 'Số lượng mượn', 'Ngày mượn', 'Ngày hẹn trả', 'Ngày trả thực tế', 'Tình trạng trả', 'Trạng thái', 'Ghi chú'],
+        main: ['Người mượn', 'Số lượng mượn', 'Ngày mượn', 'Ngày hẹn trả', 'Trạng thái']
+      },
+      'EUDR_DotDG': {
+        columns: ['ID', 'ID lô rừng', 'ID nhóm', 'ID chủ rừng', 'Ngày đánh giá', 'Người đánh giá', 'Điểm số', 'Trạng thái', 'Ghi chú', 'Cập nhật'],
+        main: ['ID lô rừng', 'Ngày đánh giá', 'Người đánh giá', 'Điểm số', 'Trạng thái']
+      },
+      'DM_ThuocBVTV': {
+        columns: ['ID', 'Tên thương mại', 'Hoạt chất', 'Nhóm thuốc', 'Đối tượng phòng trừ', 'Liều lượng', 'Cách sử dụng', 'Thời gian cách ly', 'Độc tính', 'Ghi chú', 'Trạng thái'],
+        main: ['Tên thương mại', 'Hoạt chất', 'Nhóm thuốc', 'Đối tượng phòng trừ', 'Độc tính']
+      },
+      'DM_CayTrong': {
+        columns: ['ID', 'Tên tiếng Việt', 'Tên khoa học', 'Họ thực vật', 'Nhóm cây', 'Vùng phân bố', 'Đặc điểm', 'Công dụng', 'Ghi chú', 'Trạng thái'],
+        main: ['Tên tiếng Việt', 'Tên khoa học', 'Nhóm cây', 'Vùng phân bố']
+      },
+      'DM_PhanBon': {
+        columns: ['ID', 'Tên phân bón', 'Loại phân', 'Thành phần', 'Hàm lượng', 'Cách sử dụng', 'Liều lượng', 'Nhà sản xuất', 'Ghi chú', 'Trạng thái'],
+        main: ['Tên phân bón', 'Loại phân', 'Hàm lượng', 'Nhà sản xuất']
+      },
+      'NguonGocGiong': {
+        columns: ['ID', 'Tên giống', 'Loài cây', 'Xuất xứ', 'Nhà cung cấp', 'Địa chỉ NCC', 'Giấy chứng nhận', 'Năm cung cấp', 'Chất lượng', 'Ghi chú', 'Trạng thái'],
+        main: ['Tên giống', 'Loài cây', 'Xuất xứ', 'Nhà cung cấp', 'Năm cung cấp']
+      },
+      'KH_TrongRung': {
+        columns: ['ID', 'ID nhóm', 'ID lô rừng', 'ID chủ rừng', 'Năm', 'Loài cây', 'Giống', 'Diện tích (ha)', 'Mật độ (cây/ha)', 'Số cây', 'Thời điểm trồng', 'Phương pháp', 'Kinh phí', 'Nguồn giống', 'Trạng thái', 'Người lập', 'Ghi chú', 'Cập nhật'],
+        main: ['Năm', 'Loài cây', 'Diện tích (ha)', 'Số cây', 'Trạng thái', 'Người lập']
+      },
+      'KH_KhaiThac': {
+        columns: ['ID', 'ID nhóm', 'ID lô rừng', 'ID chủ rừng', 'Năm', 'Loại khai thác', 'Diện tích (ha)', 'Sản lượng dự kiến (m³)', 'Bắt đầu', 'Kết thúc', 'Phương pháp', 'Đơn vị khai thác', 'Kinh phí', 'Trạng thái', 'Người lập', 'Ghi chú', 'Cập nhật'],
+        main: ['Năm', 'Loại khai thác', 'Diện tích (ha)', 'Sản lượng dự kiến (m³)', 'Trạng thái']
+      },
+      'KH_TaphuanPlan': {
+        columns: ['ID', 'ID nhóm', 'Năm', 'Tên khóa', 'Nội dung', 'Đối tượng', 'Số người dự kiến', 'Thời gian dự kiến', 'Địa điểm', 'Giảng viên', 'Kinh phí', 'Trạng thái', 'Người lập', 'Ghi chú', 'Cập nhật'],
+        main: ['Năm', 'Tên khóa', 'Đối tượng', 'Thời gian dự kiến', 'Trạng thái']
+      },
+      'KH_CayGiongPlan': {
+        columns: ['ID', 'ID nhóm', 'Năm', 'Loài cây', 'Giống', 'Số lượng cây', 'Nhà cung cấp', 'Địa chỉ NCC', 'Thời gian cung cấp', 'Yêu cầu chất lượng', 'Có chứng nhận', 'Kinh phí', 'Trạng thái', 'Người lập', 'Ghi chú', 'Cập nhật'],
+        main: ['Năm', 'Loài cây', 'Số lượng cây', 'Nhà cung cấp', 'Trạng thái']
       }
     };
 
@@ -3370,6 +3411,164 @@
         { id: "CapNhatVuChay", label: "Thông tin về các vụ cháy rừng có được cập nhật đầy đủ không?", index: "10.9.3" },
         { id: "QuanLyRacThai", label: "Có đảm bảo không vứt rác thải bừa bãi và thu gom vỏ thuốc BVTV đúng quy định không?", index: "10.12.1" },
         { id: "XuLyRacThai", label: "Hệ thống xử lý rác thải có hoạt động đúng chức năng không?", index: "10.12.2" }
+      ]
+    };
+
+    // === EUDR COMPLIANCE DICTIONARY ===
+    const EUDR_DICTIONARY = {
+      "1. Hợp pháp": [
+        { id: "EUDR_NguonGocHopPhap", label: "Gỗ và sản phẩm gỗ có nguồn gốc hợp pháp theo luật pháp Việt Nam không?", index: "1.1",
+          detail: "Theo Điều 4 EUDR (EU 2023/1115), sản phẩm phải được sản xuất phù hợp với luật pháp quốc gia sản xuất. Tại Việt Nam, nguồn gốc hợp pháp được xác định theo Luật Lâm nghiệp 2017 (Điều 69-72), Nghị định 102/2024/NĐ-CP về hệ thống đảm bảo gỗ hợp pháp Việt Nam (VNTLAS).",
+          evidence: "Giấy chứng nhận nguồn gốc gỗ, Bảng kê lâm sản, Hồ sơ khai thác, Giấy phép FLEGT (nếu có), Hợp đồng mua bán gỗ",
+          legal: "EUDR Điều 3(1), Luật Lâm nghiệp 2017, NĐ 102/2024/NĐ-CP" },
+        { id: "EUDR_GiayPhepKhaiThac", label: "Có đầy đủ giấy phép khai thác và vận chuyển gỗ theo quy định không?", index: "1.2",
+          detail: "EUDR yêu cầu tuân thủ đầy đủ các quy định về khai thác và vận chuyển. Rừng trồng sản xuất cần có: Phương án khai thác được phê duyệt (theo Thông tư 26/2022/TT-BNNPTNT), Giấy phép vận chuyển lâm sản. Đối với rừng FSC, cần bổ sung các yêu cầu về khai thác tác động thấp (RIL).",
+          evidence: "Phương án khai thác được UBND phê duyệt, Bảng kê lâm sản, Phiếu xuất kho, Hóa đơn bán hàng, Nhật ký khai thác",
+          legal: "EUDR Điều 3(1)(a), TT 26/2022/TT-BNNPTNT, Luật Lâm nghiệp Điều 58-60" },
+        { id: "EUDR_TuanThuLuatDat", label: "Quyền sử dụng đất có hợp pháp (sổ đỏ/GCN QSDĐ) không?", index: "1.3",
+          detail: "EUDR yêu cầu quyền sử dụng đất phải hợp pháp theo luật quốc gia. Tại Việt Nam cần có Giấy chứng nhận Quyền sử dụng đất (sổ đỏ) theo Luật Đất đai 2024. Trường hợp chưa cấp sổ đỏ cần có các giấy tờ hợp lệ khác: Quyết định giao đất, hợp đồng thuê đất, hoặc giấy tờ theo Điều 100 Luật Đất đai 2013.",
+          evidence: "Giấy chứng nhận QSDĐ (sổ đỏ), Quyết định giao đất, Hợp đồng thuê đất, Bản đồ địa chính, Sổ mục kê đất đai",
+          legal: "EUDR Điều 3(1)(a), Luật Đất đai 2024, Luật Lâm nghiệp 2017 Điều 7" },
+        { id: "EUDR_NopThue", label: "Các loại thuế và phí liên quan đến khai thác, vận chuyển gỗ đã nộp đầy đủ chưa?", index: "1.4",
+          detail: "EUDR bao gồm nghĩa vụ tài chính như một phần của tính hợp pháp. Các khoản phải nộp bao gồm: Thuế tài nguyên (theo Luật Thuế tài nguyên 2009), Phí dịch vụ môi trường rừng (PFES theo NĐ 156/2018), Tiền thuê đất rừng (nếu thuê), Phí kiểm lâm và các phí liên quan khác.",
+          evidence: "Biên lai/chứng từ nộp thuế tài nguyên, Biên lai PFES, Hóa đơn VAT, Giấy xác nhận hoàn thành nghĩa vụ tài chính",
+          legal: "EUDR Điều 3(1)(a), Luật Thuế tài nguyên 2009, NĐ 156/2018/NĐ-CP" },
+        { id: "EUDR_TuanThuLuatMT", label: "Có tuân thủ các quy định về bảo vệ môi trường trong hoạt động lâm nghiệp không?", index: "1.5",
+          detail: "EUDR tham chiếu rộng đến luật môi trường quốc gia. Hoạt động lâm nghiệp phải tuân thủ: Luật Bảo vệ môi trường 2020 (đánh giá tác động môi trường nếu thuộc danh mục), Luật Đa dạng sinh học 2008, quy định về quản lý chất thải rắn, thuốc BVTV, phòng cháy chữa cháy rừng (NĐ 156/2018).",
+          evidence: "Báo cáo đánh giá tác động môi trường (nếu có), Kế hoạch phòng cháy chữa cháy rừng, Nhật ký sử dụng hóa chất, Kế hoạch quản lý môi trường",
+          legal: "EUDR Điều 3(1)(a), Luật BVMT 2020, Luật Đa dạng sinh học 2008, NĐ 156/2018" }
+      ],
+      "2. Không phá rừng": [
+        { id: "EUDR_KhongPhaRung", label: "Có chứng minh được rằng không có phá rừng sau ngày 31/12/2020 không?", index: "2.1",
+          detail: "Đây là yêu cầu cốt lõi của EUDR. Điều 2(13) định nghĩa 'phá rừng' là chuyển đổi rừng sang sử dụng nông nghiệp. Mốc thời gian quan trọng: 31/12/2020 (cut-off date). Sản phẩm gỗ chỉ được phép nếu khu vực sản xuất KHÔNG bị phá rừng sau ngày này. Áp dụng định nghĩa rừng của FAO: >0.5ha, cây cao >5m, tán che >10%.",
+          evidence: "Ảnh vệ tinh thời điểm 31/12/2020 và hiện tại (Sentinel-2, Planet, Google Earth Pro), Bản đồ hiện trạng rừng qua các năm, Xác nhận của cơ quan kiểm lâm địa phương",
+          legal: "EUDR Điều 2(13), Điều 3(1)(b), Phụ lục I - định nghĩa rừng FAO" },
+        { id: "EUDR_BanDoRung2020", label: "Có bản đồ/ảnh vệ tinh chứng minh hiện trạng rừng tại thời điểm 31/12/2020 không?", index: "2.2",
+          detail: "EUDR yêu cầu bằng chứng không gian (geolocation) cho mỗi lô đất sản xuất. Cần có dữ liệu viễn thám hoặc bản đồ tại thời điểm tham chiếu 31/12/2020 để so sánh với hiện trạng. Dữ liệu có thể từ: Google Earth Pro (miễn phí), Sentinel-2 (ESA Copernicus), ảnh drone, hoặc bản đồ kiểm kê rừng quốc gia.",
+          evidence: "Ảnh vệ tinh Sentinel-2 hoặc Planet Labs chụp quanh ngày 31/12/2020, Bản đồ kiểm kê rừng cấp xã, Screenshot Google Earth Pro có timestamp, Báo cáo biến động rừng hàng năm",
+          legal: "EUDR Điều 9(1)(d), Điều 2(28) - geolocation, Phụ lục II" },
+        { id: "EUDR_KhongChuyenDoi", label: "Có đảm bảo không chuyển đổi rừng tự nhiên sang rừng trồng hoặc đất nông nghiệp không?", index: "2.3",
+          detail: "EUDR cấm sản phẩm từ đất có nguồn gốc chuyển đổi từ rừng tự nhiên (kể cả thành rừng trồng). Điều này đặc biệt quan trọng với Việt Nam nơi có lịch sử chuyển đổi rừng tự nhiên thành rừng keo/bạch đàn. Cần phân biệt rõ: rừng trồng trên đất trống (chấp nhận) vs rừng trồng trên đất rừng tự nhiên bị phá (không chấp nhận).",
+          evidence: "Lịch sử sử dụng đất (hồ sơ địa chính qua các năm), Bản đồ quy hoạch 3 loại rừng, Xác nhận của kiểm lâm về nguồn gốc đất, Ảnh vệ tinh so sánh đa thời gian",
+          legal: "EUDR Điều 2(13)(14), Điều 3(1)(b), FSC P&C Nguyên tắc 6" },
+        { id: "EUDR_DienTichOnDinh", label: "Diện tích rừng có được duy trì ổn định hoặc tăng so với mốc 31/12/2020 không?", index: "2.4",
+          detail: "Ngoài việc không phá rừng, EUDR kỳ vọng diện tích rừng được duy trì hoặc tăng. Điều này phù hợp với chính sách Việt Nam về tăng độ che phủ rừng (mục tiêu 42% năm 2025). Cần theo dõi biến động diện tích rừng hàng năm, bao gồm cả rừng trồng mới, rừng tái sinh tự nhiên, và diện tích rừng bị mất do thiên tai hoặc sâu bệnh.",
+          evidence: "Số liệu kiểm kê rừng hàng năm, Bản đồ biến động rừng, Báo cáo trồng rừng mới, Dữ liệu Global Forest Watch hoặc tương đương",
+          legal: "EUDR Điều 2(14) - suy thoái rừng, Chiến lược phát triển lâm nghiệp VN 2021-2030" },
+        { id: "EUDR_GiamSatBienDong", label: "Có hệ thống giám sát biến động rừng định kỳ (ảnh vệ tinh, drone, thực địa) không?", index: "2.5",
+          detail: "EUDR yêu cầu hệ thống giám sát liên tục (Điều 10). Hệ thống giám sát nên bao gồm: (1) Viễn thám: sử dụng ảnh vệ tinh miễn phí Sentinel-2 (cập nhật mỗi 5 ngày) hoặc Global Forest Watch Alerts; (2) Drone: bay chụp định kỳ 6 tháng/lần cho các khu vực rủi ro cao; (3) Thực địa: tuần tra định kỳ hàng tháng kết hợp GPS tracking.",
+          evidence: "Quy trình giám sát biến động rừng (SOP), Báo cáo giám sát định kỳ, Dữ liệu ảnh vệ tinh/drone, Nhật ký tuần tra thực địa có tọa độ GPS",
+          legal: "EUDR Điều 10 - monitoring, FSC P&C Nguyên tắc 8" }
+      ],
+      "3. Không suy thoái rừng": [
+        { id: "EUDR_KhongSuyThoai", label: "Hoạt động khai thác có đảm bảo không làm suy thoái cấu trúc và chức năng hệ sinh thái rừng không?", index: "3.1",
+          detail: "EUDR Điều 2(14) định nghĩa 'suy thoái rừng' là thay đổi cấu trúc từ rừng nguyên sinh hoặc tái sinh tự nhiên sang rừng trồng hoặc đất có cây gỗ khác. Đối với rừng trồng sản xuất, cần đảm bảo: khai thác không gây xói mòn đất nghiêm trọng, duy trì khả năng tái sinh, bảo vệ các vùng đệm ven suối và khu vực nhạy cảm.",
+          evidence: "Kế hoạch khai thác tác động thấp (RIL), Đánh giá tác động môi trường trước khai thác, Báo cáo phục hồi sau khai thác, Ảnh trước-sau khai thác",
+          legal: "EUDR Điều 2(14), Điều 3(1)(c), FSC P&C Nguyên tắc 6, Nguyên tắc 10" },
+        { id: "EUDR_KhaiThacBenVung", label: "Lượng khai thác có nằm trong giới hạn bền vững (không vượt tăng trưởng) không?", index: "3.2",
+          detail: "Nguyên tắc cơ bản: lượng khai thác hàng năm (Annual Allowable Cut - AAC) không được vượt quá lượng tăng trưởng hàng năm (Mean Annual Increment - MAI). Đối với rừng keo trồng, MAI thường 15-25 m3/ha/năm tùy lập địa. Cần có kế hoạch khai thác luân kỳ phù hợp (thường 6-8 năm cho keo).",
+          evidence: "Kế hoạch quản lý rừng có tính toán AAC, Dữ liệu tăng trưởng (ô tiêu chuẩn), Nhật ký khai thác ghi khối lượng, Báo cáo kiểm kê trước khai thác",
+          legal: "EUDR Điều 2(14), FSC P&C Tiêu chí 5.2, TT 26/2022/TT-BNNPTNT" },
+        { id: "EUDR_BaoVeLoaiQuyHiem", label: "Có biện pháp bảo vệ các loài quý hiếm, đặc hữu và sinh cảnh nhạy cảm không?", index: "3.3",
+          detail: "EUDR liên quan đến bảo vệ đa dạng sinh học trong khu vực sản xuất. Cần: (1) Khảo sát đa dạng sinh học ban đầu; (2) Xác định các loài trong Sách Đỏ Việt Nam và IUCN; (3) Thiết lập vùng bảo vệ đặc biệt (HCVF); (4) Đào tạo công nhân nhận biết và báo cáo loài quý hiếm.",
+          evidence: "Báo cáo đánh giá đa dạng sinh học, Danh sách loài quý hiếm phát hiện, Bản đồ vùng HCVF/vùng đệm, Kế hoạch bảo vệ loài quý hiếm",
+          legal: "EUDR Điều 3(1), Luật Đa dạng sinh học 2008, NĐ 84/2021/NĐ-CP, FSC P&C Nguyên tắc 6.4, 9" },
+        { id: "EUDR_PhucHoiRung", label: "Có kế hoạch và thực hiện phục hồi rừng sau khai thác không?", index: "3.4",
+          detail: "Phục hồi rừng sau khai thác là yêu cầu bắt buộc để đảm bảo tính bền vững. Yêu cầu: trồng lại trong vòng 1 mùa vụ sau khai thác (tối đa 6 tháng), sử dụng giống đạt tiêu chuẩn, mật độ trồng phù hợp (thường 1.660-2.000 cây/ha cho keo), chăm sóc bảo vệ 3 năm đầu.",
+          evidence: "Kế hoạch trồng rừng sau khai thác, Hồ sơ giống cây (xuất xứ, giấy chứng nhận), Nhật ký trồng và chăm sóc, Ảnh hiện trường trước-sau trồng",
+          legal: "EUDR Điều 2(14), FSC P&C Tiêu chí 10.1, TT 29/2018/TT-BNNPTNT" },
+        { id: "EUDR_BaoVeNguonNuoc", label: "Có biện pháp bảo vệ nguồn nước, hành lang ven suối trong khu vực khai thác không?", index: "3.5",
+          detail: "Bảo vệ nguồn nước là chỉ số quan trọng về suy thoái rừng. Yêu cầu: (1) Thiết lập hành lang ven suối tối thiểu 10-30m tùy quy mô (FSC yêu cầu 10-50m); (2) Không khai thác trong hành lang ven suối; (3) Không xây đường vận chuyển cắt ngang suối nếu không có cầu/cống; (4) Giám sát chất lượng nước định kỳ.",
+          evidence: "Bản đồ hành lang ven suối và vùng đệm, Quy trình bảo vệ nguồn nước (SOP), Kết quả giám sát chất lượng nước, Ảnh khu vực hành lang ven suối",
+          legal: "EUDR Điều 2(14), FSC P&C Tiêu chí 6.7, Luật Tài nguyên nước 2023" }
+      ],
+      "4. Truy xuất nguồn gốc": [
+        { id: "EUDR_ToaDoGPS", label: "Tất cả lô rừng có tọa độ GPS (polygon/điểm) được ghi nhận chính xác không?", index: "4.1",
+          detail: "EUDR Điều 9(1)(d) yêu cầu geolocation (định vị địa lý) bắt buộc cho tất cả lô đất sản xuất. Quy định: lô <4ha cần tọa độ 1 điểm trung tâm; lô ≥4ha cần đa giác (polygon) với đủ điểm để mô tả chính xác chu vi. Tọa độ phải ở hệ WGS84, độ chính xác <10m. Hệ thống FSCFM đã tích hợp GIS cho mục đích này.",
+          evidence: "File GeoJSON/Shapefile tọa độ các lô rừng, GPS waypoints hiện trường, Bản đồ kỹ thuật số với polygon, Dữ liệu GIS trên hệ thống FSCFM",
+          legal: "EUDR Điều 9(1)(d), Điều 2(28) - định nghĩa geolocation, Phụ lục II" },
+        { id: "EUDR_ChuoiCungUng", label: "Có hệ thống theo dõi chuỗi cung ứng từ rừng đến nhà máy không?", index: "4.2",
+          detail: "EUDR yêu cầu truy xuất nguồn gốc đầy đủ (Điều 9). Chuỗi cung ứng gỗ tại Việt Nam thường gồm: Rừng → Bãi gỗ tạm → Xưởng sơ chế → Nhà máy chế biến → Xuất khẩu. Mỗi khâu cần: (1) Ghi nhận khối lượng đầu vào-đầu ra; (2) Mã số truy xuất; (3) Hóa đơn/bảng kê; (4) Đối soát định kỳ.",
+          evidence: "Sơ đồ chuỗi cung ứng (supply chain map), Hệ thống CoC (Chain of Custody), Hóa đơn mua bán các khâu, Báo cáo đối soát khối lượng",
+          legal: "EUDR Điều 9(1)(a-g), Điều 4(2), FSC P&C Tiêu chí 8.5" },
+        { id: "EUDR_MaSoLo", label: "Mỗi lô gỗ khai thác có mã số truy xuất duy nhất không?", index: "4.3",
+          detail: "Hệ thống mã số truy xuất (lot identification) giúp liên kết sản phẩm với nguồn gốc. Đề xuất format mã: [MÃ NHÓM]-[MÃ LÔ RỪNG]-[NĂM]-[SỐ THỨ TỰ], ví dụ: VT01-LR015-2025-001. Mã phải được đánh dấu trên gỗ (sơn, bảng gắn, dập), ghi trên bảng kê lâm sản, và lưu trong hệ thống điện tử.",
+          evidence: "Quy trình đánh mã số (SOP), Mẫu bảng kê lâm sản có mã truy xuất, Ảnh gỗ được đánh dấu mã, Cơ sở dữ liệu mã lô gỗ",
+          legal: "EUDR Điều 9(1)(c), VNTLAS - NĐ 102/2024, FSC P&C Tiêu chí 8.5" },
+        { id: "EUDR_HoSoVanChuyen", label: "Hồ sơ vận chuyển gỗ (bảng kê, phiếu xuất kho) có đầy đủ và chính xác không?", index: "4.4",
+          detail: "Hồ sơ vận chuyển là mắt xích quan trọng trong chuỗi truy xuất. Theo quy định Việt Nam (TT 26/2022), vận chuyển gỗ cần: Bảng kê lâm sản (có xác nhận kiểm lâm cho gỗ rừng tự nhiên), Phiếu xuất kho, Hóa đơn VAT, Giấy phép vận chuyển (nếu cần). Tất cả phải khớp về khối lượng, chủng loại, nguồn gốc.",
+          evidence: "Bảng kê lâm sản (form mẫu theo TT 26), Phiếu xuất kho, Hóa đơn VAT, Biên bản kiểm tra vận chuyển (nếu có)",
+          legal: "EUDR Điều 9(1)(c)(e), TT 26/2022/TT-BNNPTNT, NĐ 102/2024" },
+        { id: "EUDR_LienKetBanDo", label: "Dữ liệu khai thác có liên kết được với bản đồ/GIS của lô rừng không?", index: "4.5",
+          detail: "Đây là yêu cầu tích hợp giữa truy xuất nguồn gốc và geolocation. Mỗi lô gỗ khai thác phải liên kết được với: (1) Polygon/tọa độ GPS lô rừng cụ thể; (2) Thông tin chủ rừng; (3) Diện tích và trữ lượng. Hệ thống FSCFM đã thiết kế tính năng này với tích hợp GIS và cơ sở dữ liệu lô rừng.",
+          evidence: "Bản đồ GIS lô rừng khai thác, Dữ liệu liên kết lô gỗ - lô rừng - chủ rừng, Ảnh GPS tại hiện trường, Báo cáo khai thác có bản đồ đính kèm",
+          legal: "EUDR Điều 9(1)(d)(e), Phụ lục II" }
+      ],
+      "5. Thẩm định trách nhiệm giải trình": [
+        { id: "EUDR_ThuThapThongTin", label: "Có thu thập đầy đủ thông tin về nhà cung cấp, nguồn gốc sản phẩm và quốc gia xuất xứ không?", index: "5.1",
+          detail: "EUDR Điều 9 quy định 12 loại thông tin bắt buộc phải thu thập: Mô tả sản phẩm, Khối lượng, Quốc gia sản xuất, Geolocation, Tên và địa chỉ nhà cung cấp, Tên và địa chỉ người mua, Bằng chứng rủi ro thấp về phá rừng, Bằng chứng tuân thủ luật pháp. Thông tin phải đầy đủ và có thể xác minh.",
+          evidence: "Hồ sơ nhà cung cấp đầy đủ (tên, địa chỉ, MST, giấy phép), Hợp đồng mua bán, Tuyên bố tuân thủ EUDR (DDS Statement), Chứng nhận FSC/PEFC (nếu có)",
+          legal: "EUDR Điều 9(1)(a-l), Điều 4(1)(2)" },
+        { id: "EUDR_DanhGiaRuiRo", label: "Có thực hiện đánh giá rủi ro về phá rừng và vi phạm pháp luật trong chuỗi cung ứng không?", index: "5.2",
+          detail: "EUDR Điều 10 yêu cầu đánh giá rủi ro (Risk Assessment) dựa trên: (1) Phân loại rủi ro quốc gia (EU sẽ công bố benchmarking); (2) Lịch sử phá rừng khu vực; (3) Mức độ phức tạp chuỗi cung ứng; (4) Tình hình quản trị rừng địa phương; (5) Thông tin từ bên thứ ba. Việt Nam có thể được xếp hạng 'rủi ro tiêu chuẩn' hoặc 'rủi ro thấp'.",
+          evidence: "Báo cáo đánh giá rủi ro (Risk Assessment Report), Ma trận rủi ro (risk matrix), Dữ liệu Global Forest Watch cho khu vực, Kết quả benchmarking quốc gia (khi EU công bố)",
+          legal: "EUDR Điều 10(1-3), Điều 29 - benchmarking quốc gia" },
+        { id: "EUDR_GiamThieuRuiRo", label: "Có biện pháp giảm thiểu rủi ro khi phát hiện rủi ro không thể bỏ qua không?", index: "5.3",
+          detail: "Khi đánh giá rủi ro cho kết quả 'không thể bỏ qua' (non-negligible), EUDR Điều 10(4) yêu cầu phải thực hiện biện pháp giảm thiểu. Các biện pháp bao gồm: kiểm tra thực địa, kiểm toán bổ sung, yêu cầu tài liệu bổ sung từ nhà cung cấp, sử dụng ảnh vệ tinh phân giải cao, thuê bên thứ ba đánh giá độc lập.",
+          evidence: "Kế hoạch giảm thiểu rủi ro, Báo cáo kiểm tra thực địa, Kết quả kiểm toán bổ sung, Ảnh vệ tinh phân giải cao khu vực rủi ro",
+          legal: "EUDR Điều 10(4)(5), Điều 11" },
+        { id: "EUDR_RaSoatDinhKy", label: "Có rà soát và cập nhật đánh giá rủi ro định kỳ (ít nhất hàng năm) không?", index: "5.4",
+          detail: "EUDR yêu cầu hệ thống thẩm định phải được rà soát và cập nhật thường xuyên. Tần suất tối thiểu: hàng năm, hoặc ngay lập tức khi có thông tin mới đáng chú ý (cảnh báo phá rừng, thay đổi pháp luật, khiếu nại bên thứ ba). Mỗi lần rà soát cần đánh giá lại: tất cả nhà cung cấp, thay đổi chính sách, dữ liệu viễn thám mới nhất.",
+          evidence: "Lịch rà soát đánh giá rủi ro, Báo cáo rà soát hàng năm, Biên bản họp rà soát, Cập nhật ma trận rủi ro",
+          legal: "EUDR Điều 10(6), Điều 12" },
+        { id: "EUDR_LuuTruHoSo", label: "Hồ sơ thẩm định có được lưu trữ ít nhất 5 năm và sẵn sàng cung cấp cho cơ quan kiểm tra không?", index: "5.5",
+          detail: "EUDR Điều 12(1) yêu cầu lưu trữ tất cả hồ sơ thẩm định tối thiểu 5 năm kể từ ngày đưa sản phẩm ra thị trường hoặc xuất khẩu. Hồ sơ phải: (1) Dạng số hóa (digital); (2) Dễ truy cập; (3) Có thể cung cấp cho cơ quan thẩm quyền trong vòng 72 giờ khi được yêu cầu. Hệ thống FSCFM hỗ trợ lưu trữ điện tử đáp ứng yêu cầu này.",
+          evidence: "Hệ thống lưu trữ hồ sơ điện tử (FSCFM), Chính sách lưu trữ hồ sơ, Bằng chứng backup dữ liệu, Quy trình cung cấp hồ sơ khi được kiểm tra",
+          legal: "EUDR Điều 12(1)(2), Điều 18 - quyền kiểm tra của cơ quan thẩm quyền" }
+      ],
+      "6. Quyền con người và lao động": [
+        { id: "EUDR_QuyenBanDia", label: "Quyền của người dân bản địa và cộng đồng địa phương có được tôn trọng không?", index: "6.1",
+          detail: "EUDR tham chiếu đến Tuyên bố Liên hợp quốc về Quyền của Người bản địa (UNDRIP). Tại Việt Nam, cần tôn trọng: quyền sử dụng đất truyền thống của đồng bào dân tộc thiểu số, quyền tiếp cận rừng cộng đồng, quyền hưởng lợi từ dịch vụ hệ sinh thái rừng (PFES). Đặc biệt quan trọng tại khu vực Tây Nguyên, miền núi phía Bắc.",
+          evidence: "Hồ sơ tham vấn cộng đồng, Biên bản họp thôn/bản, Bản đồ sử dụng đất truyền thống, Thỏa thuận chia sẻ lợi ích",
+          legal: "EUDR Điều 3(1)(a) - luật quốc gia, UNDRIP, Luật Lâm nghiệp 2017 Điều 84-91, FSC P&C Nguyên tắc 3-4" },
+        { id: "EUDR_ThamVanCongDong", label: "Có thực hiện tham vấn cộng đồng trước khi triển khai hoạt động lâm nghiệp không?", index: "6.2",
+          detail: "Nguyên tắc FPIC (Free, Prior and Informed Consent - Đồng thuận tự do, trước, có đầy đủ thông tin) là yêu cầu bắt buộc trong FSC và liên quan đến EUDR. Quy trình tham vấn cần: (1) Thông báo trước ít nhất 30 ngày; (2) Cung cấp thông tin bằng ngôn ngữ dễ hiểu; (3) Cho phép phản đối; (4) Ghi nhận kết quả tham vấn bằng văn bản.",
+          evidence: "Biên bản tham vấn cộng đồng (có chữ ký), Thông báo triệu tập họp, Danh sách người tham dự, Ý kiến phản hồi bằng văn bản, Ảnh cuộc họp",
+          legal: "EUDR Điều 3(1)(a), UNDRIP Điều 10-32, FSC P&C Nguyên tắc 3-4, Luật Lâm nghiệp Điều 29" },
+        { id: "EUDR_KhongLaoDongTE", label: "Có đảm bảo không sử dụng lao động trẻ em và lao động cưỡng bức không?", index: "6.3",
+          detail: "EUDR tham chiếu đến Công ước ILO 138 (tuổi lao động tối thiểu) và 182 (cấm các hình thức lao động trẻ em tồi tệ nhất). Tại Việt Nam: cấm sử dụng lao động dưới 15 tuổi cho công việc nặng nhọc (Bộ luật Lao động 2019, Điều 143-147). Đặc biệt chú ý trong mùa khai thác khi nhu cầu lao động tăng cao.",
+          evidence: "Chính sách chống lao động trẻ em/cưỡng bức, Hồ sơ lao động (CMND/CCCD, hợp đồng), Biên bản kiểm tra lao động, Cam kết của nhà thầu khai thác",
+          legal: "EUDR Điều 3(1)(a), ILO C138, C182, Bộ luật Lao động 2019 Điều 143-147, FSC P&C Nguyên tắc 2" },
+        { id: "EUDR_AnToanLaoDong", label: "Người lao động có được trang bị bảo hộ và đào tạo an toàn lao động không?", index: "6.4",
+          detail: "An toàn lao động trong lâm nghiệp đặc biệt quan trọng do tính chất nguy hiểm của công việc khai thác. Yêu cầu: (1) Trang bị bảo hộ đầy đủ (mũ, găng tay, ủng, kính, tai nghe); (2) Đào tạo sử dụng cưa xăng, vận hành máy móc; (3) Hộp sơ cứu tại hiện trường; (4) Bảo hiểm tai nạn lao động; (5) Quy trình xử lý sự cố.",
+          evidence: "Hồ sơ cấp phát bảo hộ lao động, Chứng chỉ đào tạo ATLĐ, Sổ theo dõi tai nạn lao động, Hợp đồng bảo hiểm, Ảnh bảo hộ tại hiện trường",
+          legal: "EUDR Điều 3(1)(a), ILO C155, Luật ATVSLĐ 2015, NĐ 39/2016, FSC P&C Tiêu chí 2.3" },
+        { id: "EUDR_MucLuongCongBang", label: "Mức lương có đảm bảo công bằng và không thấp hơn quy định tối thiểu không?", index: "6.5",
+          detail: "EUDR liên kết với luật lao động quốc gia về tiền lương. Yêu cầu: (1) Lương không thấp hơn mức lương tối thiểu vùng (NĐ 74/2024: Vùng I: 4.960.000đ, Vùng II: 4.410.000đ, Vùng III: 3.860.000đ, Vùng IV: 3.450.000đ); (2) Trả lương đúng hạn; (3) Không khấu trừ bất hợp lý; (4) Trả thêm giờ theo quy định.",
+          evidence: "Bảng lương/phiếu trả lương, Hợp đồng lao động, Sổ bảo hiểm xã hội, Biên lai chuyển khoản lương",
+          legal: "EUDR Điều 3(1)(a), ILO C100 (bình đẳng), Bộ luật LĐ 2019 Điều 90-97, NĐ 74/2024, FSC P&C Tiêu chí 2.4" }
+      ],
+      "7. Quản lý rủi ro": [
+        { id: "EUDR_HeThongQLRR", label: "Có hệ thống quản lý rủi ro về phá rừng và tuân thủ EUDR không?", index: "7.1",
+          detail: "Hệ thống quản lý rủi ro EUDR nên bao gồm: (1) Chính sách cam kết không phá rừng cấp tổ chức; (2) Quy trình đánh giá và phân loại rủi ro; (3) Biện pháp giảm thiểu cho từng mức rủi ro; (4) Cơ chế giám sát và cảnh báo sớm; (5) Phân công trách nhiệm rõ ràng; (6) Ngân sách cho hoạt động thẩm định.",
+          evidence: "Chính sách không phá rừng (Zero Deforestation Policy), Quy trình quản lý rủi ro (SOP), Sơ đồ tổ chức phân công, Ngân sách thẩm định EUDR",
+          legal: "EUDR Điều 8-12, Điều 4(1)" },
+        { id: "EUDR_PhanLoaiRuiRo", label: "Rủi ro có được phân loại (thấp/trung bình/cao) và xử lý theo mức độ không?", index: "7.2",
+          detail: "Ma trận phân loại rủi ro EUDR nên dựa trên: (1) Mức rủi ro quốc gia (EU benchmarking); (2) Lịch sử phá rừng khu vực (dữ liệu Global Forest Watch); (3) Mức độ phức tạp chuỗi cung ứng; (4) Chất lượng quản trị. Phân loại: Thấp (tự chứng nhận), Trung bình (kiểm tra tăng cường), Cao (kiểm toán bên thứ ba). Tần suất kiểm tra tăng theo mức rủi ro.",
+          evidence: "Ma trận rủi ro (risk matrix), Kết quả phân loại từng nhà cung cấp/khu vực, Kế hoạch hành động theo mức rủi ro, Báo cáo kiểm toán (cho rủi ro cao)",
+          legal: "EUDR Điều 10(2)(3), Điều 29(2) - benchmarking" },
+        { id: "EUDR_KhacPhucRuiRo", label: "Có kế hoạch khắc phục khi phát hiện rủi ro hoặc vi phạm không?", index: "7.3",
+          detail: "Khi phát hiện vi phạm hoặc rủi ro nghiêm trọng, cần có quy trình khắc phục bao gồm: (1) Ngừng giao dịch với nguồn vi phạm; (2) Điều tra nguyên nhân; (3) Yêu cầu nhà cung cấp khắc phục; (4) Xác minh khắc phục; (5) Báo cáo cho cơ quan thẩm quyền (nếu luật yêu cầu). Thời hạn khắc phục tùy mức độ (30-90 ngày).",
+          evidence: "Quy trình khắc phục vi phạm (Corrective Action Procedure), Hồ sơ CAR (Corrective Action Request), Biên bản xác minh khắc phục, Thông báo cho cơ quan thẩm quyền (nếu có)",
+          legal: "EUDR Điều 10(4)(5), Điều 23-24 - xử phạt" },
+        { id: "EUDR_DaoTaoEUDR", label: "Nhân viên có được đào tạo về yêu cầu EUDR và quy trình thẩm định không?", index: "7.4",
+          detail: "Đào tạo EUDR cần thiết cho: (1) Ban quản lý nhóm (hiểu tổng quan EUDR, trách nhiệm); (2) Cán bộ quản lý rừng (quy trình thẩm định, thu thập dữ liệu); (3) Công nhân khai thác (nhận biết khu vực cấm, ghi nhận tọa độ); (4) Nông hộ (yêu cầu cơ bản, lưu hồ sơ). Tần suất đào tạo: ít nhất 1 lần/năm, cập nhật khi EUDR thay đổi.",
+          evidence: "Chương trình đào tạo EUDR, Danh sách người tham dự + chữ ký, Tài liệu đào tạo, Kết quả đánh giá sau đào tạo, Ảnh đào tạo",
+          legal: "EUDR Điều 4(1) - nghĩa vụ thẩm định, FSC P&C Tiêu chí 2.1" },
+        { id: "EUDR_BaoCaoTuanThu", label: "Có báo cáo tuân thủ EUDR định kỳ cho ban quản lý và cơ quan liên quan không?", index: "7.5",
+          detail: "Báo cáo tuân thủ EUDR nên bao gồm: (1) Tổng quan hoạt động thẩm định trong kỳ; (2) Kết quả đánh giá rủi ro; (3) Các vi phạm/rủi ro phát hiện và biện pháp khắc phục; (4) Thống kê khối lượng sản phẩm và nguồn gốc; (5) Cập nhật geolocation; (6) Kế hoạch cải thiện. Tần suất: 6 tháng/lần cho nội bộ, hàng năm cho bên ngoài.",
+          evidence: "Báo cáo tuân thủ EUDR nội bộ (6 tháng), Báo cáo thường niên cho stakeholders, Biên bản họp rà soát ban quản lý, Công bố DDS (Due Diligence Statement) trên hệ thống EU",
+          legal: "EUDR Điều 4(2), Điều 12, Điều 33 - công bố thông tin" }
       ]
     };
 
@@ -3940,7 +4139,23 @@
       'GS_MoiTruong': 'NhomCCR',
       'DS_BenLienQuan': 'BenLienQuan',
       'ThucHien_ThamVan': 'DotThamVan',
-      'BaoCao_ThamVan': 'DotThamVan'
+      'BaoCao_ThamVan': 'DotThamVan',
+      'Lop_Taphuan': 'LopTaphuan',
+      'Khieu_Nai': 'KhieuNai',
+      'Tai_San': 'TaiSan',
+      'Dung_Cu': 'DungCu',
+      'EUDR_TaiLieu': 'EUDR_TaiLieu',
+      'EUDR_DanhGia': 'EUDR_DotDG',
+      'EUDR_BaoCao': 'EUDR_DotDG',
+      'TL_ThuocBVTV': 'DM_ThuocBVTV',
+      'TL_CayTrong': 'DM_CayTrong',
+      'TL_PhanBon': 'DM_PhanBon',
+      'TL_NguonGocGiong': 'NguonGocGiong',
+      'KH_trongrung': 'KH_TrongRung',
+      'KH_khaithac': 'KH_KhaiThac',
+      'KH_Taphuan': 'KH_TaphuanPlan',
+      'KH_CayGiong': 'KH_CayGiongPlan',
+      'KH_GiamSat': 'KH_GiamSat_Nhom'
     };
 
     // === SUPABASE DATA LOADING ===
@@ -3967,7 +4182,11 @@
         'KH_HD_Churung', 'HD_Lorung', 'DS_HDong', 'CauHoi_DanhGia', 'KetQua_DanhGia',
         'DG_noibo', 'Banghoi_DG_noibo',
         'GiamSat_LoRung', 'Banghoi_GiamSat', 'KH_GiamSat_Nhom',
-        'BenLienQuan', 'DotThamVan', 'PhanHoiThamVan'
+        'BenLienQuan', 'DotThamVan', 'PhanHoiThamVan',
+        'LopTaphuan', 'DSHocVien', 'KhieuNai', 'TaiSan', 'DungCu', 'MuonTraDC',
+        'EUDR_DotDG', 'Banghoi_EUDR',
+        'DM_ThuocBVTV', 'DM_CayTrong', 'DM_PhanBon', 'NguonGocGiong',
+        'KH_TrongRung', 'KH_KhaiThac', 'KH_TaphuanPlan', 'KH_CayGiongPlan'
       ];
 
       // Offline mode: load from IndexedDB (fallback localStorage for migration)
@@ -4120,21 +4339,22 @@
         toggleSidebar();
       });
 
-      // Kiểm tra session Supabase
-      sb.auth.getSession().then(async ({ data: { session } }) => {
-        if (session) {
-          console.log("Existing session found:", session.user.email);
-          await initUserSession(session.user);
-        }
-      });
-
-      // Lắng nghe thay đổi auth state
+      // Session management: onAuthStateChange as single source of truth
       sb.auth.onAuthStateChange(async (event, session) => {
-        console.log("Auth state changed:", event);
-        if (event === 'SIGNED_OUT') {
+        console.log("Auth state changed:", event, session?.user?.email);
+        if (event === 'SIGNED_IN' || event === 'TOKEN_REFRESHED' || event === 'INITIAL_SESSION') {
+          if (session && !currentUser) {
+            console.log("Restoring session for:", session.user.email);
+            await initUserSession(session.user);
+          }
+        } else if (event === 'SIGNED_OUT') {
           currentUser = null;
           APP_DATA = {};
-          location.reload();
+          $('#login-screen').show();
+          $('#app-content').hide();
+          $('#sidebar').hide();
+          $('#topbar').hide();
+          $('#bottomBar').hide();
         }
       });
     });
@@ -4657,7 +4877,7 @@
             <div class="row g-2">
               <!-- CỘT TRÁI: PC -->
               <div class="col-md-6">
-                <div class="card border-0 mb-2" style="background:#e8f5e9">
+                <div class="card border-0 mb-2 bg-success bg-opacity-10">
                   <div class="card-body p-2">
                     <h6 class="fw-bold mb-2 small"><i class="fa-solid fa-display me-1 text-success"></i> PC / Màn hình lớn</h6>
                     <div class="row g-2">
@@ -4675,7 +4895,7 @@
               </div>
               <!-- CỘT PHẢI: MOBILE -->
               <div class="col-md-6">
-                <div class="card border-0 mb-2" style="background:#e3f2fd">
+                <div class="card border-0 mb-2 bg-primary bg-opacity-10">
                   <div class="card-body p-2">
                     <h6 class="fw-bold mb-2 small"><i class="fa-solid fa-mobile-screen me-1 text-primary"></i> Mobile / Màn hình nhỏ</h6>
                     <div class="row g-2">
@@ -4802,24 +5022,24 @@
         <div class="dash-above-fold">
           <div class="d-flex align-items-center mb-2">
             <div class="me-auto">
-              <h5 class="fw-bold mb-0" style="color:var(--forest-primary)"><i class="fa-solid fa-gauge-high me-2"></i>${t('dashboard_title')}</h5>
+              <h5 class="fw-bold mb-0 text-success"><i class="fa-solid fa-gauge-high me-2"></i>${t('dashboard_title')}</h5>
             </div>
-            <button class="btn btn-sm btn-outline-secondary rounded-pill px-2 me-1" onclick="openMenuGroup('Hệ thống')" style="font-size:11px;font-weight:600">
+            <button class="btn btn-sm btn-outline-secondary rounded-pill px-2 me-1 dash-header-btn" onclick="openMenuGroup('Hệ thống')">
               <i class="fa-solid fa-gears me-1"></i>${t('menu_system')}
             </button>
-            <button class="btn btn-sm btn-outline-success rounded-pill px-2" onclick="toggleLang()" style="font-size:11px;font-weight:600" id="lang-toggle-dash">
+            <button class="btn btn-sm btn-outline-success rounded-pill px-2 dash-header-btn" onclick="toggleLang()" id="lang-toggle-dash">
               <i class="fa-solid fa-globe me-1"></i><span id="lang-label-dash">${nextLang}</span>
             </button>
           </div>
 
           <!-- Smart Search -->
           <div class="position-relative mb-2">
-            <div class="input-group input-group-sm shadow-sm" style="max-width:100%">
+            <div class="input-group input-group-sm shadow-sm">
               <span class="input-group-text bg-white border-end-0"><i class="fa-solid fa-magnifying-glass text-muted"></i></span>
               <input type="text" class="form-control border-start-0" id="smart-search-input" placeholder="${t('search_placeholder')}" autocomplete="off" oninput="smartSearch(this.value)">
               <button class="btn btn-outline-secondary border-start-0" type="button" onclick="$('#smart-search-input').val('');$('#smart-search-results').addClass('d-none')"><i class="fa-solid fa-xmark"></i></button>
             </div>
-            <div id="smart-search-results" class="d-none position-absolute w-100 bg-white border rounded shadow mt-1" style="z-index:1050;max-height:350px;overflow-y:auto"></div>
+            <div id="smart-search-results" class="d-none position-absolute w-100 bg-white border rounded shadow mt-1 smart-search-results"></div>
           </div>
 
           <!-- 6 Main Menu Cards -->
@@ -4858,8 +5078,8 @@
               <div class="card border-0 shadow-sm">
                 <div class="card-body p-2 p-md-3 d-flex flex-column">
                   <div class="d-flex justify-content-between align-items-center mb-2">
-                    <h6 class="fw-bold text-success mb-0" style="font-size:12px"><i class="fa-solid fa-chart-pie me-1"></i>${t('chart_area')}</h6>
-                    <select class="form-select form-select-sm" style="width:auto;font-size:11px;padding:2px 24px 2px 8px" onchange="switchChartType('area', this.value)">
+                    <h6 class="fw-bold text-success mb-0 chart-heading"><i class="fa-solid fa-chart-pie me-1"></i>${t('chart_area')}</h6>
+                    <select class="form-select form-select-sm chart-select" onchange="switchChartType('area', this.value)">
                       <option value="doughnut" selected>Doughnut</option>
                       <option value="pie">Pie</option>
                       <option value="bar">Bar</option>
@@ -4867,7 +5087,7 @@
                       <option value="radar">Radar</option>
                     </select>
                   </div>
-                  <div style="position:relative;min-height:250px"><canvas id="chart-area"></canvas></div>
+                  <div class="chart-canvas-wrap"><canvas id="chart-area"></canvas></div>
                 </div>
               </div>
             </div>
@@ -4875,8 +5095,8 @@
               <div class="card border-0 shadow-sm">
                 <div class="card-body p-2 p-md-3 d-flex flex-column">
                   <div class="d-flex justify-content-between align-items-center mb-2">
-                    <h6 class="fw-bold text-success mb-0" style="font-size:12px"><i class="fa-solid fa-chart-bar me-1"></i>${t('chart_groups')}</h6>
-                    <select class="form-select form-select-sm" style="width:auto;font-size:11px;padding:2px 24px 2px 8px" onchange="switchChartType('groups', this.value)">
+                    <h6 class="fw-bold text-success mb-0 chart-heading"><i class="fa-solid fa-chart-bar me-1"></i>${t('chart_groups')}</h6>
+                    <select class="form-select form-select-sm chart-select" onchange="switchChartType('groups', this.value)">
                       <option value="bar" selected>Bar</option>
                       <option value="line">Line</option>
                       <option value="radar">Radar</option>
@@ -4885,7 +5105,7 @@
                       <option value="polarArea">Polar Area</option>
                     </select>
                   </div>
-                  <div style="position:relative;min-height:250px"><canvas id="chart-groups"></canvas></div>
+                  <div class="chart-canvas-wrap"><canvas id="chart-groups"></canvas></div>
                 </div>
               </div>
             </div>
@@ -5290,11 +5510,14 @@
       'quản lý nhóm': 'fa-users-gear', 'ban quản lý': 'fa-building-columns',
       'kế hoạch': 'fa-calendar-check', 'hoạt động': 'fa-list-check', 'tập huấn': 'fa-chalkboard-teacher',
       'biến động': 'fa-arrows-rotate', 'đánh giá': 'fa-clipboard-check', 'nội bộ': 'fa-magnifying-glass', 'giám sát': 'fa-binoculars', 'thực hiện': 'fa-play-circle', 'trồng rừng': 'fa-seedling', 'khai thác': 'fa-tree', 'môi trường': 'fa-leaf', 'tham vấn': 'fa-comments', 'bên liên quan': 'fa-handshake', 'sổ tay': 'fa-book',
+      'khiếu nại': 'fa-exclamation-triangle', 'tài sản': 'fa-warehouse', 'dụng cụ': 'fa-tools',
+      'thuốc bvtv': 'fa-flask', 'cây trồng': 'fa-seedling', 'phân bón': 'fa-cubes', 'nguồn gốc': 'fa-certificate',
       'bản đồ': 'fa-map-location-dot', 'bán': 'fa-receipt', 'mua': 'fa-truck',
       'sản phẩm': 'fa-boxes-stacked', 'tài liệu': 'fa-file-lines', 'hệ thống': 'fa-gears',
       'menu': 'fa-bars', 'người dùng': 'fa-user-shield', 'profile': 'fa-id-card',
       'báo cáo': 'fa-chart-column', 'thống kê': 'fa-chart-bar', 'cài đặt': 'fa-sliders',
-      'tiêu chuẩn': 'fa-scale-balanced', 'loại': 'fa-tags', 'danh sách': 'fa-clipboard-list'
+      'tiêu chuẩn': 'fa-scale-balanced', 'loại': 'fa-tags', 'danh sách': 'fa-clipboard-list',
+      'eudr': 'fa-leaf', 'tuân thủ': 'fa-shield-halved'
     };
 
     function getSubMenuIcon(moduleName) {
@@ -5329,7 +5552,9 @@
       // Sub-group definitions: items to separate into sub-sections
       const SUB_GROUPS = {
         'Quản lý rừng bền vững': [
-          { views: ['DS_BenLienQuan', 'ThucHien_ThamVan', 'BaoCao_ThamVan'], labelKey: 'grp_consultation', icon: 'fa-comments' }
+          { views: ['DS_BenLienQuan', 'ThucHien_ThamVan', 'BaoCao_ThamVan'], labelKey: 'grp_consultation', icon: 'fa-comments' },
+          { views: ['KH_hoatdong', 'KH_QL_lorung', 'KH_khaithac', 'KH_trongrung', 'KH_Taphuan', 'KH_CayGiong', 'KH_GiamSat'], labelKey: 'grp_plans', icon: 'fa-calendar-check' },
+          { views: ['EUDR_DanhGia', 'EUDR_BaoCao'], labelKey: 'grp_eudr', icon: 'fa-leaf' }
         ]
       };
 
@@ -5396,7 +5621,7 @@
     }
 
     // IDs hidden from display (tables, detail views) — still used internally for data operations
-    const HIDDEN_DISPLAY_COLS = ['ID nhóm', 'ID chủ rừng', 'ID lô rừng', 'ID ban quản lý'];
+    const HIDDEN_DISPLAY_COLS = ['ID nhóm', 'ID chủ rừng', 'ID lô rừng', 'ID ban quản lý', 'ID lớp tập huấn', 'ID dụng cụ'];
 
     function getVisibleColumns(sheetName) {
       const saved = localStorage.getItem(`vcols_${sheetName}`);
@@ -5430,6 +5655,18 @@
       const p = String(menu[action]).toLowerCase();
       return p === '1' || p === 'x' || p === 'yes' || p === 'được';
     }
+
+    // Sidebar collapsible sub-menu definitions
+    const SIDEBAR_SUB_MENUS = {
+      'Quản lý rừng bền vững': [
+        { parentLabel: 'Tham vấn các bên liên quan', parentLabelKey: 'grp_consultation', icon: 'fa-comments',
+          views: ['DS_BenLienQuan', 'ThucHien_ThamVan', 'BaoCao_ThamVan'] },
+        { parentLabel: 'Kế hoạch hoạt động', parentLabelKey: 'grp_plans', icon: 'fa-calendar-check',
+          views: ['KH_hoatdong', 'KH_QL_lorung', 'KH_khaithac', 'KH_trongrung', 'KH_Taphuan', 'KH_CayGiong', 'KH_GiamSat'] },
+        { parentLabel: 'Tuân thủ EUDR', parentLabelKey: 'grp_eudr', icon: 'fa-leaf',
+          views: ['EUDR_DanhGia', 'EUDR_BaoCao'] }
+      ]
+    };
 
     function renderSystemMenu(menuData) {
       console.log("Rendering System Menu...", menuData);
@@ -5471,17 +5708,52 @@
         };
 
         let accordionHtml = ''; let idx = 0;
+        let subMenuIdx = 0;
         for (const [group, items] of Object.entries(grouped)) {
           idx++; const cId = `collapseSidebar${idx}`;
           const groupIcon = GROUP_ICONS[group] || 'fa-folder';
           const groupLabel = GROUP_I18N[group] ? t(GROUP_I18N[group]) : group;
           const safeGroup = group.replace(/'/g, "\\'");
-          let sub = items.map(i => {
+
+          // Check if this group has collapsible sub-menus
+          const subMenuDefs = SIDEBAR_SUB_MENUS[group] || [];
+          const subMenuViews = new Set(subMenuDefs.flatMap(sm => sm.views));
+
+          // Build menu links: separate into normal items and sub-menu items
+          const buildLink = (i) => {
             const v = (i['View'] || '').replace(/'/g, "\\'");
             const m = (i['Module'] || '').replace(/'/g, "\\'");
             const mIcon = getSubMenuIcon(m);
             return `<a href="#" class="menu-sub-link" onclick="loadViewFromGroup('${v}', '${m}', '${safeGroup}')"><i class="fa-solid ${mIcon} me-2" style="width:16px;text-align:center"></i>${tm(i['Module'])}</a>`;
-          }).join('');
+          };
+
+          let sub = '';
+          if (subMenuDefs.length > 0) {
+            // Render normal items first (not in any sub-menu)
+            items.forEach(i => {
+              if (!subMenuViews.has(i['View'])) sub += buildLink(i);
+            });
+            // Render collapsible sub-menu groups
+            subMenuDefs.forEach(sm => {
+              subMenuIdx++;
+              const smId = `sidebarSubMenu${subMenuIdx}`;
+              const smItems = items.filter(i => sm.views.includes(i['View']));
+              if (smItems.length === 0) return;
+              const smLabel = sm.parentLabelKey ? t(sm.parentLabelKey) : sm.parentLabel;
+              sub += `<a href="#" class="menu-sub-link d-flex justify-content-between align-items-center" onclick="event.preventDefault();$('#${smId}').slideToggle(200);$(this).find('.fa-chevron-down,.fa-chevron-up').toggleClass('fa-chevron-down fa-chevron-up')"><span><i class="fa-solid ${sm.icon} me-2" style="width:16px;text-align:center"></i>${smLabel}</span><i class="fa-solid fa-chevron-down" style="font-size:10px;opacity:0.5"></i></a>`;
+              sub += `<div id="${smId}" style="display:none;background:rgba(0,0,0,0.03)">`;
+              smItems.forEach(i => {
+                const v = (i['View'] || '').replace(/'/g, "\\'");
+                const m = (i['Module'] || '').replace(/'/g, "\\'");
+                const mIcon = getSubMenuIcon(m);
+                sub += `<a href="#" class="menu-sub-link" style="padding-left:3.2rem" onclick="loadViewFromGroup('${v}', '${m}', '${safeGroup}')"><i class="fa-solid ${mIcon} me-2" style="width:16px;text-align:center;font-size:12px"></i><span style="font-size:13px">${tm(i['Module'])}</span></a>`;
+              });
+              sub += `</div>`;
+            });
+          } else {
+            sub = items.map(i => buildLink(i)).join('');
+          }
+
           accordionHtml += `<div class="accordion-item" data-group-vi="${group}"><h2 class="accordion-header"><button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#${cId}"><i class="fa-solid ${groupIcon} me-2"></i><span class="fw-bold">${groupLabel}</span></button></h2><div id="${cId}" class="accordion-collapse collapse show"><div class="accordion-body p-0">${sub}</div></div></div>`;
         }
         $('#sidebarAccordion').html(accordionHtml);
@@ -5596,6 +5868,20 @@
         return;
       }
 
+      // Xử lý View đặc biệt: EUDR
+      if (current.viewName === 'EUDR_TaiLieu') {
+        renderEUDRDocuments();
+        return;
+      }
+      if (current.viewName === 'EUDR_DanhGia' || current.viewName === 'EUDR_DotDG') {
+        renderEUDRModule();
+        return;
+      }
+      if (current.viewName === 'EUDR_BaoCao') {
+        renderEUDRReport();
+        return;
+      }
+
       // Xử lý View đặc biệt: Sổ tay QLRBV
       if (current.viewName === 'SoTay_QLRBV') {
         renderHandbookView();
@@ -5674,6 +5960,66 @@
       }
     }, { passive: true });
 
+    // === Pull-to-refresh on mobile ===
+    (function() {
+      let ptrStartY = 0, ptrDist = 0, ptrActive = false;
+      const PTR_THRESHOLD = 80;
+      const indicator = document.createElement('div');
+      indicator.id = 'ptr-indicator';
+      indicator.innerHTML = '<i class="fa-solid fa-arrows-rotate"></i> <span>Kéo xuống để đồng bộ</span>';
+      indicator.style.cssText = 'position:fixed;top:0;left:0;right:0;height:0;overflow:hidden;display:flex;align-items:center;justify-content:center;background:linear-gradient(135deg,#2E7D32,#43A047);color:#fff;font-size:14px;font-weight:500;z-index:9999;transition:height 0.2s;gap:8px;';
+      document.body.prepend(indicator);
+
+      document.addEventListener('touchstart', function(e) {
+        if (window.scrollY === 0 && !document.querySelector('#map-view:not(.d-none)')) {
+          ptrStartY = e.touches[0].clientY;
+          ptrActive = true;
+        }
+      }, { passive: true });
+
+      document.addEventListener('touchmove', function(e) {
+        if (!ptrActive) return;
+        ptrDist = e.touches[0].clientY - ptrStartY;
+        if (ptrDist > 0 && ptrDist < 150 && window.scrollY === 0) {
+          const h = Math.min(ptrDist * 0.5, 50);
+          indicator.style.height = h + 'px';
+          if (ptrDist >= PTR_THRESHOLD) {
+            indicator.querySelector('span').textContent = 'Thả để đồng bộ...';
+            indicator.querySelector('i').style.transform = 'rotate(180deg)';
+          } else {
+            indicator.querySelector('span').textContent = 'Kéo xuống để đồng bộ';
+            indicator.querySelector('i').style.transform = 'rotate(0deg)';
+          }
+        }
+      }, { passive: true });
+
+      document.addEventListener('touchend', async function() {
+        if (!ptrActive) return;
+        ptrActive = false;
+        if (ptrDist >= PTR_THRESHOLD) {
+          indicator.querySelector('span').textContent = 'Đang đồng bộ...';
+          indicator.querySelector('i').classList.add('fa-spin');
+          indicator.style.height = '40px';
+          try {
+            await loadAllData();
+            if (APP_DATA['Menu']) {
+              computeGroupStats();
+              aggregateManagementBoardData();
+            }
+            indicator.querySelector('span').textContent = 'Đã đồng bộ!';
+            indicator.querySelector('i').classList.remove('fa-spin');
+          } catch(e) {
+            indicator.querySelector('span').textContent = 'Lỗi đồng bộ';
+            indicator.querySelector('i').classList.remove('fa-spin');
+          }
+          setTimeout(() => { indicator.style.height = '0'; }, 1000);
+        } else {
+          indicator.style.height = '0';
+        }
+        ptrDist = 0;
+      }, { passive: true });
+    })();
+
     // ============================================================
     // MAP MODULE - Bản đồ quản lý lô rừng
     // ============================================================
@@ -5705,7 +6051,8 @@
         return;
       }
 
-      mapInstance = L.map('map-container', { preferCanvas: true }).setView([21.6, 105.8], 10);
+      mapInstance = L.map('map-container', { preferCanvas: true });
+      mapInstance.fitBounds(PROJECT_BOUNDS);
 
       const osmLayer = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
         attribution: '&copy; OpenStreetMap',
@@ -5946,11 +6293,26 @@
       window._editingPolygonLayer = null;
     };
 
+    // Default project bounds: covers all nhom_ccr/lo_rung in Bắc Kạn, Tuyên Quang, Hà Giang
+    const PROJECT_BOUNDS = L.latLngBounds([L.latLng(21.25, 105.2), L.latLng(22.75, 106.2)]);
+
     function zoomToAllData() {
       if (!mapInstance) return;
+      // Try GeoJSON layers first
       if (mapDrawnItems && mapDrawnItems.getLayers().length > 0) {
         mapInstance.fitBounds(mapDrawnItems.getBounds().pad(0.1));
+        return;
       }
+      // Try any named GeoJSON layers
+      for (const name of Object.keys(geoJsonNamedLayers || {})) {
+        const layer = geoJsonNamedLayers[name];
+        if (layer && layer.getLayers && layer.getLayers().length > 0) {
+          mapInstance.fitBounds(layer.getBounds().pad(0.1));
+          return;
+        }
+      }
+      // Fallback: fit to project area
+      mapInstance.fitBounds(PROJECT_BOUNDS);
     }
 
     // loadLoRungMarkers removed — only polygons with data linkage are shown
@@ -8047,6 +8409,574 @@
     function clearFileInput(btn, qid) {
       const input = $(`.audit-file[data-qid="${qid}"]`);
       input.val(''); // Clear value
+    }
+
+    // ============================================================
+    // EUDR COMPLIANCE MODULE
+    // ============================================================
+
+    // EUDR Documents - Detailed reference page with explanations per question
+    function renderEUDRDocuments() {
+      const container = $('#page-content-dynamic');
+      container.empty();
+      const cats = Object.entries(EUDR_DICTIONARY);
+      const catColors = ['#1565C0','#2E7D32','#00695C','#E65100','#6A1B9A','#AD1457','#37474F'];
+      let accordionHtml = '';
+      cats.forEach(([cat, questions], idx) => {
+        const color = catColors[idx % catColors.length];
+        let qCards = '';
+        questions.forEach((q, qi) => {
+          const hasDetail = q.detail || q.evidence || q.legal;
+          qCards += `
+            <div class="card mb-2 border-0 shadow-sm">
+              <div class="card-body p-3">
+                <div class="d-flex align-items-start mb-2">
+                  <span class="badge me-2 mt-1 flex-shrink-0" style="background:${color};min-width:36px">${q.index}</span>
+                  <strong style="font-size:13px;line-height:1.5">${q.label}</strong>
+                </div>
+                ${hasDetail ? `
+                <div class="ps-4 ms-2" style="border-left:3px solid ${color}20">
+                  ${q.detail ? `<div class="mb-2"><div class="text-muted small fw-bold mb-1"><i class="fa-solid fa-circle-info me-1" style="color:${color}"></i>Giải thích chi tiết</div><div style="font-size:12.5px;line-height:1.7;color:#444">${q.detail}</div></div>` : ''}
+                  ${q.evidence ? `<div class="mb-2"><div class="text-muted small fw-bold mb-1"><i class="fa-solid fa-file-circle-check me-1 text-success"></i>Bằng chứng / Hồ sơ cần có</div><div style="font-size:12px;line-height:1.6"><ul class="mb-0 ps-3">${q.evidence.split(', ').map(e => `<li class="text-dark">${e}</li>`).join('')}</ul></div></div>` : ''}
+                  ${q.legal ? `<div><div class="text-muted small fw-bold mb-1"><i class="fa-solid fa-scale-balanced me-1 text-warning"></i>Căn cứ pháp lý</div><div style="font-size:11.5px"><span class="badge bg-light text-dark border">${q.legal.split(', ').join('</span> <span class="badge bg-light text-dark border">')}</span></div></div>` : ''}
+                </div>` : ''}
+              </div>
+            </div>`;
+        });
+
+        accordionHtml += `
+          <div class="accordion-item mb-3 border-0 rounded-3 shadow overflow-hidden">
+            <h2 class="accordion-header">
+              <button class="accordion-button ${idx > 0 ? 'collapsed' : ''} fw-bold py-3" type="button" data-bs-toggle="collapse" data-bs-target="#eudrDoc${idx}" style="background:${color}10;color:${color}">
+                <i class="fa-solid fa-bookmark me-2" style="color:${color}"></i>${cat}
+                <span class="badge ms-2" style="background:${color};color:#fff">${questions.length} tiêu chí</span>
+              </button>
+            </h2>
+            <div id="eudrDoc${idx}" class="accordion-collapse collapse ${idx === 0 ? 'show' : ''}">
+              <div class="accordion-body p-3" style="background:#fafbfc">${qCards}</div>
+            </div>
+          </div>`;
+      });
+
+      const totalQ = cats.reduce((s, [, qs]) => s + qs.length, 0);
+      const html = `
+        <div class="card shadow-sm border-0 mb-4">
+          <div class="card-header bg-primary text-white py-3">
+            <div class="d-flex justify-content-between align-items-center flex-wrap gap-2">
+              <h5 class="mb-0 fw-bold"><i class="fa-solid fa-book-open me-2"></i>${t('eudr_doc_title')}</h5>
+              <div>
+                <span class="badge bg-white text-primary me-1">${totalQ} ${currentLang === 'en' ? 'criteria' : 'tiêu chí'}</span>
+                <span class="badge bg-white text-primary">${cats.length} ${currentLang === 'en' ? 'categories' : 'lĩnh vực'}</span>
+              </div>
+            </div>
+          </div>
+          <div class="card-body">
+            <div class="alert alert-info border-0 mb-3">
+              <div class="d-flex align-items-start">
+                <i class="fa-solid fa-info-circle me-2 mt-1 fs-5"></i>
+                <div>
+                  <strong>EUDR - EU Deforestation Regulation (EU 2023/1115)</strong>
+                  <p class="mb-1 mt-1" style="font-size:13px">${currentLang === 'en'
+                    ? 'The EU Deforestation Regulation requires operators and traders to demonstrate that products placed on the EU market are deforestation-free, produced in accordance with national legislation, and covered by a due diligence statement.'
+                    : 'Quy định Chống phá rừng của EU yêu cầu các nhà khai thác và thương nhân phải chứng minh rằng sản phẩm đưa vào thị trường EU không gây phá rừng, được sản xuất phù hợp với luật pháp quốc gia, và được bảo đảm bởi tuyên bố thẩm định trách nhiệm giải trình (DDS).'}</p>
+                  <div class="d-flex flex-wrap gap-2 mt-2">
+                    <span class="badge bg-danger bg-opacity-10 text-danger border"><i class="fa-solid fa-calendar me-1"></i>Cut-off: 31/12/2020</span>
+                    <span class="badge bg-success bg-opacity-10 text-success border"><i class="fa-solid fa-tree me-1"></i>${currentLang === 'en' ? 'Applies to: Timber, Wood products' : 'Áp dụng: Gỗ và sản phẩm gỗ'}</span>
+                    <span class="badge bg-primary bg-opacity-10 text-primary border"><i class="fa-solid fa-globe me-1"></i>${currentLang === 'en' ? 'Market: EU/EEA' : 'Thị trường: EU/EEA'}</span>
+                    <span class="badge bg-warning bg-opacity-10 text-warning border"><i class="fa-solid fa-clock me-1"></i>${currentLang === 'en' ? 'Effective: 30/12/2025' : 'Hiệu lực: 30/12/2025'}</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="accordion" id="eudrDocAccordion">${accordionHtml}</div>
+          </div>
+        </div>`;
+      container.html(html);
+    }
+
+    // EUDR Assessment Module - Tab view with history + target selector
+    function renderEUDRModule() {
+      const container = $('#page-content-dynamic');
+      container.empty();
+
+      const allDG = APP_DATA['EUDR_DotDG'] || [];
+      // Sort by date descending
+      const sorted = [...allDG].sort((a, b) => new Date(b['Ngày đánh giá'] || 0) - new Date(a['Ngày đánh giá'] || 0));
+
+      let tableRows = '';
+      if (sorted.length === 0) {
+        tableRows = `<tr><td colspan="6" class="text-center py-4 text-muted">${currentLang === 'en' ? 'No EUDR assessments yet.' : 'Chưa có đánh giá EUDR nào.'}</td></tr>`;
+      } else {
+        sorted.forEach(r => {
+          const score = parseInt(r['Điểm số']) || 0;
+          const badgeClass = score >= 80 ? 'bg-success' : score >= 50 ? 'bg-warning' : 'bg-danger';
+          tableRows += `<tr>
+            <td class="fw-bold text-primary">${r['ID']}</td>
+            <td>${r['ID lô rừng'] || r['ID nhóm'] || '-'}</td>
+            <td>${r['Ngày đánh giá'] || '-'}</td>
+            <td>${r['Người đánh giá'] || '-'}</td>
+            <td><span class="badge ${badgeClass}">${score}%</span></td>
+            <td><button class="btn btn-sm btn-outline-primary" onclick="viewEUDRDetail('${r['ID']}')">${currentLang === 'en' ? 'Detail' : 'Chi tiết'}</button></td>
+          </tr>`;
+        });
+      }
+
+      // Build target selector for new assessment
+      let loRungOpts = '<option value="">-- ' + (currentLang === 'en' ? 'Select plot' : 'Chọn lô rừng') + ' --</option>';
+      (APP_DATA['Lo_rung'] || []).forEach(lr => {
+        const id = lr['ID lô rừng'];
+        const name = lr['Tên lô rừng'] || lr['Mã số lô rừng'] || id;
+        loRungOpts += `<option value="${id}">${name}</option>`;
+      });
+
+      const html = `
+        <div class="card shadow-sm border-0">
+          <div class="card-header bg-primary text-white py-3">
+            <h5 class="mb-0 fw-bold"><i class="fa-solid fa-leaf me-2"></i>${t('eudr_form_title')}</h5>
+          </div>
+          <div class="card-body">
+            <ul class="nav nav-tabs mb-3" role="tablist">
+              <li class="nav-item"><button class="nav-link active fw-bold text-primary" data-bs-toggle="tab" data-bs-target="#eudr-history-tab">${currentLang === 'en' ? 'History' : 'Lịch sử'} (${sorted.length})</button></li>
+              <li class="nav-item"><button class="nav-link fw-bold text-primary" data-bs-toggle="tab" data-bs-target="#eudr-new-tab"><i class="fa-solid fa-plus me-1"></i>${currentLang === 'en' ? 'New Assessment' : 'Đánh giá mới'}</button></li>
+            </ul>
+            <div class="tab-content">
+              <div class="tab-pane fade show active" id="eudr-history-tab">
+                <div class="table-responsive">
+                  <table class="table table-hover align-middle">
+                    <thead class="table-light">
+                      <tr><th>ID</th><th>${currentLang === 'en' ? 'Target' : 'Đối tượng'}</th><th>${currentLang === 'en' ? 'Date' : 'Ngày'}</th><th>${currentLang === 'en' ? 'Assessor' : 'Người ĐG'}</th><th>${currentLang === 'en' ? 'Score' : 'Điểm'}</th><th></th></tr>
+                    </thead>
+                    <tbody>${tableRows}</tbody>
+                  </table>
+                </div>
+              </div>
+              <div class="tab-pane fade" id="eudr-new-tab">
+                <div class="row g-3">
+                  <div class="col-md-6">
+                    <label class="form-label fw-bold">${currentLang === 'en' ? 'Select forest plot' : 'Chọn lô rừng'}</label>
+                    <select class="form-select" id="eudr-target-select">${loRungOpts}</select>
+                  </div>
+                  <div class="col-md-6 d-flex align-items-end">
+                    <button class="btn btn-primary fw-bold w-100" onclick="startEUDRAssessment()">
+                      <i class="fa-solid fa-play me-2"></i>${currentLang === 'en' ? 'Start Assessment' : 'Bắt đầu đánh giá'}
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>`;
+      container.html(html);
+    }
+
+    // Start EUDR assessment from selector
+    window.startEUDRAssessment = function() {
+      const loRungId = $('#eudr-target-select').val();
+      if (!loRungId) return alert(currentLang === 'en' ? 'Please select a forest plot!' : 'Vui lòng chọn lô rừng!');
+      const loRung = (APP_DATA['Lo_rung'] || []).find(lr => lr['ID lô rừng'] === loRungId);
+      if (!loRung) return alert('Không tìm thấy lô rừng!');
+      renderEUDRFormUI(loRung, 'Lo_rung');
+    };
+
+    // Show EUDR History for a specific target (called from drilldown)
+    function showEUDRHistory(item, type) {
+      const container = $('#page-content-dynamic');
+
+      let idVal = '', nameVal = '';
+      if (type === 'Lo_rung') {
+        idVal = item['ID lô rừng']; nameVal = item['Tên lô rừng'] || item['Mã số lô rừng'] || idVal;
+      } else if (type === 'NhomCCR') {
+        idVal = item['ID nhóm'] || item['Mã nhóm']; nameVal = item['Tên nhóm'] || idVal;
+      }
+
+      const allHistory = APP_DATA['EUDR_DotDG'] || [];
+      const filterKey = type === 'Lo_rung' ? 'ID lô rừng' : 'ID nhóm';
+      const myHistory = allHistory.filter(h => String(h[filterKey]).trim() === String(idVal).trim());
+      myHistory.sort((a, b) => new Date(b['Ngày đánh giá'] || 0) - new Date(a['Ngày đánh giá'] || 0));
+
+      const safeItem = JSON.stringify(item).replace(/"/g, '&quot;');
+
+      let html = `
+        <div class="card shadow-sm border-0 mb-4">
+          <div class="card-header bg-primary text-white py-3">
+            <div class="d-flex justify-content-between align-items-center">
+              <h5 class="mb-0 fw-bold"><i class="fa-solid fa-leaf me-2"></i>EUDR: ${nameVal}</h5>
+              <button class="btn btn-light btn-sm fw-bold text-primary" onclick="navigateBack()"><i class="fas fa-arrow-left me-1"></i>${t('audit_back_list')}</button>
+            </div>
+          </div>
+          <div class="card-body">
+            <div class="row g-3 mb-4">
+              <div class="col-md-8">
+                <div class="alert alert-info border-0 bg-light text-dark mb-0">
+                  <strong><i class="fas fa-info-circle me-1"></i></strong> ${nameVal} (${idVal})
+                </div>
+              </div>
+              <div class="col-md-4 text-end">
+                <button class="btn btn-primary fw-bold w-100 shadow py-2" onclick="renderEUDRFormUI(${safeItem}, '${type}')">
+                  <i class="fas fa-plus-circle me-2"></i>${currentLang === 'en' ? 'New EUDR Assessment' : 'Đánh giá EUDR mới'}
+                </button>
+              </div>
+            </div>
+            <h6 class="fw-bold text-primary border-bottom pb-2 mb-3">${currentLang === 'en' ? 'Assessment History' : 'Lịch sử đánh giá'} (${myHistory.length})</h6>
+            <div class="table-responsive">
+              <table class="table table-hover align-middle">
+                <thead class="table-light">
+                  <tr><th>ID</th><th>${currentLang === 'en' ? 'Date' : 'Ngày'}</th><th>${currentLang === 'en' ? 'Assessor' : 'Người ĐG'}</th><th>${currentLang === 'en' ? 'Score' : 'Điểm'}</th><th></th></tr>
+                </thead>
+                <tbody>`;
+
+      if (myHistory.length === 0) {
+        html += `<tr><td colspan="5" class="text-center py-4 text-muted">${currentLang === 'en' ? 'No assessments yet' : 'Chưa có đánh giá nào'}</td></tr>`;
+      } else {
+        myHistory.forEach(h => {
+          const score = parseInt(h['Điểm số']) || 0;
+          const badgeClass = score >= 80 ? 'bg-success' : score >= 50 ? 'bg-warning' : 'bg-danger';
+          html += `<tr>
+            <td class="fw-bold text-primary">${h['ID']}</td>
+            <td>${h['Ngày đánh giá'] || '-'}</td>
+            <td>${h['Người đánh giá'] || '-'}</td>
+            <td><span class="badge ${badgeClass}">${score}%</span></td>
+            <td><button class="btn btn-sm btn-outline-primary" onclick="viewEUDRDetail('${h['ID']}')">${currentLang === 'en' ? 'Detail' : 'Chi tiết'}</button></td>
+          </tr>`;
+        });
+      }
+
+      html += `</tbody></table></div></div></div>`;
+      container.html(html);
+    }
+
+    // Render EUDR Form UI - follows renderAuditFormUI pattern
+    function renderEUDRFormUI(item, type) {
+      const container = $('#page-content-dynamic');
+      container.empty();
+
+      let idVal = '', nameVal = '', loRungId = '', nhomId = '', chuRungId = '';
+      if (type === 'Lo_rung') {
+        loRungId = item['ID lô rừng']; idVal = loRungId;
+        nameVal = item['Tên lô rừng'] || item['Mã số lô rừng'] || idVal;
+        nhomId = item['ID nhóm'] || '';
+        chuRungId = item['ID chủ rừng'] || '';
+      } else if (type === 'NhomCCR') {
+        nhomId = item['ID nhóm'] || item['Mã nhóm']; idVal = nhomId;
+        nameVal = item['Tên nhóm'] || idVal;
+      }
+      const safeItem = JSON.stringify(item).replace(/"/g, '&quot;');
+
+      let html = `
+        <div class="card shadow-sm mb-4 border-0">
+          <div class="card-header bg-primary text-white fw-bold py-2" style="position:sticky;top:0;z-index:10">
+            <div class="d-flex justify-content-between align-items-center">
+              <span><i class="fas fa-leaf me-2"></i>${t('eudr_form_title')}: ${nameVal}</span>
+              <button class="btn btn-sm btn-light text-primary fw-bold" onclick="showEUDRHistory(${safeItem}, '${type}')"><i class="fas fa-arrow-left me-1"></i>${t('audit_cancel_back')}</button>
+            </div>
+          </div>
+          <div class="card-body bg-light" style="padding-top:0">
+            <input type="hidden" id="eudr-target-id" value="${idVal}">
+            <input type="hidden" id="eudr-target-type" value="${type}">
+            <input type="hidden" id="eudr-lo-rung-id" value="${loRungId}">
+            <input type="hidden" id="eudr-nhom-id" value="${nhomId}">
+            <input type="hidden" id="eudr-chu-rung-id" value="${chuRungId}">
+
+            <div class="row g-2 align-items-center bg-white p-2 rounded shadow-sm mb-3" style="position:sticky;top:42px;z-index:9">
+              <div class="col-md-6"><h6 class="m-0 text-muted small">${currentLang === 'en' ? 'Subject' : 'Đối tượng'}: <strong class="text-dark">${nameVal}</strong> (${idVal})</h6></div>
+              <div class="col-md-6 text-md-end">
+                <div class="input-group input-group-sm w-auto d-inline-flex">
+                  <span class="input-group-text fw-bold">${currentLang === 'en' ? 'Date' : 'Ngày'}:</span>
+                  <input type="date" class="form-control" id="eudr-date" value="${new Date().toISOString().split('T')[0]}">
+                </div>
+              </div>
+            </div>`;
+
+      html += `<div class="accordion" id="eudrFormAccordion">`;
+      let idx = 0;
+      for (const [cat, questions] of Object.entries(EUDR_DICTIONARY)) {
+        html += `
+          <div class="accordion-item mb-3 border rounded shadow-sm overflow-hidden">
+            <h2 class="accordion-header">
+              <button class="accordion-button ${idx > 0 ? 'collapsed' : ''} fw-bold bg-white text-primary" type="button" data-bs-toggle="collapse" data-bs-target="#eudrCat${idx}">
+                ${cat} <span class="badge bg-light text-dark ms-2 border">${questions.length}</span>
+              </button>
+            </h2>
+            <div id="eudrCat${idx}" class="accordion-collapse collapse ${idx === 0 ? 'show' : ''}" data-bs-parent="#eudrFormAccordion">
+              <div class="accordion-body bg-light p-3">
+                <div class="row row-cols-1 row-cols-md-2 g-3">
+                  ${questions.map(q => `
+                    <div class="col">
+                      <div class="card h-100 border-0 shadow-sm">
+                        <div class="card-body p-3">
+                          <div class="d-flex justify-content-between mb-2">
+                            <span class="badge bg-primary bg-opacity-10 text-primary">${q.index}</span>
+                          </div>
+                          <h6 class="fw-bold mb-3" style="font-size:12px;min-height:36px">${q.label}</h6>
+                          <input type="hidden" class="eudr-result" data-qid="${q.id}" value="NA">
+                          <div class="btn-group w-100 mb-3" role="group">
+                            <button type="button" class="btn btn-outline-success btn-sm" onclick="toggleEUDRBtn(this,'${q.id}','TT')">${t('audit_compliant')}</button>
+                            <button type="button" class="btn btn-outline-danger btn-sm" onclick="toggleEUDRBtn(this,'${q.id}','KTT')">${t('audit_non_compliant')}</button>
+                            <button type="button" class="btn btn-secondary btn-sm active" onclick="toggleEUDRBtn(this,'${q.id}','NA')">N/A</button>
+                          </div>
+                          <div class="bg-light p-2 rounded">
+                            <textarea class="form-control form-control-sm eudr-note border-0 bg-white" rows="1" placeholder="${t('audit_note_ph')}" data-qid="${q.id}" style="resize:none"></textarea>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  `).join('')}
+                </div>
+              </div>
+            </div>
+          </div>`;
+        idx++;
+      }
+      html += `</div>`;
+      html += `
+        <div class="mt-4 text-center">
+          <button class="btn btn-primary btn-lg px-5 fw-bold shadow" onclick="submitEUDRAssessment()">
+            <i class="fas fa-save me-2"></i>${currentLang === 'en' ? 'Save EUDR Assessment' : 'Lưu kết quả đánh giá EUDR'}
+          </button>
+        </div>`;
+      html += `</div></div>`;
+      container.html(html);
+    }
+
+    // Toggle EUDR answer button
+    window.toggleEUDRBtn = function(btn, qid, val) {
+      const wrapper = $(btn).parent();
+      wrapper.find('.btn').removeClass('active btn-success btn-danger text-white').each(function() {
+        const cl = $(this).attr('class');
+        if (!cl.includes('btn-outline') && !cl.includes('btn-secondary')) {
+          // restore outline
+        }
+      });
+      wrapper.find('.btn').removeClass('active');
+      if (val === 'TT') $(btn).addClass('active btn-success text-white').removeClass('btn-outline-success');
+      else if (val === 'KTT') $(btn).addClass('active btn-danger text-white').removeClass('btn-outline-danger');
+      else $(btn).addClass('active');
+      wrapper.find('.btn-outline-success').not(btn).removeClass('active btn-success text-white');
+      wrapper.find('.btn-outline-danger').not(btn).removeClass('active btn-danger text-white');
+      $(`.eudr-result[data-qid="${qid}"]`).val(val);
+    };
+
+    // Submit EUDR Assessment
+    window.submitEUDRAssessment = async function() {
+      const targetId = $('#eudr-target-id').val();
+      const loRungId = $('#eudr-lo-rung-id').val();
+      const nhomId = $('#eudr-nhom-id').val();
+      const chuRungId = $('#eudr-chu-rung-id').val();
+      const date = $('#eudr-date').val();
+
+      if (!targetId) return alert(currentLang === 'en' ? 'No target selected!' : 'Chưa chọn đối tượng!');
+
+      const today = new Date();
+      const yy = today.getFullYear().toString().slice(-2);
+      const idPrefix = `EUDR-${targetId}-${yy}`;
+
+      let nextSeq = 1;
+      const existing = APP_DATA['EUDR_DotDG'] || [];
+      existing.forEach(row => {
+        const rID = String(row['ID'] || '');
+        if (rID.startsWith(idPrefix)) {
+          const suffix = parseInt(rID.replace(idPrefix, ''), 10);
+          if (!isNaN(suffix) && suffix >= nextSeq) nextSeq = suffix + 1;
+        }
+      });
+      const idDG = `${idPrefix}${String(nextSeq).padStart(2, '0')}`;
+
+      // Collect answers
+      const answers = {};
+      let passCount = 0, total = 0;
+      $('.eudr-result').each(function() {
+        const qid = $(this).data('qid');
+        const val = $(this).val();
+        const note = $(`.eudr-note[data-qid="${qid}"]`).val() || '';
+        if (val !== 'NA') { total++; if (val === 'TT') passCount++; }
+        answers[qid] = JSON.stringify({ r: val, n: note });
+      });
+
+      const score = total === 0 ? 100 : Math.round((passCount / total) * 100);
+
+      if (confirm(`${currentLang === 'en' ? 'Save EUDR assessment?' : 'Xác nhận lưu kết quả đánh giá EUDR?'}\n${currentLang === 'en' ? 'Score' : 'Điểm số'}: ${score}%`)) {
+        const btn = $('button[onclick="submitEUDRAssessment()"]');
+        btn.prop('disabled', true).html('<i class="fas fa-spinner fa-spin me-2"></i>...');
+
+        try {
+          const pad = n => String(n).padStart(2, '0');
+          const ts = pad(today.getDate()) + pad(today.getMonth() + 1) + yy +
+            pad(today.getHours()) + pad(today.getMinutes()) + pad(today.getSeconds());
+          const idHoi = `${idDG}-${ts}`;
+
+          const dgData = {
+            id: idDG,
+            id_lo_rung: loRungId || null,
+            id_nhom: nhomId || null,
+            id_chu_rung: chuRungId || null,
+            ngay_danh_gia: date,
+            nguoi_danh_gia: currentUser['Email'],
+            diem_so: score,
+            trang_thai: 'Hoàn thành'
+          };
+          const hoiData = { id: idHoi, id_dg: idDG, answers: answers };
+
+          if (navigator.onLine) {
+            const { error: err1 } = await sb.from('dot_dg_eudr').insert(dgData);
+            if (err1) throw new Error('Lỗi lưu dot_dg_eudr: ' + err1.message);
+            const { error: err2 } = await sb.from('bang_hoi_eudr').insert(hoiData);
+            if (err2) throw new Error('Lỗi lưu bang_hoi_eudr: ' + err2.message);
+          } else {
+            await syncManager.enqueue({ table: 'dot_dg_eudr', sheetName: 'EUDR_DotDG', action: 'INSERT', data: dgData, idValue: idDG });
+            await syncManager.enqueue({ table: 'bang_hoi_eudr', sheetName: 'Banghoi_EUDR', action: 'INSERT', data: hoiData, idValue: idHoi });
+            showSyncNotification(t('sync_saved_offline'), 'info');
+          }
+
+          // Update local data
+          if (!APP_DATA['EUDR_DotDG']) APP_DATA['EUDR_DotDG'] = [];
+          APP_DATA['EUDR_DotDG'].push({
+            'ID': idDG, 'ID lô rừng': loRungId, 'ID nhóm': nhomId, 'ID chủ rừng': chuRungId,
+            'Ngày đánh giá': date, 'Người đánh giá': currentUser['Email'],
+            'Điểm số': String(score), 'Trạng thái': 'Hoàn thành', 'Ghi chú': '', 'Cập nhật': new Date().toLocaleString()
+          });
+          if (!APP_DATA['Banghoi_EUDR']) APP_DATA['Banghoi_EUDR'] = [];
+          APP_DATA['Banghoi_EUDR'].push({ 'ID_hoi': idHoi, 'ID_DG': idDG, ...answers });
+          await cacheTableToIDB('EUDR_DotDG');
+          await cacheTableToIDB('Banghoi_EUDR');
+
+          if (navigator.onLine) alert(currentLang === 'en' ? 'Saved successfully!' : 'Lưu thành công!');
+          renderEUDRModule();
+        } catch (e) {
+          alert('Lỗi: ' + e.message);
+          console.error(e);
+        } finally {
+          btn.prop('disabled', false).html(`<i class="fas fa-save me-2"></i>${currentLang === 'en' ? 'Save EUDR Assessment' : 'Lưu kết quả đánh giá EUDR'}`);
+        }
+      }
+    };
+
+    // View EUDR Detail (read-only)
+    function viewEUDRDetail(idDG) {
+      const dgList = APP_DATA['EUDR_DotDG'] || [];
+      const hoiList = APP_DATA['Banghoi_EUDR'] || [];
+      const dgRecord = dgList.find(r => String(r['ID']) === String(idDG));
+      if (!dgRecord) return alert(currentLang === 'en' ? 'Assessment not found' : 'Không tìm thấy đánh giá');
+      const hoiRecord = hoiList.find(r => String(r['ID_DG']) === String(idDG));
+
+      const container = $('#page-content-dynamic');
+      container.empty();
+
+      let targetName = dgRecord['ID lô rừng'] || dgRecord['ID nhóm'] || '-';
+      if (dgRecord['ID lô rừng'] && APP_DATA['Lo_rung']) {
+        const lr = APP_DATA['Lo_rung'].find(x => String(x['ID lô rừng']) === String(dgRecord['ID lô rừng']));
+        if (lr) targetName = lr['Tên lô rừng'] || lr['Mã số lô rừng'] || targetName;
+      }
+
+      const score = parseInt(dgRecord['Điểm số']) || 0;
+      const badgeClass = score >= 80 ? 'bg-success' : score >= 50 ? 'bg-warning' : 'bg-danger';
+
+      let html = `
+        <div class="card shadow-sm mb-4 border-0">
+          <div class="card-header bg-primary text-white fw-bold py-3">
+            <div class="d-flex justify-content-between align-items-center">
+              <span><i class="fas fa-eye me-2"></i>EUDR: ${targetName} — ${dgRecord['Ngày đánh giá'] || ''}</span>
+              <button class="btn btn-sm btn-light text-primary fw-bold" onclick="renderEUDRModule()"><i class="fas fa-arrow-left me-1"></i>${t('audit_back')}</button>
+            </div>
+          </div>
+          <div class="card-body bg-light">
+            <div class="row g-2 mb-3">
+              <div class="col-md-3"><div class="card border-0 shadow-sm p-3 text-center"><div class="text-muted small">${currentLang === 'en' ? 'Score' : 'Điểm số'}</div><div class="fw-bold fs-4"><span class="badge ${badgeClass} fs-5">${score}%</span></div></div></div>
+              <div class="col-md-3"><div class="card border-0 shadow-sm p-3 text-center"><div class="text-muted small">${currentLang === 'en' ? 'Date' : 'Ngày'}</div><div class="fw-bold">${dgRecord['Ngày đánh giá'] || '-'}</div></div></div>
+              <div class="col-md-3"><div class="card border-0 shadow-sm p-3 text-center"><div class="text-muted small">${currentLang === 'en' ? 'Assessor' : 'Người ĐG'}</div><div class="fw-bold">${dgRecord['Người đánh giá'] || '-'}</div></div></div>
+              <div class="col-md-3"><div class="card border-0 shadow-sm p-3 text-center"><div class="text-muted small">${currentLang === 'en' ? 'Status' : 'Trạng thái'}</div><div class="fw-bold">${dgRecord['Trạng thái'] || '-'}</div></div></div>
+            </div>
+            <div class="accordion" id="eudrDetailAccordion">`;
+
+      let idx = 0;
+      for (const [cat, questions] of Object.entries(EUDR_DICTIONARY)) {
+        let catPass = 0, catTotal = 0;
+        const qCards = questions.map(q => {
+          let ans = null;
+          if (hoiRecord && hoiRecord[q.id]) {
+            try { ans = typeof hoiRecord[q.id] === 'string' ? JSON.parse(hoiRecord[q.id]) : hoiRecord[q.id]; } catch(e) { ans = null; }
+          }
+          const val = ans ? ans.r : 'NA';
+          const note = ans ? ans.n : '';
+          if (val !== 'NA') { catTotal++; if (val === 'TT') catPass++; }
+          const icon = val === 'TT' ? 'fa-check-circle text-success' : val === 'KTT' ? 'fa-times-circle text-danger' : 'fa-minus-circle text-muted';
+          const label = val === 'TT' ? (currentLang === 'en' ? 'Compliant' : 'Tuân thủ') : val === 'KTT' ? (currentLang === 'en' ? 'Non-compliant' : 'Không tuân thủ') : 'N/A';
+          return `<div class="col"><div class="card h-100 border-0 shadow-sm"><div class="card-body p-3">
+            <div class="d-flex justify-content-between mb-2"><span class="badge bg-primary bg-opacity-10 text-primary">${q.index}</span><i class="fas ${icon}"></i></div>
+            <h6 class="fw-bold mb-2" style="font-size:12px;min-height:36px">${q.label}</h6>
+            <span class="badge ${val === 'TT' ? 'bg-success' : val === 'KTT' ? 'bg-danger' : 'bg-secondary'}">${label}</span>
+            ${note ? `<div class="mt-2 small text-muted"><i class="fas fa-sticky-note me-1"></i>${note}</div>` : ''}
+          </div></div></div>`;
+        }).join('');
+        const catScore = catTotal > 0 ? Math.round((catPass / catTotal) * 100) : 100;
+        const catBadge = catScore >= 80 ? 'bg-success' : catScore >= 50 ? 'bg-warning' : 'bg-danger';
+        html += `<div class="accordion-item mb-2 border rounded shadow-sm overflow-hidden">
+          <h2 class="accordion-header"><button class="accordion-button ${idx > 0 ? 'collapsed' : ''} fw-bold bg-white text-primary" type="button" data-bs-toggle="collapse" data-bs-target="#eudrDetail${idx}">
+            ${cat} <span class="badge ${catBadge} ms-2">${catScore}%</span>
+          </button></h2>
+          <div id="eudrDetail${idx}" class="accordion-collapse collapse ${idx === 0 ? 'show' : ''}">
+            <div class="accordion-body bg-light p-3"><div class="row row-cols-1 row-cols-md-2 g-3">${qCards}</div></div>
+          </div></div>`;
+        idx++;
+      }
+
+      html += `</div></div></div>`;
+      container.html(html);
+    }
+
+    // EUDR Compliance Report
+    function renderEUDRReport() {
+      const container = $('#page-content-dynamic');
+      container.empty();
+
+      const allDG = APP_DATA['EUDR_DotDG'] || [];
+      const allHoi = APP_DATA['Banghoi_EUDR'] || [];
+      const totalAssessments = allDG.length;
+      const avgScore = totalAssessments > 0
+        ? Math.round(allDG.reduce((s, r) => s + (parseInt(r['Điểm số']) || 0), 0) / totalAssessments) : 0;
+      const highCompliance = allDG.filter(r => (parseInt(r['Điểm số']) || 0) >= 80).length;
+      const lowCompliance = allDG.filter(r => (parseInt(r['Điểm số']) || 0) < 50).length;
+
+      // Category breakdown from latest assessments
+      let catBreakdown = '';
+      const cats = Object.entries(EUDR_DICTIONARY);
+      if (allHoi.length > 0) {
+        catBreakdown = cats.map(([cat, questions]) => {
+          let catPass = 0, catTotal = 0;
+          allHoi.forEach(hoi => {
+            questions.forEach(q => {
+              if (hoi[q.id]) {
+                try {
+                  const ans = typeof hoi[q.id] === 'string' ? JSON.parse(hoi[q.id]) : hoi[q.id];
+                  if (ans.r !== 'NA') { catTotal++; if (ans.r === 'TT') catPass++; }
+                } catch(e) {}
+              }
+            });
+          });
+          const pct = catTotal > 0 ? Math.round((catPass / catTotal) * 100) : 0;
+          const barColor = pct >= 80 ? '#198754' : pct >= 50 ? '#ffc107' : '#dc3545';
+          return `<div class="mb-3">
+            <div class="d-flex justify-content-between mb-1"><span class="fw-bold small">${cat}</span><span class="small">${pct}%</span></div>
+            <div class="progress" style="height:8px"><div class="progress-bar" style="width:${pct}%;background:${barColor}"></div></div>
+          </div>`;
+        }).join('');
+      }
+
+      const html = `
+        <div class="card shadow-sm border-0 mb-4">
+          <div class="card-header bg-primary text-white py-3">
+            <h5 class="mb-0 fw-bold"><i class="fa-solid fa-chart-bar me-2"></i>${t('eudr_report_title')}</h5>
+          </div>
+          <div class="card-body">
+            <div class="row g-3 mb-4">
+              <div class="col-md-3"><div class="card border-0 shadow-sm p-3 text-center bg-primary bg-opacity-10"><div class="text-muted small">${currentLang === 'en' ? 'Total Assessments' : 'Tổng đánh giá'}</div><div class="fw-bold fs-3 text-primary">${totalAssessments}</div></div></div>
+              <div class="col-md-3"><div class="card border-0 shadow-sm p-3 text-center"><div class="text-muted small">${currentLang === 'en' ? 'Average Score' : 'Điểm trung bình'}</div><div class="fw-bold fs-3">${avgScore}%</div></div></div>
+              <div class="col-md-3"><div class="card border-0 shadow-sm p-3 text-center bg-success bg-opacity-10"><div class="text-muted small">${currentLang === 'en' ? 'High Compliance' : 'Tuân thủ cao'} (≥80%)</div><div class="fw-bold fs-3 text-success">${highCompliance}</div></div></div>
+              <div class="col-md-3"><div class="card border-0 shadow-sm p-3 text-center bg-danger bg-opacity-10"><div class="text-muted small">${currentLang === 'en' ? 'Low Compliance' : 'Tuân thủ thấp'} (<50%)</div><div class="fw-bold fs-3 text-danger">${lowCompliance}</div></div></div>
+            </div>
+            ${catBreakdown ? `<h6 class="fw-bold text-primary mb-3"><i class="fa-solid fa-chart-simple me-2"></i>${currentLang === 'en' ? 'Compliance by Category' : 'Tuân thủ theo lĩnh vực'}</h6>${catBreakdown}` : `<div class="text-center py-4 text-muted">${currentLang === 'en' ? 'No data available for report' : 'Chưa có dữ liệu để báo cáo'}</div>`}
+          </div>
+        </div>`;
+      container.html(html);
     }
 
     // ============================================================
@@ -10741,7 +11671,7 @@ ${gsRecord['Đề xuất'] ? `<div class="proposal-box"><h4>${t('mon_proposal')}
 
     function handleRowClick(sheetName, rowJson) {
       const rowData = JSON.parse(decodeURIComponent(rowJson));
-      let title = rowData['Tên ban quản lý'] || rowData['Tên nhóm'] || rowData['Họ tên chủ rừng'] || rowData['Mã số lô rừng'] || rowData['Họ và tên'] || t('detail_title');
+      let title = rowData['Tên ban quản lý'] || rowData['Tên nhóm'] || rowData['Họ tên chủ rừng'] || rowData['Mã số lô rừng'] || rowData['Họ và tên'] || rowData['Tên lớp'] || rowData['Người khiếu nại'] || rowData['Tên tài sản'] || rowData['Tên dụng cụ'] || rowData['Người mượn'] || rowData['Họ tên'] || t('detail_title');
 
       // Chế độ xem chi tiết mặc định
       navHistory.push({ mode: 'DETAIL', viewName: sheetName, title: title, rowData: rowData });
@@ -10814,6 +11744,12 @@ ${gsRecord['Đề xuất'] ? `<div class="proposal-box"><h4>${t('mon_proposal')}
           <button class="btn btn-success btn-sm fw-bold shadow-sm flex-fill" onclick="loadViewWithFilter('Churung', 'ID nhóm', '${d['ID nhóm']}', 'Hộ dân thuộc ${d['Tên nhóm']}')"><i class="fa-solid fa-users me-1"></i> ${t('dd_hodan')}</button>
           <button class="btn btn-outline-success btn-sm fw-bold shadow-sm flex-fill" onclick="showTargetHistory(${safeItem}, 'NhomCCR')"><i class="fa-solid fa-clipboard-check me-1"></i> ${t('dd_danhgia')}</button>
           <button class="btn btn-outline-primary btn-sm fw-bold shadow-sm flex-fill" onclick="showGroupMonitoring(${grpSafe})"><i class="fa-solid fa-users-viewfinder me-1"></i> ${t('dd_giamsat')}</button>
+        </div>
+        <div class="d-flex gap-1 mb-2 flex-nowrap detail-action-bar">
+          <button class="btn btn-outline-success btn-sm fw-bold shadow-sm flex-fill" onclick="loadViewWithFilter('LopTaphuan', 'ID nhóm', '${d['ID nhóm']}', 'Tập huấn ${d['Tên nhóm']}')"><i class="fa-solid fa-chalkboard-teacher me-1"></i> Tập huấn</button>
+          <button class="btn btn-outline-warning btn-sm fw-bold shadow-sm flex-fill" onclick="loadViewWithFilter('KhieuNai', 'ID nhóm', '${d['ID nhóm']}', 'Khiếu nại ${d['Tên nhóm']}')"><i class="fa-solid fa-exclamation-triangle me-1"></i> Khiếu nại</button>
+          <button class="btn btn-outline-info btn-sm fw-bold shadow-sm flex-fill" onclick="loadViewWithFilter('TaiSan', 'ID nhóm', '${d['ID nhóm']}', 'Tài sản ${d['Tên nhóm']}')"><i class="fa-solid fa-warehouse me-1"></i> Tài sản</button>
+          <button class="btn btn-outline-secondary btn-sm fw-bold shadow-sm flex-fill" onclick="loadViewWithFilter('DungCu', 'ID nhóm', '${d['ID nhóm']}', 'Dụng cụ ${d['Tên nhóm']}')"><i class="fa-solid fa-tools me-1"></i> Dụng cụ</button>
         </div>`;
       } else if (sheetName === 'Churung') {
         html += `<div class="d-flex gap-1 mb-2 flex-nowrap detail-action-bar">
@@ -10827,6 +11763,17 @@ ${gsRecord['Đề xuất'] ? `<div class="proposal-box"><h4>${t('mon_proposal')}
           <button class="btn btn-outline-success btn-sm fw-bold shadow-sm flex-fill" onclick="loadViewWithFilter('HD_Lorung', 'ID lô rừng', '${d['ID lô rừng']}', 'Hoạt động lô ${d['Mã số lô rừng']}')"><i class="fa-solid fa-clipboard-list me-1"></i> ${t('dd_baocao')}</button>
           <button class="btn btn-outline-success btn-sm fw-bold shadow-sm flex-fill" onclick="loadViewWithFilter('KH_QL_Lorung', 'ID lô rừng', '${d['ID lô rừng']}', 'Kế hoạch lô ${d['Mã số lô rừng']}')"><i class="fa-solid fa-calendar-check me-1"></i> ${t('dd_kehoach')}</button>
           <button class="btn btn-outline-primary btn-sm fw-bold shadow-sm flex-fill" onclick="showPlotMonitoring(${plotSafe})"><i class="fa-solid fa-clipboard-check me-1"></i> ${t('dd_giamsat')}</button>
+        </div>
+        <div class="d-flex gap-1 mb-2 flex-nowrap detail-action-bar">
+          <button class="btn btn-outline-primary btn-sm fw-bold shadow-sm flex-fill" onclick="showEUDRHistory(${plotSafe}, 'Lo_rung')"><i class="fa-solid fa-leaf me-1"></i> ${t('dd_eudr')}</button>
+        </div>`;
+      } else if (sheetName === 'LopTaphuan') {
+        html += `<div class="d-flex gap-1 mb-2 flex-nowrap detail-action-bar">
+          <button class="btn btn-success btn-sm fw-bold shadow-sm flex-fill" onclick="loadViewWithFilter('DSHocVien', 'ID lớp tập huấn', '${d['ID']}', 'Học viên lớp ${d['Tên lớp']}')"><i class="fa-solid fa-user-graduate me-1"></i> DS Học viên</button>
+        </div>`;
+      } else if (sheetName === 'DungCu') {
+        html += `<div class="d-flex gap-1 mb-2 flex-nowrap detail-action-bar">
+          <button class="btn btn-outline-success btn-sm fw-bold shadow-sm flex-fill" onclick="loadViewWithFilter('MuonTraDC', 'ID dụng cụ', '${d['ID']}', 'Mượn/trả ${d['Tên dụng cụ']}')"><i class="fa-solid fa-exchange-alt me-1"></i> Mượn/Trả</button>
         </div>`;
       } else if (sheetName === 'NhanSu') {
         const isAdmin = currentUser && (String(currentUser['Chức vụ']).toLowerCase().includes('admin'));
@@ -10911,6 +11858,34 @@ ${gsRecord['Đề xuất'] ? `<div class="proposal-box"><h4>${t('mon_proposal')}
     }
 
     let currentAction = '', currentSheetTarget = '';
+
+    // Auto-generate ID prefix map for each sheet
+    const AUTO_ID_PREFIX = {
+      'LopTaphuan': 'TH', 'DSHocVien': 'HV', 'KhieuNai': 'KN',
+      'TaiSan': 'TS', 'DungCu': 'DC', 'MuonTraDC': 'MT',
+      'DM_ThuocBVTV': 'BVTV', 'DM_CayTrong': 'CT', 'DM_PhanBon': 'PB', 'NguonGocGiong': 'GG',
+      'KH_TrongRung': 'KHTR', 'KH_KhaiThac': 'KHKT', 'KH_TaphuanPlan': 'KHTH', 'KH_CayGiongPlan': 'KHCG'
+    };
+
+    function _generateId(sheetName) {
+      const prefix = AUTO_ID_PREFIX[sheetName] || sheetName.substring(0, 3).toUpperCase();
+      const ts = Date.now().toString(36).toUpperCase();
+      const rnd = Math.random().toString(36).substring(2, 5).toUpperCase();
+      return `${prefix}_${ts}${rnd}`;
+    }
+
+    // FK dropdown config: which columns get dropdown selectors
+    const FK_DROPDOWN_CONFIG = {
+      'ID nhóm': { source: 'NhomCCR', valueCol: 'ID nhóm', labelCol: 'Tên nhóm' },
+      'ID chủ rừng': { source: 'Churung', valueCol: 'ID chủ rừng', labelCol: 'Họ tên' },
+      'ID lô rừng': { source: 'Lo_rung', valueCol: 'ID', labelCol: 'Mã số lô' },
+      'ID lớp tập huấn': { source: 'LopTaphuan', valueCol: 'ID', labelCol: 'Tên lớp' },
+      'ID dụng cụ': { source: 'DungCu', valueCol: 'ID', labelCol: 'Tên dụng cụ' }
+    };
+
+    // Columns that are file upload fields
+    const FILE_UPLOAD_COLS = ['Tài liệu (file)', 'Hình ảnh', 'Báo cáo (file)'];
+
     function openModal(action, sheetName, rowJson = null) {
       if (!_isAdmin() && action === 'UPDATE') { alert(t('no_permission')); return; }
       currentAction = action;
@@ -10925,6 +11900,11 @@ ${gsRecord['Đề xuất'] ? `<div class="proposal-box"><h4>${t('mon_proposal')}
       const lastHist = navHistory[navHistory.length - 1];
       if (action === 'CREATE' && lastHist && lastHist.filter) {
         rowData[lastHist.filter.key] = lastHist.filter.value;
+      }
+
+      // Auto-generate ID for CREATE mode
+      if (action === 'CREATE' && AUTO_ID_PREFIX[sheetName]) {
+        rowData['ID'] = _generateId(sheetName);
       }
 
       columns.forEach(col => {
@@ -10942,15 +11922,67 @@ ${gsRecord['Đề xuất'] ? `<div class="proposal-box"><h4>${t('mon_proposal')}
 
         let inputHtml = '';
         const isKey = col.toLowerCase().includes('id') || col.toLowerCase().includes('mã');
+        const colLower = col.toLowerCase();
 
-        if (col === 'Trạng thái') {
+        // HIDE: Primary ID in CREATE mode (auto-generated)
+        if (col === 'ID' && action === 'CREATE' && AUTO_ID_PREFIX[sheetName]) {
+          inputHtml = `<input type="hidden" name="${col}" value="${val}">`;
+          form.append(inputHtml);
+          return; // skip rendering visible field
+        }
+
+        // FK DROPDOWN: ID nhóm, ID chủ rừng, etc.
+        if (FK_DROPDOWN_CONFIG[col] && action === 'CREATE') {
+          const fk = FK_DROPDOWN_CONFIG[col];
+          const sourceData = APP_DATA[fk.source] || [];
+          let opts = `<option value="">-- Chọn --</option>`;
+          sourceData.forEach(item => {
+            const v = item[fk.valueCol] || '';
+            const lbl = item[fk.labelCol] || v;
+            const sel = val === v ? 'selected' : '';
+            opts += `<option value="${v}" ${sel}>${lbl} (${v})</option>`;
+          });
+          // If value is preset from drill-down, make it readonly
+          if (lastHist && lastHist.filter && col === lastHist.filter.key) {
+            inputHtml = `<input type="text" class="form-control bg-light" name="${col}" value="${val}" readonly>`;
+          } else {
+            inputHtml = `<select class="form-select" name="${col}">${opts}</select>`;
+          }
+        } else if (col === 'Trạng thái' && (sheetName === 'KhieuNai')) {
+          const opts = ['Chưa xử lý', 'Đang xử lý', 'Đã xử lý', 'Đóng'];
+          inputHtml = `<select class="form-select" name="${col}">${opts.map(o => `<option value="${o}" ${val === o ? 'selected' : ''}>${o}</option>`).join('')}</select>`;
+        } else if (col === 'Trạng thái' && (sheetName === 'MuonTraDC')) {
+          const opts = ['Đang mượn', 'Đã trả', 'Quá hạn'];
+          inputHtml = `<select class="form-select" name="${col}">${opts.map(o => `<option value="${o}" ${val === o ? 'selected' : ''}>${o}</option>`).join('')}</select>`;
+        } else if (col === 'Trạng thái') {
           inputHtml = `<select class="form-select" name="${col}"><option value="Act" ${val === 'Act' ? 'selected' : ''}>Act</option><option value="inAct" ${val === 'inAct' ? 'selected' : ''}>inAct</option><option value="Pending" disabled ${val === 'Pending' ? 'selected' : ''}>Pending</option></select>`;
+        } else if (col === 'Phân loại' && sheetName === 'KhieuNai') {
+          const opts = ['Lao động', 'Môi trường', 'Ranh giới', 'Quản lý', 'Khác'];
+          inputHtml = `<select class="form-select" name="${col}">${opts.map(o => `<option value="${o}" ${val === o ? 'selected' : ''}>${o}</option>`).join('')}</select>`;
+        } else if (col === 'Mức độ' && sheetName === 'KhieuNai') {
+          const opts = ['Nhẹ', 'Trung bình', 'Nghiêm trọng'];
+          inputHtml = `<select class="form-select" name="${col}">${opts.map(o => `<option value="${o}" ${val === o ? 'selected' : ''}>${o}</option>`).join('')}</select>`;
+        } else if (col === 'Giới tính') {
+          const opts = ['Nam', 'Nữ'];
+          inputHtml = `<select class="form-select" name="${col}">${opts.map(o => `<option value="${o}" ${val === o ? 'selected' : ''}>${o}</option>`).join('')}</select>`;
+        } else if (col === 'Tình trạng' && (sheetName === 'TaiSan' || sheetName === 'DungCu')) {
+          const opts = ['Tốt', 'Hư hỏng nhẹ', 'Cần sửa chữa', 'Thanh lý'];
+          inputHtml = `<select class="form-select" name="${col}">${opts.map(o => `<option value="${o}" ${val === o ? 'selected' : ''}>${o}</option>`).join('')}</select>`;
         } else if (col === 'Chức vụ') {
           const roles = ['Admin', 'Thành viên'];
           inputHtml = `<select class="form-select" name="${col}">${roles.map(r => `<option value="${r}" ${val === r ? 'selected' : ''}>${r}</option>`).join('')}</select>`;
         } else if (col === 'Mật khẩu') {
           if (action === 'CREATE') inputHtml = `<input type="text" class="form-control" name="${col}" placeholder="Mật khẩu khởi tạo">`;
           else if (String(rowData['Email']) === String(currentUser['Email'])) inputHtml = `<input type="text" class="form-control" name="${col}" placeholder="Đổi mật khẩu">`;
+        } else if (FILE_UPLOAD_COLS.includes(col)) {
+          // File upload field: show URL input + file picker
+          inputHtml = `<div class="input-group">
+            <input type="text" class="form-control" name="${col}" value="${val}" placeholder="URL hoặc chọn file...">
+            <label class="input-group-text btn btn-outline-success" style="cursor:pointer">
+              <i class="fa-solid fa-upload"></i>
+              <input type="file" class="d-none" onchange="handleFileUpload(this, '${col}')">
+            </label>
+          </div>`;
         } else {
           // KHÔNG CHO SỬA KEY
           const readonly = (action === 'UPDATE' && isKey) || (action === 'CREATE' && lastHist && lastHist.filter && col === lastHist.filter.key) ? 'readonly class="form-control bg-light"' : '';
@@ -10959,6 +11991,28 @@ ${gsRecord['Đề xuất'] ? `<div class="proposal-box"><h4>${t('mon_proposal')}
         if (inputHtml) form.append(`<div class="col-md-6"><label class="form-label small fw-bold text-muted">${col}</label>${inputHtml}</div>`);
       });
       new bootstrap.Modal(document.getElementById('dataModal')).show();
+    }
+
+    // File upload handler — uploads to Supabase Storage
+    async function handleFileUpload(inputEl, colName) {
+      const file = inputEl.files[0];
+      if (!file) return;
+      const bucket = 'uploads';
+      const path = `${currentSheetTarget}/${Date.now()}_${file.name}`;
+      try {
+        const { data, error } = await sb.storage.from(bucket).upload(path, file);
+        if (error) {
+          // If bucket doesn't exist, just store filename as reference
+          console.warn('Upload error (bucket may not exist):', error.message);
+          $(`[name="${colName}"]`).val(file.name);
+          return;
+        }
+        const { data: urlData } = sb.storage.from(bucket).getPublicUrl(path);
+        $(`[name="${colName}"]`).val(urlData.publicUrl || file.name);
+      } catch(e) {
+        console.warn('File upload fallback:', e);
+        $(`[name="${colName}"]`).val(file.name);
+      }
     }
 
     function performAggregation() {
@@ -11346,7 +12400,20 @@ ${gsRecord['Đề xuất'] ? `<div class="proposal-box"><h4>${t('mon_proposal')}
       'Lo_rung': { titleKey: 'st_lorung', icon: 'fa-tree', viewName: 'Lo_rung', displayCols: ['Tên lô rừng','ID lô rừng','Loài cây trồng chính','Trạng thái'] },
       'NhanSu': { titleKey: 'st_nhansu', icon: 'fa-id-badge', viewName: 'Nhan_Su', displayCols: ['Họ và tên','Email','Chức vụ'] },
       'Taphuan': { titleKey: 'st_taphuan', icon: 'fa-chalkboard-teacher', viewName: 'Taphuan', displayCols: ['Loại tập huấn','Ngày tập huấn','Giảng viên'] },
-      'DG_noibo': { titleKey: 'st_danhgia', icon: 'fa-clipboard-check', viewName: 'DG_noibo', displayCols: ['ID','ID nhóm','Date','Staff'] }
+      'DG_noibo': { titleKey: 'st_danhgia', icon: 'fa-clipboard-check', viewName: 'DG_noibo', displayCols: ['ID','ID nhóm','Date','Staff'] },
+      'LopTaphuan': { titleKey: 'st_taphuan', icon: 'fa-chalkboard-teacher', viewName: 'Lop_Taphuan', displayCols: ['Tên lớp','Giảng viên','Năm','Số người tham gia'] },
+      'KhieuNai': { titleKey: 'st_khieunai', icon: 'fa-exclamation-triangle', viewName: 'Khieu_Nai', displayCols: ['Người khiếu nại','Phân loại','Trạng thái','Ngày tiếp nhận'] },
+      'TaiSan': { titleKey: 'st_taisan', icon: 'fa-warehouse', viewName: 'Tai_San', displayCols: ['Tên tài sản','Loại tài sản','Số lượng','Tình trạng'] },
+      'DungCu': { titleKey: 'st_dungcu', icon: 'fa-tools', viewName: 'Dung_Cu', displayCols: ['Tên dụng cụ','Loại dụng cụ','Số lượng tổng','Số lượng còn lại'] },
+      'EUDR_DotDG': { titleKey: 'st_eudr', icon: 'fa-leaf', viewName: 'EUDR_DanhGia', displayCols: ['ID lô rừng','Ngày đánh giá','Người đánh giá','Điểm số'] },
+      'DM_ThuocBVTV': { titleKey: 'st_thuocbvtv', icon: 'fa-flask', viewName: 'TL_ThuocBVTV', displayCols: ['Tên thương mại','Hoạt chất','Nhóm thuốc','Độc tính'] },
+      'DM_CayTrong': { titleKey: 'st_caytrong', icon: 'fa-seedling', viewName: 'TL_CayTrong', displayCols: ['Tên tiếng Việt','Tên khoa học','Nhóm cây'] },
+      'DM_PhanBon': { titleKey: 'st_phanbon', icon: 'fa-cubes', viewName: 'TL_PhanBon', displayCols: ['Tên phân bón','Loại phân','Hàm lượng','Nhà sản xuất'] },
+      'NguonGocGiong': { titleKey: 'st_nguongoc', icon: 'fa-certificate', viewName: 'TL_NguonGocGiong', displayCols: ['Tên giống','Loài cây','Xuất xứ','Nhà cung cấp'] },
+      'KH_TrongRung': { titleKey: 'grp_plans', icon: 'fa-seedling', viewName: 'KH_trongrung', displayCols: ['Năm','Loài cây','Diện tích (ha)','Trạng thái'] },
+      'KH_KhaiThac': { titleKey: 'grp_plans', icon: 'fa-tree', viewName: 'KH_khaithac', displayCols: ['Năm','Loại khai thác','Diện tích (ha)','Trạng thái'] },
+      'KH_TaphuanPlan': { titleKey: 'grp_plans', icon: 'fa-chalkboard-teacher', viewName: 'KH_Taphuan', displayCols: ['Năm','Tên khóa','Đối tượng','Trạng thái'] },
+      'KH_CayGiongPlan': { titleKey: 'grp_plans', icon: 'fa-certificate', viewName: 'KH_CayGiong', displayCols: ['Năm','Loài cây','Số lượng cây','Nhà cung cấp'] }
     };
 
     const APP_FUNCTIONS = [
