@@ -1051,10 +1051,86 @@
 
     /* Smart search */
     .smart-search-results { z-index: 1050; max-height: 350px; overflow-y: auto; }
+
+    /* PWA Install Banner */
+    .pwa-install-banner {
+      position: fixed; bottom: 0; left: 0; right: 0; z-index: 9998;
+      background: linear-gradient(135deg, #1B5E20 0%, #2E7D32 50%, #43A047 100%);
+      color: #fff; padding: 12px 16px; display: none; align-items: center; gap: 12px;
+      box-shadow: 0 -4px 20px rgba(0,0,0,0.3); animation: slideUp 0.4s ease-out;
+    }
+    .pwa-install-banner.show { display: flex; }
+    .pwa-install-banner .pwa-icon { width: 48px; height: 48px; border-radius: 12px; background: rgba(255,255,255,0.15); display: flex; align-items: center; justify-content: center; font-size: 24px; flex-shrink: 0; }
+    .pwa-install-banner .pwa-text { flex: 1; }
+    .pwa-install-banner .pwa-text h6 { margin: 0; font-size: 14px; font-weight: 700; }
+    .pwa-install-banner .pwa-text p { margin: 0; font-size: 12px; opacity: 0.85; }
+    .pwa-install-banner .btn-pwa-install { background: #fff; color: #1B5E20; border: none; border-radius: 20px; padding: 8px 20px; font-weight: 700; font-size: 13px; white-space: nowrap; }
+    .pwa-install-banner .btn-pwa-close { background: none; border: none; color: rgba(255,255,255,0.7); font-size: 18px; padding: 4px; }
+    @keyframes slideUp { from { transform: translateY(100%); } to { transform: translateY(0); } }
+
+    /* Backup overlay */
+    .backup-overlay {
+      position: fixed; top: 0; left: 0; right: 0; bottom: 0; z-index: 9997;
+      background: rgba(0,0,0,0.5); display: none; align-items: center; justify-content: center;
+    }
+    .backup-overlay.show { display: flex; }
+    .backup-card {
+      background: #fff; border-radius: 16px; padding: 24px; width: 90%; max-width: 400px;
+      box-shadow: 0 8px 32px rgba(0,0,0,0.3); text-align: center;
+    }
+    .backup-card .backup-icon { font-size: 48px; color: #1B5E20; margin-bottom: 12px; }
+    .backup-card h5 { color: #1B5E20; margin-bottom: 8px; }
+    .backup-card p { color: #666; font-size: 13px; margin-bottom: 16px; }
+    .backup-card .btn-group-vertical { width: 100%; gap: 8px; }
+    .backup-card .btn-backup { border-radius: 10px; font-weight: 600; padding: 10px; }
+
+    /* Swipe backup hint */
+    .swipe-backup-hint {
+      position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%);
+      background: rgba(27,94,32,0.9); color: #fff; padding: 12px 24px;
+      border-radius: 12px; font-size: 14px; font-weight: 600; z-index: 9996;
+      display: none; pointer-events: none; white-space: nowrap;
+    }
   </style>
 </head>
 
 <body>
+
+  <!-- PWA Install Banner -->
+  <div class="pwa-install-banner" id="pwa-install-banner">
+    <div class="pwa-icon"><i class="fa-solid fa-tree"></i></div>
+    <div class="pwa-text">
+      <h6 data-i18n="pwa_install_title">Cài đặt FSC FM</h6>
+      <p data-i18n="pwa_install_desc">Thêm vào màn hình chính để dùng offline</p>
+    </div>
+    <button class="btn-pwa-install" onclick="installPWA()" data-i18n="pwa_install_btn">Cài đặt</button>
+    <button class="btn-pwa-close" onclick="dismissInstallBanner()">&times;</button>
+  </div>
+
+  <!-- Backup Overlay -->
+  <div class="backup-overlay" id="backup-overlay" onclick="if(event.target===this)closeBackupOverlay()">
+    <div class="backup-card">
+      <div class="backup-icon"><i class="fa-solid fa-cloud-arrow-down"></i></div>
+      <h5 data-i18n="backup_title">Sao lưu dữ liệu</h5>
+      <p data-i18n="backup_desc">Xuất toàn bộ dữ liệu ứng dụng để lưu trữ an toàn</p>
+      <div class="btn-group-vertical">
+        <button class="btn btn-success btn-backup" onclick="backupToJSON()">
+          <i class="fa-solid fa-file-export me-2"></i><span data-i18n="backup_json">Tải file JSON</span>
+        </button>
+        <button class="btn btn-outline-success btn-backup" onclick="backupToClipboard()">
+          <i class="fa-solid fa-clipboard me-2"></i><span data-i18n="backup_clipboard">Sao chép vào clipboard</span>
+        </button>
+        <button class="btn btn-outline-secondary btn-backup" onclick="closeBackupOverlay()">
+          <i class="fa-solid fa-xmark me-2"></i><span data-i18n="backup_close">Đóng</span>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Swipe backup hint -->
+  <div class="swipe-backup-hint" id="swipe-backup-hint">
+    <i class="fa-solid fa-cloud-arrow-down me-2"></i><span data-i18n="backup_swipe_hint">Sao lưu dữ liệu</span>
+  </div>
 
   <div id="login-screen" class="d-flex align-items-center justify-content-center min-vh-100">
     <div class="login-card">
@@ -1311,6 +1387,108 @@
       });
     }
 
+    // === PWA INSTALL BANNER ===
+    let deferredInstallPrompt = null;
+    window.addEventListener('beforeinstallprompt', (e) => {
+      e.preventDefault();
+      deferredInstallPrompt = e;
+      // Show banner if not dismissed recently
+      const dismissed = localStorage.getItem('pwa_install_dismissed');
+      if (!dismissed || Date.now() - parseInt(dismissed) > 7 * 24 * 60 * 60 * 1000) {
+        setTimeout(() => {
+          document.getElementById('pwa-install-banner').classList.add('show');
+        }, 3000);
+      }
+    });
+
+    window.addEventListener('appinstalled', () => {
+      console.log('PWA installed');
+      document.getElementById('pwa-install-banner').classList.remove('show');
+      deferredInstallPrompt = null;
+    });
+
+    function installPWA() {
+      if (deferredInstallPrompt) {
+        deferredInstallPrompt.prompt();
+        deferredInstallPrompt.userChoice.then(result => {
+          console.log('PWA install:', result.outcome);
+          deferredInstallPrompt = null;
+          document.getElementById('pwa-install-banner').classList.remove('show');
+        });
+      }
+    }
+
+    function dismissInstallBanner() {
+      document.getElementById('pwa-install-banner').classList.remove('show');
+      localStorage.setItem('pwa_install_dismissed', String(Date.now()));
+    }
+
+    // === BACKUP FUNCTIONS ===
+    function openBackupOverlay() {
+      document.getElementById('backup-overlay').classList.add('show');
+    }
+
+    function closeBackupOverlay() {
+      document.getElementById('backup-overlay').classList.remove('show');
+    }
+
+    function backupToJSON() {
+      try {
+        const backup = {
+          app: 'FSC FM',
+          version: '1.0',
+          date: new Date().toISOString(),
+          user: typeof currentUser !== 'undefined' ? (currentUser || {})['Email'] || 'unknown' : 'unknown',
+          tables: {}
+        };
+        for (const [key, data] of Object.entries(typeof APP_DATA !== 'undefined' ? APP_DATA : {})) {
+          if (Array.isArray(data) && data.length > 0) {
+            backup.tables[key] = data;
+          }
+        }
+        const json = JSON.stringify(backup, null, 2);
+        const blob = new Blob([json], { type: 'application/json' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `FSCFM_backup_${new Date().toISOString().slice(0,10)}.json`;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+        const msg = typeof t === 'function' ? t('backup_success') : 'Sao lưu thành công!';
+        alert(msg);
+        closeBackupOverlay();
+      } catch (e) {
+        console.error('Backup error:', e);
+        alert('Backup error: ' + e.message);
+      }
+    }
+
+    async function backupToClipboard() {
+      try {
+        const backup = {
+          app: 'FSC FM',
+          version: '1.0',
+          date: new Date().toISOString(),
+          user: typeof currentUser !== 'undefined' ? (currentUser || {})['Email'] || 'unknown' : 'unknown',
+          tables: {}
+        };
+        for (const [key, data] of Object.entries(typeof APP_DATA !== 'undefined' ? APP_DATA : {})) {
+          if (Array.isArray(data) && data.length > 0) {
+            backup.tables[key] = data;
+          }
+        }
+        await navigator.clipboard.writeText(JSON.stringify(backup, null, 2));
+        const msg = typeof t === 'function' ? t('backup_copied') : 'Đã sao chép vào clipboard!';
+        alert(msg);
+        closeBackupOverlay();
+      } catch (e) {
+        console.error('Clipboard error:', e);
+        alert('Clipboard error: ' + e.message);
+      }
+    }
+
     // === OFFLINE/ONLINE STATUS ===
     function updateOnlineStatus() {
       const badge = document.getElementById('offline-badge');
@@ -1478,6 +1656,17 @@
         grp_eudr: 'Tuân thủ EUDR',
         grp_reference: 'Tài liệu tham khảo',
         grp_plans: 'Kế hoạch hoạt động',
+        pwa_install_title: 'Cài đặt FSC FM',
+        pwa_install_desc: 'Thêm vào màn hình chính để dùng offline',
+        pwa_install_btn: 'Cài đặt',
+        backup_title: 'Sao lưu dữ liệu',
+        backup_desc: 'Xuất toàn bộ dữ liệu ứng dụng để lưu trữ an toàn',
+        backup_json: 'Tải file JSON',
+        backup_clipboard: 'Sao chép vào clipboard',
+        backup_close: 'Đóng',
+        backup_swipe_hint: 'Sao lưu dữ liệu',
+        backup_success: 'Sao lưu thành công!',
+        backup_copied: 'Đã sao chép vào clipboard!',
         eudr_form_title: 'Đánh giá tuân thủ EUDR',
         eudr_doc_title: 'Tài liệu tham khảo EUDR',
         eudr_report_title: 'Báo cáo tuân thủ EUDR',
@@ -1890,6 +2079,17 @@
         grp_eudr: 'EUDR Compliance',
         grp_reference: 'Reference Documents',
         grp_plans: 'Activity Plans',
+        pwa_install_title: 'Install FSC FM',
+        pwa_install_desc: 'Add to home screen for offline use',
+        pwa_install_btn: 'Install',
+        backup_title: 'Backup Data',
+        backup_desc: 'Export all app data for safe storage',
+        backup_json: 'Download JSON',
+        backup_clipboard: 'Copy to clipboard',
+        backup_close: 'Close',
+        backup_swipe_hint: 'Backup data',
+        backup_success: 'Backup successful!',
+        backup_copied: 'Copied to clipboard!',
         eudr_form_title: 'EUDR Compliance Assessment',
         eudr_doc_title: 'EUDR Reference Documents',
         eudr_report_title: 'EUDR Compliance Report',
@@ -5951,19 +6151,33 @@
       }
     }
 
-    // Swipe gesture for sidebar on mobile
-    let touchStartX = 0;
+    // Swipe gestures: right=sidebar, left=backup (prevents accidental app exit)
+    let touchStartX = 0, touchStartY = 0;
     document.addEventListener('touchstart', function(e) {
       touchStartX = e.touches[0].clientX;
+      touchStartY = e.touches[0].clientY;
     }, { passive: true });
     document.addEventListener('touchend', function(e) {
-      const diff = e.changedTouches[0].clientX - touchStartX;
-      if (diff > 80 && touchStartX < 40) {
+      const diffX = e.changedTouches[0].clientX - touchStartX;
+      const diffY = Math.abs(e.changedTouches[0].clientY - touchStartY);
+      // Only horizontal swipes (not vertical scroll)
+      if (diffY > 80) return;
+      if (diffX > 80 && touchStartX < 40) {
+        // Swipe right from edge → open sidebar
         $('#sidebar-wrapper').addClass('show-sidebar');
         $('#sidebar-overlay').addClass('active');
-      } else if (diff < -80 && $('#sidebar-wrapper').hasClass('show-sidebar')) {
-        $('#sidebar-wrapper').removeClass('show-sidebar');
-        $('#sidebar-overlay').removeClass('active');
+      } else if (diffX < -100) {
+        // Swipe left → close sidebar if open, otherwise show backup
+        if ($('#sidebar-wrapper').hasClass('show-sidebar')) {
+          $('#sidebar-wrapper').removeClass('show-sidebar');
+          $('#sidebar-overlay').removeClass('active');
+        } else if (document.getElementById('login-screen').classList.contains('d-none')) {
+          // Show backup hint briefly then open overlay
+          const hint = document.getElementById('swipe-backup-hint');
+          hint.style.display = 'block';
+          setTimeout(() => { hint.style.display = 'none'; }, 800);
+          setTimeout(() => { openBackupOverlay(); }, 400);
+        }
       }
     }, { passive: true });
 
