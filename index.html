@@ -832,8 +832,8 @@
       .map-toolbar .btn-sm span[data-i18n] { display: none; }
       .map-toolbar .btn-sm .me-1 { margin-right: 0; }
       .map-toolbar .map-search-wrap { flex-shrink: 0; }
-      .map-fab-stack { bottom: 80px; }
-      .coords-panel { bottom: 80px; }
+      .map-fab-stack { bottom: calc(80px + env(safe-area-inset-bottom, 0px)); }
+      .coords-panel { bottom: calc(80px + env(safe-area-inset-bottom, 0px)); }
       .map-layer-control { top: 10px; right: 10px; max-height: 250px; min-width: 160px; }
     }
 
@@ -11319,11 +11319,15 @@ ${gsRecord['Đề xuất'] ? `<div class="proposal-box"><h4>${t('mon_proposal')}
         const resp = await fetch('handbook/' + key + '.html');
         if (!resp.ok) throw new Error('HTTP ' + resp.status);
         const html = await resp.text();
+        // Guard: if SPA fallback returned index.html instead of handbook content, treat as 404
+        if (html.includes('id="login-screen"') || html.includes('<!DOCTYPE html>')) {
+          throw new Error('File not found (SPA fallback)');
+        }
         _handbookCache[key] = html;
         el.innerHTML = html;
         el.dataset.loaded = 'true';
       } catch (err) {
-        el.innerHTML = `<div class="text-center py-5 text-muted"><i class="fas fa-exclamation-triangle fa-2x text-warning mb-3"></i><br>Không tải được nội dung: ${err.message}</div>`;
+        el.innerHTML = `<div class="text-center py-5 text-muted"><i class="fas fa-exclamation-triangle fa-2x text-warning mb-3"></i><br>${t('hb_load_error') || 'Không tải được nội dung'}: ${err.message}</div>`;
       }
     }
 
