@@ -832,8 +832,9 @@
       .map-toolbar .btn-sm span[data-i18n] { display: none; }
       .map-toolbar .btn-sm .me-1 { margin-right: 0; }
       .map-toolbar .map-search-wrap { flex-shrink: 0; }
-      .map-fab-stack { bottom: calc(80px + env(safe-area-inset-bottom, 0px)); }
-      .coords-panel { bottom: calc(80px + env(safe-area-inset-bottom, 0px)); }
+      .map-fab-stack { bottom: calc(90px + env(safe-area-inset-bottom, 0px)); }
+      .coords-panel { bottom: calc(90px + env(safe-area-inset-bottom, 0px)); }
+      .gps-record-guide { top: var(--sp-2); }
       .map-layer-control { top: 10px; right: 10px; max-height: 250px; min-width: 160px; }
     }
 
@@ -856,18 +857,21 @@
 
     /* Plot label tooltips on map (visible at high zoom only) */
     .plot-label {
-      background: transparent !important;
-      border: none !important;
-      box-shadow: none !important;
-      font-size: 11px !important;
-      line-height: 1.2 !important;
-      color: #FFD600;
-      font-weight: 700;
+      background: rgba(0,0,0,0.55) !important;
+      border: 1px solid rgba(255,214,0,0.4) !important;
+      border-radius: 4px !important;
+      box-shadow: 0 1px 4px rgba(0,0,0,0.5) !important;
+      font-size: 10px !important;
+      line-height: 1.35 !important;
+      color: #fff;
+      font-weight: 600;
       text-align: center;
       white-space: nowrap;
-      text-shadow: 1px 1px 3px #000, -1px -1px 3px #000, 1px -1px 3px #000, -1px 1px 3px #000, 0 0 6px rgba(0,0,0,0.8);
-      padding: 0 !important;
+      padding: 2px 6px !important;
     }
+    .plot-label .lbl-name { color: #FFD600; font-weight: 700; font-size: 11px; }
+    .plot-label .lbl-owner { color: #B9F6CA; }
+    .plot-label .lbl-info { color: #E0E0E0; font-size: 9px; }
     .plot-label::before { display: none !important; }
 
     .map-container-relative { position: relative; }
@@ -6352,7 +6356,7 @@
     }
 
     let _labelsEnabled = false; // Labels off by default for speed
-    const LABEL_ZOOM_MIN = 18; // ~1:1000 scale
+    const LABEL_ZOOM_MIN = 14; // Show labels from zoom 14+
 
     // Toggle labels on/off
     window.togglePlotLabels = function() {
@@ -6392,27 +6396,37 @@
         // Skip polygons outside current viewport
         if (!bounds.contains(center)) return;
 
-        let plotCode = '', ownerName = '', area = '';
+        let plotName = '', plotCode = '', ownerName = '', area = '', yearPlant = '';
         if (layer.loRungId) {
           const lr = loRungData.find(r => String(r['ID lô rừng']) === String(layer.loRungId));
           if (lr) {
+            plotName = lr['Tên lô rừng'] || '';
             plotCode = lr['Mã số lô rừng'] || '';
             ownerName = ownerMap[lr['ID chủ rừng']] || '';
             area = lr['Tổng diện tích'] || '';
+            yearPlant = lr['Năm trồng'] || '';
           }
         }
-        if (!plotCode && layer.feature && layer.feature.properties) {
+        if (!plotName && !plotCode && layer.feature && layer.feature.properties) {
           const p = layer.feature.properties;
+          plotName = p['Tên lô rừng'] || p['ten_lo_rung'] || '';
           plotCode = p['Mã số lô rừng'] || p['ma_so_lo'] || '';
           ownerName = p['Tên chủ rừng'] || p['ten_chu_rung'] || '';
           area = p['Diện tích'] || p['dien_tich'] || '';
+          yearPlant = p['Năm trồng'] || p['nam_trong'] || '';
         }
-        if (!plotCode && !ownerName) return;
+        if (!plotName && !plotCode && !ownerName) return;
 
-        const labelText = [plotCode, ownerName, area ? area + ' ha' : ''].filter(Boolean).join('\n');
+        // Build rich label HTML
+        const displayName = plotName || plotCode;
+        const infoLine = [area ? area + ' ha' : '', yearPlant ? yearPlant : ''].filter(Boolean).join('/');
+        let html = `<span class="lbl-name">${displayName}</span>`;
+        if (ownerName) html += `<br><span class="lbl-owner">${ownerName}</span>`;
+        if (infoLine) html += `<br><span class="lbl-info">${infoLine}</span>`;
+
         mapPlotLabels.addLayer(L.tooltip({
           permanent: true, direction: 'center', className: 'plot-label', offset: [0, 0]
-        }).setContent(labelText.replace(/\n/g, '<br>')).setLatLng(center));
+        }).setContent(html).setLatLng(center));
       });
     }
 
