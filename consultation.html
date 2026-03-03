@@ -113,13 +113,51 @@
   </div>
 </div>
 
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="https://cdn.jsdelivr.net/gh/pocketbase/js-sdk@master/dist/pocketbase.umd.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 <script>
 (function() {
-  const SUPABASE_URL = 'https://rvvctklkxjhypgmzcaym.supabase.co';
-  const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJ2dmN0a2xreGpoeXBnbXpjYXltIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzA1NTQyOTEsImV4cCI6MjA4NjEzMDI5MX0.h_Y-_YRFlfKlmchIcz6h5nz6FusmVotwjXpPHUZvDvs';
-  const sb = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+  const PB_URL = 'https://fscfm.lvtcenter.it.com';
+  const pb = new PocketBase(PB_URL);
+
+  // Mini PocketBase wrapper (select, insert, eq, single)
+  const sb = {
+    from(table) {
+      let _filters = [], _single = false;
+      const self = {
+        select() { return self; },
+        eq(col, val) { _filters.push({ col, val }); return self; },
+        single() { _single = true; return self; },
+        insert(data) {
+          return (async () => {
+            try {
+              const cleanData = { ...data };
+              delete cleanData.created_at; delete cleanData.updated_at;
+              await pb.collection(table).create(cleanData);
+              return { error: null };
+            } catch (e) { return { error: { message: e.message } }; }
+          })();
+        },
+        then(resolve, reject) {
+          (async () => {
+            try {
+              const filter = _filters.map(f => `${f.col}='${String(f.val).replace(/'/g, "\\'")}'`).join('&&');
+              if (_single) {
+                const list = await pb.collection(table).getList(1, 1, { filter });
+                if (list.items.length === 0) return resolve({ data: null, error: { message: 'Not found' } });
+                const rec = list.items[0];
+                rec.created_at = rec.created; rec.updated_at = rec.updated;
+                return resolve({ data: rec, error: null });
+              }
+              const items = await pb.collection(table).getFullList({ filter });
+              return resolve({ data: items.map(r => { r.created_at = r.created; r.updated_at = r.updated; return r; }), error: null });
+            } catch (e) { resolve({ data: null, error: { message: e.message } }); }
+          })();
+        }
+      };
+      return self;
+    }
+  };
 
   // Consultation questions dictionary
   const QUESTIONS = {

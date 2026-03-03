@@ -1,6 +1,6 @@
-const CACHE_NAME = 'fscfm-v3';
-const CDN_CACHE = 'fscfm-cdn-v3';
-const DATA_CACHE = 'fscfm-data-v2';
+const CACHE_NAME = 'fscfm-v5';
+const CDN_CACHE = 'fscfm-cdn-v5';
+const DATA_CACHE = 'fscfm-data-v4';
 
 // Core app files
 const APP_FILES = [
@@ -20,7 +20,7 @@ const CDN_FILES = [
   'https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js',
   'https://cdn.datatables.net/1.13.4/js/jquery.dataTables.min.js',
   'https://cdn.datatables.net/1.13.4/js/dataTables.bootstrap5.min.js',
-  'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2',
+  'https://cdn.jsdelivr.net/gh/pocketbase/js-sdk@master/dist/pocketbase.umd.js',
   'https://unpkg.com/leaflet@1.9.4/dist/leaflet.js',
   'https://cdnjs.cloudflare.com/ajax/libs/leaflet.draw/1.0.4/leaflet.draw.js',
   'https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js',
@@ -54,8 +54,8 @@ self.addEventListener('activate', event => {
 self.addEventListener('fetch', event => {
   const url = new URL(event.request.url);
 
-  // Supabase API calls: network-first, cache response for offline
-  if (url.hostname.includes('supabase.co')) {
+  // PocketBase API calls: network-first, cache response for offline
+  if (url.pathname.startsWith('/api/')) {
     event.respondWith(
       caches.open(DATA_CACHE).then(cache =>
         fetch(event.request.clone()).then(response => {

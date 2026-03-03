@@ -976,8 +976,8 @@
       .map-toolbar .btn-sm span[data-i18n] { display: none; }
       .map-toolbar .btn-sm .me-1 { margin-right: 0; }
       .map-toolbar .map-search-wrap { flex-shrink: 0; }
-      .map-fab-stack { bottom: calc(90px + env(safe-area-inset-bottom, 0px)); }
-      .coords-panel { bottom: calc(90px + env(safe-area-inset-bottom, 0px)); }
+      .map-fab-stack { bottom: calc(115px + env(safe-area-inset-bottom, 8px)); }
+      .coords-panel { bottom: calc(115px + env(safe-area-inset-bottom, 8px)); }
       .gps-record-guide { top: var(--sp-2); }
       .map-layer-control { top: 10px; right: 10px; max-height: 250px; min-width: 160px; }
     }
@@ -1463,6 +1463,9 @@
             <div id="map-container" class="map-container-relative">
               <!-- Floating GPS buttons (bottom-right) -->
               <div class="map-fab-stack">
+                <button type="button" class="map-fab map-fab-primary" id="btn-gps-track" onclick="toggleGpsTracking()" aria-label="Vị trí" title="Vị trí điểm đứng">
+                  <i class="fa-solid fa-location-crosshairs"></i><span class="visually-hidden">Vị trí</span>
+                </button>
                 <button type="button" class="map-fab" id="btn-gps-coords" onclick="toggleCoordsDisplay()" aria-label="Tọa độ" title="Tọa độ">
                   <i class="fa-solid fa-crosshairs"></i><span class="visually-hidden">Tọa độ</span>
                 </button>
@@ -1471,9 +1474,6 @@
                 </button>
                 <button type="button" class="map-fab" id="btn-gps-record" onclick="toggleGpsRecord()" aria-label="Vẽ vùng GPS" title="Vẽ vùng GPS theo di chuyển">
                   <i class="fa-solid fa-route"></i><span class="visually-hidden">Vẽ vùng GPS</span>
-                </button>
-                <button type="button" class="map-fab map-fab-primary" id="btn-gps-track" onclick="toggleGpsTracking()" aria-label="Vị trí" title="Vị trí điểm đứng">
-                  <i class="fa-solid fa-location-crosshairs"></i><span class="visually-hidden">Vị trí</span>
                 </button>
               </div>
               <!-- Coordinate display (bottom-left) -->
@@ -1524,7 +1524,7 @@
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
   <script src="https://cdn.datatables.net/1.13.4/js/jquery.dataTables.min.js"></script>
   <script src="https://cdn.datatables.net/1.13.4/js/dataTables.bootstrap5.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="https://cdn.jsdelivr.net/gh/pocketbase/js-sdk@master/dist/pocketbase.umd.js"></script>
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet.draw/1.0.4/leaflet.draw.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
@@ -2952,10 +2952,290 @@
     // Apply language on page load
     document.addEventListener('DOMContentLoaded', () => applyI18n());
 
-    // === SUPABASE CONFIG ===
-    const SUPABASE_URL = 'https://rvvctklkxjhypgmzcaym.supabase.co';
-    const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJ2dmN0a2xreGpoeXBnbXpjYXltIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzA1NTQyOTEsImV4cCI6MjA4NjEzMDI5MX0.h_Y-_YRFlfKlmchIcz6h5nz6FusmVotwjXpPHUZvDvs';
-    const sb = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+    // === POCKETBASE CONFIG ===
+    const PB_URL = 'https://fscfm.lvtcenter.it.com';
+    const pb = new PocketBase(PB_URL);
+
+    // --- QueryBuilder: wraps PocketBase SDK to match sb.from(table).select().eq()... ---
+    class QueryBuilder {
+      constructor(table) {
+        this._table = table;
+        this._filters = [];
+        this._order = [];
+        this._limitVal = null;
+        this._rangeFrom = null;
+        this._rangeTo = null;
+        this._selectCols = '*';
+        this._single = false;
+        this._insertData = null;
+        this._updateData = null;
+        this._upsertData = null;
+        this._upsertOpts = null;
+        this._deleteMode = false;
+        this._doSelect = false; // .select() after mutation
+      }
+      select(cols) {
+        if (this._insertData || this._updateData || this._upsertData) {
+          this._doSelect = true;
+          return this;
+        }
+        this._selectCols = cols || '*';
+        return this;
+      }
+      eq(col, val) { this._filters.push({ col, op: '=', val }); return this; }
+      order(col, opts) { this._order.push({ col, ascending: opts?.ascending ?? true }); return this; }
+      limit(n) { this._limitVal = n; return this; }
+      range(from, to) { this._rangeFrom = from; this._rangeTo = to; return this; }
+      single() { this._single = true; return this; }
+      insert(data) { this._insertData = data; return this; }
+      update(data) { this._updateData = data; return this; }
+      upsert(data, opts) { this._upsertData = data; this._upsertOpts = opts; return this; }
+      delete() { this._deleteMode = true; return this; }
+
+      _buildFilter() {
+        return this._filters.map(f => `${f.col}='${String(f.val).replace(/'/g, "\\'")}'`).join('&&');
+      }
+
+      _buildSort() {
+        return this._order.map(o => (o.ascending ? '' : '-') + o.col).join(',');
+      }
+
+      _toPojo(rec) {
+        if (!rec) return rec;
+        const obj = {};
+        for (const [k, v] of Object.entries(rec)) {
+          if (k === 'collectionId' || k === 'collectionName' || k === 'expand') continue;
+          obj[k] = v;
+        }
+        obj.created_at = rec.created;
+        obj.updated_at = rec.updated;
+        return obj;
+      }
+
+      async then(resolve, reject) {
+        try {
+          const result = await this._exec();
+          resolve(result);
+        } catch (e) { reject ? reject(e) : resolve({ data: null, error: e }); }
+      }
+
+      async _exec() {
+        const col = pb.collection(this._table);
+
+        // --- DELETE ---
+        if (this._deleteMode) {
+          if (this._filters.length === 0) return { data: null, error: { message: 'Delete requires a filter' } };
+          try {
+            const filter = this._buildFilter();
+            const records = await col.getFullList({ filter });
+            for (const r of records) await col.delete(r.id);
+            return { data: records.map(r => this._toPojo(r)), error: null };
+          } catch (e) { return { data: null, error: { message: e.message } }; }
+        }
+
+        // --- INSERT ---
+        if (this._insertData) {
+          try {
+            const cleanData = { ...this._insertData };
+            delete cleanData.created_at; delete cleanData.updated_at;
+            const rec = await col.create(cleanData);
+            const pojo = this._toPojo(rec);
+            return { data: this._doSelect ? [pojo] : pojo, error: null };
+          } catch (e) { return { data: null, error: { message: e.message } }; }
+        }
+
+        // --- UPDATE ---
+        if (this._updateData) {
+          try {
+            const cleanData = { ...this._updateData };
+            delete cleanData.created_at; delete cleanData.updated_at;
+            if (this._filters.length > 0) {
+              const filter = this._buildFilter();
+              const records = await col.getFullList({ filter });
+              const results = [];
+              for (const r of records) {
+                const updated = await col.update(r.id, cleanData);
+                results.push(this._toPojo(updated));
+              }
+              return { data: this._doSelect ? results : (results[0] || null), error: null };
+            }
+            return { data: null, error: { message: 'Update requires a filter' } };
+          } catch (e) { return { data: null, error: { message: e.message } }; }
+        }
+
+        // --- UPSERT ---
+        if (this._upsertData) {
+          try {
+            const data = { ...this._upsertData };
+            delete data.created_at; delete data.updated_at;
+            const conflictField = this._upsertOpts?.onConflict || 'id';
+            const conflictVal = data[conflictField];
+            let rec;
+            if (conflictVal) {
+              const filter = `${conflictField}='${String(conflictVal).replace(/'/g, "\\'")}'`;
+              const existing = await col.getFullList({ filter });
+              if (existing.length > 0) {
+                rec = await col.update(existing[0].id, data);
+              } else {
+                rec = await col.create(data);
+              }
+            } else {
+              rec = await col.create(data);
+            }
+            const pojo = this._toPojo(rec);
+            return { data: this._doSelect ? [pojo] : pojo, error: null };
+          } catch (e) { return { data: null, error: { message: e.message } }; }
+        }
+
+        // --- SELECT ---
+        try {
+          const opts = {};
+          if (this._filters.length > 0) opts.filter = this._buildFilter();
+          if (this._order.length > 0) opts.sort = this._buildSort();
+
+          let fields = undefined;
+          if (this._selectCols && this._selectCols !== '*') {
+            fields = this._selectCols.replace(/\s/g, '');
+          }
+          if (fields) opts.fields = fields;
+
+          if (this._single) {
+            const list = await col.getList(1, 1, opts);
+            if (list.items.length === 0) return { data: null, error: { message: 'Row not found', code: 'PGRST116' } };
+            return { data: this._toPojo(list.items[0]), error: null };
+          }
+
+          if (this._rangeFrom !== null && this._rangeTo !== null) {
+            const perPage = this._rangeTo - this._rangeFrom + 1;
+            const page = Math.floor(this._rangeFrom / perPage) + 1;
+            const list = await col.getList(page, perPage, opts);
+            return { data: list.items.map(r => this._toPojo(r)), error: null };
+          }
+
+          if (this._limitVal) {
+            const list = await col.getList(1, this._limitVal, opts);
+            return { data: list.items.map(r => this._toPojo(r)), error: null };
+          }
+
+          const all = await col.getFullList(opts);
+          return { data: all.map(r => this._toPojo(r)), error: null };
+        } catch (e) { return { data: null, error: { message: e.message } }; }
+      }
+    }
+
+    // --- sb compatibility object ---
+    const sb = {
+      from(table) {
+        // Map 'profiles' to 'users' collection
+        const mapped = (table === 'profiles') ? 'users' : table;
+        return new QueryBuilder(mapped);
+      },
+
+      auth: {
+        async signInWithPassword({ email, password }) {
+          try {
+            const authData = await pb.collection('users').authWithPassword(email, password);
+            return {
+              data: {
+                user: { id: authData.record.id, email: authData.record.email, ...authData.record },
+                session: { access_token: authData.token, user: authData.record }
+              },
+              error: null
+            };
+          } catch (e) { return { data: null, error: { message: e.message } }; }
+        },
+
+        async signUp({ email, password, options }) {
+          try {
+            const meta = options?.data || {};
+            const userData = {
+              email, password, passwordConfirm: password,
+              ho_va_ten: meta.ho_va_ten || '',
+              so_dien_thoai: meta.so_dien_thoai || '',
+              username: meta.username || '',
+              chuc_vu: 'Thanh vien',
+              trang_thai: 'Act',
+            };
+            const rec = await pb.collection('users').create(userData);
+            // Auto-login after signup
+            try {
+              const authData = await pb.collection('users').authWithPassword(email, password);
+              return {
+                data: {
+                  user: { id: rec.id, email: rec.email, ...rec },
+                  session: { access_token: authData.token, user: rec }
+                },
+                error: null
+              };
+            } catch (loginErr) {
+              return {
+                data: { user: { id: rec.id, email: rec.email, ...rec }, session: null },
+                error: null
+              };
+            }
+          } catch (e) { return { data: null, error: { message: e.message } }; }
+        },
+
+        async signOut() {
+          pb.authStore.clear();
+        },
+
+        async resetPasswordForEmail(email) {
+          try {
+            await pb.collection('users').requestPasswordReset(email);
+            return { error: null };
+          } catch (e) { return { error: { message: e.message } }; }
+        },
+
+        getSession() {
+          return Promise.resolve({
+            data: {
+              session: pb.authStore.isValid ? {
+                user: pb.authStore.record,
+                access_token: pb.authStore.token
+              } : null
+            }
+          });
+        },
+
+        onAuthStateChange(callback) {
+          pb.authStore.onChange((token, record) => {
+            if (!token || !record) {
+              callback('SIGNED_OUT', null);
+            } else {
+              callback('TOKEN_REFRESHED', { user: record, access_token: token });
+            }
+          });
+          return { data: { subscription: { unsubscribe: () => {} } } };
+        }
+      },
+
+      storage: {
+        from(bucket) {
+          return {
+            async upload(path, file, opts) {
+              try {
+                const formData = new FormData();
+                formData.append('file', file);
+                formData.append('path', path);
+                formData.append('bucket', bucket);
+                const rec = await pb.collection('uploads').create(formData);
+                return { data: { path: rec.id }, error: null };
+              } catch (e) { return { data: null, error: { message: e.message } }; }
+            },
+            getPublicUrl(path) {
+              // Try to find upload record, return constructed URL
+              // For simplicity, store the path and construct URL
+              return {
+                data: {
+                  publicUrl: `${PB_URL}/api/files/uploads/${path}`
+                }
+              };
+            }
+          };
+        }
+      }
+    };
 
     let currentUser = null;
     let APP_DATA = {};
@@ -3495,7 +3775,7 @@
       }}
     };
 
-    // === HELPER: Convert Supabase row (snake_case) → Display (Vietnamese) ===
+    // === HELPER: Convert DB row (snake_case) → Display (Vietnamese) ===
     function fromDB(sheetName, rows) {
       const map = DB_MAP[sheetName];
       if (!map || !rows) return rows || [];
@@ -3515,7 +3795,7 @@
       });
     }
 
-    // === HELPER: Convert Display (Vietnamese) → Supabase (snake_case) ===
+    // === HELPER: Convert Display (Vietnamese) → DB (snake_case) ===
     function toDB(sheetName, obj) {
       const map = DB_MAP[sheetName];
       if (!map) return obj;
@@ -4531,8 +4811,8 @@
       'KH_GiamSat': 'KH_GiamSat_Nhom'
     };
 
-    // === SUPABASE DATA LOADING ===
-    // Fetch all rows from a Supabase table (paginated to bypass 1000-row limit)
+    // === DATA LOADING ===
+    // Fetch all rows from a PocketBase collection (paginated)
     async function fetchAll(table) {
       const PAGE = 1000;
       let allData = [], from = 0;
@@ -4763,7 +5043,7 @@
             }
           }
         } else {
-          // Online: load profile from Supabase
+          // Online: load profile from PocketBase
           const { data: profile, error } = await sb.from('profiles').select('*').eq('id', authUser.id).single();
           if (error || !profile) {
             console.error("Profile not found:", error);
@@ -6324,7 +6604,7 @@
       }
     }
 
-    // Swipe gestures: right from edge = open sidebar, left = close sidebar
+    // Swipe gestures: right from edge = open sidebar, left = back one screen
     let touchStartX = 0, touchStartY = 0;
     document.addEventListener('touchstart', function(e) {
       touchStartX = e.touches[0].clientX;
@@ -6334,12 +6614,19 @@
       const diffX = e.changedTouches[0].clientX - touchStartX;
       const diffY = Math.abs(e.changedTouches[0].clientY - touchStartY);
       if (diffY > 80) return;
+      // Swipe right from left edge → open sidebar
       if (diffX > 80 && touchStartX < 40) {
         $('#sidebar-wrapper').addClass('show-sidebar');
         $('#sidebar-overlay').addClass('active');
-      } else if (diffX < -80 && $('#sidebar-wrapper').hasClass('show-sidebar')) {
-        $('#sidebar-wrapper').removeClass('show-sidebar');
-        $('#sidebar-overlay').removeClass('active');
+      }
+      // Swipe left → close sidebar if open, otherwise navigate back
+      else if (diffX < -80) {
+        if ($('#sidebar-wrapper').hasClass('show-sidebar')) {
+          $('#sidebar-wrapper').removeClass('show-sidebar');
+          $('#sidebar-overlay').removeClass('active');
+        } else if (!document.querySelector('#map-view:not(.d-none)')) {
+          navigateBack();
+        }
       }
     }, { passive: true });
 
@@ -6514,7 +6801,7 @@
     }
 
     let _labelsEnabled = false; // Labels off by default for speed
-    const LABEL_ZOOM_MIN = 14; // Show labels from zoom 14+
+    const LABEL_ZOOM_MIN = 17; // Show labels from zoom 17+ (~1:2000 scale)
 
     // Toggle labels on/off
     window.togglePlotLabels = function() {
@@ -6575,10 +6862,11 @@
         }
         if (!plotName && !plotCode && !ownerName) return;
 
-        // Build rich label HTML
-        const displayName = plotName || plotCode;
-        const infoLine = [area ? area + ' ha' : '', yearPlant ? yearPlant : ''].filter(Boolean).join('/');
-        let html = `<span class="lbl-name">${displayName}</span>`;
+        // Build 3-line label: Mã lô | Chủ rừng | Diện tích(ha), Năm trồng
+        const displayCode = plotCode || plotName;
+        if (!displayCode && !ownerName) return;
+        const infoLine = [area ? area + '(ha)' : '', yearPlant ? yearPlant : ''].filter(Boolean).join(', ');
+        let html = `<span class="lbl-name">${displayCode}</span>`;
         if (ownerName) html += `<br><span class="lbl-owner">${ownerName}</span>`;
         if (infoLine) html += `<br><span class="lbl-info">${infoLine}</span>`;
 
@@ -7084,7 +7372,7 @@
       return { linkedCount, layerGroup };
     }
 
-    // Load all GeoJSON layers from geojson_kho (Supabase)
+    // Load all GeoJSON layers from geojson_kho (PocketBase)
     async function loadGeoJSONFromKho() {
       try {
         // Get latest version of each layer name
@@ -12390,7 +12678,7 @@ ${gsRecord['Đề xuất'] ? `<div class="proposal-box"><h4>${t('mon_proposal')}
       new bootstrap.Modal(document.getElementById('dataModal')).show();
     }
 
-    // File upload handler — uploads to Supabase Storage
+    // File upload handler — uploads to PocketBase Storage
     async function handleFileUpload(inputEl, colName) {
       const file = inputEl.files[0];
       if (!file) return;
@@ -12505,7 +12793,7 @@ ${gsRecord['Đề xuất'] ? `<div class="proposal-box"><h4>${t('mon_proposal')}
         }
 
         if (navigator.onLine) {
-          // === ONLINE: original Supabase call ===
+          // === ONLINE: PocketBase call ===
           let result;
           if (currentAction === 'CREATE') {
             result = await sb.from(dbTable).insert(dbData).select();
