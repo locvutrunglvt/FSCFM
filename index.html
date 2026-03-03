@@ -88,14 +88,13 @@
     .login-split {
       position: relative; z-index: 1;
       display: flex; flex-direction: row; align-items: stretch;
-      width: 880px; max-width: 95vw;
-      min-height: 480px;
-      margin-left: auto; margin-right: 5vw;
+      width: 100%; height: 100%;
     }
     .login-brand {
       flex: 1; display: flex; flex-direction: column;
       align-items: center; justify-content: center;
       padding: 40px 32px; text-align: center;
+      min-width: 0;
     }
     .login-brand-logo {
       width: 160px; height: auto;
@@ -184,6 +183,7 @@
     .login-panel-wrap {
       display: flex; flex-direction: column; align-items: stretch;
       width: 380px; flex-shrink: 0; gap: 10px;
+      margin-right: 5vw; align-self: center;
     }
     .login-icon-strip {
       display: flex; align-items: center; justify-content: center;
@@ -208,9 +208,8 @@
     @media (max-width: 767px) {
       #login-screen { align-items: flex-start; padding-top: 0; }
       .login-split {
-        flex-direction: column; width: 100%; max-width: 100%;
-        min-height: 100vh; border-radius: 0;
-        margin-left: 0; margin-right: 0;
+        flex-direction: column;
+        min-height: 100vh;
       }
       .login-brand {
         flex: none; padding: 32px 20px 24px;
@@ -221,6 +220,7 @@
       .login-brand-subtitle { font-size: 11px; }
       .login-panel-wrap {
         width: 100%; flex: 1; gap: 0;
+        margin-right: 0; align-self: stretch;
       }
       .login-icon-strip.strip-top { display: none; }
       .login-icon-strip.strip-bottom {
