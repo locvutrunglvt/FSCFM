@@ -246,7 +246,27 @@
     }
     .accordion-button i,
     .menu-sub-link i {
-      color: var(--forest-primary);
+      color: #2E7D32;
+    }
+
+    /* Sidebar circular icon badges */
+    .sidebar-icon-badge {
+      width: 28px; height: 28px; border-radius: 50%;
+      display: inline-flex; align-items: center; justify-content: center;
+      background: linear-gradient(135deg, #e8f5e9, #c8e6c9);
+      color: #2E7D32; font-size: 0.8rem; flex-shrink: 0;
+    }
+    .sidebar-icon-sm {
+      width: 22px; height: 22px; border-radius: 50%;
+      display: inline-flex; align-items: center; justify-content: center;
+      background: linear-gradient(135deg, #e8f5e9, #c8e6c9);
+      color: #2E7D32; font-size: 0.65rem; flex-shrink: 0; vertical-align: middle;
+    }
+    .sidebar-icon-xs {
+      width: 18px; height: 18px; border-radius: 50%;
+      display: inline-flex; align-items: center; justify-content: center;
+      background: linear-gradient(135deg, #f1f8e9, #dcedc8);
+      color: #388E3C; font-size: 0.55rem; flex-shrink: 0; vertical-align: middle;
     }
     .search-result-item:hover { background-color: var(--forest-light); }
 
@@ -298,20 +318,20 @@
     .dashboard-card-3d:active { transform: translateY(-2px); }
 
     .icon-3d-wrapper {
-      width: 44px;
-      height: 44px;
+      width: 52px;
+      height: 52px;
       margin: 0 auto var(--sp-2) auto;
-      border-radius: var(--radius-md);
+      border-radius: 50%;
       display: flex;
       align-items: center;
       justify-content: center;
-      color: white;
-      font-size: 1.15rem;
-      background: var(--forest-gradient);
-      box-shadow: var(--shadow-sm);
+      color: #2E7D32;
+      font-size: 1.3rem;
+      background: linear-gradient(135deg, #e8f5e9, #c8e6c9);
+      box-shadow: none;
       transition: transform var(--transition-normal);
     }
-    .dashboard-card-3d:hover .icon-3d-wrapper { transform: scale(1.08); }
+    .dashboard-card-3d:hover .icon-3d-wrapper { transform: scale(1.1); }
 
     .card-title-3d {
       font-weight: 700;
@@ -494,13 +514,13 @@
 
       /* Dashboard cards */
       .dashboard-card-3d { padding: var(--sp-3) var(--sp-2) var(--sp-2); }
-      .icon-3d-wrapper { width: 36px; height: 36px; font-size: 0.9rem; border-radius: var(--radius-sm); margin-bottom: var(--sp-1); }
+      .icon-3d-wrapper { width: 40px; height: 40px; font-size: 1.05rem; border-radius: 50%; margin-bottom: var(--sp-1); }
       .card-title-3d { font-size: var(--fs-xs); line-height: 1.2; }
 
       /* KPI cards */
       .kpi-card { padding: var(--sp-2); }
       .kpi-card-inner { flex-direction: column; text-align: center; gap: var(--sp-1); }
-      .kpi-icon-circle { width: 28px; height: 28px; font-size: 0.7rem; border-radius: var(--radius-sm); }
+      .kpi-icon-circle { width: 28px; height: 28px; font-size: 0.7rem; border-radius: 50%; }
       .kpi-value { font-size: 1.1rem; }
       .kpi-label { font-size: var(--fs-xs); }
       .kpi-unit { font-size: 0.6rem; }
@@ -550,7 +570,7 @@
 
       /* Sub-menu cards */
       .submenu-card { padding: var(--sp-3) var(--sp-2); }
-      .submenu-icon { width: 36px; height: 36px; font-size: 1rem; margin-bottom: var(--sp-2); }
+      .submenu-icon { width: 38px; height: 38px; font-size: 1rem; margin-bottom: var(--sp-2); border-radius: 50%; }
       .submenu-label { font-size: var(--fs-xs); }
 
       /* Modal */
@@ -646,7 +666,7 @@
       #dashboard-view .kpi-value { font-size: 1.15rem; font-weight: 800; }
       #dashboard-view .kpi-label { font-size: var(--fs-xs); }
       #dashboard-view .kpi-card-inner { flex-direction: column; text-align: center; gap: var(--sp-1); }
-      #dashboard-view .kpi-icon-circle { width: 28px; height: 28px; font-size: 0.75rem; border-radius: var(--radius-sm); }
+      #dashboard-view .kpi-icon-circle { width: 28px; height: 28px; font-size: 0.75rem; border-radius: 50%; }
       #dashboard-view .kpi-grid { margin-bottom: 0; }
       #dashboard-view .row.g-3 { --bs-gutter-x: 0.5rem; --bs-gutter-y: 0.5rem; }
       .dash-charts { flex: none; min-height: auto; overflow: visible; padding: var(--sp-2) 0 var(--sp-5); }
@@ -669,12 +689,13 @@
       box-shadow: var(--shadow-md);
     }
     .submenu-icon {
-      width: 44px; height: 44px;
+      width: 48px; height: 48px;
       margin: 0 auto var(--sp-2) auto;
-      border-radius: var(--radius-md);
+      border-radius: 50%;
       display: flex; align-items: center; justify-content: center;
-      color: white; font-size: 1.2rem;
-      box-shadow: var(--shadow-sm);
+      color: #2E7D32; font-size: 1.2rem;
+      background: linear-gradient(135deg, #e8f5e9, #c8e6c9) !important;
+      box-shadow: none;
     }
     .submenu-label {
       font-weight: 600; font-size: var(--fs-sm); color: var(--text-main);
@@ -741,23 +762,23 @@
     .kpi-label { font-size: var(--fs-sm); color: var(--text-secondary); font-weight: 600; margin-top: 2px; }
     .kpi-unit { font-size: 0.7rem; font-weight: 600; color: var(--text-muted); margin-left: 2px; }
     .kpi-icon-circle {
-      width: 34px; height: 34px; border-radius: var(--radius-md);
+      width: 36px; height: 36px; border-radius: 50%;
       display: flex; align-items: center; justify-content: center;
-      font-size: 0.85rem; color: white; background: var(--forest-primary); flex-shrink: 0;
+      font-size: 0.85rem; color: #2E7D32; background: linear-gradient(135deg, #e8f5e9, #c8e6c9); flex-shrink: 0;
     }
-    /* KPI color variants — subtle, same green family */
+    /* KPI color variants — subtle border accents */
     .kpi-card.blue { border-left-color: var(--forest-secondary); }
-    .kpi-card.blue .kpi-icon-circle { background: var(--forest-secondary); }
+    .kpi-card.blue .kpi-icon-circle { color: #1B5E20; background: linear-gradient(135deg, #e0f2f1, #b2dfdb); }
     .kpi-card.orange { border-left-color: #558B2F; }
-    .kpi-card.orange .kpi-icon-circle { background: #558B2F; }
+    .kpi-card.orange .kpi-icon-circle { color: #33691E; background: linear-gradient(135deg, #f1f8e9, #dcedc8); }
     .kpi-card.purple { border-left-color: #33691E; }
-    .kpi-card.purple .kpi-icon-circle { background: #33691E; }
+    .kpi-card.purple .kpi-icon-circle { color: #1B5E20; background: linear-gradient(135deg, #e8f5e9, #a5d6a7); }
     /* All KPI values use same green color for clean look */
     .kpi-card.blue .kpi-value,
     .kpi-card.orange .kpi-value,
     .kpi-card.purple .kpi-value { color: var(--forest-primary); }
 
-    .kpi-sm .kpi-icon-circle { width: 28px; height: 28px; font-size: 0.7rem; border-radius: var(--radius-sm); }
+    .kpi-sm .kpi-icon-circle { width: 30px; height: 30px; font-size: 0.7rem; border-radius: 50%; }
     .kpi-sm .kpi-value { font-size: 1.15rem; }
     .kpi-sm .kpi-label { font-size: var(--fs-xs); }
     .kpi-sm { padding: var(--sp-2); }
@@ -1088,13 +1109,6 @@
     .backup-card .btn-group-vertical { width: 100%; gap: 8px; }
     .backup-card .btn-backup { border-radius: 10px; font-weight: 600; padding: 10px; }
 
-    /* Swipe backup hint */
-    .swipe-backup-hint {
-      position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%);
-      background: rgba(27,94,32,0.9); color: #fff; padding: 12px 24px;
-      border-radius: 12px; font-size: 14px; font-weight: 600; z-index: 9996;
-      display: none; pointer-events: none; white-space: nowrap;
-    }
   </style>
 </head>
 
@@ -1129,11 +1143,6 @@
         </button>
       </div>
     </div>
-  </div>
-
-  <!-- Swipe backup hint -->
-  <div class="swipe-backup-hint" id="swipe-backup-hint">
-    <i class="fa-solid fa-cloud-arrow-down me-2"></i><span data-i18n="backup_swipe_hint">Sao lưu dữ liệu</span>
   </div>
 
   <div id="login-screen" class="d-flex align-items-center justify-content-center min-vh-100">
@@ -1342,6 +1351,9 @@
       </button>
       <button type="button" class="mob-nav-btn" onclick="loadView('Bando_lorung','Bản đồ quản lý lô rừng')">
         <i class="fa-solid fa-map"></i><span data-i18n="nav_map">Bản đồ</span>
+      </button>
+      <button type="button" class="mob-nav-btn" onclick="openBackupOverlay()">
+        <i class="fa-solid fa-cloud-arrow-down"></i><span data-i18n="nav_backup">Sao lưu</span>
       </button>
     </div>
   </div>
@@ -1701,6 +1713,7 @@
         nav_menu: 'Menu',
         nav_home: 'Trang chủ',
         nav_map: 'Bản đồ',
+        nav_backup: 'Sao lưu',
         nav_logout: 'Thoát',
 
         // Modal & form
@@ -2123,6 +2136,7 @@
         nav_menu: 'Menu',
         nav_home: 'Home',
         nav_map: 'Map',
+        nav_backup: 'Backup',
         nav_logout: 'Logout',
 
         modal_add: 'Add New',
@@ -5261,7 +5275,7 @@
             ${mainMenus.map(m => `
               <div class="col">
                 <div class="dashboard-card-3d" style="--card-accent:${m.color}" onclick="openMenuGroup('${m.group}')">
-                  <div class="icon-3d-wrapper" style="background:${m.color}"><i class="fa-solid ${m.icon}"></i></div>
+                  <div class="icon-3d-wrapper"><i class="fa-solid ${m.icon}"></i></div>
                   <div class="card-title-3d">${t(m.labelKey)}</div>
                 </div>
               </div>
@@ -5779,7 +5793,7 @@
         const safeG = groupName.replace(/'/g, "\\'");
         return `<div class="col">
           <div class="submenu-card" onclick="loadViewFromGroup('${safeV}','${safeM}','${safeG}')" style="border-top: 3px solid ${color}">
-            <div class="submenu-icon" style="background: ${color}"><i class="fa-solid ${subIcon}"></i></div>
+            <div class="submenu-icon"><i class="fa-solid ${subIcon}"></i></div>
             <div class="submenu-label">${tm(m)}</div>
           </div>
         </div>`;
@@ -5938,7 +5952,7 @@
             const v = (i['View'] || '').replace(/'/g, "\\'");
             const m = (i['Module'] || '').replace(/'/g, "\\'");
             const mIcon = getSubMenuIcon(m);
-            return `<a href="#" class="menu-sub-link" onclick="loadViewFromGroup('${v}', '${m}', '${safeGroup}')"><i class="fa-solid ${mIcon} me-2" style="width:16px;text-align:center"></i>${tm(i['Module'])}</a>`;
+            return `<a href="#" class="menu-sub-link" onclick="loadViewFromGroup('${v}', '${m}', '${safeGroup}')"><span class="sidebar-icon-sm me-2"><i class="fa-solid ${mIcon}"></i></span>${tm(i['Module'])}</a>`;
           };
 
           let sub = '';
@@ -5954,13 +5968,13 @@
               const smItems = items.filter(i => sm.views.includes(i['View']));
               if (smItems.length === 0) return;
               const smLabel = sm.parentLabelKey ? t(sm.parentLabelKey) : sm.parentLabel;
-              sub += `<a href="#" class="menu-sub-link d-flex justify-content-between align-items-center" onclick="event.preventDefault();$('#${smId}').slideToggle(200);$(this).find('.fa-chevron-down,.fa-chevron-up').toggleClass('fa-chevron-down fa-chevron-up')"><span><i class="fa-solid ${sm.icon} me-2" style="width:16px;text-align:center"></i>${smLabel}</span><i class="fa-solid fa-chevron-down" style="font-size:10px;opacity:0.5"></i></a>`;
+              sub += `<a href="#" class="menu-sub-link d-flex justify-content-between align-items-center" onclick="event.preventDefault();$('#${smId}').slideToggle(200);$(this).find('.fa-chevron-down,.fa-chevron-up').toggleClass('fa-chevron-down fa-chevron-up')"><span><span class="sidebar-icon-sm me-2"><i class="fa-solid ${sm.icon}"></i></span>${smLabel}</span><i class="fa-solid fa-chevron-down" style="font-size:10px;opacity:0.5"></i></a>`;
               sub += `<div id="${smId}" style="display:none;background:rgba(0,0,0,0.03)">`;
               smItems.forEach(i => {
                 const v = (i['View'] || '').replace(/'/g, "\\'");
                 const m = (i['Module'] || '').replace(/'/g, "\\'");
                 const mIcon = getSubMenuIcon(m);
-                sub += `<a href="#" class="menu-sub-link" style="padding-left:3.2rem" onclick="loadViewFromGroup('${v}', '${m}', '${safeGroup}')"><i class="fa-solid ${mIcon} me-2" style="width:16px;text-align:center;font-size:12px"></i><span style="font-size:13px">${tm(i['Module'])}</span></a>`;
+                sub += `<a href="#" class="menu-sub-link" style="padding-left:3.2rem" onclick="loadViewFromGroup('${v}', '${m}', '${safeGroup}')"><span class="sidebar-icon-xs me-2"><i class="fa-solid ${mIcon}"></i></span><span style="font-size:13px">${tm(i['Module'])}</span></a>`;
               });
               sub += `</div>`;
             });
@@ -5968,7 +5982,7 @@
             sub = items.map(i => buildLink(i)).join('');
           }
 
-          accordionHtml += `<div class="accordion-item" data-group-vi="${group}"><h2 class="accordion-header"><button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#${cId}"><i class="fa-solid ${groupIcon} me-2"></i><span class="fw-bold">${groupLabel}</span></button></h2><div id="${cId}" class="accordion-collapse collapse show"><div class="accordion-body p-0">${sub}</div></div></div>`;
+          accordionHtml += `<div class="accordion-item" data-group-vi="${group}"><h2 class="accordion-header"><button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#${cId}"><span class="sidebar-icon-badge me-2"><i class="fa-solid ${groupIcon}"></i></span><span class="fw-bold">${groupLabel}</span></button></h2><div id="${cId}" class="accordion-collapse collapse show"><div class="accordion-body p-0">${sub}</div></div></div>`;
         }
         $('#sidebarAccordion').html(accordionHtml);
 
@@ -5976,7 +5990,7 @@
         $('#sidebarAccordion .accordion-item').each(function() {
           const grpVi = $(this).attr('data-group-vi');
           if (grpVi && grpVi.trim().toLowerCase() === 'hệ thống') {
-            $(this).find('.accordion-body').append(`<a href="#" class="menu-sub-link" onclick="loadViewFromGroup('CaiDat_HeThong', '${t('menu_settings')}', 'Hệ thống')"><i class="fa-solid fa-sliders me-2"></i>${t('menu_settings')}</a>`);
+            $(this).find('.accordion-body').append(`<a href="#" class="menu-sub-link" onclick="loadViewFromGroup('CaiDat_HeThong', '${t('menu_settings')}', 'Hệ thống')"><span class="sidebar-icon-sm me-2"><i class="fa-solid fa-sliders"></i></span>${t('menu_settings')}</a>`);
           }
         });
 
@@ -6155,7 +6169,7 @@
       }
     }
 
-    // Swipe gestures: right=sidebar, left=backup (prevents accidental app exit)
+    // Swipe gestures: right from edge = open sidebar, left = close sidebar
     let touchStartX = 0, touchStartY = 0;
     document.addEventListener('touchstart', function(e) {
       touchStartX = e.touches[0].clientX;
@@ -6164,24 +6178,13 @@
     document.addEventListener('touchend', function(e) {
       const diffX = e.changedTouches[0].clientX - touchStartX;
       const diffY = Math.abs(e.changedTouches[0].clientY - touchStartY);
-      // Only horizontal swipes (not vertical scroll)
       if (diffY > 80) return;
       if (diffX > 80 && touchStartX < 40) {
-        // Swipe right from edge → open sidebar
         $('#sidebar-wrapper').addClass('show-sidebar');
         $('#sidebar-overlay').addClass('active');
-      } else if (diffX < -100) {
-        // Swipe left → close sidebar if open, otherwise show backup
-        if ($('#sidebar-wrapper').hasClass('show-sidebar')) {
-          $('#sidebar-wrapper').removeClass('show-sidebar');
-          $('#sidebar-overlay').removeClass('active');
-        } else if (document.getElementById('login-screen').classList.contains('d-none')) {
-          // Show backup hint briefly then open overlay
-          const hint = document.getElementById('swipe-backup-hint');
-          hint.style.display = 'block';
-          setTimeout(() => { hint.style.display = 'none'; }, 800);
-          setTimeout(() => { openBackupOverlay(); }, 400);
-        }
+      } else if (diffX < -80 && $('#sidebar-wrapper').hasClass('show-sidebar')) {
+        $('#sidebar-wrapper').removeClass('show-sidebar');
+        $('#sidebar-overlay').removeClass('active');
       }
     }, { passive: true });
 
