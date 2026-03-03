@@ -3126,9 +3126,7 @@
     // --- sb compatibility object ---
     const sb = {
       from(table) {
-        // Map 'profiles' to 'users' collection
-        const mapped = (table === 'profiles') ? 'users' : table;
-        return new QueryBuilder(mapped);
+        return new QueryBuilder(table);
       },
 
       auth: {
