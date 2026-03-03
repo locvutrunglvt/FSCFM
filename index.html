@@ -72,43 +72,74 @@
       line-height: 1.5;
     }
 
+    /* === Login Split Screen === */
     #login-screen {
-      background: var(--forest-gradient);
-      position: fixed;
-      inset: 0;
-      z-index: 9999;
-      overflow-y: auto;
-      -webkit-overflow-scrolling: touch;
-    }
-    .login-card {
-      background: var(--bg-white);
-      border-radius: var(--radius-lg);
-      box-shadow: 0 20px 60px rgba(0,0,0,0.3);
-      width: 100%;
-      max-width: 380px;
-      margin: 0 var(--sp-4);
+      position: fixed; inset: 0; z-index: 9999;
+      display: flex; flex-direction: row;
       overflow: hidden;
     }
-    .login-header {
-      background: var(--forest-gradient);
-      padding: var(--sp-6) var(--sp-6) var(--sp-5);
-      text-align: center;
+    .login-brand {
+      flex: 1; display: flex; flex-direction: column;
+      align-items: center; justify-content: center;
+      background: linear-gradient(160deg, #43A047 0%, #2E7D32 40%, #1B5E20 100%);
+      position: relative; overflow: hidden;
     }
-    .login-body { padding: var(--sp-6); }
+    .login-brand::before {
+      content: ''; position: absolute; inset: 0;
+      background: radial-gradient(ellipse at 30% 20%, rgba(255,255,255,0.08) 0%, transparent 60%),
+                  radial-gradient(ellipse at 70% 80%, rgba(0,0,0,0.12) 0%, transparent 50%);
+    }
+    .login-brand-content {
+      position: relative; z-index: 1; text-align: center;
+      padding: 40px; max-width: 480px;
+    }
+    .login-brand-logo {
+      width: 180px; height: auto;
+      filter: drop-shadow(0 4px 12px rgba(0,0,0,0.2));
+      margin-bottom: 32px;
+      border-radius: 16px; background: rgba(255,255,255,0.95); padding: 12px;
+    }
+    .login-brand-title {
+      color: #fff; font-size: 22px; font-weight: 700;
+      margin-bottom: 8px; letter-spacing: 0.5px;
+      text-shadow: 0 2px 8px rgba(0,0,0,0.2);
+    }
+    .login-brand-subtitle {
+      color: rgba(255,255,255,0.8); font-size: 14px;
+      font-weight: 400; line-height: 1.6;
+    }
+    .login-panel {
+      width: 460px; flex-shrink: 0;
+      display: flex; flex-direction: column;
+      align-items: center; justify-content: center;
+      background: #fff; position: relative;
+      overflow-y: auto; -webkit-overflow-scrolling: touch;
+    }
+    .login-panel-inner {
+      width: 100%; max-width: 360px;
+      padding: 40px 32px;
+    }
+    .login-panel-header {
+      text-align: center; margin-bottom: 28px;
+    }
+    .login-panel-title {
+      font-size: 20px; font-weight: 700; color: var(--text-main);
+      margin-bottom: 4px;
+    }
+    .login-panel-desc {
+      font-size: 13px; color: var(--text-muted);
+    }
+    .login-body { padding: 0; }
     .login-input-group {
-      display: flex;
-      align-items: center;
-      gap: var(--sp-3);
-      margin-bottom: var(--sp-3);
+      display: flex; align-items: center;
+      gap: var(--sp-3); margin-bottom: var(--sp-3);
     }
     .login-input-group i.input-icon {
       color: var(--forest-secondary); font-size: 18px; flex-shrink: 0; width: 22px; text-align: center;
     }
-    .login-input-group .input-wrap {
-      position: relative; flex: 1;
-    }
+    .login-input-group .input-wrap { position: relative; flex: 1; }
     .login-input-group .form-control {
-      padding: var(--sp-3) 40px var(--sp-3) var(--sp-3);
+      padding: 12px 40px 12px 14px;
       border-radius: var(--radius-md);
       border: 1.5px solid var(--border-color);
       font-size: 15px;
@@ -126,29 +157,47 @@
     .btn-login-main {
       background: var(--forest-gradient);
       color: #fff; border: none; border-radius: var(--radius-md);
-      padding: var(--sp-3); font-size: var(--fs-lg); font-weight: 600;
+      padding: 12px; font-size: var(--fs-lg); font-weight: 600;
       width: 100%; transition: all var(--transition-fast);
       box-shadow: var(--shadow-md);
     }
-    .btn-login-main:hover { transform: translateY(-1px); box-shadow: var(--shadow-md); color: #fff; }
+    .btn-login-main:hover { transform: translateY(-1px); box-shadow: 0 6px 20px rgba(27,94,32,0.3); color: #fff; }
     .btn-login-main:active { transform: translateY(0); }
     .btn-register-main {
       background: var(--forest-gradient);
       color: #fff; border: none; border-radius: var(--radius-md);
-      padding: var(--sp-3); font-size: var(--fs-lg); font-weight: 600;
+      padding: 12px; font-size: var(--fs-lg); font-weight: 600;
       width: 100%; transition: all var(--transition-fast);
       box-shadow: var(--shadow-md);
     }
     .btn-register-main:hover { transform: translateY(-1px); color: #fff; }
+    .login-footer {
+      background: var(--bg-light); border-top: 1px solid var(--border-color);
+      font-size: var(--fs-sm); color: var(--text-muted);
+    }
+    /* Mobile: stack vertically */
     @media (max-width: 767px) {
-      .login-card { max-width: 100%; margin: 0 var(--sp-3); border-radius: var(--radius-lg); }
-      .login-header { padding: var(--sp-5) var(--sp-5) var(--sp-4); }
-      .login-body { padding: var(--sp-5) var(--sp-4) var(--sp-4); }
+      #login-screen { flex-direction: column; }
+      .login-brand {
+        flex: none; min-height: 220px; padding: 24px 16px;
+      }
+      .login-brand-logo { width: 120px; margin-bottom: 16px; padding: 8px; }
+      .login-brand-title { font-size: 17px; }
+      .login-brand-subtitle { font-size: 12px; }
+      .login-brand-content { padding: 16px; }
+      .login-panel {
+        width: 100%; flex: 1;
+        border-radius: 20px 20px 0 0;
+        margin-top: -20px; z-index: 1;
+        box-shadow: 0 -4px 20px rgba(0,0,0,0.1);
+      }
+      .login-panel-inner { padding: 28px 20px; max-width: 100%; }
+      .login-panel-title { font-size: 18px; }
     }
     @media (max-width: 374px) {
-      .login-card { margin: 0 var(--sp-2); }
-      .login-header { padding: var(--sp-4) var(--sp-3); }
-      .login-body { padding: var(--sp-4) var(--sp-3); }
+      .login-brand { min-height: 180px; }
+      .login-brand-logo { width: 100px; }
+      .login-panel-inner { padding: 24px 16px; }
     }
 
     #sidebar-wrapper {
@@ -1054,27 +1103,20 @@
     }
 
     /* === Utility classes (replacing inline styles) === */
-    .login-header-rel { position: relative; }
     .lang-toggle-btn {
-      position: absolute; top: var(--sp-3); right: var(--sp-3);
-      background: rgba(255,255,255,0.15); color: #fff;
-      border: 1px solid rgba(255,255,255,0.3);
+      position: absolute; top: 16px; right: 16px;
+      background: rgba(255,255,255,0.12); color: var(--text-muted);
+      border: 1px solid var(--border-color);
       border-radius: var(--radius-pill);
-      padding: 3px var(--sp-3); font-size: var(--fs-sm); font-weight: 600;
+      padding: 4px 12px; font-size: var(--fs-sm); font-weight: 600;
+      z-index: 2; transition: all var(--transition-fast);
     }
-    .lang-toggle-btn:hover { background: rgba(255,255,255,0.3); color: #fff; }
-    .login-logos { display: flex; align-items: center; justify-content: center; gap: var(--sp-3); margin-bottom: var(--sp-3); }
-    .login-logo-img { border-radius: var(--radius-sm); background: #fff; padding: 2px; }
-    .login-title { color: #fff; font-weight: 700; font-size: 15px; margin: 0; letter-spacing: 0.3px; }
-    .login-subtitle { color: rgba(255,255,255,0.7); font-size: var(--fs-sm); margin-top: var(--sp-1); }
+    .lang-toggle-btn:hover { background: var(--forest-light); color: var(--forest-secondary); }
+    .login-footer-line { border-top: 1px solid var(--border-color); }
     .login-links { margin-top: -2px; }
     .login-link-register { font-size: var(--fs-base); }
     .login-link-forgot { font-size: var(--fs-sm); }
     .login-error { display: none; }
-    .login-footer {
-      background: var(--bg-light); border-top: 1px solid var(--border-color);
-      font-size: var(--fs-sm); color: var(--text-muted);
-    }
 
     /* Navbar utility classes */
     .navbar-main {
@@ -1177,81 +1219,89 @@
     </div>
   </div>
 
-  <div id="login-screen" class="d-flex align-items-center justify-content-center min-vh-100">
-    <div class="login-card">
-      <div class="login-header login-header-rel">
-        <button type="button" class="btn btn-sm lang-toggle-btn" onclick="toggleLang()" id="lang-toggle-login" aria-label="Toggle language">
-          <i class="fa-solid fa-globe me-1"></i><span id="lang-label-login">EN</span>
-        </button>
-        <div class="login-logos">
-          <img src="Logo Clever forestry.png" height="52" alt="Clever Forestry" class="login-logo-img" onerror="this.style.display='none'">
-          <img id="login-logo-custom" src="data:," height="52" alt="" class="login-logo-img d-none">
+  <div id="login-screen">
+    <!-- Left: Brand Panel -->
+    <div class="login-brand">
+      <div class="login-brand-content">
+        <img src="Logo Clever forestry.png" alt="CleverForestry" class="login-brand-logo" onerror="this.style.display='none'">
+        <div class="login-brand-title" data-i18n="login_brand_title">Hệ thống Quản lý Rừng bền vững</div>
+        <div class="login-brand-subtitle" data-i18n="login_brand_subtitle">Forest Stewardship Council - Sustainable Forest Management</div>
+      </div>
+    </div>
+
+    <!-- Right: Login Panel -->
+    <div class="login-panel">
+      <button type="button" class="btn btn-sm lang-toggle-btn" onclick="toggleLang()" id="lang-toggle-login" aria-label="Toggle language">
+        <i class="fa-solid fa-globe me-1"></i><span id="lang-label-login">EN</span>
+      </button>
+      <div class="login-panel-inner">
+        <div class="login-panel-header">
+          <div class="login-panel-title" data-i18n="login_panel_title">Xin chào!</div>
+          <div class="login-panel-desc" data-i18n="login_panel_desc">Đăng nhập để tiếp tục</div>
         </div>
-        <h5 class="login-title" data-i18n="login_title">He thong Quan ly Rung FSC</h5>
-        <div class="login-subtitle" data-i18n="login_subtitle">Forest Stewardship Council</div>
-      </div>
 
-      <div class="login-body">
-        <form id="form-login">
-          <div class="login-input-group">
-            <i class="fa-solid fa-user input-icon"></i>
-            <div class="input-wrap">
-              <input type="text" class="form-control" id="login-email" data-i18n-ph="ph_email_user" placeholder="Email hoac Username" required autocomplete="username" autocapitalize="none" autocorrect="off" spellcheck="false" inputmode="email">
+        <div class="login-body">
+          <form id="form-login">
+            <div class="login-input-group">
+              <i class="fa-solid fa-user input-icon"></i>
+              <div class="input-wrap">
+                <input type="text" class="form-control" id="login-email" data-i18n-ph="ph_email_user" placeholder="Email hoac Username" required autocomplete="username" autocapitalize="none" autocorrect="off" spellcheck="false" inputmode="email">
+              </div>
             </div>
-          </div>
-          <div class="login-input-group">
-            <i class="fa-solid fa-lock input-icon"></i>
-            <div class="input-wrap">
-              <input type="password" class="form-control" id="login-pass" data-i18n-ph="ph_password" placeholder="Mat khau" required autocomplete="current-password">
-              <button type="button" class="toggle-pass" onclick="togglePasswordVis(this)" tabindex="-1"><i class="fa-solid fa-eye"></i></button>
+            <div class="login-input-group">
+              <i class="fa-solid fa-lock input-icon"></i>
+              <div class="input-wrap">
+                <input type="password" class="form-control" id="login-pass" data-i18n-ph="ph_password" placeholder="Mat khau" required autocomplete="current-password">
+                <button type="button" class="toggle-pass" onclick="togglePasswordVis(this)" tabindex="-1"><i class="fa-solid fa-eye"></i></button>
+              </div>
             </div>
-          </div>
-          <div class="d-flex justify-content-between align-items-center mb-3 login-links">
-            <a href="javascript:void(0)" class="text-decoration-none text-success fw-semibold login-link-register" onclick="toggleAuth('REGISTER')" data-i18n="register_new">Dang ky moi</a>
-            <a href="javascript:void(0)" class="text-decoration-none text-muted login-link-forgot" onclick="handleForgotPassword()" data-i18n="forgot_pass">Quen mat khau?</a>
-          </div>
-          <button type="submit" class="btn btn-login-main" id="btn-login"><i class="fa-solid fa-right-to-bracket me-2"></i><span data-i18n="btn_login">Dang nhap</span></button>
-        </form>
-
-        <form id="form-register" class="d-none">
-          <div class="login-input-group">
-            <i class="fa-solid fa-user-pen input-icon"></i>
-            <div class="input-wrap"><input type="text" class="form-control" id="reg-name" data-i18n-ph="ph_fullname" placeholder="Ho ten day du" required></div>
-          </div>
-          <div class="login-input-group">
-            <i class="fa-solid fa-at input-icon"></i>
-            <div class="input-wrap"><input type="text" class="form-control" id="reg-username" data-i18n-ph="ph_username" placeholder="Username (viet lien, khong dau)" required autocapitalize="none" autocorrect="off" spellcheck="false" pattern="[a-zA-Z0-9_]+" title="Chi cho phep chu cai, so va dau gach duoi"></div>
-          </div>
-          <div class="login-input-group">
-            <i class="fa-solid fa-envelope input-icon"></i>
-            <div class="input-wrap"><input type="email" class="form-control" id="reg-email" placeholder="Email" required autocapitalize="none"></div>
-          </div>
-          <div class="login-input-group">
-            <i class="fa-solid fa-phone input-icon"></i>
-            <div class="input-wrap"><input type="tel" class="form-control" id="reg-phone" data-i18n-ph="ph_phone" placeholder="So dien thoai"></div>
-          </div>
-          <div class="login-input-group">
-            <i class="fa-solid fa-lock input-icon"></i>
-            <div class="input-wrap">
-              <input type="password" class="form-control" id="reg-pass" data-i18n-ph="ph_password" placeholder="Mat khau" required autocomplete="new-password">
-              <button type="button" class="toggle-pass" onclick="togglePasswordVis(this)" tabindex="-1"><i class="fa-solid fa-eye"></i></button>
+            <div class="d-flex justify-content-between align-items-center mb-3 login-links">
+              <a href="javascript:void(0)" class="text-decoration-none text-success fw-semibold login-link-register" onclick="toggleAuth('REGISTER')" data-i18n="register_new">Dang ky moi</a>
+              <a href="javascript:void(0)" class="text-decoration-none text-muted login-link-forgot" onclick="handleForgotPassword()" data-i18n="forgot_pass">Quen mat khau?</a>
             </div>
-          </div>
-          <div class="login-input-group">
-            <i class="fa-solid fa-check-double input-icon"></i>
-            <div class="input-wrap"><input type="password" class="form-control" id="reg-confirm-pass" data-i18n-ph="ph_confirm_pass" placeholder="Nhap lai mat khau" required autocomplete="new-password"></div>
-          </div>
-          <button type="submit" class="btn btn-register-main mb-3" id="btn-register"><i class="fa-solid fa-user-plus me-2"></i><span data-i18n="btn_register">Dang ky</span></button>
-          <div class="text-center">
-            <a href="javascript:void(0)" class="text-decoration-none text-success fw-semibold login-link-register" onclick="toggleAuth('LOGIN')"><i class="fa-solid fa-arrow-left me-1"></i><span data-i18n="back_login">Quay lai Dang nhap</span></a>
-          </div>
-        </form>
+            <button type="submit" class="btn btn-login-main" id="btn-login"><i class="fa-solid fa-right-to-bracket me-2"></i><span data-i18n="btn_login">Dang nhap</span></button>
+          </form>
 
-        <div id="login-error" class="text-danger mt-2 small fw-bold text-center login-error"></div>
-      </div>
+          <form id="form-register" class="d-none">
+            <div class="login-input-group">
+              <i class="fa-solid fa-user-pen input-icon"></i>
+              <div class="input-wrap"><input type="text" class="form-control" id="reg-name" data-i18n-ph="ph_fullname" placeholder="Ho ten day du" required></div>
+            </div>
+            <div class="login-input-group">
+              <i class="fa-solid fa-at input-icon"></i>
+              <div class="input-wrap"><input type="text" class="form-control" id="reg-username" data-i18n-ph="ph_username" placeholder="Username (viet lien, khong dau)" required autocapitalize="none" autocorrect="off" spellcheck="false" pattern="[a-zA-Z0-9_]+" title="Chi cho phep chu cai, so va dau gach duoi"></div>
+            </div>
+            <div class="login-input-group">
+              <i class="fa-solid fa-envelope input-icon"></i>
+              <div class="input-wrap"><input type="email" class="form-control" id="reg-email" placeholder="Email" required autocapitalize="none"></div>
+            </div>
+            <div class="login-input-group">
+              <i class="fa-solid fa-phone input-icon"></i>
+              <div class="input-wrap"><input type="tel" class="form-control" id="reg-phone" data-i18n-ph="ph_phone" placeholder="So dien thoai"></div>
+            </div>
+            <div class="login-input-group">
+              <i class="fa-solid fa-lock input-icon"></i>
+              <div class="input-wrap">
+                <input type="password" class="form-control" id="reg-pass" data-i18n-ph="ph_password" placeholder="Mat khau" required autocomplete="new-password">
+                <button type="button" class="toggle-pass" onclick="togglePasswordVis(this)" tabindex="-1"><i class="fa-solid fa-eye"></i></button>
+              </div>
+            </div>
+            <div class="login-input-group">
+              <i class="fa-solid fa-check-double input-icon"></i>
+              <div class="input-wrap"><input type="password" class="form-control" id="reg-confirm-pass" data-i18n-ph="ph_confirm_pass" placeholder="Nhap lai mat khau" required autocomplete="new-password"></div>
+            </div>
+            <button type="submit" class="btn btn-register-main mb-3" id="btn-register"><i class="fa-solid fa-user-plus me-2"></i><span data-i18n="btn_register">Dang ky</span></button>
+            <div class="text-center">
+              <a href="javascript:void(0)" class="text-decoration-none text-success fw-semibold login-link-register" onclick="toggleAuth('LOGIN')"><i class="fa-solid fa-arrow-left me-1"></i><span data-i18n="back_login">Quay lai Dang nhap</span></a>
+            </div>
+          </form>
 
-      <div class="text-center py-3 login-footer">
-        <i class="fa-solid fa-code me-1"></i> <span data-i18n="developed_by">Phát triển bởi Lộc Vũ Trung - Công ty tư vấn CleverForestry</span>
+          <div id="login-error" class="text-danger mt-2 small fw-bold text-center login-error"></div>
+        </div>
+
+        <div class="text-center mt-4 pt-3 login-footer-line">
+          <small class="text-muted"><i class="fa-solid fa-code me-1"></i> <span data-i18n="developed_by">Phát triển bởi Lộc Vũ Trung - Công ty tư vấn CleverForestry</span></small>
+        </div>
       </div>
     </div>
   </div>
@@ -1561,6 +1611,10 @@
         // Login screen
         login_title: 'Nhóm hộ CCR Nam Phát - Định Hoá',
         login_subtitle: 'Quản lý Rừng bền vững FSC',
+        login_brand_title: 'Hệ thống Quản lý Rừng bền vững',
+        login_brand_subtitle: 'Forest Stewardship Council - Sustainable Forest Management',
+        login_panel_title: 'Xin chào!',
+        login_panel_desc: 'Đăng nhập để tiếp tục',
         ph_email_user: 'Email hoặc Username',
         ph_password: 'Mật khẩu',
         ph_fullname: 'Họ tên đầy đủ',
@@ -1995,6 +2049,10 @@
       en: {
         login_title: 'FSC Forest Management System',
         login_subtitle: 'Forest Stewardship Council',
+        login_brand_title: 'Sustainable Forest Management System',
+        login_brand_subtitle: 'Forest Stewardship Council - FSC Certified',
+        login_panel_title: 'Welcome!',
+        login_panel_desc: 'Sign in to continue',
         ph_email_user: 'Email or Username',
         ph_password: 'Password',
         ph_fullname: 'Full name',
