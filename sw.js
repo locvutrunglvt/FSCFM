@@ -1,6 +1,6 @@
-const CACHE_NAME = 'fscfm-v5';
-const CDN_CACHE = 'fscfm-cdn-v5';
-const DATA_CACHE = 'fscfm-data-v4';
+const CACHE_NAME = 'fscfm-v17';
+const CDN_CACHE = 'fscfm-cdn-v17';
+const DATA_CACHE = 'fscfm-data-v6';
 
 // Core app files
 const APP_FILES = [
@@ -20,7 +20,7 @@ const CDN_FILES = [
   'https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js',
   'https://cdn.datatables.net/1.13.4/js/jquery.dataTables.min.js',
   'https://cdn.datatables.net/1.13.4/js/dataTables.bootstrap5.min.js',
-  'https://cdn.jsdelivr.net/gh/pocketbase/js-sdk@master/dist/pocketbase.umd.js',
+  'https://cdn.jsdelivr.net/npm/pocketbase@0.25.2/dist/pocketbase.umd.js',
   'https://unpkg.com/leaflet@1.9.4/dist/leaflet.js',
   'https://cdnjs.cloudflare.com/ajax/libs/leaflet.draw/1.0.4/leaflet.draw.js',
   'https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js',
@@ -73,12 +73,19 @@ self.addEventListener('fetch', event => {
   if (url.hostname.match(/^mt\d\.google\.com$/) || url.hostname.includes('arcgisonline.com') || url.hostname.includes('tile.openstreetmap.org')) {
     event.respondWith(
       caches.open('fscfm-tiles-v1').then(cache =>
-        cache.match(event.request).then(cached => {
+        cache.match(event.request, { ignoreSearch: false, ignoreMethod: true, ignoreVary: true }).then(cached => {
           if (cached) return cached;
-          return fetch(event.request).then(response => {
-            if (response.ok) cache.put(event.request, response.clone());
-            return response;
-          }).catch(() => cached || new Response('', { status: 404 }));
+          // Also try matching by URL string (for tiles cached via cacheTilesForOffline)
+          return cache.match(event.request.url).then(cachedByUrl => {
+            if (cachedByUrl) return cachedByUrl;
+            return fetch(event.request).then(response => {
+              // Cache both ok and opaque (no-cors) responses
+              if (response.ok || response.type === 'opaque') {
+                cache.put(event.request, response.clone());
+              }
+              return response;
+            }).catch(() => cached || cachedByUrl || new Response('', { status: 404 }));
+          });
         })
       )
     );

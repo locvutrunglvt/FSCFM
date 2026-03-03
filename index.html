@@ -8,14 +8,31 @@
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <link rel="manifest" href="manifest.json">
-  <title>Nhóm hộ CCR Nam Phát - Định Hoá</title>
+  <title>Hệ thống quản lý rừng chứng chỉ rừng FSC</title>
+  <!-- Preconnect to CDN hosts for faster loading -->
+  <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
+  <link rel="preconnect" href="https://cdnjs.cloudflare.com" crossorigin>
+  <link rel="preconnect" href="https://code.jquery.com" crossorigin>
+  <link rel="preconnect" href="https://fonts.googleapis.com" crossorigin>
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <!-- Critical CSS: Bootstrap + Font Awesome loaded first -->
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-  <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@300;400;500;600;700&display=swap"
-    rel="stylesheet">
-  <link rel="stylesheet" href="https://cdn.datatables.net/1.13.4/css/dataTables.bootstrap5.min.css">
-  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet.draw/1.0.4/leaflet.draw.css" />
+  <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;600;700&display=swap" rel="stylesheet">
+  <!-- Non-critical CSS: defer DataTables & Leaflet CSS until after paint -->
+  <link rel="stylesheet" href="https://cdn.datatables.net/1.13.4/css/dataTables.bootstrap5.min.css" media="print" onload="this.media='all'">
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" media="print" onload="this.media='all'" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet.draw/1.0.4/leaflet.draw.css" media="print" onload="this.media='all'" />
+  <!-- Splash screen: shows instantly before any JS loads -->
+  <style id="splash-css">
+    #app-splash{position:fixed;inset:0;z-index:99999;display:flex;flex-direction:column;align-items:center;justify-content:center;background:linear-gradient(160deg,#43A047 0%,#2E7D32 40%,#1B5E20 100%);color:#fff;font-family:system-ui,-apple-system,sans-serif;transition:opacity .3s}
+    #app-splash .splash-logo{width:72px;height:72px;background:rgba(255,255,255,.15);border-radius:18px;display:flex;align-items:center;justify-content:center;font-size:32px;font-weight:700;margin-bottom:16px;animation:splash-pulse 1.5s ease-in-out infinite}
+    #app-splash .splash-title{font-size:15px;font-weight:600;text-align:center;margin-bottom:8px;padding:0 24px}
+    #app-splash .splash-bar{width:120px;height:3px;background:rgba(255,255,255,.2);border-radius:3px;overflow:hidden}
+    #app-splash .splash-bar-inner{width:30%;height:100%;background:#fff;border-radius:3px;animation:splash-load 1.2s ease-in-out infinite}
+    @keyframes splash-pulse{0%,100%{transform:scale(1)}50%{transform:scale(1.05)}}
+    @keyframes splash-load{0%{transform:translateX(-100%)}100%{transform:translateX(400%)}}
+  </style>
   <style>
     :root {
       /* === Color System === */
@@ -79,11 +96,21 @@
       background: linear-gradient(160deg, #43A047 0%, #2E7D32 40%, #1B5E20 100%);
       overflow: hidden;
     }
+    @media (min-width: 768px) {
+      #login-screen {
+        background: url('login-bg.jpg') center/cover no-repeat fixed;
+      }
+    }
     #login-screen::before {
       content: ''; position: absolute; inset: 0;
-      background: radial-gradient(ellipse at 30% 20%, rgba(255,255,255,0.08) 0%, transparent 60%),
-                  radial-gradient(ellipse at 70% 80%, rgba(0,0,0,0.10) 0%, transparent 50%);
+      background: linear-gradient(160deg, rgba(27,94,32,0.55) 0%, rgba(46,125,50,0.40) 50%, rgba(27,94,32,0.55) 100%);
       pointer-events: none;
+    }
+    @media (max-width: 767px) {
+      #login-screen::before {
+        background: radial-gradient(ellipse at 30% 20%, rgba(255,255,255,0.08) 0%, transparent 60%),
+                    radial-gradient(ellipse at 70% 80%, rgba(0,0,0,0.10) 0%, transparent 50%);
+      }
     }
     .login-split {
       position: relative; z-index: 1;
@@ -112,9 +139,10 @@
       font-weight: 400; line-height: 1.6;
     }
     .login-panel {
-      background: #fff;
+      background: rgba(255,255,255,0.95);
+      backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
       border-radius: 16px;
-      box-shadow: 0 8px 40px rgba(0,0,0,0.18);
+      box-shadow: 0 8px 40px rgba(0,0,0,0.22);
       display: flex; flex-direction: column;
       justify-content: center;
       position: relative; flex: 1;
@@ -416,13 +444,19 @@
       display: flex;
       align-items: center;
       justify-content: center;
-      color: #2E7D32;
+      color: #fff;
       font-size: 1.3rem;
       background: linear-gradient(135deg, #e8f5e9, #c8e6c9);
-      box-shadow: none;
+      box-shadow: 0 4px 14px rgba(0,0,0,0.15);
       transition: transform var(--transition-normal);
     }
-    .dashboard-card-3d:hover .icon-3d-wrapper { transform: scale(1.1); }
+    .row-cols-3 > .col:nth-child(1) .icon-3d-wrapper { background: linear-gradient(135deg, #1B5E20, #4CAF50); }
+    .row-cols-3 > .col:nth-child(2) .icon-3d-wrapper { background: linear-gradient(135deg, #00695C, #26A69A); }
+    .row-cols-3 > .col:nth-child(3) .icon-3d-wrapper { background: linear-gradient(135deg, #0277BD, #4FC3F7); }
+    .row-cols-3 > .col:nth-child(4) .icon-3d-wrapper { background: linear-gradient(135deg, #33691E, #7CB342); }
+    .row-cols-3 > .col:nth-child(5) .icon-3d-wrapper { background: linear-gradient(135deg, #4E342E, #8D6E63); }
+    .row-cols-3 > .col:nth-child(6) .icon-3d-wrapper { background: linear-gradient(135deg, #2E7D32, #66BB6A); }
+    .dashboard-card-3d:hover .icon-3d-wrapper { transform: scale(1.12); }
 
     .card-title-3d {
       font-weight: 700;
@@ -887,19 +921,20 @@
     .kpi-icon-circle {
       width: 36px; height: 36px; border-radius: 50%;
       display: flex; align-items: center; justify-content: center;
-      font-size: 0.85rem; color: #2E7D32; background: linear-gradient(135deg, #e8f5e9, #c8e6c9); flex-shrink: 0;
+      font-size: 0.85rem; color: #fff; flex-shrink: 0;
+      background: linear-gradient(135deg, #43A047, #81C784);
+      box-shadow: 0 3px 10px rgba(0,0,0,0.12);
     }
-    /* KPI color variants — subtle border accents */
-    .kpi-card.blue { border-left-color: var(--forest-secondary); }
-    .kpi-card.blue .kpi-icon-circle { color: #1B5E20; background: linear-gradient(135deg, #e0f2f1, #b2dfdb); }
-    .kpi-card.orange { border-left-color: #558B2F; }
-    .kpi-card.orange .kpi-icon-circle { color: #33691E; background: linear-gradient(135deg, #f1f8e9, #dcedc8); }
-    .kpi-card.purple { border-left-color: #33691E; }
-    .kpi-card.purple .kpi-icon-circle { color: #1B5E20; background: linear-gradient(135deg, #e8f5e9, #a5d6a7); }
-    /* All KPI values use same green color for clean look */
-    .kpi-card.blue .kpi-value,
-    .kpi-card.orange .kpi-value,
-    .kpi-card.purple .kpi-value { color: var(--forest-primary); }
+    /* KPI color variants */
+    .kpi-card.blue { border-left-color: #1E88E5; }
+    .kpi-card.blue .kpi-icon-circle { background: linear-gradient(135deg, #1E88E5, #64B5F6); }
+    .kpi-card.blue .kpi-value { color: #1565C0; }
+    .kpi-card.orange { border-left-color: #FF6D00; }
+    .kpi-card.orange .kpi-icon-circle { background: linear-gradient(135deg, #FF6D00, #FFAB40); }
+    .kpi-card.orange .kpi-value { color: #E65100; }
+    .kpi-card.purple { border-left-color: #7C4DFF; }
+    .kpi-card.purple .kpi-icon-circle { background: linear-gradient(135deg, #7C4DFF, #B388FF); }
+    .kpi-card.purple .kpi-value { color: #5E35B1; }
 
     .kpi-sm .kpi-icon-circle { width: 30px; height: 30px; font-size: 0.7rem; border-radius: 50%; }
     .kpi-sm .kpi-value { font-size: 1.15rem; }
@@ -976,7 +1011,7 @@
       .map-toolbar .btn-sm span[data-i18n] { display: none; }
       .map-toolbar .btn-sm .me-1 { margin-right: 0; }
       .map-toolbar .map-search-wrap { flex-shrink: 0; }
-      .map-fab-stack { bottom: calc(115px + env(safe-area-inset-bottom, 8px)); }
+      .map-fab-stack { top: 50%; }
       .coords-panel { bottom: calc(115px + env(safe-area-inset-bottom, 8px)); }
       .gps-record-guide { top: var(--sp-2); }
       .map-layer-control { top: 10px; right: 10px; max-height: 250px; min-width: 160px; }
@@ -1022,7 +1057,8 @@
 
     /* Map floating action buttons */
     .map-fab-stack {
-      position: absolute; bottom: var(--sp-4); right: var(--sp-3); z-index: 1070;
+      position: absolute; top: 50%; right: var(--sp-3); z-index: 1070;
+      transform: translateY(-50%);
       display: flex; flex-direction: column; gap: var(--sp-2); align-items: center;
     }
     .map-fab {
@@ -1230,6 +1266,13 @@
 
 <body>
 
+  <!-- Splash Screen: visible instantly, hidden after app loads -->
+  <div id="app-splash">
+    <div class="splash-logo">FSC</div>
+    <div class="splash-title">Hệ thống quản lý rừng chứng chỉ rừng FSC</div>
+    <div class="splash-bar"><div class="splash-bar-inner"></div></div>
+  </div>
+
   <!-- PWA Install Banner -->
   <div class="pwa-install-banner" id="pwa-install-banner">
     <div class="pwa-icon"><i class="fa-solid fa-tree"></i></div>
@@ -1261,12 +1304,21 @@
     </div>
   </div>
 
-  <div id="login-screen">
+  <div id="login-screen" style="display:none !important">
+  <script>
+    // Show login screen only if no auth token exists (prevents flash on refresh)
+    (function() {
+      try {
+        var raw = localStorage.getItem('pocketbase_auth');
+        if (!raw) document.getElementById('login-screen').style.cssText = '';
+      } catch(e) { document.getElementById('login-screen').style.cssText = ''; }
+    })();
+  </script>
     <div class="login-split">
       <!-- Left: Brand Panel -->
       <div class="login-brand">
         <img src="Logo Clever forestry.png" alt="CleverForestry" class="login-brand-logo" onerror="this.style.display='none'">
-        <div class="login-brand-title" data-i18n="login_brand_title">Hệ thống Quản lý Rừng bền vững</div>
+        <div class="login-brand-title" data-i18n="login_brand_title">Hệ thống quản lý rừng chứng chỉ rừng FSC</div>
         <div class="login-brand-subtitle" data-i18n="login_brand_subtitle">Forest Stewardship Council - Sustainable Forest Management</div>
       </div>
 
@@ -1437,9 +1489,16 @@
                 <button type="button" class="btn btn-outline-success btn-sm" onclick="toggleMapLayers()">
                   <i class="fa-solid fa-layer-group me-1"></i> <span data-i18n="btn_layers">Lớp</span>
                 </button>
-                <button type="button" class="btn btn-outline-success btn-sm" onclick="addMapNote()">
-                  <i class="fa-solid fa-sticky-note me-1"></i> <span data-i18n="map_notes">Ghi chú</span>
-                </button>
+                <div class="btn-group">
+                  <button type="button" class="btn btn-outline-success btn-sm" onclick="addMapNote()">
+                    <i class="fa-solid fa-map-pin me-1"></i> <span data-i18n="map_notes">Ghi chú</span>
+                  </button>
+                  <button type="button" class="btn btn-outline-success btn-sm dropdown-toggle dropdown-toggle-split" data-bs-toggle="dropdown"></button>
+                  <ul class="dropdown-menu dropdown-menu-end">
+                    <li><a class="dropdown-item small" href="#" onclick="addMapNote();return false"><i class="fa-solid fa-plus me-1"></i>Thêm ghi chú</a></li>
+                    <li><a class="dropdown-item small" href="#" onclick="exportMapNotesCSV();return false"><i class="fa-solid fa-file-csv me-1"></i>Xuất CSV</a></li>
+                  </ul>
+                </div>
                 <div class="btn-group">
                   <button type="button" class="btn btn-outline-success btn-sm" onclick="zoomToAllData()">
                     <i class="fa-solid fa-expand me-1"></i> <span data-i18n="btn_zoom_all">Toàn bộ</span>
@@ -1524,7 +1583,7 @@
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
   <script src="https://cdn.datatables.net/1.13.4/js/jquery.dataTables.min.js"></script>
   <script src="https://cdn.datatables.net/1.13.4/js/dataTables.bootstrap5.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/gh/pocketbase/js-sdk@master/dist/pocketbase.umd.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/pocketbase@0.25.2/dist/pocketbase.umd.js"></script>
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet.draw/1.0.4/leaflet.draw.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
@@ -1672,9 +1731,9 @@
     const LANG = {
       vi: {
         // Login screen
-        login_title: 'Nhóm hộ CCR Nam Phát - Định Hoá',
+        login_title: 'Hệ thống quản lý rừng chứng chỉ rừng FSC',
         login_subtitle: 'Quản lý Rừng bền vững FSC',
-        login_brand_title: 'Hệ thống Quản lý Rừng bền vững',
+        login_brand_title: 'Hệ thống quản lý rừng chứng chỉ rừng FSC',
         login_brand_subtitle: 'Forest Stewardship Council - Sustainable Forest Management',
         login_panel_label: 'Vui lòng đăng nhập',
         login_panel_title: 'Xin chào!',
@@ -2113,7 +2172,7 @@
       en: {
         login_title: 'FSC Forest Management System',
         login_subtitle: 'Forest Stewardship Council',
-        login_brand_title: 'Sustainable Forest Management System',
+        login_brand_title: 'FSC Forest Management System',
         login_brand_subtitle: 'Forest Stewardship Council - FSC Certified',
         login_panel_label: 'Please sign in',
         login_panel_title: 'Welcome!',
@@ -2955,6 +3014,8 @@
     // === POCKETBASE CONFIG ===
     const PB_URL = 'https://fscfm.lvtcenter.it.com';
     const pb = new PocketBase(PB_URL);
+    // Flag to distinguish intentional signOut from token refresh cycles
+    let _intentionalSignOut = false;
 
     // --- QueryBuilder: wraps PocketBase SDK to match sb.from(table).select().eq()... ---
     class QueryBuilder {
@@ -2992,12 +3053,14 @@
       upsert(data, opts) { this._upsertData = data; this._upsertOpts = opts; return this; }
       delete() { this._deleteMode = true; return this; }
 
+      _mapCol(c) { return c === 'created_at' ? 'created' : c === 'updated_at' ? 'updated' : c; }
+
       _buildFilter() {
-        return this._filters.map(f => `${f.col}='${String(f.val).replace(/'/g, "\\'")}'`).join('&&');
+        return this._filters.map(f => `${this._mapCol(f.col)}='${String(f.val).replace(/'/g, "\\'")}'`).join('&&');
       }
 
       _buildSort() {
-        return this._order.map(o => (o.ascending ? '' : '-') + o.col).join(',');
+        return this._order.map(o => (o.ascending ? '' : '-') + this._mapCol(o.col)).join(',');
       }
 
       _toPojo(rec) {
@@ -3095,7 +3158,7 @@
 
           let fields = undefined;
           if (this._selectCols && this._selectCols !== '*') {
-            fields = this._selectCols.replace(/\s/g, '');
+            fields = this._selectCols.replace(/\s/g, '').split(',').map(c => this._mapCol(c)).join(',');
           }
           if (fields) opts.fields = fields;
 
@@ -3175,6 +3238,7 @@
         },
 
         async signOut() {
+          _intentionalSignOut = true;
           pb.authStore.clear();
         },
 
@@ -3185,21 +3249,37 @@
           } catch (e) { return { error: { message: e.message } }; }
         },
 
-        getSession() {
-          return Promise.resolve({
-            data: {
-              session: pb.authStore.isValid ? {
-                user: pb.authStore.record,
-                access_token: pb.authStore.token
-              } : null
-            }
-          });
+        async getSession() {
+          let token = pb.authStore.token;
+          let record = pb.authStore.record;
+          // Fallback: read raw localStorage if SDK didn't auto-load
+          if (!token) {
+            try {
+              const raw = localStorage.getItem('pocketbase_auth');
+              if (raw) {
+                const parsed = JSON.parse(raw);
+                token = parsed.token;
+                record = parsed.record || parsed.model;
+                if (token && record) pb.authStore.save(token, record);
+              }
+            } catch(e) {}
+          }
+          if (!token || !record) return { data: { session: null } };
+          if (!pb.authStore.isValid) return { data: { session: null } };
+          // Background refresh (non-blocking)
+          if (navigator.onLine) pb.collection('users').authRefresh().catch(() => {});
+          return { data: { session: { user: record, access_token: token } } };
         },
 
         onAuthStateChange(callback) {
           pb.authStore.onChange((token, record) => {
             if (!token || !record) {
-              callback('SIGNED_OUT', null);
+              // Only fire SIGNED_OUT if it was an intentional signOut call
+              if (_intentionalSignOut) {
+                _intentionalSignOut = false;
+                callback('SIGNED_OUT', null);
+              }
+              // Ignore transient token clears (e.g. during authRefresh cycle)
             } else {
               callback('TOKEN_REFRESHED', { user: record, access_token: token });
             }
@@ -3359,8 +3439,8 @@
           sheetName: op.sheetName || '',
           action: op.action,
           data: op.data,
-          idField: op.idField || 'id',
-          idValue: op.idValue || (op.data && op.data.id) || null,
+          idField: op.idField || 'sb_id',
+          idValue: op.idValue || (op.data && (op.data.sb_id || op.data.id)) || null,
           displayData: op.displayData || null,
           status: 'pending',
           error: null,
@@ -3531,21 +3611,21 @@
         trang_thai:'Trạng thái', thuoc_ban_quan_ly:'Thuộc Ban quản lý', thuoc_nhom:'Thuộc nhóm'
       }},
       'Menu': { table: 'menu', cols: {
-        id:'ID', nhom:'Nhom', module:'Module', view_name:'View',
+        sb_id:'ID', nhom:'Nhom', module:'Module', view_name:'View',
         xem:'Xem', them:'Thêm', sua:'Sửa', xoa:'Xóa', phan_quyen:'PhanQuyen'
       }},
       'Admin': { table: 'admin_province', cols: {
-        id:'ID', province_code:'Province code', province:'Province',
+        sb_id:'ID', province_code:'Province code', province:'Province',
         district:'District', commune:'Commune', type:'TYPE'
       }},
       'Ban_Quanlynhom': { table: 'ban_quan_ly_nhom', cols: {
-        id:'ID ban quản lý', ten:'Tên ban quản lý', loai_to_chuc:'Loại tổ chức',
+        sb_id:'ID ban quản lý', ten:'Tên ban quản lý', loai_to_chuc:'Loại tổ chức',
         dia_chi:'Địa chỉ', tinh:'Tỉnh', huyen:'Huyện', nguoi_dai_dien:'Người đại diện',
         chuc_vu:'Chức vụ', dien_thoai:'Điện thoại', email:'Email', website:'Website',
         loai_cay_trong_chinh:'Loài cây trồng chính'
       }},
       'NhomCCR': { table: 'nhom_ccr', cols: {
-        id:'ID nhóm', id_ban_quan_ly:'ID ban quản lý', ma_nhom:'Mã nhóm', ten_nhom:'Tên nhóm',
+        sb_id:'ID nhóm', id_ban_quan_ly:'ID ban quản lý', ma_nhom:'Mã nhóm', ten_nhom:'Tên nhóm',
         nguoi_dai_dien:'Người đại diện', so_dien_thoai:'Số điện thoại', dia_chi:'Địa chỉ',
         tinh:'Tỉnh', huyen:'Huyện', xa:'Xã', xom:'Xóm', vi_tri:'Vị trí',
         dien_tich_fsc:'Diện tích FSC', dien_tich_ngoai_fsc:'Diện tích ngoài FSC',
@@ -3555,7 +3635,7 @@
         ngay_cap_nhat:'Ngày cập nhật', nguoi_cap_nhat:'Người cập nhật', duong_dan_file:'Đường dẫn file'
       }},
       'Churung': { table: 'chu_rung', cols: {
-        id:'ID chủ rừng', id_nhom:'ID nhóm', ho_ten:'Họ tên chủ rừng', gioi_tinh:'Giới tính',
+        sb_id:'ID chủ rừng', id_nhom:'ID nhóm', ho_ten:'Họ tên chủ rừng', gioi_tinh:'Giới tính',
         ngay_sinh:'Ngày sinh', dan_toc:'Dân tộc', cccd:'CCCD',
         ho_ten_vo:'Họ tên vợ', ho_ten_chong:'Họ tên chồng',
         so_dien_thoai:'Số điện thoại', tinh:'Tỉnh', huyen:'Huyện', xa:'Xã', thon:'Thôn', dia_chi:'Địa chỉ',
@@ -3566,7 +3646,7 @@
         nguoi_nhap:'Người nhập dữ liệu', duong_dan_file:'Đường dẫn file'
       }},
       'Lo_rung': { table: 'lo_rung', cols: {
-        id:'ID lô rừng', id_nhom:'ID nhóm', id_chu_rung:'ID chủ rừng',
+        sb_id:'ID lô rừng', id_nhom:'ID nhóm', id_chu_rung:'ID chủ rừng',
         ma_so_lo_rung:'Mã số lô rừng', ma_so_lo:'Mã số lô', qr_code:'QR code', ten_lo_rung:'Tên lô rừng',
         so_so_do:'Số sổ đỏ', to_ban_do:'Tờ bản đồ', thua_dat:'Thửa đất', tieu_khu:'Tiểu khu', khoanh:'Khoảnh',
         toa_do_tam_lo:'Tọa độ tâm lô', khoang_cach_toi_nha:'Khoảng cách tới nhà', dia_chi_lo:'Địa chỉ lô',
@@ -3600,98 +3680,98 @@
         ten_tinh:'Tên tỉnh', ten_huyen:'Tên huyện', ten_xa:'Tên xã', ten_xa_moi:'Tên xã mới'
       }},
       'Taphuan': { table: 'tap_huan', cols: {
-        id:'ID tập huấn', id_chu_rung:'ID chủ rừng', loai_tap_huan:'Loại tập huấn',
+        sb_id:'ID tập huấn', id_chu_rung:'ID chủ rừng', loai_tap_huan:'Loại tập huấn',
         ngay_tap_huan:'Ngày tập huấn', dia_diem:'Địa điểm', giang_vien:'Giảng viên',
         so_luong_tham_du:'Số lượng tham dự'
       }},
       'Noidung_taphuan': { table: 'noi_dung_tap_huan', cols: {
-        id:'ID tập huấn', ten_lop:'Tên lớp tập huấn', loai_tap_huan:'Loại tập huấn', ghi_chu:'Ghi chú'
+        sb_id:'ID tập huấn', ten_lop:'Tên lớp tập huấn', loai_tap_huan:'Loại tập huấn', ghi_chu:'Ghi chú'
       }},
       'Loai_hoatdong_rung': { table: 'loai_hoat_dong_rung', cols: {
-        id:'ID hoạt động', ten_hoat_dong:'Tên hoạt động', mo_ta_chi_tiet:'Mô tả chi tiết'
+        sb_id:'ID hoạt động', ten_hoat_dong:'Tên hoạt động', mo_ta_chi_tiet:'Mô tả chi tiết'
       }},
       'KH_QL_Lorung': { table: 'kh_ql_lo_rung', cols: {
-        id:'ID kế hoạch', id_lo_rung:'ID lô rừng', hoat_dong:'Hoạt động',
+        sb_id:'ID kế hoạch', id_lo_rung:'ID lô rừng', hoat_dong:'Hoạt động',
         ngay_thuc_hien:'Ngày thực hiện', noi_dung:'Nội dung', trang_thai:'Trạng thái',
         nguoi_nhap:'Người nhập', ghi_chu:'Ghi chú'
       }},
       'Biendong_lorung': { table: 'bien_dong_lo_rung', cols: {
-        id:'ID', id_lo_rung:'ID lô rừng', loai_bien_dong:'Loại biến động',
+        sb_id:'ID', id_lo_rung:'ID lô rừng', loai_bien_dong:'Loại biến động',
         ngay_bien_dong:'Ngày biến động', noi_dung:'Nội dung', nguoi_nhap:'Người nhập', ghi_chu:'Ghi chú'
       }},
       'KH_HD_nhom': { table: 'kh_hd_nhom', cols: {
-        id:'ID', id_nhom:'ID nhóm', hoat_dong:'Hoạt động', ngay_thuc_hien:'Ngày thực hiện',
+        sb_id:'ID', id_nhom:'ID nhóm', hoat_dong:'Hoạt động', ngay_thuc_hien:'Ngày thực hiện',
         noi_dung:'Nội dung', trang_thai:'Trạng thái', nguoi_nhap:'Người nhập', ghi_chu:'Ghi chú'
       }},
       'KH_HD_Churung': { table: 'kh_hd_chu_rung', cols: {
-        id:'ID', id_chu_rung:'ID chủ rừng', hoat_dong:'Hoạt động', ngay_thuc_hien:'Ngày thực hiện',
+        sb_id:'ID', id_chu_rung:'ID chủ rừng', hoat_dong:'Hoạt động', ngay_thuc_hien:'Ngày thực hiện',
         noi_dung:'Nội dung', trang_thai:'Trạng thái', nguoi_nhap:'Người nhập', ghi_chu:'Ghi chú'
       }},
       'HD_Lorung': { table: 'hd_lo_rung', cols: {
-        id:'ID hoạt động lô', id_lo_rung:'ID lô rừng', id_hoat_dong:'ID hoạt động',
+        sb_id:'ID hoạt động lô', id_lo_rung:'ID lô rừng', id_hoat_dong:'ID hoạt động',
         ten_hoat_dong:'Tên hoạt động', ngay_trien_khai:'Ngày triển khai', ngay_ket_thuc:'Ngày kết thúc',
         ngay_bao_cao:'Ngày báo cáo', dia_diem_kiem_tra:'Địa điểm kiểm tra', nguoi_kiem_tra:'Người kiểm tra',
         ket_qua_hoat_dong:'Kết quả hoạt động', dien_tich_thuc_hien:'Diện tích thực hiện',
         so_lao_dong:'Số lao động', tuoi_lao_dong:'Tuổi lao động'
       }},
       'DS_HDong': { table: 'ds_hdong', cols: {
-        id:'ID DS hoat dong', hoat_dong_chi_tiet:'Hoạt động chi tiết', nhom_hoat_dong:'Nhóm hoạt động'
+        sb_id:'ID DS hoat dong', hoat_dong_chi_tiet:'Hoạt động chi tiết', nhom_hoat_dong:'Nhóm hoạt động'
       }},
       'CauHoi_DanhGia': { table: 'cau_hoi_danh_gia', cols: {
-        id:'ID câu hỏi', nhom_tieu_chi:'Nhóm tiêu chí', noi_dung:'Nội dung câu hỏi',
+        sb_id:'ID câu hỏi', nhom_tieu_chi:'Nhóm tiêu chí', noi_dung:'Nội dung câu hỏi',
         phuong_phap:'Phương pháp kiểm tra', goi_y_bang_chung:'Gợi ý bằng chứng'
       }},
       'KetQua_DanhGia': { table: 'ket_qua_danh_gia', cols: {
-        id:'ID', id_cau_hoi:'ID câu hỏi', id_dg:'ID đánh giá', ket_qua:'Kết quả', ghi_chu:'Ghi chú'
+        sb_id:'ID', id_cau_hoi:'ID câu hỏi', id_dg:'ID đánh giá', ket_qua:'Kết quả', ghi_chu:'Ghi chú'
       }},
       'DG_noibo': { table: 'dg_noi_bo', cols: {
-        id:'ID', id_nhom:'ID nhóm', audit_date:'Date', staff:'Staff', updated_at:'Update'
+        sb_id:'ID', id_nhom:'ID nhóm', audit_date:'Date', staff:'Staff', updated_at:'Update'
       }},
       'Banghoi_DG_noibo': { table: 'bang_hoi_dg_noi_bo', cols: {
-        id:'ID_hoi', id_dg:'ID_DG', answers:'answers'
+        sb_id:'ID_hoi', id_dg:'ID_DG', answers:'answers'
       }},
       'GiamSat_LoRung': { table: 'giam_sat_lo_rung', cols: {
-        id:'ID', id_lo_rung:'ID lô rừng', id_nhom:'ID nhóm', id_chu_rung:'ID chủ rừng',
+        sb_id:'ID', id_lo_rung:'ID lô rừng', id_nhom:'ID nhóm', id_chu_rung:'ID chủ rừng',
         loai_giam_sat:'Loại giám sát', ngay_giam_sat:'Ngày giám sát', nguoi_giam_sat:'Người giám sát',
         dai_dien_to:'Đại diện tổ', dien_tich_giam_sat:'Diện tích GS', thoi_tiet:'Thời tiết',
         ghi_chu:'Ghi chú', de_xuat:'Đề xuất', updated_at:'Cập nhật'
       }},
       'Banghoi_GiamSat': { table: 'bang_hoi_giam_sat', cols: {
-        id:'ID_hoi', id_giam_sat:'ID_GS', answers:'answers'
+        sb_id:'ID_hoi', id_giam_sat:'ID_GS', answers:'answers'
       }},
       'KH_GiamSat_Nhom': { table: 'kh_giam_sat_nhom', cols: {
-        id:'ID', id_nhom:'ID nhóm', nam:'Năm', loai_giam_sat:'Loại giám sát',
+        sb_id:'ID', id_nhom:'ID nhóm', nam:'Năm', loai_giam_sat:'Loại giám sát',
         thang_1:'T1', thang_2:'T2', thang_3:'T3', thang_4:'T4',
         thang_5:'T5', thang_6:'T6', thang_7:'T7', thang_8:'T8',
         thang_9:'T9', thang_10:'T10', thang_11:'T11', thang_12:'T12', ghi_chu:'Ghi chú'
       }},
       'BenLienQuan': { table: 'ben_lien_quan', cols: {
-        id:'ID', ten_to_chuc:'Tên tổ chức', email:'Email', dia_chi:'Địa chỉ',
+        sb_id:'ID', ten_to_chuc:'Tên tổ chức', email:'Email', dia_chi:'Địa chỉ',
         dien_thoai:'Điện thoại', nguoi_dai_dien:'Người đại diện', website:'Website',
         nhom_blq:'Nhóm BLQ'
       }},
       'DotThamVan': { table: 'dot_tham_van', cols: {
-        id:'ID', ten_dot:'Tên đợt', nam:'Năm', noi_dung_gioi_thieu:'Nội dung giới thiệu',
+        sb_id:'ID', ten_dot:'Tên đợt', nam:'Năm', noi_dung_gioi_thieu:'Nội dung giới thiệu',
         trang_thai:'Trạng thái', nguoi_tao:'Người tạo'
       }},
       'PhanHoiThamVan': { table: 'phan_hoi_tham_van', cols: {
-        id:'ID', id_dot:'ID đợt', id_ben_lien_quan:'ID BLQ', nguoi_tra_loi:'Người trả lời',
+        sb_id:'ID', id_dot:'ID đợt', id_ben_lien_quan:'ID BLQ', nguoi_tra_loi:'Người trả lời',
         dia_chi:'Địa chỉ', dien_thoai:'Điện thoại', ngay_phan_hoi:'Ngày phản hồi',
         answers:'answers'
       }},
       'LopTaphuan': { table: 'lop_tap_huan', cols: {
-        id:'ID', id_nhom:'ID nhóm', ten_lop:'Tên lớp', noi_dung:'Nội dung',
+        sb_id:'ID', id_nhom:'ID nhóm', ten_lop:'Tên lớp', noi_dung:'Nội dung',
         giang_vien:'Giảng viên', dia_diem:'Địa điểm', ngay_bat_dau:'Ngày bắt đầu',
         ngay_ket_thuc:'Ngày kết thúc', so_buoi:'Số buổi', so_nguoi_tham_gia:'Số người tham gia',
         kinh_phi:'Kinh phí', ket_qua:'Kết quả', tai_lieu:'Tài liệu', nam:'Năm',
         tai_lieu_url:'Tài liệu (file)', hinh_anh_url:'Hình ảnh', bao_cao_url:'Báo cáo (file)', ghi_chu:'Ghi chú'
       }},
       'DSHocVien': { table: 'ds_hoc_vien', cols: {
-        id:'ID', id_lop_tap_huan:'ID lớp tập huấn', id_chu_rung:'ID chủ rừng',
+        sb_id:'ID', id_lop_tap_huan:'ID lớp tập huấn', id_chu_rung:'ID chủ rừng',
         ho_ten:'Họ tên', gioi_tinh:'Giới tính', danh_gia:'Đánh giá', ghi_chu:'Ghi chú'
       }},
       'KhieuNai': { table: 'khieu_nai', cols: {
-        id:'ID', id_nhom:'ID nhóm', nguoi_khieu_nai:'Người khiếu nại', dia_chi:'Địa chỉ',
+        sb_id:'ID', id_nhom:'ID nhóm', nguoi_khieu_nai:'Người khiếu nại', dia_chi:'Địa chỉ',
         dien_thoai:'Điện thoại', email:'Email', ngay_tiep_nhan:'Ngày tiếp nhận',
         noi_dung:'Nội dung', phan_loai:'Phân loại', muc_do:'Mức độ',
         nguoi_xu_ly:'Người xử lý', ngay_xu_ly:'Ngày xử lý', bien_phap:'Biện pháp',
@@ -3699,73 +3779,73 @@
         tai_lieu_url:'Tài liệu (file)', hinh_anh_url:'Hình ảnh', ghi_chu:'Ghi chú'
       }},
       'TaiSan': { table: 'tai_san', cols: {
-        id:'ID', id_nhom:'ID nhóm', ten_tai_san:'Tên tài sản', loai_tai_san:'Loại tài sản',
+        sb_id:'ID', id_nhom:'ID nhóm', ten_tai_san:'Tên tài sản', loai_tai_san:'Loại tài sản',
         so_luong:'Số lượng', don_vi:'Đơn vị', gia_tri:'Giá trị', ngay_mua:'Ngày mua',
         nguon_goc:'Nguồn gốc', tinh_trang:'Tình trạng', vi_tri_luu_tru:'Vị trí lưu trữ',
         nguoi_quan_ly:'Người quản lý', tai_lieu_url:'Tài liệu (file)', hinh_anh_url:'Hình ảnh', ghi_chu:'Ghi chú'
       }},
       'DungCu': { table: 'dung_cu_lao_dong', cols: {
-        id:'ID', id_nhom:'ID nhóm', ten_dung_cu:'Tên dụng cụ', loai_dung_cu:'Loại dụng cụ',
+        sb_id:'ID', id_nhom:'ID nhóm', ten_dung_cu:'Tên dụng cụ', loai_dung_cu:'Loại dụng cụ',
         so_luong_tong:'Số lượng tổng', so_luong_con_lai:'Số lượng còn lại',
         don_vi:'Đơn vị', tinh_trang:'Tình trạng', vi_tri_luu_tru:'Vị trí lưu trữ',
         tai_lieu_url:'Tài liệu (file)', hinh_anh_url:'Hình ảnh', ghi_chu:'Ghi chú'
       }},
       'MuonTraDC': { table: 'muon_tra_dung_cu', cols: {
-        id:'ID', id_dung_cu:'ID dụng cụ', id_chu_rung:'ID chủ rừng',
+        sb_id:'ID', id_dung_cu:'ID dụng cụ', id_chu_rung:'ID chủ rừng',
         nguoi_muon:'Người mượn', so_luong_muon:'Số lượng mượn',
         ngay_muon:'Ngày mượn', ngay_hen_tra:'Ngày hẹn trả', ngay_tra_thuc_te:'Ngày trả thực tế',
         tinh_trang_tra:'Tình trạng trả', trang_thai:'Trạng thái', ghi_chu:'Ghi chú'
       }},
       'EUDR_DotDG': { table: 'dot_dg_eudr', cols: {
-        id:'ID', id_lo_rung:'ID lô rừng', id_nhom:'ID nhóm', id_chu_rung:'ID chủ rừng',
+        sb_id:'ID', id_lo_rung:'ID lô rừng', id_nhom:'ID nhóm', id_chu_rung:'ID chủ rừng',
         ngay_danh_gia:'Ngày đánh giá', nguoi_danh_gia:'Người đánh giá',
         diem_so:'Điểm số', trang_thai:'Trạng thái', ghi_chu:'Ghi chú', updated_at:'Cập nhật'
       }},
       'Banghoi_EUDR': { table: 'bang_hoi_eudr', cols: {
-        id:'ID_hoi', id_dg:'ID_DG', answers:'answers'
+        sb_id:'ID_hoi', id_dg:'ID_DG', answers:'answers'
       }},
       'DM_ThuocBVTV': { table: 'danh_muc_thuoc_bvtv', cols: {
-        id:'ID', ten_thuong_mai:'Tên thương mại', hoat_chat:'Hoạt chất', nhom_thuoc:'Nhóm thuốc',
+        sb_id:'ID', ten_thuong_mai:'Tên thương mại', hoat_chat:'Hoạt chất', nhom_thuoc:'Nhóm thuốc',
         doi_tuong_phong_tru:'Đối tượng phòng trừ', lieu_luong:'Liều lượng', cach_su_dung:'Cách sử dụng',
         thoi_gian_cach_ly:'Thời gian cách ly', doc_tinh:'Độc tính', ghi_chu:'Ghi chú', trang_thai:'Trạng thái'
       }},
       'DM_CayTrong': { table: 'danh_muc_cay_trong', cols: {
-        id:'ID', ten_tieng_viet:'Tên tiếng Việt', ten_khoa_hoc:'Tên khoa học', ho_thuc_vat:'Họ thực vật',
+        sb_id:'ID', ten_tieng_viet:'Tên tiếng Việt', ten_khoa_hoc:'Tên khoa học', ho_thuc_vat:'Họ thực vật',
         nhom_cay:'Nhóm cây', vung_phan_bo:'Vùng phân bố', dac_diem:'Đặc điểm',
         cong_dung:'Công dụng', ghi_chu:'Ghi chú', trang_thai:'Trạng thái'
       }},
       'DM_PhanBon': { table: 'danh_muc_phan_bon', cols: {
-        id:'ID', ten_phan_bon:'Tên phân bón', loai_phan:'Loại phân', thanh_phan:'Thành phần',
+        sb_id:'ID', ten_phan_bon:'Tên phân bón', loai_phan:'Loại phân', thanh_phan:'Thành phần',
         ham_luong:'Hàm lượng', cach_su_dung:'Cách sử dụng', lieu_luong:'Liều lượng',
         nha_san_xuat:'Nhà sản xuất', ghi_chu:'Ghi chú', trang_thai:'Trạng thái'
       }},
       'NguonGocGiong': { table: 'nguon_goc_cay_giong', cols: {
-        id:'ID', ten_giong:'Tên giống', loai_cay:'Loài cây', xuat_xu:'Xuất xứ',
+        sb_id:'ID', ten_giong:'Tên giống', loai_cay:'Loài cây', xuat_xu:'Xuất xứ',
         nha_cung_cap:'Nhà cung cấp', dia_chi_ncc:'Địa chỉ NCC', giay_chung_nhan:'Giấy chứng nhận',
         nam_cung_cap:'Năm cung cấp', chat_luong:'Chất lượng', ghi_chu:'Ghi chú', trang_thai:'Trạng thái'
       }},
       'KH_TrongRung': { table: 'kh_trong_rung', cols: {
-        id:'ID', id_nhom:'ID nhóm', id_lo_rung:'ID lô rừng', id_chu_rung:'ID chủ rừng',
+        sb_id:'ID', id_nhom:'ID nhóm', id_lo_rung:'ID lô rừng', id_chu_rung:'ID chủ rừng',
         nam:'Năm', loai_cay:'Loài cây', giong:'Giống', dien_tich:'Diện tích (ha)',
         mat_do:'Mật độ (cây/ha)', so_cay:'Số cây', thoi_diem_trong:'Thời điểm trồng',
         phuong_phap:'Phương pháp', kinh_phi:'Kinh phí', nguon_giong:'Nguồn giống',
         trang_thai:'Trạng thái', nguoi_lap:'Người lập', ghi_chu:'Ghi chú', updated_at:'Cập nhật'
       }},
       'KH_KhaiThac': { table: 'kh_khai_thac', cols: {
-        id:'ID', id_nhom:'ID nhóm', id_lo_rung:'ID lô rừng', id_chu_rung:'ID chủ rừng',
+        sb_id:'ID', id_nhom:'ID nhóm', id_lo_rung:'ID lô rừng', id_chu_rung:'ID chủ rừng',
         nam:'Năm', loai_khai_thac:'Loại khai thác', dien_tich:'Diện tích (ha)',
         san_luong_du_kien:'Sản lượng dự kiến (m³)', thoi_gian_bat_dau:'Bắt đầu',
         thoi_gian_ket_thuc:'Kết thúc', phuong_phap:'Phương pháp', don_vi_khai_thac:'Đơn vị khai thác',
         kinh_phi:'Kinh phí', trang_thai:'Trạng thái', nguoi_lap:'Người lập', ghi_chu:'Ghi chú', updated_at:'Cập nhật'
       }},
       'KH_TaphuanPlan': { table: 'kh_tap_huan', cols: {
-        id:'ID', id_nhom:'ID nhóm', nam:'Năm', ten_khoa:'Tên khóa', noi_dung:'Nội dung',
+        sb_id:'ID', id_nhom:'ID nhóm', nam:'Năm', ten_khoa:'Tên khóa', noi_dung:'Nội dung',
         doi_tuong:'Đối tượng', so_nguoi_du_kien:'Số người dự kiến', thoi_gian_du_kien:'Thời gian dự kiến',
         dia_diem:'Địa điểm', giang_vien:'Giảng viên', kinh_phi:'Kinh phí',
         trang_thai:'Trạng thái', nguoi_lap:'Người lập', ghi_chu:'Ghi chú', updated_at:'Cập nhật'
       }},
       'KH_CayGiongPlan': { table: 'kh_cay_giong', cols: {
-        id:'ID', id_nhom:'ID nhóm', nam:'Năm', loai_cay:'Loài cây', giong:'Giống',
+        sb_id:'ID', id_nhom:'ID nhóm', nam:'Năm', loai_cay:'Loài cây', giong:'Giống',
         so_luong_cay:'Số lượng cây', nha_cung_cap:'Nhà cung cấp', dia_chi_ncc:'Địa chỉ NCC',
         thoi_gian_cung_cap:'Thời gian cung cấp', yeu_cau_chat_luong:'Yêu cầu chất lượng',
         co_chung_nhan:'Có chứng nhận', kinh_phi:'Kinh phí',
@@ -3816,9 +3896,7 @@
     }
 
     function getIdColumn(sheetName) {
-      const map = DB_MAP[sheetName];
-      if (!map) return 'id';
-      return 'id';
+      return 'sb_id';
     }
 
     const TABLE_CONFIG = {
@@ -4873,7 +4951,7 @@
           // Special handling for JSONB answer tables
           if (r.sheetName === 'Banghoi_DG_noibo') {
             APP_DATA[r.sheetName] = (r.data || []).map(row => {
-              const obj = { 'ID_hoi': row.id, 'ID_DG': row.id_dg };
+              const obj = { 'ID_hoi': row.sb_id || row.id, 'ID_DG': row.id_dg };
               if (row.answers && typeof row.answers === 'object') {
                 Object.assign(obj, row.answers);
               }
@@ -4881,7 +4959,7 @@
             });
           } else if (r.sheetName === 'Banghoi_GiamSat') {
             APP_DATA[r.sheetName] = (r.data || []).map(row => {
-              const obj = { 'ID_hoi': row.id, 'ID_GS': row.id_giam_sat };
+              const obj = { 'ID_hoi': row.sb_id || row.id, 'ID_GS': row.id_giam_sat };
               if (row.answers && typeof row.answers === 'object') {
                 Object.assign(obj, row.answers);
               }
@@ -4889,7 +4967,7 @@
             });
           } else if (r.sheetName === 'Banghoi_EUDR') {
             APP_DATA[r.sheetName] = (r.data || []).map(row => {
-              const obj = { 'ID_hoi': row.id, 'ID_DG': row.id_dg };
+              const obj = { 'ID_hoi': row.sb_id || row.id, 'ID_DG': row.id_dg };
               if (row.answers && typeof row.answers === 'object') {
                 Object.assign(obj, row.answers);
               }
@@ -4898,7 +4976,7 @@
           } else if (r.sheetName === 'PhanHoiThamVan') {
             APP_DATA[r.sheetName] = (r.data || []).map(row => {
               const obj = {
-                'ID': row.id, 'ID đợt': row.id_dot, 'ID BLQ': row.id_ben_lien_quan,
+                'ID': row.sb_id || row.id, 'ID đợt': row.id_dot, 'ID BLQ': row.id_ben_lien_quan,
                 'Người trả lời': row.nguoi_tra_loi, 'Địa chỉ': row.dia_chi,
                 'Điện thoại': row.dien_thoai, 'Ngày phản hồi': row.ngay_phan_hoi
               };
@@ -5001,21 +5079,26 @@
       // Check existing session on page load (persist login across refresh)
       sb.auth.getSession().then(async ({ data: { session } }) => {
         if (session) {
-          console.log("Existing session found:", session.user.email);
           await initUserSession(session.user);
+        } else {
+          // No valid session — show login screen
+          _hideSplash();
+          $('#login-screen').css('display', '').removeClass('d-none').addClass('d-flex');
         }
-      }).catch(err => console.warn("getSession error:", err));
+      }).catch(err => {
+        console.warn("getSession error:", err);
+        _hideSplash();
+        $('#login-screen').css('display', '').removeClass('d-none').addClass('d-flex');
+      });
 
-      // Listen for auth state changes (logout, token refresh)
+      // Listen for auth state changes (only handle intentional logout)
       sb.auth.onAuthStateChange(async (event, session) => {
-        console.log("Auth state changed:", event);
         if (event === 'SIGNED_OUT') {
+          // Only react to intentional sign-out, not token refresh cycles
           currentUser = null;
           APP_DATA = {};
           $('#main-app').removeClass('d-flex').addClass('d-none');
-          $('#login-screen').removeClass('d-none').addClass('d-flex').show();
-        } else if (event === 'TOKEN_REFRESHED' && session) {
-          console.log("Token refreshed for:", session.user.email);
+          $('#login-screen').css('display', '').removeClass('d-none').addClass('d-flex');
         }
       });
     });
@@ -5059,9 +5142,19 @@
         }
 
         currentUser = profileDisplay;
-        await loadAllData();
+
+        // Show app shell immediately with skeleton dashboard (perceived speed boost)
         showAppMain();
         updateOnlineStatus();
+
+        // Load data in background, then re-render dashboard with real KPIs
+        await loadAllData();
+        if (APP_DATA && APP_DATA['Menu']) {
+          computeGroupStats();
+          aggregateManagementBoardData();
+          renderSystemMenu(APP_DATA['Menu']);
+        }
+        renderDashboardContent();
 
         // Auto-sync pending operations if online
         if (navigator.onLine) {
@@ -5077,12 +5170,18 @@
       }
     }
 
+    function _hideSplash() {
+      const splash = document.getElementById('app-splash');
+      if (splash) { splash.style.opacity = '0'; setTimeout(() => splash.remove(), 300); }
+    }
+
     function showAppMain() {
       console.log("Entering showAppMain...", { currentUser, APP_DATA });
       try {
         // Luôn ẩn màn hình đăng nhập trước
         $('#login-screen').removeClass('d-flex').addClass('d-none').hide();
         $('#main-app').removeClass('d-none').addClass('d-flex');
+        _hideSplash();
 
         if (!currentUser) throw new Error("currentUser is missing");
 
@@ -5273,7 +5372,7 @@
     // SETTINGS MODULE
     // ============================================================
     const DEFAULT_SETTINGS = {
-      projectName: 'Nhóm hộ CCR Nam Phát - Định Hoá',
+      projectName: 'Hệ thống quản lý rừng chứng chỉ rừng FSC',
       fontFamily: 'Be Vietnam Pro',
       titleAlign: 'center',
       logoUrl: '',
@@ -5627,8 +5726,27 @@
       renderDashboardContent();
     }
 
+    function _kpiSkeletonHTML() {
+      const sk = (w) => `<div style="height:14px;width:${w};background:linear-gradient(90deg,#e0e0e0 25%,#f5f5f5 50%,#e0e0e0 75%);background-size:200% 100%;animation:shimmer 1.5s infinite;border-radius:4px;margin:4px 0"></div>`;
+      const card = `<div class="col-4"><div class="kpi-card h-100"><div class="kpi-card-inner"><div class="kpi-icon-circle" style="background:#e8f5e9">&nbsp;</div><div class="kpi-body">${sk('60%')}${sk('80%')}</div></div></div></div>`;
+      return `<style>@keyframes shimmer{0%{background-position:200% 0}100%{background-position:-200% 0}}</style>
+        <div class="dash-above-fold">
+          <h6 class="fw-bold text-secondary"><i class="fa-solid fa-chart-line me-2"></i>${t('kpi_title')}</h6>
+          <div class="row g-2 kpi-grid mb-1">${card}${card}${card}</div>
+          <div class="row g-2 kpi-grid mb-2">${card}${card}${card}</div>
+          <div class="row g-2 kpi-grid mb-2">${card}${card}${card}</div>
+          <div class="text-center text-muted mt-3"><i class="fa-solid fa-spinner fa-spin me-2"></i>Đang tải dữ liệu...</div>
+        </div>`;
+    }
+
     function renderDashboardContent() {
       const safeFloat = v => { if (!v) return 0; return parseFloat(String(v).replace(/,/g, '')) || 0; };
+
+      // Show skeleton if data not loaded yet
+      if (!APP_DATA['Lo_rung'] || !APP_DATA['Churung']) {
+        $('#dashboard-view').html(_kpiSkeletonHTML());
+        return;
+      }
 
       // Compute KPIs from data
       const groups = APP_DATA['NhomCCR'] || [];
@@ -6219,14 +6337,32 @@
         ]
       };
 
+      // Green-toned color palette for submenu icons — diverse but cohesive
+      const ICON_COLORS = [
+        { bg: 'linear-gradient(135deg,#e8f5e9,#a5d6a7)', fg: '#1B5E20', border: '#43A047' },
+        { bg: 'linear-gradient(135deg,#e0f2f1,#80cbc4)', fg: '#00695C', border: '#26A69A' },
+        { bg: 'linear-gradient(135deg,#f1f8e9,#aed581)', fg: '#33691E', border: '#7CB342' },
+        { bg: 'linear-gradient(135deg,#e8eaf6,#9fa8da)', fg: '#283593', border: '#5C6BC0' },
+        { bg: 'linear-gradient(135deg,#fff3e0,#ffcc80)', fg: '#E65100', border: '#FB8C00' },
+        { bg: 'linear-gradient(135deg,#e3f2fd,#90caf9)', fg: '#0D47A1', border: '#42A5F5' },
+        { bg: 'linear-gradient(135deg,#fce4ec,#f48fb1)', fg: '#880E4F', border: '#EC407A' },
+        { bg: 'linear-gradient(135deg,#f3e5f5,#ce93d8)', fg: '#6A1B9A', border: '#AB47BC' },
+        { bg: 'linear-gradient(135deg,#e0f7fa,#80deea)', fg: '#006064', border: '#00ACC1' },
+        { bg: 'linear-gradient(135deg,#fff8e1,#ffe082)', fg: '#F57F17', border: '#FFC107' },
+        { bg: 'linear-gradient(135deg,#efebe9,#bcaaa4)', fg: '#4E342E', border: '#8D6E63' },
+        { bg: 'linear-gradient(135deg,#e8f5e9,#81c784)', fg: '#2E7D32', border: '#66BB6A' },
+      ];
+      let cardIdx = 0;
       const buildCard = (v, m, color) => {
         const subIcon = getSubMenuIcon(m);
         const safeV = v.replace(/'/g, "\\'");
         const safeM = m.replace(/'/g, "\\'");
         const safeG = groupName.replace(/'/g, "\\'");
+        const ic = ICON_COLORS[cardIdx % ICON_COLORS.length];
+        cardIdx++;
         return `<div class="col">
-          <div class="submenu-card" onclick="loadViewFromGroup('${safeV}','${safeM}','${safeG}')" style="border-top: 3px solid ${color}">
-            <div class="submenu-icon"><i class="fa-solid ${subIcon}"></i></div>
+          <div class="submenu-card" onclick="loadViewFromGroup('${safeV}','${safeM}','${safeG}')" style="border-top: 3px solid ${ic.border}">
+            <div class="submenu-icon" style="background:${ic.bg} !important;color:${ic.fg}"><i class="fa-solid ${subIcon}"></i></div>
             <div class="submenu-label">${tm(m)}</div>
           </div>
         </div>`;
@@ -6278,7 +6414,12 @@
           ${subGroupHtml}
         </div>`;
 
-      $('#dashboard-view').html(html);
+      // Ensure dashboard view is visible, data view hidden
+      $('#data-view').addClass('d-none');
+      $('#dashboard-view').removeClass('d-none').html(html);
+      // On mobile allow scroll
+      const isMobile = $(window).width() < 768;
+      $('#page-content-wrapper').css('overflow', isMobile ? 'auto' : 'auto');
     }
 
     // IDs hidden from display (tables, detail views) — still used internally for data operations
@@ -6415,7 +6556,7 @@
             sub = items.map(i => buildLink(i)).join('');
           }
 
-          accordionHtml += `<div class="accordion-item" data-group-vi="${group}"><h2 class="accordion-header"><button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#${cId}"><span class="sidebar-icon-badge me-2"><i class="fa-solid ${groupIcon}"></i></span><span class="fw-bold">${groupLabel}</span></button></h2><div id="${cId}" class="accordion-collapse collapse show"><div class="accordion-body p-0">${sub}</div></div></div>`;
+          accordionHtml += `<div class="accordion-item" data-group-vi="${group}"><h2 class="accordion-header"><button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#${cId}" onclick="openMenuGroup('${safeGroup}')"><span class="sidebar-icon-badge me-2"><i class="fa-solid ${groupIcon}"></i></span><span class="fw-bold">${groupLabel}</span></button></h2><div id="${cId}" class="accordion-collapse collapse show"><div class="accordion-body p-0">${sub}</div></div></div>`;
         }
         $('#sidebarAccordion').html(accordionHtml);
 
@@ -6602,6 +6743,25 @@
       }
     }
 
+    // === PWA Back Navigation Prevention ===
+    // Push a dummy state so browser back navigates within app, not out of PWA
+    (function() {
+      if (window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone) {
+        // Push an initial state so back button doesn't exit
+        history.pushState({ fscfm: true }, '');
+        window.addEventListener('popstate', function(e) {
+          // When user triggers browser back (swipe-left in PWA), navigate back in app
+          history.pushState({ fscfm: true }, ''); // re-push to prevent exit
+          if ($('#sidebar-wrapper').hasClass('show-sidebar')) {
+            $('#sidebar-wrapper').removeClass('show-sidebar');
+            $('#sidebar-overlay').removeClass('active');
+          } else if (!document.querySelector('#map-view:not(.d-none)')) {
+            navigateBack();
+          }
+        });
+      }
+    })();
+
     // Swipe gestures: right from edge = open sidebar, left = back one screen
     let touchStartX = 0, touchStartY = 0;
     document.addEventListener('touchstart', function(e) {
@@ -6745,20 +6905,53 @@
       mapDrawnItems = new L.FeatureGroup().addTo(mapInstance);
       mapLayers['Lô rừng (GeoJSON)'] = mapDrawnItems;
 
-      // Draw control - initially not added (edit mode off)
+      // Draw control - full GIS editing: polygon, polyline, rectangle, circle, marker, delete
+      const _drawMarkerIcon = L.icon({ iconUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon.png', iconSize: [25, 41], iconAnchor: [12, 41] });
+      // Draw control: only for creating new shapes + delete
+      // Per-polygon editing uses SVG clone approach (click polygon → Sửa GIS)
       mapDrawControl = new L.Control.Draw({
-        edit: { featureGroup: mapDrawnItems },
+        position: 'topleft',
+        edit: {
+          featureGroup: mapDrawnItems,
+          remove: true,
+          edit: false  // Disabled: canvas layers can't use L.Draw edit. Use per-polygon SVG clone instead.
+        },
         draw: {
-          polygon: { allowIntersection: false, shapeOptions: { color: '#2E7D32', weight: 2 } },
-          polyline: false, rectangle: false, circle: false, circlemarker: false,
-          marker: { icon: L.icon({ iconUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon.png', iconSize: [25, 41], iconAnchor: [12, 41] }) }
+          polygon: { allowIntersection: false, shapeOptions: { color: '#2E7D32', weight: 2, fillOpacity: 0.15 }, showArea: true, metric: true },
+          polyline: { shapeOptions: { color: '#1565C0', weight: 3 }, metric: true },
+          rectangle: { shapeOptions: { color: '#FF6D00', weight: 2, fillOpacity: 0.15 } },
+          circle: { shapeOptions: { color: '#7C4DFF', weight: 2, fillOpacity: 0.15 }, showRadius: true, metric: true },
+          circlemarker: false,
+          marker: { icon: _drawMarkerIcon }
         }
       });
 
       mapInstance.on(L.Draw.Event.CREATED, function(e) {
-        mapDrawnItems.addLayer(e.layer);
-        if (e.layerType === 'polygon') {
-          promptLinkPolygonToLoRung(e.layer);
+        const layer = e.layer;
+        mapDrawnItems.addLayer(layer);
+        if (e.layerType === 'polygon' || e.layerType === 'rectangle') {
+          promptLinkPolygonToLoRung(layer);
+        } else if (e.layerType === 'polyline') {
+          // Show length info
+          try {
+            const latlngs = layer.getLatLngs();
+            let totalM = 0;
+            for (let i = 1; i < latlngs.length; i++) totalM += latlngs[i-1].distanceTo(latlngs[i]);
+            const label = totalM > 1000 ? (totalM/1000).toFixed(2) + ' km' : totalM.toFixed(1) + ' m';
+            layer.bindPopup(`<div class="small"><strong>Đường vẽ</strong><br>Dài: ${label}<br>${latlngs.length} điểm<br>
+              <button class="btn btn-outline-success btn-sm mt-1 w-100" onclick="savePolygonAsNamedLayer()"><i class="fa-solid fa-save me-1"></i>Lưu vào Kho</button>
+              <button class="btn btn-outline-danger btn-sm mt-1 w-100" onclick="deleteDrawnLayer()"><i class="fa-solid fa-trash me-1"></i>Xóa</button></div>`);
+            layer._linkedLayer = layer; // for savePolygonAsNamedLayer
+          } catch(ex) {}
+        } else if (e.layerType === 'circle') {
+          const r = layer.getRadius();
+          const label = r > 1000 ? (r/1000).toFixed(2) + ' km' : r.toFixed(1) + ' m';
+          layer.bindPopup(`<div class="small"><strong>Hình tròn</strong><br>Bán kính: ${label}<br>
+            <button class="btn btn-outline-danger btn-sm mt-1 w-100" onclick="deleteDrawnLayer()"><i class="fa-solid fa-trash me-1"></i>Xóa</button></div>`);
+        } else if (e.layerType === 'marker') {
+          const ll = layer.getLatLng();
+          layer.bindPopup(`<div class="small"><strong>Điểm đánh dấu</strong><br>Lat: ${ll.lat.toFixed(6)}<br>Lng: ${ll.lng.toFixed(6)}<br>
+            <button class="btn btn-outline-danger btn-sm mt-1 w-100" onclick="deleteDrawnLayer()"><i class="fa-solid fa-trash me-1"></i>Xóa</button></div>`);
         }
       });
 
@@ -6768,6 +6961,36 @@
           if (layer.loRungId) savePolygonGeometry(layer);
         });
       });
+
+      mapInstance.on(L.Draw.Event.DELETED, function(e) {
+        e.layers.eachLayer(function(layer) {
+          if (layer.loRungId) {
+            console.log('Deleted polygon:', layer.loRungId);
+          }
+          // Remove from named layers if it belongs to one
+          for (const [name, group] of Object.entries(geoJsonNamedLayers)) {
+            if (group.hasLayer(layer)) {
+              group.removeLayer(layer);
+              if (group.getLayers().length === 0) {
+                delete geoJsonNamedLayers[name];
+                delete mapLayers[name];
+              }
+              break;
+            }
+          }
+        });
+        updateZoomLayerMenu();
+        renderMapLayerPanel();
+      });
+
+      // Delete the currently popup-linked drawn layer
+      window.deleteDrawnLayer = function() {
+        if (mapInstance._popup && mapInstance._popup._source) {
+          const layer = mapInstance._popup._source;
+          mapDrawnItems.removeLayer(layer);
+          mapInstance.closePopup();
+        }
+      };
 
       mapPlotLabels = L.layerGroup(); // Labels shown only at zoom >= 18 and within viewport
       mapLayers['Nhãn lô rừng'] = mapPlotLabels;
@@ -6793,6 +7016,7 @@
           }
           updateZoomLayerMenu(); renderMapLayerPanel();
         }, 300);
+        loadMapNotes();
       });
       renderMapLayerPanel();
       initMapSearch();
@@ -6895,81 +7119,81 @@
       }
     }
 
-    // Enable/disable vertex editing on all polygons in mapDrawnItems
+    // Initialize L.Edit handler on a layer if not already present
+    function _ensureEditHandler(layer) {
+      if (layer.editing) return;
+      if (layer instanceof L.Polygon || layer instanceof L.Polyline) {
+        layer.editing = new L.Edit.Poly(layer);
+      } else if (layer instanceof L.Circle) {
+        layer.editing = new L.Edit.Circle(layer);
+      } else if (layer instanceof L.Rectangle) {
+        layer.editing = new L.Edit.Rectangle(layer);
+      }
+    }
+
+    // Enable/disable click-to-edit popup on all layers (lightweight, no vertex handles on all 7000+ polygons)
     function _enableAllPolygonEditing(enable) {
       if (!mapDrawnItems) return;
       mapDrawnItems.eachLayer(layer => {
-        if (layer instanceof L.Polygon || layer instanceof L.Polyline) {
+        if (layer instanceof L.Polygon || layer instanceof L.Polyline || layer instanceof L.Circle) {
           if (enable) {
-            layer.editing && layer.editing.enable();
             layer.on('click', _onPolygonEditClick);
           } else {
-            layer.editing && layer.editing.disable();
             layer.off('click', _onPolygonEditClick);
+          }
+        } else if (layer instanceof L.Marker) {
+          if (enable) {
+            if (layer.dragging) layer.dragging.enable();
+          } else {
+            if (layer.dragging) layer.dragging.disable();
           }
         }
       });
     }
 
-    // Save geometry of polygons that were edited via vertex dragging
+    // Save geometry of all layers that were edited via vertex dragging
     function _saveEditedPolygons() {
       if (!mapDrawnItems) return;
       mapDrawnItems.eachLayer(layer => {
-        if ((layer instanceof L.Polygon) && layer.edited && layer.loRungId) {
-          savePolygonGeometry(layer);
+        if (layer.edited) {
+          if (layer.loRungId) {
+            savePolygonGeometry(layer);
+          }
           layer.edited = false;
         }
       });
     }
 
-    // Click handler for polygon in edit mode — show attribute edit popup
+    // Click handler for geometry in edit mode — show attribute edit popup
     function _onPolygonEditClick(e) {
       L.DomEvent.stopPropagation(e);
-      const layer = e.target;
-      const loRungData = APP_DATA['Lo_rung'] || [];
-      const linked = layer.loRungId ? loRungData.find(lr => String(lr['ID lô rừng']) === String(layer.loRungId)) : null;
-
-      let areaHa = '';
-      try {
-        const latlngs = layer.getLatLngs()[0];
-        let area = 0;
-        for (let i = 0; i < latlngs.length; i++) {
-          const j = (i + 1) % latlngs.length;
-          area += latlngs[i].lng * latlngs[j].lat;
-          area -= latlngs[j].lng * latlngs[i].lat;
-        }
-        areaHa = (Math.abs(area) / 2 * 111320 * 111320 * Math.cos(latlngs[0].lat * Math.PI / 180) / 10000).toFixed(4);
-      } catch(ex) {}
-
-      const name = linked ? (linked['Mã số lô rừng'] || linked['Tên lô rừng'] || layer.loRungId) : (layer.layerName || t('polygon_unnamed'));
-      const vertexCount = layer.getLatLngs()[0] ? layer.getLatLngs()[0].length : 0;
-
-      let popupHtml = `<div style="min-width:220px">
-        <div class="fw-bold small mb-1" style="color:#1B5E20"><i class="fa-solid fa-draw-polygon me-1"></i>${name}</div>
-        ${areaHa ? `<div class="small text-muted mb-1"><i class="fa-solid fa-ruler-combined me-1"></i>${areaHa} ha | ${vertexCount} ${t('vertices')}</div>` : ''}`;
-
-      if (linked) {
-        popupHtml += `<button class="btn btn-outline-success btn-sm w-100 mb-1" onclick="viewLoRungFromMap('${layer.loRungId}')"><i class="fa-solid fa-edit me-1"></i>${t('edit_attributes')}</button>`;
-      }
-      if (_isAdmin()) popupHtml += `<button class="btn btn-outline-danger btn-sm w-100" onclick="deletePolygonFromEdit()" id="btn-delete-edit-polygon"><i class="fa-solid fa-trash me-1"></i>${t('btn_delete')}</button>`;
-      popupHtml += `</div>`;
-
-      const popup = L.popup({ maxWidth: 280 }).setLatLng(e.latlng).setContent(popupHtml).openOn(mapInstance);
-      window._editingPolygonLayer = layer;
+      _showPolygonPopup(e.target, e.latlng);
     }
 
     // Delete polygon from edit mode
     window.deletePolygonFromEdit = async function() {
-      if (!_isAdmin()) { alert(t('no_permission')); return; }
       const layer = window._editingPolygonLayer;
       if (!layer) return;
+      // Linked polygons (lô rừng) require admin to delete from DB
+      if (layer.loRungId && !_isAdmin()) { alert(t('no_permission')); return; }
       if (!confirm(t('confirm_delete_polygon'))) return;
+      // Clean up edit state
+      _cleanupEditState();
       if (layer.loRungId) {
-        try { await sb.from('lo_rung_geojson').delete().eq('lo_rung_id', layer.loRungId); } catch(e) {}
+        try { await sb.from('lo_rung_geojson').delete().eq('id_lo_rung', layer.loRungId); } catch(e) {}
+      }
+      // Also remove from named layers
+      for (const [name, group] of Object.entries(geoJsonNamedLayers)) {
+        if (group.hasLayer(layer)) {
+          group.removeLayer(layer);
+          if (group.getLayers().length === 0) { delete geoJsonNamedLayers[name]; delete mapLayers[name]; }
+          break;
+        }
       }
       mapDrawnItems.removeLayer(layer);
       mapInstance.closePopup();
       window._editingPolygonLayer = null;
+      updateZoomLayerMenu();
     };
 
     // Default project bounds: covers all nhom_ccr/lo_rung in Bắc Kạn, Tuyên Quang, Hà Giang
@@ -7101,20 +7325,21 @@
         `<option value="${lr['ID lô rừng']}">${lr['Mã số lô rừng'] || lr['Tên lô rừng'] || lr['ID lô rừng']}</option>`
       ).join('');
 
-      // Calculate area from polygon (hectares)
+      // Calculate area from polygon (hectares) - unwrap nested arrays
       let areaHa = '';
       try {
+        let ring = layer.getLatLngs();
+        while (ring.length > 0 && Array.isArray(ring[0]) && !ring[0].lat) ring = ring[0];
         if (typeof L.GeometryUtil !== 'undefined') {
-          areaHa = (L.GeometryUtil.geodesicArea(layer.getLatLngs()[0]) / 10000).toFixed(4);
+          areaHa = (L.GeometryUtil.geodesicArea(ring) / 10000).toFixed(4);
         } else {
-          const latlngs = layer.getLatLngs()[0];
           let area = 0;
-          for (let i = 0; i < latlngs.length; i++) {
-            const j = (i + 1) % latlngs.length;
-            area += latlngs[i].lng * latlngs[j].lat;
-            area -= latlngs[j].lng * latlngs[i].lat;
+          for (let i = 0; i < ring.length; i++) {
+            const j = (i + 1) % ring.length;
+            area += ring[i].lng * ring[j].lat;
+            area -= ring[j].lng * ring[i].lat;
           }
-          areaHa = (Math.abs(area) / 2 * 111320 * 111320 * Math.cos(latlngs[0].lat * Math.PI / 180) / 10000).toFixed(4);
+          areaHa = (Math.abs(area) / 2 * 111320 * 111320 * Math.cos(ring[0].lat * Math.PI / 180) / 10000).toFixed(4);
         }
       } catch(e) { /* ignore */ }
 
@@ -7344,22 +7569,14 @@
               );
               if (match) { linkedId = match['ID lô rừng']; break; }
             }
-            let popup = `<div class="small"><strong class="text-success">${layerName}</strong><hr class="my-1">`;
-            for (const [k, v] of Object.entries(feature.properties)) popup += `<strong>${k}:</strong> ${v}<br>`;
-            if (linkedId) {
-              const lr = loRungData.find(r => String(r['ID lô rừng']) === String(linkedId));
-              popup += `<span class="badge bg-success mt-1">Liên kết: ${lr ? (lr['Mã số lô rừng'] || linkedId) : linkedId}</span>`;
-              popup += `<br><button class="btn btn-sm btn-outline-success mt-1" onclick="viewLoRungFromMap('${linkedId}')">Xem chi tiết</button>`;
-              popup += `<button class="btn btn-sm btn-outline-danger mt-1 ms-1" onclick="unlinkPolygon('${linkedId}')">Hủy liên kết</button>`;
-            }
-            popup += '</div>';
-            layer.bindPopup(popup);
           }
           if (linkedId) {
             layer.loRungId = linkedId;
             layer.setStyle({ color: '#2E7D32', weight: 2, fillColor: '#4CAF50', fillOpacity: 0.2 });
             linkedCount++;
           }
+          layer.layerName = layerName;
+          layer.on('click', function(e) { _showPolygonPopup(layer, e.latlng); });
           layerGroup.addLayer(layer);
           mapDrawnItems.addLayer(layer);
         }
@@ -7398,12 +7615,439 @@
       }
     }
 
-    // Load all polygons from lo_rung_geojson (paginated)
+    // Universal polygon popup: info + GIS edit combined
+    function _showPolygonPopup(layer, latlng) {
+      const loRungData = APP_DATA['Lo_rung'] || [];
+      const churungData = APP_DATA['Churung'] || [];
+      const ownerMap = {};
+      churungData.forEach(cr => { ownerMap[cr['ID chủ rừng']] = cr['Họ tên chủ rừng'] || ''; });
+      const linked = layer.loRungId ? loRungData.find(lr => String(lr['ID lô rừng']) === String(layer.loRungId)) : null;
+      const isPolyline = (layer instanceof L.Polyline) && !(layer instanceof L.Polygon);
+
+      // Calculate geometry info
+      let geoInfo = '';
+      try {
+        if (isPolyline) {
+          // Flatten nested arrays for polylines
+          let pts = layer.getLatLngs();
+          while (pts.length > 0 && Array.isArray(pts[0]) && !pts[0].lat) pts = pts[0];
+          let totalM = 0;
+          for (let i = 1; i < pts.length; i++) totalM += pts[i-1].distanceTo(pts[i]);
+          const label = totalM > 1000 ? (totalM/1000).toFixed(2) + ' km' : totalM.toFixed(1) + ' m';
+          geoInfo = `<i class="fa-solid fa-ruler me-1"></i>${label} | ${pts.length} điểm`;
+        } else {
+          // Unwrap nested arrays: getLatLngs() may return [[LatLng,...]] or [[[LatLng,...]]]
+          let ring = layer.getLatLngs();
+          while (ring.length > 0 && Array.isArray(ring[0]) && !ring[0].lat) ring = ring[0];
+          if (ring.length < 3) throw new Error('Not enough vertices');
+          let area = 0;
+          for (let i = 0; i < ring.length; i++) {
+            const j = (i + 1) % ring.length;
+            area += ring[i].lng * ring[j].lat;
+            area -= ring[j].lng * ring[i].lat;
+          }
+          const areaHa = (Math.abs(area) / 2 * 111320 * 111320 * Math.cos(ring[0].lat * Math.PI / 180) / 10000).toFixed(4);
+          geoInfo = `<i class="fa-solid fa-ruler-combined me-1"></i>${areaHa} ha | ${ring.length} đỉnh`;
+        }
+      } catch(ex) {}
+
+      const typeIcon = isPolyline ? 'fa-route' : 'fa-draw-polygon';
+      const name = linked ? (linked['Mã số lô rừng'] || linked['Tên lô rừng'] || layer.loRungId) : (layer.layerName || (isPolyline ? 'Đường vẽ' : t('polygon_unnamed')));
+      const ownerName = linked ? (ownerMap[linked['ID chủ rừng']] || '') : '';
+      const diaDanh = linked ? (linked['Địa danh'] || '') : '';
+      const isEditing = (_singleEditLayer === layer) || mapEditMode;
+
+      let html = `<div style="min-width:240px">
+        <div class="fw-bold small mb-1" style="color:#1B5E20"><i class="fa-solid ${typeIcon} me-1"></i>${name}</div>`;
+      if (ownerName) html += `<div class="small text-muted">Chủ rừng: ${ownerName}</div>`;
+      if (diaDanh) html += `<div class="small text-muted">Địa danh: ${diaDanh}</div>`;
+      if (geoInfo) html += `<div class="small text-muted mb-2">${geoInfo}</div>`;
+
+      // Info buttons
+      html += `<div class="d-flex gap-1 mb-1">`;
+      if (linked) {
+        html += `<button class="btn btn-outline-success btn-sm flex-fill" onclick="viewLoRungFromMap('${layer.loRungId}')"><i class="fa-solid fa-table me-1"></i>Thông tin</button>`;
+      } else {
+        html += `<button class="btn btn-outline-primary btn-sm flex-fill" onclick="promptLinkPolygonToLoRung(window._editingPolygonLayer)"><i class="fa-solid fa-link me-1"></i>Liên kết</button>`;
+      }
+
+      // GIS edit toggle
+      if (isEditing) {
+        html += `<button class="btn btn-success btn-sm flex-fill" onclick="toggleSingleEdit(false)"><i class="fa-solid fa-check me-1"></i>Xong</button>`;
+      } else {
+        html += `<button class="btn btn-outline-warning btn-sm flex-fill" onclick="toggleSingleEdit(true)"><i class="fa-solid fa-pen me-1"></i>Sửa GIS</button>`;
+      }
+      html += `</div>`;
+
+      // Extra buttons when editing
+      if (isEditing) {
+        html += `<div class="d-flex gap-1">
+          <button class="btn btn-outline-info btn-sm flex-fill" onclick="savePolygonAsNamedLayer()"><i class="fa-solid fa-save me-1"></i>Lưu Kho</button>
+          <button class="btn btn-outline-danger btn-sm flex-fill" onclick="deletePolygonFromEdit()"><i class="fa-solid fa-trash me-1"></i>Xóa</button>
+        </div>`;
+      }
+      html += `</div>`;
+
+      window._editingPolygonLayer = layer;
+      const popup = L.popup({ maxWidth: 300 }).setLatLng(latlng).setContent(html).openOn(mapInstance);
+      popup._linkedLayer = layer;
+    }
+
+    // Per-polygon GIS editing with SVG clone approach
+    // preferCanvas:true renders polygons on canvas — vertex handles need SVG
+    // Solution: overlay an SVG clone for editing, keep original visible
+    let _singleEditLayer = null;
+    let _singleEditActive = false;
+    let _svgEditClone = null;
+    let _svgRenderer = null;
+
+    // Undo/Redo history stack for polygon editing
+    let _editHistory = [];      // Array of LatLng snapshots
+    let _editHistoryIdx = -1;   // Current position in history
+
+    function _captureSnapshot() {
+      if (!_svgEditClone) return null;
+      let ring = _svgEditClone.getLatLngs();
+      while (ring.length > 0 && Array.isArray(ring[0]) && typeof ring[0].lat === 'undefined') ring = ring[0];
+      return ring.map(p => L.latLng(p.lat, p.lng));
+    }
+
+    function _pushHistory() {
+      const snap = _captureSnapshot();
+      if (!snap || snap.length < 2) return;
+      // Truncate any future states (redo history lost on new edit)
+      _editHistory = _editHistory.slice(0, _editHistoryIdx + 1);
+      _editHistory.push(snap);
+      _editHistoryIdx = _editHistory.length - 1;
+      _updateUndoRedoButtons();
+    }
+
+    function _applySnapshot(snap) {
+      if (!_svgEditClone || !snap) return;
+      try {
+        if (_svgEditClone.editing) _svgEditClone.editing.disable();
+      } catch(e) {}
+      _svgEditClone.setLatLngs([snap]);
+      try {
+        if (!_svgEditClone.editing) _svgEditClone.editing = new L.Edit.Poly(_svgEditClone);
+        _svgEditClone.editing.enable();
+      } catch(e) {}
+      _svgEditClone._wasEdited = true;
+    }
+
+    window._editUndo = function() {
+      if (_editHistoryIdx <= 0) return;
+      _editHistoryIdx--;
+      _applySnapshot(_editHistory[_editHistoryIdx]);
+      _updateUndoRedoButtons();
+      _showEditToast('Undo (' + _editHistoryIdx + '/' + (_editHistory.length - 1) + ')');
+    };
+
+    window._editRedo = function() {
+      if (_editHistoryIdx >= _editHistory.length - 1) return;
+      _editHistoryIdx++;
+      _applySnapshot(_editHistory[_editHistoryIdx]);
+      _updateUndoRedoButtons();
+      _showEditToast('Redo (' + _editHistoryIdx + '/' + (_editHistory.length - 1) + ')');
+    };
+
+    function _updateUndoRedoButtons() {
+      const btnUndo = document.getElementById('btn-edit-undo');
+      const btnRedo = document.getElementById('btn-edit-redo');
+      if (btnUndo) btnUndo.disabled = _editHistoryIdx <= 0;
+      if (btnRedo) btnRedo.disabled = _editHistoryIdx >= _editHistory.length - 1;
+    }
+
+    // Ensure we have a shared SVG renderer for edit overlays
+    function _getSvgRenderer() {
+      if (!_svgRenderer) _svgRenderer = L.svg();
+      return _svgRenderer;
+    }
+
+    // Cleanup any lingering edit state (safety net)
+    function _cleanupEditState() {
+      if (_svgEditClone) {
+        try { if (_svgEditClone.editing) _svgEditClone.editing.disable(); } catch(e) {}
+        try { mapInstance.removeLayer(_svgEditClone); } catch(e) {}
+        _svgEditClone = null;
+      }
+      if (_singleEditLayer && _singleEditLayer._origStyle) {
+        try { _singleEditLayer.setStyle(_singleEditLayer._origStyle); } catch(e) {}
+        delete _singleEditLayer._origStyle;
+      }
+      const bar = document.getElementById('map-edit-toolbar');
+      if (bar) bar.remove();
+      // Legacy cleanup
+      const btn = document.getElementById('btn-finish-edit');
+      if (btn) btn.remove();
+      _editHistory = [];
+      _editHistoryIdx = -1;
+      _singleEditActive = false;
+      _singleEditLayer = null;
+    }
+
+    // Cancel edit — discard changes, restore original geometry
+    function _cancelEdit() {
+      if (!_singleEditActive) return;
+      const origLayer = _singleEditLayer;
+      // Remove SVG clone without transferring geometry
+      if (_svgEditClone) {
+        try { if (_svgEditClone.editing) _svgEditClone.editing.disable(); } catch(e) {}
+        try { mapInstance.removeLayer(_svgEditClone); } catch(e) {}
+        _svgEditClone = null;
+      }
+      // Restore original style
+      if (origLayer && origLayer._origStyle) {
+        origLayer.setStyle({ ...origLayer._origStyle, dashArray: null });
+        delete origLayer._origStyle;
+      }
+      const bar = document.getElementById('map-edit-toolbar');
+      if (bar) bar.remove();
+      _editHistory = [];
+      _editHistoryIdx = -1;
+      _singleEditActive = false;
+      _singleEditLayer = null;
+      _showEditToast('Đã hủy chỉnh sửa.');
+      // Re-open popup
+      if (origLayer) {
+        try {
+          const center = origLayer.getBounds ? origLayer.getBounds().getCenter() : origLayer.getLatLng();
+          setTimeout(() => _showPolygonPopup(origLayer, center), 200);
+        } catch(e) {}
+      }
+    }
+
+    window.toggleSingleEdit = function(enable) {
+      const layer = window._editingPolygonLayer;
+      if (!layer) return;
+      mapInstance.closePopup();
+
+      if (enable && !_singleEditActive) {
+        // Cleanup any previous edit
+        _cleanupEditState();
+
+        _singleEditLayer = layer;
+        _singleEditActive = true;
+
+        // Save original style & highlight
+        layer._origStyle = {
+          color: layer.options.color || '#FFFF00',
+          weight: layer.options.weight || 1.5,
+          fillColor: layer.options.fillColor || '#2E7D32',
+          fillOpacity: layer.options.fillOpacity || 0.12,
+          opacity: layer.options.opacity != null ? layer.options.opacity : 1
+        };
+        layer.setStyle({ color: '#FF5722', weight: 3, fillOpacity: 0.25, dashArray: '8,4' });
+
+        // Create SVG overlay clone for vertex editing
+        try {
+          const isPolyline = (layer instanceof L.Polyline) && !(layer instanceof L.Polygon);
+          const svgOpts = { color: '#FF5722', weight: 2, fillColor: '#FF5722', fillOpacity: 0.1, renderer: _getSvgRenderer(), interactive: false };
+
+          // Extract flat LatLng ring — GeoJSON polygons have deeply nested arrays
+          let ring = layer.getLatLngs();
+          // Unwrap until we get an array of LatLng objects (objects with .lat property)
+          while (ring && ring.length > 0 && Array.isArray(ring[0]) && typeof ring[0].lat === 'undefined') {
+            ring = ring[0];
+          }
+          // Filter out any null/undefined entries
+          ring = ring.filter(p => p && typeof p.lat === 'number' && typeof p.lng === 'number');
+
+          if (ring.length < 2) throw new Error('Not enough valid vertices: ' + ring.length);
+
+          _svgEditClone = isPolyline
+            ? L.polyline(ring, svgOpts)
+            : L.polygon([ring], svgOpts);
+
+          _svgEditClone.addTo(mapInstance);
+
+          // Enable vertex editing
+          if (!_svgEditClone.editing) {
+            _svgEditClone.editing = new L.Edit.Poly(_svgEditClone);
+          }
+          _svgEditClone.editing.enable();
+          _svgEditClone._wasEdited = false;
+
+          // Initialize undo/redo history with initial state
+          _editHistory = [];
+          _editHistoryIdx = -1;
+          _pushHistory(); // snapshot #0 = original shape
+
+          _svgEditClone.on('edit', function() {
+            _svgEditClone._wasEdited = true;
+            _pushHistory(); // capture each edit as a new snapshot
+          });
+        } catch(e) {
+          console.error('[GIS] SVG clone error:', e);
+          // Restore original if clone fails
+          if (layer._origStyle) { layer.setStyle(layer._origStyle); delete layer._origStyle; }
+          _singleEditActive = false;
+          _singleEditLayer = null;
+          _showEditToast('Lỗi khởi tạo chỉnh sửa. Vui lòng thử lại.');
+          return;
+        }
+
+        // Zoom to polygon
+        try { if (layer.getBounds) mapInstance.fitBounds(layer.getBounds().pad(0.5)); } catch(e) {}
+
+        _showFinishButton();
+        _showEditToast('Kéo các đỉnh (nút tròn trắng) để sửa hình dạng. Bấm "Hoàn tất" khi xong.');
+      } else if (_singleEditActive) {
+        const origLayer = _singleEditLayer;
+        if (!origLayer) { _cleanupEditState(); return; }
+
+        // Disable editing & transfer geometry
+        if (_svgEditClone) {
+          try { if (_svgEditClone.editing) _svgEditClone.editing.disable(); } catch(e) {}
+          if (_svgEditClone._wasEdited) {
+            try {
+              // Get edited ring from SVG clone and transfer to original canvas layer
+              let editedRing = _svgEditClone.getLatLngs();
+              // Unwrap to flat ring
+              while (editedRing.length > 0 && Array.isArray(editedRing[0]) && typeof editedRing[0].lat === 'undefined') {
+                editedRing = editedRing[0];
+              }
+              origLayer.setLatLngs([editedRing]);
+              // Force canvas redraw
+              if (origLayer.redraw) origLayer.redraw();
+              origLayer.edited = true;
+            } catch(e) { console.error('[GIS] Transfer error:', e); }
+          }
+          try { mapInstance.removeLayer(_svgEditClone); } catch(e) {}
+          _svgEditClone = null;
+        }
+
+        // Restore style first (removes dashArray, resets colors)
+        if (origLayer._origStyle) {
+          origLayer.setStyle({ ...origLayer._origStyle, dashArray: null });
+          delete origLayer._origStyle;
+        }
+
+        // Save if edited
+        if (origLayer.edited && origLayer.loRungId) {
+          savePolygonGeometry(origLayer);
+          origLayer.edited = false;
+          _showEditToast('Đã lưu thay đổi hình dạng.');
+        }
+
+        // Cleanup toolbar & history
+        const bar = document.getElementById('map-edit-toolbar');
+        if (bar) bar.remove();
+        _editHistory = [];
+        _editHistoryIdx = -1;
+        _singleEditActive = false;
+        _singleEditLayer = null;
+
+        // Re-open popup
+        try {
+          const center = origLayer.getBounds ? origLayer.getBounds().getCenter() : origLayer.getLatLng();
+          setTimeout(() => _showPolygonPopup(origLayer, center), 200);
+        } catch(e) {}
+      }
+    };
+
+    function _showFinishButton() {
+      let bar = document.getElementById('map-edit-toolbar');
+      if (bar) bar.remove();
+      bar = document.createElement('div');
+      bar.id = 'map-edit-toolbar';
+      bar.style.cssText = 'position:absolute;top:12px;left:50%;transform:translateX(-50%);z-index:1200;display:flex;gap:6px;align-items:center;';
+
+      // Undo button
+      const btnUndo = document.createElement('button');
+      btnUndo.id = 'btn-edit-undo';
+      btnUndo.className = 'btn btn-light shadow-sm';
+      btnUndo.style.cssText = 'padding:8px 14px;font-size:14px;border-radius:20px;border:1px solid #ccc;';
+      btnUndo.innerHTML = '<i class="fa-solid fa-rotate-left"></i>';
+      btnUndo.title = 'Undo (Ctrl+Z)';
+      btnUndo.disabled = true;
+      btnUndo.onclick = function() { window._editUndo(); };
+
+      // Redo button
+      const btnRedo = document.createElement('button');
+      btnRedo.id = 'btn-edit-redo';
+      btnRedo.className = 'btn btn-light shadow-sm';
+      btnRedo.style.cssText = 'padding:8px 14px;font-size:14px;border-radius:20px;border:1px solid #ccc;';
+      btnRedo.innerHTML = '<i class="fa-solid fa-rotate-right"></i>';
+      btnRedo.title = 'Redo (Ctrl+Y)';
+      btnRedo.disabled = true;
+      btnRedo.onclick = function() { window._editRedo(); };
+
+      // Finish button
+      const btnFinish = document.createElement('button');
+      btnFinish.id = 'btn-finish-edit';
+      btnFinish.className = 'btn btn-success shadow';
+      btnFinish.style.cssText = 'padding:10px 28px;font-weight:700;font-size:14px;border-radius:25px;';
+      btnFinish.innerHTML = '<i class="fa-solid fa-check me-2"></i>Hoàn tất chỉnh sửa';
+      btnFinish.onclick = function() { toggleSingleEdit(false); };
+
+      // Cancel button
+      const btnCancel = document.createElement('button');
+      btnCancel.id = 'btn-cancel-edit';
+      btnCancel.className = 'btn btn-outline-danger shadow-sm';
+      btnCancel.style.cssText = 'padding:8px 14px;font-size:14px;border-radius:20px;';
+      btnCancel.innerHTML = '<i class="fa-solid fa-xmark"></i>';
+      btnCancel.title = 'Hủy chỉnh sửa';
+      btnCancel.onclick = function() { _cancelEdit(); };
+
+      bar.appendChild(btnUndo);
+      bar.appendChild(btnRedo);
+      bar.appendChild(btnFinish);
+      bar.appendChild(btnCancel);
+      document.getElementById('map-container').appendChild(bar);
+    }
+
+    // Small toast notification for map editing
+    function _showEditToast(msg) {
+      let toast = document.getElementById('map-edit-toast');
+      if (!toast) {
+        toast = document.createElement('div');
+        toast.id = 'map-edit-toast';
+        toast.style.cssText = 'position:absolute;bottom:60px;left:50%;transform:translateX(-50%);z-index:1200;background:rgba(0,0,0,0.8);color:#fff;padding:8px 16px;border-radius:20px;font-size:12px;pointer-events:none;transition:opacity 0.3s;white-space:nowrap;';
+        document.getElementById('map-container').appendChild(toast);
+      }
+      toast.textContent = msg;
+      toast.style.opacity = '1';
+      clearTimeout(toast._timer);
+      toast._timer = setTimeout(() => { toast.style.opacity = '0'; }, 3000);
+    }
+
+    // Keyboard shortcuts for undo/redo during polygon editing
+    document.addEventListener('keydown', function(e) {
+      if (!_singleEditActive) return;
+      if (e.ctrlKey && e.key === 'z' && !e.shiftKey) {
+        e.preventDefault();
+        window._editUndo();
+      } else if ((e.ctrlKey && e.key === 'y') || (e.ctrlKey && e.shiftKey && e.key === 'Z')) {
+        e.preventDefault();
+        window._editRedo();
+      } else if (e.key === 'Escape') {
+        e.preventDefault();
+        _cancelEdit();
+      }
+    });
+
+    // Load all polygons from lo_rung_geojson (with IDB cache for speed)
     async function loadStoredGeoJSON() {
       _mapSearchIndex = null; // Invalidate search index on reload
       try {
-        const { data, error } = await fetchAll('lo_rung_geojson');
-        if (error || !data) { console.error('Load lo_rung_geojson error:', error); return; }
+        // Try IDB cache first for instant load
+        let data = null;
+        try {
+          const cached = await fscDB.get('app_data', '_geojson_cache');
+          if (cached && cached.data && Date.now() - cached.updatedAt < 10 * 60 * 1000) {
+            data = cached.data;
+            console.log(`GeoJSON from IDB cache: ${data.length} records`);
+          }
+        } catch(e) {}
+        // Fetch from API if no cache
+        if (!data) {
+          const { data: apiData, error } = await fetchAll('lo_rung_geojson');
+          if (error || !apiData) { console.error('Load lo_rung_geojson error:', error); return; }
+          data = apiData;
+          // Cache to IDB for next time
+          try { await fscDB.put('app_data', { sheetName: '_geojson_cache', data, updatedAt: Date.now() }); } catch(e) {}
+        }
         console.log(`Loading ${data.length} polygons from lo_rung_geojson...`);
         const loRungData = APP_DATA['Lo_rung'] || [];
         const churungData = APP_DATA['Churung'] || [];
@@ -7454,21 +8098,20 @@
         // Create single GeoJSON layer from all features
         const fc = { type: 'FeatureCollection', features };
         const geoLayer = L.geoJSON(fc, {
-          style: { color: '#FFFF00', weight: 1.5, fillColor: '#2E7D32', fillOpacity: 0.12 },
+          style: { color: '#FFFF00', weight: 1.5, fillColor: '#2E7D32', fillOpacity: 0.12, smoothFactor: 2 },
           onEachFeature: function(feature, layer) {
             const p = feature.properties;
             layer.loRungId = p._loRungId;
-            layer.bindPopup(`<div class="small">
-              <strong>${p._plotName}</strong><br>
-              ${p._ownerName ? 'Chủ rừng: ' + p._ownerName + '<br>' : ''}
-              ${p._diaDanh ? 'Địa danh: ' + p._diaDanh + '<br>' : ''}
-              Diện tích: ${p._area} ha<br>
-              <button class="btn btn-sm btn-outline-success mt-1" onclick="viewLoRungFromMap('${p._loRungId}')">Xem chi tiết</button>
-            </div>`);
+            layer.on('click', function(e) { _showPolygonPopup(layer, e.latlng); });
             mapDrawnItems.addLayer(layer);
           }
         });
         console.log(`Loaded ${features.length} polygons as single FeatureCollection.`);
+        // Debug: check editing handler on first polygon
+        if (mapDrawnItems.getLayers().length > 0) {
+          const sample = mapDrawnItems.getLayers()[0];
+          console.log('Sample layer editing:', !!sample.editing, '_map:', !!sample._map, 'type:', sample instanceof L.Polygon ? 'Polygon' : 'Other');
+        }
       } catch (e) {
         console.error('Load stored GeoJSON error:', e);
       }
@@ -7530,10 +8173,10 @@
                 ${row.ghi_chu ? `<div class="text-muted" style="font-size:10px">${row.ghi_chu}</div>` : ''}
               </div>
               <div class="d-flex gap-1 flex-shrink-0 ms-2">
-                <button class="btn btn-outline-success btn-sm" style="font-size:10px;padding:2px 6px" onclick="loadKhoLayer(${row.id})" title="${t('btn_layers')}"><i class="fa-solid fa-eye"></i></button>
-                <button class="btn btn-outline-info btn-sm" style="font-size:10px;padding:2px 6px" onclick="exportKhoLayer(${row.id},'${safeName}')" title="${t('btn_export_geojson')}"><i class="fa-solid fa-download"></i></button>
+                <button class="btn btn-outline-success btn-sm" style="font-size:10px;padding:2px 6px" onclick="loadKhoLayer('${row.id}')" title="${t('btn_layers')}"><i class="fa-solid fa-eye"></i></button>
+                <button class="btn btn-outline-info btn-sm" style="font-size:10px;padding:2px 6px" onclick="exportKhoLayer('${row.id}','${safeName}')" title="${t('btn_export_geojson')}"><i class="fa-solid fa-download"></i></button>
                 <button class="btn btn-outline-primary btn-sm" style="font-size:10px;padding:2px 6px" onclick="zoomKhoLayer('${safeName}')" title="Zoom"><i class="fa-solid fa-expand"></i></button>
-                ${_isAdmin() ? `<button class="btn btn-outline-danger btn-sm" style="font-size:10px;padding:2px 6px" onclick="deleteKhoLayer(${row.id}, '${safeName}')" title="${t('btn_delete')}"><i class="fa-solid fa-trash"></i></button>` : ''}
+                ${_isAdmin() ? `<button class="btn btn-outline-danger btn-sm" style="font-size:10px;padding:2px 6px" onclick="deleteKhoLayer('${row.id}', '${safeName}')" title="${t('btn_delete')}"><i class="fa-solid fa-trash"></i></button>` : ''}
               </div>
             </div>`;
         });
@@ -7664,18 +8307,132 @@
     };
 
 
+    // === MAP NOTES: points layer with photo + CSV export ===
+    let mapNotesLayer = null;
+    let _mapNotesData = []; // local cache of notes
+
+    function _noteIcon() {
+      return L.divIcon({ className: '', html: '<i class="fas fa-map-pin fa-lg" style="color:#E91E63;text-shadow:0 2px 4px rgba(0,0,0,0.3)"></i>', iconSize: [20, 28], iconAnchor: [10, 28] });
+    }
+
+    function _notePopupHtml(n) {
+      const photoUrl = n._photoUrl || '';
+      return `<div style="min-width:200px;max-width:260px">
+        <div class="fw-bold small mb-1" style="color:#E91E63"><i class="fas fa-map-pin me-1"></i>${n.note || '(no note)'}</div>
+        <div class="small text-muted mb-1">${n.date || ''} &bull; ${n.user_email || ''}</div>
+        <div class="small text-muted mb-1"><i class="fas fa-map-marker-alt me-1"></i>${Number(n.lat).toFixed(6)}, ${Number(n.lng).toFixed(6)}</div>
+        ${photoUrl ? `<img src="${photoUrl}" class="img-fluid rounded mb-1" style="max-height:150px;cursor:pointer" onclick="window.open('${photoUrl}','_blank')">` : ''}
+        <button class="btn btn-outline-danger btn-sm w-100 mt-1" onclick="deleteMapNote('${n.id}')"><i class="fas fa-trash me-1"></i>Xóa</button>
+      </div>`;
+    }
+
+    function _addNoteMarker(n) {
+      const marker = L.marker([n.lat, n.lng], { icon: _noteIcon() })
+        .bindPopup(_notePopupHtml(n));
+      marker._noteId = n.id;
+      if (mapNotesLayer) mapNotesLayer.addLayer(marker);
+      return marker;
+    }
+
+    async function loadMapNotes() {
+      if (!mapNotesLayer) {
+        mapNotesLayer = L.layerGroup().addTo(mapInstance);
+        mapLayers['Ghi chú vị trí'] = mapNotesLayer;
+      }
+      mapNotesLayer.clearLayers();
+      try {
+        const { data, error } = await sb.from('map_notes').select('*').order('created_at', { ascending: false });
+        if (error || !data) return;
+        _mapNotesData = data.map(n => {
+          n._photoUrl = n.photo ? `${PB_URL}/api/files/map_notes/${n.id}/${n.photo}` : '';
+          return n;
+        });
+        _mapNotesData.forEach(n => _addNoteMarker(n));
+        console.log(`Loaded ${_mapNotesData.length} map notes`);
+      } catch(e) { console.error('Load map notes error:', e); }
+    }
+
     function addMapNote() {
-      alert('Nhấn vào bản đồ để đặt ghi chú');
+      alert('Nhấn vào bản đồ để đặt ghi chú vị trí');
       mapInstance.once('click', function(e) {
-        const note = prompt('Nhập nội dung ghi chú:');
-        if (note) {
-          L.marker(e.latlng, {
-            icon: L.divIcon({ className: '', html: '<i class="fas fa-sticky-note text-warning fa-lg"></i>', iconSize: [20, 20] })
-          }).bindPopup(`<div class="small fw-bold">${note}</div>`).addTo(mapInstance).openPopup();
-          mapAnnotations.push({ latlng: e.latlng, note });
-        }
+        const lat = e.latlng.lat.toFixed(6);
+        const lng = e.latlng.lng.toFixed(6);
+        const today = new Date().toISOString().slice(0, 10);
+
+        const formHtml = `
+          <div style="min-width:260px">
+            <div class="fw-bold small mb-2" style="color:#E91E63"><i class="fas fa-map-pin me-1"></i>Ghi chú vị trí mới</div>
+            <div class="small text-muted mb-2"><i class="fas fa-map-marker-alt me-1"></i>${lat}, ${lng}</div>
+            <input type="text" id="note-input" class="form-control form-control-sm mb-2" placeholder="Nội dung ghi chú..." autofocus>
+            <label class="btn btn-outline-secondary btn-sm w-100 mb-2">
+              <i class="fas fa-camera me-1"></i>Chụp / chọn ảnh
+              <input type="file" accept="image/*" capture="environment" id="note-photo-input" class="d-none" onchange="document.getElementById('note-photo-preview').src=URL.createObjectURL(this.files[0]);document.getElementById('note-photo-preview').classList.remove('d-none')">
+            </label>
+            <img id="note-photo-preview" class="img-fluid rounded mb-2 d-none" style="max-height:120px">
+            <button class="btn btn-sm w-100" style="background:#E91E63;color:#fff" onclick="saveMapNote(${lat},${lng})"><i class="fas fa-save me-1"></i>Lưu ghi chú</button>
+          </div>`;
+
+        L.popup({ maxWidth: 300 }).setLatLng(e.latlng).setContent(formHtml).openOn(mapInstance);
       });
     }
+
+    window.saveMapNote = async function(lat, lng) {
+      const noteText = document.getElementById('note-input')?.value?.trim();
+      const photoInput = document.getElementById('note-photo-input');
+      const photoFile = photoInput?.files?.[0];
+      const today = new Date().toISOString().slice(0, 10);
+      const email = pb.authStore.record?.email || '';
+
+      if (!noteText && !photoFile) { alert('Vui lòng nhập ghi chú hoặc chụp ảnh'); return; }
+
+      try {
+        const formData = new FormData();
+        formData.append('lat', lat);
+        formData.append('lng', lng);
+        formData.append('note', noteText || '');
+        formData.append('date', today);
+        formData.append('user_email', email);
+        if (photoFile) formData.append('photo', photoFile);
+
+        const rec = await pb.collection('map_notes').create(formData);
+        rec._photoUrl = rec.photo ? `${PB_URL}/api/files/map_notes/${rec.id}/${rec.photo}` : '';
+        _mapNotesData.unshift(rec);
+        _addNoteMarker(rec);
+        mapInstance.closePopup();
+        showSyncNotification('Đã lưu ghi chú vị trí', 'success');
+      } catch(e) {
+        alert('Lỗi lưu ghi chú: ' + e.message);
+      }
+    };
+
+    window.deleteMapNote = async function(noteId) {
+      if (!confirm('Xóa ghi chú này?')) return;
+      try {
+        await pb.collection('map_notes').delete(noteId);
+        _mapNotesData = _mapNotesData.filter(n => n.id !== noteId);
+        if (mapNotesLayer) {
+          mapNotesLayer.eachLayer(l => { if (l._noteId === noteId) mapNotesLayer.removeLayer(l); });
+        }
+        mapInstance.closePopup();
+        showSyncNotification('Đã xóa ghi chú', 'info');
+      } catch(e) { alert('Lỗi xóa: ' + e.message); }
+    };
+
+    window.exportMapNotesCSV = function() {
+      if (!_mapNotesData.length) { alert('Chưa có ghi chú nào'); return; }
+      const header = 'STT,Ngay,Latitude,Longitude,Ghi_chu,Nguoi_tao,Ten_anh\n';
+      const rows = _mapNotesData.map((n, i) =>
+        `${i+1},"${n.date || ''}",${n.lat},${n.lng},"${(n.note || '').replace(/"/g, '""')}","${n.user_email || ''}","${n.photo || ''}"`
+      ).join('\n');
+      const BOM = '\uFEFF';
+      const blob = new Blob([BOM + header + rows], { type: 'text/csv;charset=utf-8' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `map_notes_${new Date().toISOString().slice(0,10)}.csv`;
+      a.click();
+      URL.revokeObjectURL(url);
+    };
 
     window.viewLoRungFromMap = function(loRungId) {
       const data = APP_DATA['Lo_rung'] || [];
@@ -9818,10 +10575,10 @@
         if (!colName) return;
 
         if (navigator.onLine) {
-          const { error } = await sb.from('kh_giam_sat_nhom').update({ [colName[0]]: newVal }).eq('id', rowId);
+          const { error } = await sb.from('kh_giam_sat_nhom').update({ [colName[0]]: newVal }).eq('sb_id', rowId);
           if (error) throw new Error(error.message);
         } else {
-          await syncManager.enqueue({ table: 'kh_giam_sat_nhom', sheetName: 'KH_GiamSat_Nhom', action: 'UPDATE', data: { id: rowId, [colName[0]]: newVal }, idValue: rowId });
+          await syncManager.enqueue({ table: 'kh_giam_sat_nhom', sheetName: 'KH_GiamSat_Nhom', action: 'UPDATE', data: { sb_id: rowId, [colName[0]]: newVal }, idValue: rowId });
           showSyncNotification(t('sync_saved_offline'), 'info');
         }
         row[monthKey] = newVal;
@@ -9837,10 +10594,10 @@
       if (!confirm(t('mon_confirm_save'))) return;
       try {
         if (navigator.onLine) {
-          const { error } = await sb.from('kh_giam_sat_nhom').delete().eq('id', rowId);
+          const { error } = await sb.from('kh_giam_sat_nhom').delete().eq('sb_id', rowId);
           if (error) throw new Error(error.message);
         } else {
-          await syncManager.enqueue({ table: 'kh_giam_sat_nhom', sheetName: 'KH_GiamSat_Nhom', action: 'DELETE', data: {}, idValue: rowId });
+          await syncManager.enqueue({ table: 'kh_giam_sat_nhom', sheetName: 'KH_GiamSat_Nhom', action: 'DELETE', data: {}, idField: 'sb_id', idValue: rowId });
           showSyncNotification(t('sync_saved_offline'), 'info');
         }
         APP_DATA['KH_GiamSat_Nhom'] = (APP_DATA['KH_GiamSat_Nhom'] || []).filter(r => r['ID'] !== rowId);
@@ -11212,10 +11969,10 @@ ${gsRecord['Đề xuất'] ? `<div class="proposal-box"><h4>${t('mon_proposal')}
       if (!_isAdmin()) { alert(t('no_permission')); return; }
       if (!confirm('Đóng đợt tham vấn này? Sẽ không nhận phản hồi mới.')) return;
       if (navigator.onLine) {
-        const { error } = await sb.from('dot_tham_van').update({ trang_thai: 'Đã đóng' }).eq('id', idDot);
+        const { error } = await sb.from('dot_tham_van').update({ trang_thai: 'Đã đóng' }).eq('sb_id', idDot);
         if (error) { alert('Lỗi: ' + error.message); return; }
       } else {
-        await syncManager.enqueue({ table: 'dot_tham_van', sheetName: 'DotThamVan', action: 'UPDATE', data: { id: idDot, trang_thai: 'Đã đóng' }, idValue: idDot });
+        await syncManager.enqueue({ table: 'dot_tham_van', sheetName: 'DotThamVan', action: 'UPDATE', data: { sb_id: idDot, trang_thai: 'Đã đóng' }, idField: 'sb_id', idValue: idDot });
         showSyncNotification(t('sync_saved_offline'), 'info');
       }
       const s = (APP_DATA['DotThamVan'] || []).find(s => s['ID'] === idDot);
@@ -11239,13 +11996,13 @@ ${gsRecord['Đề xuất'] ? `<div class="proposal-box"><h4>${t('mon_proposal')}
           const { error: rErr } = await sb.from('phan_hoi_tham_van').delete().eq('id_dot', idDot);
           if (rErr) { alert('Lỗi xóa phản hồi: ' + rErr.message); return; }
         }
-        const { error } = await sb.from('dot_tham_van').delete().eq('id', idDot);
+        const { error } = await sb.from('dot_tham_van').delete().eq('sb_id', idDot);
         if (error) { alert('Lỗi xóa đợt: ' + error.message); return; }
       } else {
         if (responses.length > 0) {
           await syncManager.enqueue({ table: 'phan_hoi_tham_van', sheetName: 'PhanHoiThamVan', action: 'DELETE', data: {}, idField: 'id_dot', idValue: idDot });
         }
-        await syncManager.enqueue({ table: 'dot_tham_van', sheetName: 'DotThamVan', action: 'DELETE', data: {}, idValue: idDot });
+        await syncManager.enqueue({ table: 'dot_tham_van', sheetName: 'DotThamVan', action: 'DELETE', data: {}, idField: 'sb_id', idValue: idDot });
         showSyncNotification(t('sync_saved_offline'), 'info');
       }
 
@@ -12782,12 +13539,12 @@ ${gsRecord['Đề xuất'] ? `<div class="proposal-box"><h4>${t('mon_proposal')}
         const dbTable = getDBTable(currentSheetTarget);
         const dbData = toDB(currentSheetTarget, dataObj);
 
-        if (currentAction === 'CREATE' && (!dbData.id || dbData.id === '')) {
+        if (currentAction === 'CREATE' && (!dbData.sb_id || dbData.sb_id === '')) {
           const prefix = currentSheetTarget.substring(0, 3).toUpperCase();
-          dbData.id = `${prefix}-${new Date().getFullYear().toString().substr(-2)}-${Math.floor(1000 + Math.random() * 9000)}`;
+          dbData.sb_id = `${prefix}-${new Date().getFullYear().toString().substr(-2)}-${Math.floor(1000 + Math.random() * 9000)}`;
           // Write generated ID back to dataObj
           const idCol = Object.keys(dataObj)[0];
-          if (idCol) dataObj[idCol] = dbData.id;
+          if (idCol) dataObj[idCol] = dbData.sb_id;
         }
 
         if (navigator.onLine) {
@@ -12796,9 +13553,9 @@ ${gsRecord['Đề xuất'] ? `<div class="proposal-box"><h4>${t('mon_proposal')}
           if (currentAction === 'CREATE') {
             result = await sb.from(dbTable).insert(dbData).select();
           } else {
-            const idVal = dbData.id;
-            delete dbData.id; delete dbData.created_at;
-            result = await sb.from(dbTable).update(dbData).eq('id', idVal).select();
+            const idVal = dbData.sb_id;
+            delete dbData.sb_id; delete dbData.created_at;
+            result = await sb.from(dbTable).update(dbData).eq('sb_id', idVal).select();
           }
           if (result.error) { alert("Lỗi: " + result.error.message); return; }
           // Update local data from server response
@@ -12817,11 +13574,11 @@ ${gsRecord['Đề xuất'] ? `<div class="proposal-box"><h4>${t('mon_proposal')}
         } else {
           // === OFFLINE: queue + optimistic local update ===
           const action = currentAction === 'CREATE' ? 'INSERT' : 'UPDATE';
-          const idVal = dbData.id || toDB(currentSheetTarget, dataObj).id;
+          const idVal = dbData.sb_id || toDB(currentSheetTarget, dataObj).sb_id;
           const queueData = currentAction === 'CREATE' ? dbData : { ...toDB(currentSheetTarget, dataObj) };
           await syncManager.enqueue({
             table: dbTable, sheetName: currentSheetTarget,
-            action, data: queueData, idField: 'id', idValue: idVal
+            action, data: queueData, idField: 'sb_id', idValue: idVal
           });
           // Optimistic update
           if (currentAction === 'CREATE') {
@@ -12839,7 +13596,7 @@ ${gsRecord['Đề xuất'] ? `<div class="proposal-box"><h4>${t('mon_proposal')}
 
         // If this was a new plot created from polygon drawing, save the geometry
         if (window._pendingNewPlotLayer && currentSheetTarget === 'Lo_rung' && currentAction === 'CREATE') {
-          const realId = dbData.id || dataObj['ID lô rừng'];
+          const realId = dbData.sb_id || dataObj['ID lô rừng'];
           if (realId) {
             window._pendingNewPlotLayer.loRungId = realId;
             try { await savePolygonGeometry(window._pendingNewPlotLayer); } catch(e) { console.warn('Polygon save error:', e); }
@@ -12871,15 +13628,15 @@ ${gsRecord['Đề xuất'] ? `<div class="proposal-box"><h4>${t('mon_proposal')}
       try {
         const dbTable = getDBTable(sheetName);
         const dbData = toDB(sheetName, rowData);
-        const dbId = dbData.id;
+        const dbId = dbData.sb_id;
 
         if (navigator.onLine) {
-          const { error } = await sb.from(dbTable).delete().eq('id', dbId);
+          const { error } = await sb.from(dbTable).delete().eq('sb_id', dbId);
           if (error) { alert("Lỗi khi xóa: " + error.message); return; }
         } else {
           await syncManager.enqueue({
             table: dbTable, sheetName, action: 'DELETE',
-            data: dbData, idField: 'id', idValue: dbId
+            data: dbData, idField: 'sb_id', idValue: dbId
           });
           showSyncNotification(t('sync_saved_offline'), 'info');
         }

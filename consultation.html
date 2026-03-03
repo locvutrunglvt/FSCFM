@@ -113,7 +113,7 @@
   </div>
 </div>
 
-<script src="https://cdn.jsdelivr.net/gh/pocketbase/js-sdk@master/dist/pocketbase.umd.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/pocketbase@0.25.2/dist/pocketbase.umd.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 <script>
 (function() {
@@ -361,7 +361,7 @@
     currentSessionId = dotId;
 
     try {
-      const { data, error } = await sb.from('dot_tham_van').select('*').eq('id', dotId).single();
+      const { data, error } = await sb.from('dot_tham_van').select('*').eq('sb_id', dotId).single();
 
       if (error || !data) {
         showError('Không tìm thấy đợt tham vấn: ' + dotId);

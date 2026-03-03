@@ -1,7 +1,7 @@
 {
-  "name": "Hệ thống Quản lý Rừng FSC",
+  "name": "Hệ thống quản lý rừng chứng chỉ rừng FSC",
   "short_name": "FSC FM",
-  "description": "Hệ thống Quản lý Rừng bền vững theo tiêu chuẩn FSC",
+  "description": "Hệ thống quản lý rừng chứng chỉ rừng FSC",
   "start_url": "./index.html",
   "scope": "./",
   "display": "standalone",
