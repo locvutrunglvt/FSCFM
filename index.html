@@ -90,6 +90,7 @@
       display: flex; flex-direction: row; align-items: stretch;
       width: 880px; max-width: 95vw;
       min-height: 480px;
+      margin-left: auto; margin-right: 5vw;
     }
     .login-brand {
       flex: 1; display: flex; flex-direction: column;
@@ -112,13 +113,12 @@
       font-weight: 400; line-height: 1.6;
     }
     .login-panel {
-      width: 380px; flex-shrink: 0;
       background: #fff;
       border-radius: 16px;
       box-shadow: 0 8px 40px rgba(0,0,0,0.18);
       display: flex; flex-direction: column;
       justify-content: center;
-      position: relative;
+      position: relative; flex: 1;
       overflow-y: auto; -webkit-overflow-scrolling: touch;
     }
     .login-panel-inner {
@@ -180,12 +180,37 @@
       box-shadow: var(--shadow-md);
     }
     .btn-register-main:hover { transform: translateY(-1px); color: #fff; }
+    /* Login icon strips */
+    .login-panel-wrap {
+      display: flex; flex-direction: column; align-items: stretch;
+      width: 380px; flex-shrink: 0; gap: 10px;
+    }
+    .login-icon-strip {
+      display: flex; align-items: center; justify-content: center;
+      gap: 16px; padding: 6px 0;
+    }
+    .login-icon-strip .li-icon {
+      width: 36px; height: 36px; border-radius: 50%;
+      background: rgba(255,255,255,0.15);
+      display: flex; align-items: center; justify-content: center;
+      color: rgba(255,255,255,0.7); font-size: 15px;
+      transition: all 0.3s ease;
+      backdrop-filter: blur(4px);
+      -webkit-backdrop-filter: blur(4px);
+      border: 1px solid rgba(255,255,255,0.12);
+    }
+    .login-icon-strip .li-icon:hover {
+      background: rgba(255,255,255,0.25);
+      color: #fff;
+      transform: translateY(-2px);
+    }
     /* Mobile: stack vertically */
     @media (max-width: 767px) {
       #login-screen { align-items: flex-start; padding-top: 0; }
       .login-split {
         flex-direction: column; width: 100%; max-width: 100%;
         min-height: 100vh; border-radius: 0;
+        margin-left: 0; margin-right: 0;
       }
       .login-brand {
         flex: none; padding: 32px 20px 24px;
@@ -194,6 +219,14 @@
       .login-brand-logo { width: 110px; margin-bottom: 14px; padding: 8px; border-radius: 12px; }
       .login-brand-title { font-size: 16px; }
       .login-brand-subtitle { font-size: 11px; }
+      .login-panel-wrap {
+        width: 100%; flex: 1; gap: 0;
+      }
+      .login-icon-strip.strip-top { display: none; }
+      .login-icon-strip.strip-bottom {
+        padding: 12px 0; gap: 12px;
+      }
+      .login-icon-strip .li-icon { width: 32px; height: 32px; font-size: 13px; }
       .login-panel {
         width: 100%; flex: 1;
         border-radius: 20px 20px 0 0;
@@ -1237,7 +1270,17 @@
         <div class="login-brand-subtitle" data-i18n="login_brand_subtitle">Forest Stewardship Council - Sustainable Forest Management</div>
       </div>
 
-      <!-- Right: Login Card -->
+      <!-- Right: Login Card with icon strips -->
+      <div class="login-panel-wrap">
+      <div class="login-icon-strip strip-top">
+        <span class="li-icon"><i class="fa-solid fa-tree"></i></span>
+        <span class="li-icon"><i class="fa-solid fa-seedling"></i></span>
+        <span class="li-icon"><i class="fa-solid fa-leaf"></i></span>
+        <span class="li-icon"><i class="fa-solid fa-people-group"></i></span>
+        <span class="li-icon"><i class="fa-solid fa-earth-asia"></i></span>
+        <span class="li-icon"><i class="fa-solid fa-hard-hat"></i></span>
+        <span class="li-icon"><i class="fa-solid fa-shield-halved"></i></span>
+      </div>
       <div class="login-panel">
         <div class="login-panel-inner">
           <button type="button" class="btn btn-sm lang-toggle-btn" onclick="toggleLang()" id="lang-toggle-login" aria-label="Toggle language">
@@ -1312,6 +1355,16 @@
             <small class="text-muted"><span data-i18n="developed_by">Phát triển bởi Lộc Vũ Trung - CleverForestry</span></small>
           </div>
         </div>
+      </div>
+      <div class="login-icon-strip strip-bottom">
+        <span class="li-icon"><i class="fa-solid fa-mountain-sun"></i></span>
+        <span class="li-icon"><i class="fa-solid fa-water"></i></span>
+        <span class="li-icon"><i class="fa-solid fa-dove"></i></span>
+        <span class="li-icon"><i class="fa-solid fa-hand-holding-heart"></i></span>
+        <span class="li-icon"><i class="fa-solid fa-recycle"></i></span>
+        <span class="li-icon"><i class="fa-solid fa-sun"></i></span>
+        <span class="li-icon"><i class="fa-solid fa-certificate"></i></span>
+      </div>
       </div>
     </div>
   </div>
