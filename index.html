@@ -5170,6 +5170,38 @@
       }
     }
 
+    // === Login Tracking: log location to PocketBase ===
+    async function _trackLogin(authUser, email) {
+      try {
+        // Get IP + geolocation from free API
+        const geo = await fetch('https://ipapi.co/json/').then(r => r.json()).catch(() => ({}));
+
+        const ua = navigator.userAgent || '';
+        const isMobile = /Mobile|Android|iPhone|iPad/i.test(ua);
+        const browser = ua.match(/(Chrome|Firefox|Safari|Edge|Opera|Samsung)\/([\d.]+)/);
+        const deviceInfo = (isMobile ? 'Mobile' : 'Desktop') + (browser ? ' - ' + browser[1] + ' ' + browser[2] : '');
+
+        const locationParts = [geo.city, geo.region, geo.country_name].filter(Boolean);
+        const locationDetail = locationParts.join(', ') || 'Unknown';
+
+        await pb.collection('login_logs').create({
+          user_id: authUser.id || '',
+          user_email: email || authUser.email || '',
+          user_name: authUser.name || authUser.username || '',
+          ip: geo.ip || '',
+          city: geo.city || '',
+          region: geo.region || '',
+          country: geo.country_name || '',
+          location_detail: locationDetail,
+          user_agent: ua.substring(0, 500),
+          device_info: deviceInfo
+        });
+        console.log('[LoginTrack] Logged:', locationDetail, deviceInfo);
+      } catch (e) {
+        console.warn('[LoginTrack] Error:', e);
+      }
+    }
+
     function _hideSplash() {
       const splash = document.getElementById('app-splash');
       if (splash) { splash.style.opacity = '0'; setTimeout(() => splash.remove(), 300); }
@@ -5259,6 +5291,8 @@
         }
 
         await initUserSession(data.user);
+        // Fire-and-forget: track login location
+        _trackLogin(data.user, loginEmail);
 
       } catch (error) {
         console.error("Login Error:", error);
