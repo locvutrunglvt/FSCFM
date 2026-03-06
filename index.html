@@ -8,7 +8,7 @@
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <link rel="manifest" href="manifest.json">
-  <title>Hệ thống quản lý rừng chứng chỉ rừng FSC</title>
+  <title>Hệ thống quản lý rừng bền vững - Chứng chỉ rừng FSC</title>
   <!-- Preconnect to CDN hosts for faster loading -->
   <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
   <link rel="preconnect" href="https://cdnjs.cloudflare.com" crossorigin>
@@ -31,14 +31,23 @@
       --forest-primary: #1B5E20;
       --forest-secondary: #2E7D32;
       --forest-light: #E8F5E9;
-      --forest-gradient: linear-gradient(135deg, #2E7D32 0%, #1B5E20 100%);
-      --bg-light: #F5F7F5;
+      --forest-gradient: linear-gradient(135deg, #43A047 0%, #1B5E20 100%);
+      --bg-light: #f0f4f0;
       --bg-white: #ffffff;
-      --text-main: #2c3e50;
-      --text-secondary: #666;
-      --text-muted: #999;
-      --border-color: #e8e8e8;
-      --border-light: #f0f0f0;
+      --text-main: #1a2e1a;
+      --text-secondary: #4a5e4a;
+      --text-muted: #7a8e7a;
+      --border-color: rgba(27,94,32,0.1);
+      --border-light: rgba(27,94,32,0.05);
+
+      /* === Glassmorphism === */
+      --glass-bg: rgba(255,255,255,0.72);
+      --glass-bg-strong: rgba(255,255,255,0.88);
+      --glass-border: rgba(255,255,255,0.45);
+      --glass-shadow: 0 8px 32px rgba(0,0,0,0.06), 0 2px 8px rgba(0,0,0,0.04);
+      --glass-shadow-hover: 0 12px 40px rgba(0,0,0,0.10), 0 4px 12px rgba(0,0,0,0.06);
+      --glass-blur: blur(20px);
+      --glass-radius: 16px;
 
       /* === Spacing Scale (4px base) === */
       --sp-1: 4px;
@@ -51,37 +60,167 @@
 
       /* === Typography Scale === */
       --fs-xs: 10px;
-      --fs-sm: 12px;
+      --fs-sm: 11.5px;
       --fs-base: 13px;
       --fs-md: 14px;
       --fs-lg: 16px;
       --fs-xl: 20px;
+      --fs-2xl: 24px;
 
       /* === Border Radius === */
-      --radius-sm: 6px;
-      --radius-md: 10px;
-      --radius-lg: 14px;
+      --radius-sm: 8px;
+      --radius-md: 12px;
+      --radius-lg: 16px;
+      --radius-xl: 20px;
       --radius-pill: 30px;
 
-      /* === Shadows (2 levels only) === */
-      --shadow-sm: 0 2px 8px rgba(0,0,0,0.06);
-      --shadow-md: 0 4px 16px rgba(0,0,0,0.10);
+      /* === Shadows === */
+      --shadow-sm: 0 2px 8px rgba(0,0,0,0.05);
+      --shadow-md: 0 4px 20px rgba(0,0,0,0.08);
+      --shadow-lg: 0 8px 40px rgba(0,0,0,0.12);
 
       /* === Transitions === */
-      --transition-fast: 0.2s ease;
-      --transition-normal: 0.3s ease;
+      --transition-fast: 0.15s cubic-bezier(0.4,0,0.2,1);
+      --transition-normal: 0.3s cubic-bezier(0.4,0,0.2,1);
+      --transition-bounce: 0.4s cubic-bezier(0.34,1.56,0.64,1);
     }
 
     body {
-      font-family: 'Be Vietnam Pro', sans-serif;
+      font-family: 'Be Vietnam Pro', system-ui, -apple-system, sans-serif;
       background-color: #1B5E20;
       color: var(--text-main);
       overflow: hidden;
       font-size: var(--fs-base);
-      line-height: 1.5;
+      line-height: 1.6;
+      -webkit-font-smoothing: antialiased;
     }
     body.app-ready {
-      background-color: var(--bg-light);
+      background: linear-gradient(160deg, #e8f0e8 0%, #f0f4f0 40%, #f5f8f5 100%);
+    }
+    /* Custom scrollbar — glass theme */
+    ::-webkit-scrollbar { width: 6px; height: 6px; }
+    ::-webkit-scrollbar-track { background: transparent; }
+    ::-webkit-scrollbar-thumb { background: rgba(27,94,32,0.2); border-radius: 3px; }
+    ::-webkit-scrollbar-thumb:hover { background: rgba(27,94,32,0.35); }
+
+    /* === Glassmorphism Global Overrides === */
+    .card {
+      background: var(--glass-bg);
+      backdrop-filter: var(--glass-blur); -webkit-backdrop-filter: var(--glass-blur);
+      border: 1px solid var(--glass-border);
+      border-radius: var(--glass-radius);
+      box-shadow: var(--glass-shadow);
+    }
+    .form-control, .form-select {
+      background: rgba(255,255,255,0.6);
+      border: 1px solid rgba(27,94,32,0.12);
+      border-radius: var(--radius-md);
+      transition: all var(--transition-fast);
+      font-size: var(--fs-base);
+    }
+    .form-control:focus, .form-select:focus {
+      background: rgba(255,255,255,0.9);
+      border-color: var(--forest-secondary);
+      box-shadow: 0 0 0 3px rgba(46,125,50,0.12);
+    }
+    .btn {
+      border-radius: var(--radius-md);
+      font-weight: 600;
+      transition: all var(--transition-fast);
+    }
+    .btn-success {
+      background: var(--forest-gradient);
+      border: none;
+      box-shadow: 0 2px 8px rgba(27,94,32,0.25);
+    }
+    .btn-success:hover {
+      box-shadow: 0 4px 16px rgba(27,94,32,0.35);
+      transform: translateY(-1px);
+    }
+    .btn-outline-success {
+      border-color: rgba(27,94,32,0.3);
+      color: var(--forest-primary);
+    }
+    .btn-outline-success:hover {
+      background: rgba(27,94,32,0.08);
+      border-color: var(--forest-primary);
+      color: var(--forest-primary);
+      transform: translateY(-1px);
+    }
+    .table { font-size: var(--fs-sm); }
+    .table thead th {
+      background: linear-gradient(135deg, rgba(43,100,47,0.92), rgba(27,94,32,0.95));
+      color: #fff;
+      font-weight: 700;
+      font-size: var(--fs-xs);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      border: none;
+      padding: var(--sp-2) var(--sp-3);
+    }
+    .table tbody tr {
+      transition: all var(--transition-fast);
+    }
+    .table tbody tr:hover {
+      background: rgba(27,94,32,0.04);
+    }
+    .modal-content {
+      background: var(--glass-bg-strong);
+      backdrop-filter: blur(30px); -webkit-backdrop-filter: blur(30px);
+      border: 1px solid var(--glass-border);
+      border-radius: var(--radius-xl);
+      box-shadow: var(--shadow-lg);
+    }
+    .accordion-item {
+      background: var(--glass-bg);
+      backdrop-filter: var(--glass-blur); -webkit-backdrop-filter: var(--glass-blur);
+      border: 1px solid var(--glass-border) !important;
+      border-radius: var(--radius-md) !important;
+      margin-bottom: var(--sp-1);
+      overflow: hidden;
+    }
+    /* DataTables pagination glassmorphism */
+    .dataTables_wrapper .dataTables_paginate .paginate_button {
+      border-radius: var(--radius-sm) !important;
+      border: 1px solid var(--glass-border) !important;
+      background: var(--glass-bg) !important;
+      transition: all var(--transition-fast) !important;
+      font-size: var(--fs-xs) !important;
+    }
+    .dataTables_wrapper .dataTables_paginate .paginate_button:hover {
+      background: rgba(27,94,32,0.08) !important;
+      border-color: var(--forest-secondary) !important;
+      color: var(--forest-primary) !important;
+    }
+    .dataTables_wrapper .dataTables_paginate .paginate_button.current {
+      background: var(--forest-gradient) !important;
+      border-color: var(--forest-primary) !important;
+      color: #fff !important;
+    }
+    .dataTables_wrapper .dataTables_info {
+      font-size: var(--fs-xs) !important;
+      color: var(--text-muted);
+    }
+    .dataTables_wrapper .dataTables_length select,
+    .dataTables_wrapper .dataTables_filter input {
+      background: var(--glass-bg);
+      border: 1px solid rgba(27,94,32,0.12);
+      border-radius: var(--radius-sm);
+      font-size: var(--fs-sm);
+      padding: var(--sp-1) var(--sp-2);
+    }
+    .dataTables_wrapper .dataTables_filter input:focus {
+      border-color: var(--forest-secondary);
+      box-shadow: 0 0 0 3px rgba(46,125,50,0.12);
+      outline: none;
+    }
+    /* Smooth page transitions */
+    #page-content-dynamic > * {
+      animation: fadeSlideIn 0.3s ease-out;
+    }
+    @keyframes fadeSlideIn {
+      from { opacity: 0; transform: translateY(8px); }
+      to { opacity: 1; transform: translateY(0); }
     }
 
     /* === Login Split Screen === */
@@ -269,8 +408,9 @@
       position: fixed;
       top: 0; left: 0; bottom: 0;
       width: 270px;
-      background: var(--bg-white);
-      border-right: 1px solid var(--border-color);
+      background: rgba(255,255,255,0.85);
+      backdrop-filter: blur(24px); -webkit-backdrop-filter: blur(24px);
+      border-right: 1px solid rgba(27,94,32,0.08);
       transition: transform var(--transition-normal);
       z-index: 1050;
       transform: translateX(-100%);
@@ -328,11 +468,13 @@
       font-size: var(--fs-sm);
       font-weight: 700;
       padding: var(--sp-2) var(--sp-3);
-      color: #444;
+      color: var(--text-secondary);
+      border-radius: var(--radius-sm) !important;
+      transition: all var(--transition-fast);
     }
     .accordion-button:not(.collapsed) {
       color: var(--forest-primary);
-      background-color: var(--forest-light);
+      background: rgba(27,94,32,0.06);
       box-shadow: inset 3px 0 0 var(--forest-primary);
     }
     .accordion-button:focus { box-shadow: none; }
@@ -340,20 +482,22 @@
     .menu-sub-link {
       display: block;
       padding: var(--sp-2) var(--sp-3) var(--sp-2) var(--sp-5);
-      color: #555;
+      color: var(--text-secondary);
       text-decoration: none;
       font-size: var(--fs-sm);
       font-weight: 500;
       transition: all var(--transition-fast);
       border-left: 3px solid transparent;
+      border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+      margin: 1px 4px 1px 0;
     }
     .menu-sub-link:hover {
-      background-color: #f0f7f1;
+      background: rgba(27,94,32,0.06);
       color: var(--forest-primary);
-      border-left-color: var(--forest-primary);
+      border-left-color: var(--forest-secondary);
     }
     .menu-sub-link.active {
-      background-color: var(--forest-light);
+      background: rgba(27,94,32,0.10);
       color: var(--forest-primary);
       border-left-color: var(--forest-primary);
       font-weight: 700;
@@ -405,14 +549,15 @@
 
     /* Dashboard Menu Cards */
     .dashboard-card-3d {
-      background: var(--bg-white);
-      border-radius: var(--radius-lg);
+      background: var(--glass-bg);
+      backdrop-filter: var(--glass-blur); -webkit-backdrop-filter: var(--glass-blur);
+      border-radius: var(--glass-radius);
       padding: var(--sp-4) var(--sp-3);
       text-align: center;
       cursor: pointer;
-      transition: all var(--transition-normal);
-      box-shadow: var(--shadow-sm);
-      border: none;
+      transition: all var(--transition-bounce);
+      box-shadow: var(--glass-shadow);
+      border: 1px solid var(--glass-border);
       height: 100%;
       position: relative;
       overflow: hidden;
@@ -423,13 +568,14 @@
       top: 0; left: 0; right: 0;
       height: 3px;
       background: var(--forest-gradient);
-      border-radius: var(--radius-lg) var(--radius-lg) 0 0;
+      border-radius: var(--glass-radius) var(--glass-radius) 0 0;
     }
     .dashboard-card-3d:hover {
-      transform: translateY(-4px);
-      box-shadow: var(--shadow-md);
+      transform: translateY(-5px) scale(1.02);
+      box-shadow: var(--glass-shadow-hover);
+      border-color: rgba(27,94,32,0.15);
     }
-    .dashboard-card-3d:active { transform: translateY(-2px); }
+    .dashboard-card-3d:active { transform: translateY(-2px) scale(1.01); }
 
     .icon-3d-wrapper {
       width: 52px;
@@ -520,15 +666,16 @@
     }
 
     .fsc-breadcrumb {
-      background: var(--bg-white);
+      background: var(--glass-bg);
+      backdrop-filter: var(--glass-blur); -webkit-backdrop-filter: var(--glass-blur);
       padding: var(--sp-2) var(--sp-3);
-      border-radius: var(--radius-sm);
-      box-shadow: var(--shadow-sm);
+      border-radius: var(--radius-md);
+      box-shadow: var(--glass-shadow);
       margin-bottom: var(--sp-3);
       display: flex;
       align-items: center;
       font-size: var(--fs-sm);
-      border: 1px solid var(--border-color);
+      border: 1px solid var(--glass-border);
     }
     .breadcrumb-item {
       cursor: pointer;
@@ -539,25 +686,27 @@
     .breadcrumb-item.active { color: var(--text-muted); cursor: default; text-decoration: none; }
     .breadcrumb-separator { margin: 0 var(--sp-2); color: #ccc; font-size: var(--fs-sm); }
 
-    /* Excel-like data table */
+    /* Excel-like data table — glassmorphism */
     table.dataTable {
       border-collapse: collapse;
       border-spacing: 0;
       width: 100%;
-      font-size: 0.85rem;
+      font-size: var(--fs-sm);
     }
     table.dataTable thead th {
-      background: #2E7D32;
+      background: linear-gradient(135deg, rgba(43,100,47,0.92), rgba(27,94,32,0.95));
       color: #fff;
-      padding: 8px 10px;
-      font-size: 0.8rem;
+      padding: var(--sp-2) var(--sp-3);
+      font-size: var(--fs-xs);
       font-weight: 700;
-      border: 1px solid #1B5E20;
+      border: none;
+      border-bottom: 2px solid rgba(27,94,32,0.3);
       position: sticky;
       top: 0;
       z-index: 10;
       white-space: nowrap;
-      letter-spacing: 0.2px;
+      letter-spacing: 0.5px;
+      text-transform: uppercase;
     }
     table.dataTable thead th.sorting:after,
     table.dataTable thead th.sorting_asc:after,
@@ -565,20 +714,24 @@
     .table-responsive {
       max-height: calc(100vh - 260px);
       overflow: auto;
-      border: 1px solid #e0e0e0;
-      border-radius: var(--radius-md);
+      border: 1px solid var(--glass-border);
+      border-radius: var(--glass-radius);
+      background: var(--glass-bg);
+      backdrop-filter: var(--glass-blur); -webkit-backdrop-filter: var(--glass-blur);
+      box-shadow: var(--glass-shadow);
     }
     table.dataTable tbody td {
       padding: 5px 10px;
-      font-size: 0.85rem;
+      font-size: var(--fs-sm);
       vertical-align: middle;
-      border: 1px solid #e8e8e8;
+      border: 1px solid rgba(27,94,32,0.06);
     }
-    table.dataTable tbody tr:nth-child(odd) { background: #fff; }
-    table.dataTable tbody tr:nth-child(even) { background: #f6fbf6; }
+    table.dataTable tbody tr:nth-child(odd) { background: rgba(255,255,255,0.6); }
+    table.dataTable tbody tr:nth-child(even) { background: rgba(232,245,233,0.4); }
+    table.dataTable tbody tr:hover { background: rgba(200,230,201,0.5) !important; }
     /* Empty cell highlight */
     table.dataTable tbody td.cell-empty {
-      background: #fff0f0 !important;
+      background: rgba(255,235,238,0.5) !important;
     }
     /* Numeric column right-align */
     table.dataTable tbody td.cell-num { text-align: right; font-variant-numeric: tabular-nums; }
@@ -588,41 +741,31 @@
     .tbl-action-btn {
       width: 28px; height: 28px; border-radius: 50%; border: none;
       display: inline-flex; align-items: center; justify-content: center;
-      font-size: 0.7rem; cursor: pointer; transition: all 0.15s;
+      font-size: 0.7rem; cursor: pointer; transition: all var(--transition-fast);
       margin: 0 1px;
+      backdrop-filter: blur(4px); -webkit-backdrop-filter: blur(4px);
     }
-    .tbl-action-btn.btn-view { background: linear-gradient(135deg, #e8f5e9, #c8e6c9); color: #2E7D32; }
-    .tbl-action-btn.btn-view:hover { background: #2E7D32; color: #fff; }
-    .tbl-action-btn.btn-edit { background: linear-gradient(135deg, #E3F2FD, #BBDEFB); color: #1565C0; }
-    .tbl-action-btn.btn-edit:hover { background: #1565C0; color: #fff; }
-    .tbl-action-btn.btn-del { background: linear-gradient(135deg, #FFEBEE, #FFCDD2); color: #C62828; }
-    .tbl-action-btn.btn-del:hover { background: #C62828; color: #fff; }
+    .tbl-action-btn.btn-view { background: linear-gradient(135deg, rgba(232,245,233,0.8), rgba(200,230,201,0.8)); color: #2E7D32; }
+    .tbl-action-btn.btn-view:hover { background: var(--forest-gradient); color: #fff; transform: scale(1.15); }
+    .tbl-action-btn.btn-edit { background: linear-gradient(135deg, rgba(227,242,253,0.8), rgba(187,222,251,0.8)); color: #1565C0; }
+    .tbl-action-btn.btn-edit:hover { background: linear-gradient(135deg, #42A5F5, #1565C0); color: #fff; transform: scale(1.15); }
+    .tbl-action-btn.btn-del { background: linear-gradient(135deg, rgba(255,235,238,0.8), rgba(255,205,210,0.8)); color: #C62828; }
+    .tbl-action-btn.btn-del:hover { background: linear-gradient(135deg, #EF5350, #C62828); color: #fff; transform: scale(1.15); }
     .clickable-row {
       cursor: pointer;
-      transition: background-color 0.15s;
+      transition: all var(--transition-fast);
     }
     .clickable-row:hover {
-      background-color: #E8F5E9 !important;
+      background-color: rgba(200,230,201,0.5) !important;
     }
 
-    .form-control,
-    .form-select {
-      font-size: var(--fs-base);
+    /* Form + btn sizing (glass styles in global overrides above) */
+    .form-control, .form-select {
       padding: var(--sp-2) var(--sp-3);
-      border-radius: var(--radius-sm);
-      border: 1px solid #ddd;
     }
-    .form-control:focus,
-    .form-select:focus {
-      border-color: var(--forest-secondary);
-      box-shadow: 0 0 0 0.2rem rgba(46,125,50,0.2);
-    }
-
     .btn {
       font-size: var(--fs-sm);
-      font-weight: 600;
       padding: var(--sp-2) var(--sp-3);
-      border-radius: var(--radius-pill);
     }
 
     .logo-bounce {
@@ -744,7 +887,7 @@
       .tbl-action-btn { width: 26px; height: 26px; font-size: 0.65rem; }
 
       /* Card headers */
-      .card-header.bg-success { padding: var(--sp-2) var(--sp-3); }
+      .card-header { padding: var(--sp-2) var(--sp-3); }
       .card-header h5 { font-size: var(--fs-sm); }
 
       /* Breadcrumb */
@@ -857,20 +1000,23 @@
       .dash-charts .card { margin-bottom: var(--sp-3); }
     }
 
-    /* Sub-menu Screen Cards */
+    /* Sub-menu Screen Cards — glassmorphism */
     .submenu-card {
-      background: var(--bg-white);
-      border-radius: var(--radius-lg);
+      background: var(--glass-bg);
+      backdrop-filter: var(--glass-blur); -webkit-backdrop-filter: var(--glass-blur);
+      border: 1px solid var(--glass-border);
+      border-radius: var(--glass-radius);
       padding: var(--sp-4) var(--sp-3);
       text-align: center;
       cursor: pointer;
-      transition: all var(--transition-normal);
-      box-shadow: var(--shadow-sm);
+      transition: all var(--transition-bounce);
+      box-shadow: var(--glass-shadow);
       height: 100%;
     }
     .submenu-card:hover {
-      transform: translateY(-3px);
-      box-shadow: var(--shadow-md);
+      transform: translateY(-5px) scale(1.02);
+      box-shadow: var(--glass-shadow-hover);
+      border-color: rgba(27,94,32,0.15);
     }
     .submenu-icon {
       width: 48px; height: 48px;
@@ -930,27 +1076,27 @@
 
     /* KPI Cards — unified color scheme */
     .kpi-card {
-      background: var(--bg-white);
-      border-radius: var(--radius-lg);
+      background: var(--glass-bg);
+      backdrop-filter: var(--glass-blur); -webkit-backdrop-filter: var(--glass-blur);
+      border-radius: var(--glass-radius);
       padding: var(--sp-3);
-      box-shadow: var(--shadow-sm);
+      box-shadow: var(--glass-shadow);
+      border: 1px solid var(--glass-border);
       border-left: 4px solid var(--forest-primary);
-      transition: all var(--transition-fast);
+      transition: all var(--transition-normal);
       position: relative;
       overflow: hidden;
     }
     .kpi-card::after {
       content: '';
       position: absolute;
-      top: 0; right: 0;
-      width: 60px; height: 60px;
+      top: -20px; right: -20px;
+      width: 80px; height: 80px;
       border-radius: 50%;
-      background: var(--forest-primary);
-      opacity: 0.04;
-      transform: translate(15px, -15px);
+      background: linear-gradient(135deg, rgba(27,94,32,0.08), transparent);
       pointer-events: none;
     }
-    .kpi-card:hover { transform: translateY(-2px); box-shadow: var(--shadow-md); }
+    .kpi-card:hover { transform: translateY(-3px); box-shadow: var(--glass-shadow-hover); }
     .kpi-card-inner { display: flex; flex-direction: column; align-items: center; text-align: center; gap: var(--sp-2); position: relative; z-index: 1; }
     .kpi-body { min-width: 0; }
     .kpi-value { font-size: 1.5rem; font-weight: 800; color: var(--forest-primary); letter-spacing: -0.5px; line-height: 1.2; }
@@ -991,11 +1137,15 @@
     .kpi-sm { padding: var(--sp-2); }
 
     /* Detail sections */
-    .detail-summary-card { background: linear-gradient(135deg, #f8fdf8 0%, #fff 100%); }
-    .detail-summary-card .detail-stat { border-right: 1px solid var(--forest-light); padding: var(--sp-2) var(--sp-3); }
+    .detail-summary-card {
+      background: var(--glass-bg);
+      backdrop-filter: var(--glass-blur); -webkit-backdrop-filter: var(--glass-blur);
+      border: 1px solid var(--glass-border);
+    }
+    .detail-summary-card .detail-stat { border-right: 1px solid rgba(27,94,32,0.08); padding: var(--sp-2) var(--sp-3); }
     .detail-summary-card .detail-stat:last-child { border-right: none; }
-    .detail-field label { font-size: var(--fs-xs); font-weight: 700; color: #888; text-transform: uppercase; letter-spacing: 0.3px; }
-    .detail-field .detail-val { font-size: var(--fs-base); color: var(--text-main); padding: 2px 0; border-bottom: 1px solid var(--border-light); }
+    .detail-field label { font-size: var(--fs-xs); font-weight: 700; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.5px; }
+    .detail-field .detail-val { font-size: var(--fs-base); color: var(--text-main); padding: 3px 0; border-bottom: 1px solid rgba(27,94,32,0.06); }
     .group-stat-card { transition: all var(--transition-fast); }
     .group-stat-card:hover { transform: translateY(-2px); box-shadow: var(--shadow-md); }
 
@@ -1016,20 +1166,24 @@
       position: relative;
     }
     .map-toolbar {
-      background: var(--bg-white);
-      border-radius: var(--radius-sm);
+      background: var(--glass-bg);
+      backdrop-filter: var(--glass-blur); -webkit-backdrop-filter: var(--glass-blur);
+      border-radius: var(--radius-md);
       padding: var(--sp-2) var(--sp-3);
-      box-shadow: var(--shadow-sm);
+      box-shadow: var(--glass-shadow);
+      border: 1px solid var(--glass-border);
       margin-bottom: var(--sp-2);
     }
     .map-layer-control {
       position: absolute;
       top: 10px; right: 10px;
       z-index: 1070;
-      background: var(--bg-white);
-      border-radius: var(--radius-sm);
+      background: var(--glass-bg-strong);
+      backdrop-filter: blur(24px); -webkit-backdrop-filter: blur(24px);
+      border-radius: var(--radius-md);
       padding: var(--sp-3);
-      box-shadow: var(--shadow-md);
+      box-shadow: var(--glass-shadow);
+      border: 1px solid var(--glass-border);
       max-height: 300px;
       overflow-y: auto;
       min-width: 180px;
@@ -1071,7 +1225,7 @@
     .map-search-wrap input { padding-left: var(--sp-3); padding-right: 28px; font-size: var(--fs-sm); height: 31px; border-color: #a5d6a7; }
     .map-search-wrap input:focus { border-color: var(--forest-secondary); box-shadow: 0 0 0 2px rgba(46,125,50,0.15); }
     .map-search-icon { position: absolute; right: var(--sp-2); left: auto; top: 50%; transform: translateY(-50%); color: var(--text-muted); font-size: var(--fs-sm); pointer-events: none; }
-    .map-search-dropdown { position: absolute; top: 100%; left: 0; right: 0; z-index: 1060; background: var(--bg-white); border: 1px solid #c8e6c9; border-top: none; border-radius: 0 0 var(--radius-sm) var(--radius-sm); max-height: 300px; overflow-y: auto; box-shadow: var(--shadow-md); }
+    .map-search-dropdown { position: absolute; top: 100%; left: 0; right: 0; z-index: 1060; background: var(--glass-bg-strong); backdrop-filter: blur(24px); -webkit-backdrop-filter: blur(24px); border: 1px solid var(--glass-border); border-top: none; border-radius: 0 0 var(--radius-md) var(--radius-md); max-height: 300px; overflow-y: auto; box-shadow: var(--glass-shadow); }
     .map-search-item { padding: var(--sp-2) var(--sp-3); cursor: pointer; border-bottom: 1px solid var(--border-light); font-size: var(--fs-sm); }
     .map-search-item:last-child { border-bottom: none; }
     .map-search-item:hover, .map-search-item.active { background: var(--forest-light); }
@@ -1176,9 +1330,9 @@
     .handbook-content h4, .handbook-content h5 { color: #43a047; font-weight: 700; margin: 16px 0 8px; }
     .handbook-content p { margin-bottom: 10px; text-align: justify; }
     .handbook-content table { width: 100%; border-collapse: collapse; margin: 14px 0; font-size: 14px; }
-    .handbook-content table th { background: #e8f5e9; color: #1b5e20; font-weight: 700; border: 1px solid #a5d6a7; padding: 8px 10px; }
-    .handbook-content table td { border: 1px solid #c8e6c9; padding: 7px 10px; vertical-align: top; }
-    .handbook-content table tr:nth-child(even) { background: #f1f8e9; }
+    .handbook-content table th { background: linear-gradient(135deg, rgba(43,100,47,0.12), rgba(27,94,32,0.08)); color: #1b5e20; font-weight: 700; border: 1px solid rgba(27,94,32,0.15); padding: 8px 10px; }
+    .handbook-content table td { border: 1px solid rgba(27,94,32,0.08); padding: 7px 10px; vertical-align: top; }
+    .handbook-content table tr:nth-child(even) { background: rgba(232,245,233,0.4); }
     .handbook-content img { max-width: 100%; height: auto; border-radius: 6px; margin: 10px 0; box-shadow: 0 2px 8px rgba(0,0,0,.1); }
     .handbook-content ul, .handbook-content ol { padding-left: 24px; margin-bottom: 12px; }
     .handbook-content li { margin-bottom: 4px; }
@@ -1247,7 +1401,9 @@
 
     /* Navbar utility classes */
     .navbar-main {
-      background: var(--forest-gradient); min-height: 56px;
+      background: linear-gradient(135deg, rgba(43,100,47,0.95) 0%, rgba(27,94,32,0.98) 100%);
+      backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
+      min-height: 56px; border-bottom: 1px solid rgba(255,255,255,0.1);
     }
     .navbar-title-desktop { gap: var(--sp-3); }
     .navbar-project-title { font-size: var(--fs-xl); letter-spacing: 0.5px; text-transform: uppercase; }
@@ -1310,6 +1466,82 @@
     .backup-card .btn-group-vertical { width: 100%; gap: 8px; }
     .backup-card .btn-backup { border-radius: 10px; font-weight: 600; padding: 10px; }
 
+    /* === Welcome / About Modal === */
+    .welcome-overlay {
+      position: fixed; inset: 0; z-index: 10500;
+      background: rgba(0,0,0,0.55); backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px);
+      display: flex; align-items: center; justify-content: center;
+      opacity: 0; transition: opacity 0.35s ease;
+    }
+    .welcome-overlay.show { opacity: 1; }
+    .welcome-panel {
+      width: 94%; max-width: 820px; max-height: 88vh;
+      background: #fff; border-radius: 20px;
+      box-shadow: 0 24px 80px rgba(0,0,0,0.25);
+      display: flex; flex-direction: column;
+      transform: translateY(30px) scale(0.96); transition: transform 0.4s cubic-bezier(0.34,1.56,0.64,1);
+      overflow: hidden;
+    }
+    .welcome-overlay.show .welcome-panel { transform: translateY(0) scale(1); }
+    .welcome-header {
+      background: linear-gradient(135deg, #43A047 0%, #1B5E20 100%);
+      color: #fff; padding: 28px 32px 22px; text-align: center; flex-shrink: 0;
+      position: relative; overflow: hidden;
+    }
+    .welcome-header::before {
+      content: ''; position: absolute; inset: 0;
+      background: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M30 5 L35 15 L30 12 L25 15Z' fill='rgba(255,255,255,0.04)'/%3E%3C/svg%3E") repeat;
+    }
+    .welcome-header h4 { font-size: 1.3rem; font-weight: 700; margin: 0 0 4px; position: relative; }
+    .welcome-header p { font-size: 0.82rem; opacity: 0.85; margin: 0; position: relative; }
+    .welcome-body {
+      flex: 1; overflow-y: auto; padding: 24px 28px;
+      scrollbar-width: thin; scrollbar-color: rgba(27,94,32,0.2) transparent;
+    }
+    .welcome-section {
+      display: grid; grid-template-columns: repeat(auto-fill, minmax(230px, 1fr)); gap: 14px;
+      margin-bottom: 24px;
+    }
+    .welcome-card {
+      border: 1px solid rgba(27,94,32,0.1); border-radius: 14px;
+      padding: 16px; background: linear-gradient(135deg, #f8fdf8, #fff);
+      transition: all 0.2s ease;
+    }
+    .welcome-card:hover { border-color: rgba(27,94,32,0.25); box-shadow: 0 4px 16px rgba(27,94,32,0.08); transform: translateY(-2px); }
+    .welcome-card .wc-icon {
+      width: 38px; height: 38px; border-radius: 10px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 16px; margin-bottom: 10px; color: #fff; flex-shrink: 0;
+    }
+    .welcome-card .wc-title { font-size: 0.82rem; font-weight: 700; color: #1B5E20; margin-bottom: 4px; }
+    .welcome-card .wc-desc { font-size: 0.72rem; color: #555; line-height: 1.5; margin: 0; }
+    .welcome-values {
+      display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 10px;
+      margin-top: 8px;
+    }
+    .welcome-val {
+      display: flex; align-items: center; gap: 10px;
+      padding: 10px 14px; border-radius: 10px;
+      background: rgba(27,94,32,0.04); font-size: 0.78rem; color: #2E7D32; font-weight: 600;
+    }
+    .welcome-val i { font-size: 14px; color: #43A047; flex-shrink: 0; }
+    .welcome-footer {
+      flex-shrink: 0; padding: 14px 28px; border-top: 1px solid rgba(0,0,0,0.06);
+      display: flex; align-items: center; justify-content: space-between; gap: 12px;
+      flex-wrap: wrap; background: #fafafa;
+    }
+    .welcome-footer label { font-size: 0.78rem; color: #666; cursor: pointer; display: flex; align-items: center; gap: 6px; margin: 0; }
+    .welcome-footer label input[type="checkbox"] { accent-color: #1B5E20; width: 16px; height: 16px; }
+    @media (max-width: 576px) {
+      .welcome-panel { width: 98%; max-height: 92vh; border-radius: 16px; }
+      .welcome-header { padding: 20px 18px 16px; }
+      .welcome-header h4 { font-size: 1.05rem; }
+      .welcome-body { padding: 16px 14px; }
+      .welcome-section { grid-template-columns: 1fr; }
+      .welcome-values { grid-template-columns: 1fr; }
+      .welcome-footer { padding: 12px 14px; flex-direction: column; align-items: stretch; text-align: center; }
+    }
+
   </style>
 </head>
 
@@ -1317,7 +1549,7 @@
   <!-- Splash Screen: fully inline for instant first paint (no external CSS dependency) -->
   <div id="app-splash" style="position:fixed;inset:0;z-index:99999;display:flex;flex-direction:column;align-items:center;justify-content:center;background:linear-gradient(160deg,#43A047 0%,#2E7D32 40%,#1B5E20 100%);color:#fff;font-family:system-ui,-apple-system,sans-serif;transition:opacity .3s">
     <div style="width:72px;height:72px;background:rgba(255,255,255,.15);border-radius:18px;display:flex;align-items:center;justify-content:center;font-size:32px;font-weight:700;margin-bottom:16px">FSC</div>
-    <div style="font-size:15px;font-weight:600;text-align:center;margin-bottom:12px;padding:0 24px">Hệ thống quản lý rừng chứng chỉ rừng FSC</div>
+    <div style="font-size:15px;font-weight:600;text-align:center;margin-bottom:12px;padding:0 24px">Hệ thống quản lý rừng bền vững - Chứng chỉ rừng FSC</div>
     <div style="width:120px;height:3px;background:rgba(255,255,255,.2);border-radius:3px;overflow:hidden"><div style="width:30%;height:100%;background:#fff;border-radius:3px;animation:_sl 1.2s ease-in-out infinite"></div></div>
     <style>@keyframes _sl{0%{transform:translateX(-100%)}100%{transform:translateX(400%)}}</style>
   </div>
@@ -1367,7 +1599,7 @@
       <!-- Left: Brand Panel -->
       <div class="login-brand">
         <img src="Logo Clever forestry.png" alt="CleverForestry" class="login-brand-logo" onerror="this.style.display='none'">
-        <div class="login-brand-title" data-i18n="login_brand_title">Hệ thống quản lý rừng chứng chỉ rừng FSC</div>
+        <div class="login-brand-title" data-i18n="login_brand_title">Hệ thống quản lý rừng bền vững - Chứng chỉ rừng FSC</div>
         <div class="login-brand-subtitle" data-i18n="login_brand_subtitle">Forest Stewardship Council - Sustainable Forest Management</div>
       </div>
 
@@ -1453,7 +1685,8 @@
           </div>
 
           <div class="text-center mt-3 pt-2 login-footer-line">
-            <small class="text-muted"><span data-i18n="developed_by">Phát triển bởi Lộc Vũ Trung - CleverForestry</span></small>
+            <small class="text-muted"><span data-i18n="developed_by">Phát triển bởi</span> <a href="https://locvutrung.lvtcenter.it.com" target="_blank" class="text-decoration-none" style="color:#2E7D32;font-weight:600">Lộc Vũ Trung</a></small>
+            <br><small class="text-muted" style="font-size:0.7rem"><i class="fa-solid fa-envelope me-1"></i>locvutrung@gmail.com <span class="mx-1">|</span> <i class="fa-solid fa-phone me-1"></i>+84 913 191 178</small>
           </div>
         </div>
       </div>
@@ -1489,10 +1722,12 @@
           <div class="navbar-date" id="navbar-date"></div>
         </div>
         <span class="text-white me-1 small d-none d-md-block navbar-user" id="user-display-name">User</span>
+        <span id="user-role-badge" class="badge rounded-pill d-none d-md-inline-block" style="font-size:0.65rem;padding:3px 8px;"></span>
         <span id="offline-badge" class="badge bg-warning text-dark d-none badge-offline"><i class="fa-solid fa-wifi-slash me-1"></i>Offline</span>
         <span id="sync-badge" class="badge bg-info text-white d-none badge-sync" onclick="showSyncPanel()" title="Pending sync">
           <i class="fa-solid fa-arrows-rotate me-1"></i><span id="sync-count">0</span>
         </span>
+        <button type="button" class="btn btn-sm text-white rounded-pill px-2" onclick="showWelcomeModal()" title="About FSCFM" style="opacity:0.75" onmouseover="this.style.opacity='1'" onmouseout="this.style.opacity='0.75'"><i class="fa-solid fa-circle-info"></i></button>
         <button type="button" class="btn btn-sm btn-logout fw-bold rounded-pill px-2 px-md-3"
           onclick="logout()"><i class="fa-solid fa-right-from-bracket me-1"></i><span class="d-none d-sm-inline" data-i18n="btn_logout">Thoát</span></button>
       </div>
@@ -1500,14 +1735,17 @@
 
     <div class="d-flex flex-grow-1 overflow-hidden">
       <div id="sidebar-overlay" onclick="toggleSidebar()"></div>
-      <div id="sidebar-wrapper" class="bg-white border-end shadow-sm">
+      <div id="sidebar-wrapper" class="border-end shadow-sm d-flex flex-column">
         <div class="sidebar-header d-flex align-items-center justify-content-center" role="button" onclick="goHome()" id="sidebar-home-btn">
           <span class="home-icon"><i class="fa-solid fa-house"></i></span>
         </div>
-        <div class="accordion accordion-flush overflow-auto h-100" id="sidebarAccordion"></div>
+        <div class="accordion accordion-flush overflow-auto flex-grow-1" id="sidebarAccordion"></div>
+        <div class="text-center py-2 border-top" style="font-size:0.65rem;opacity:0.6">
+          <a href="https://locvutrung.lvtcenter.it.com" target="_blank" class="text-decoration-none text-muted">v2.0 | LVT</a>
+        </div>
       </div>
 
-      <div id="page-content-wrapper" class="flex-grow-1 bg-light overflow-auto p-2 p-md-3">
+      <div id="page-content-wrapper" class="flex-grow-1 overflow-auto p-2 p-md-3" style="background:transparent">
         <div id="dashboard-view"></div>
         <div id="data-view" class="d-none">
           <div class="d-flex align-items-center mb-3">
@@ -1611,22 +1849,7 @@
     </div>
   </div>
 
-  <div class="modal fade" id="dataModal" tabindex="-1">
-    <div class="modal-dialog modal-lg">
-      <div class="modal-content">
-        <div class="modal-header bg-success text-white">
-          <h5 class="modal-title" id="modalTitle">Form</h5><button type="button" class="btn-close btn-close-white"
-            data-bs-dismiss="modal"></button>
-        </div>
-        <div class="modal-body">
-          <form id="dynamic-form" class="row g-3"></form>
-        </div>
-        <div class="modal-footer"><button type="button" class="btn btn-light"
-            data-bs-dismiss="modal"><span data-i18n="modal_close">Đóng</span></button><button type="button" class="btn btn-success" id="btn-save"
-            onclick="saveData()"><span data-i18n="modal_save">Lưu</span></button></div>
-      </div>
-    </div>
-  </div>
+  <!-- Modal removed: forms now render inline in page content -->
 
   <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
@@ -1780,9 +2003,9 @@
     const LANG = {
       vi: {
         // Login screen
-        login_title: 'Hệ thống quản lý rừng chứng chỉ rừng FSC',
+        login_title: 'Hệ thống quản lý rừng bền vững - Chứng chỉ rừng FSC',
         login_subtitle: 'Quản lý Rừng bền vững FSC',
-        login_brand_title: 'Hệ thống quản lý rừng chứng chỉ rừng FSC',
+        login_brand_title: 'Hệ thống quản lý rừng bền vững - Chứng chỉ rừng FSC',
         login_brand_subtitle: 'Forest Stewardship Council - Sustainable Forest Management',
         login_panel_label: 'Vui lòng đăng nhập',
         login_panel_title: 'Xin chào!',
@@ -2216,12 +2439,52 @@
         fsc_std_criterion: 'Tiêu chí',
         fsc_std_clause: 'Điều khoản',
         fsc_std_part: 'Phần',
-        fsc_std_no_results: 'Không tìm thấy tiêu chí phù hợp'
+        fsc_std_no_results: 'Không tìm thấy tiêu chí phù hợp',
+        // About/Welcome modal
+        about_title: 'FSCFM - Hệ thống Số hóa Quản lý Rừng Bền vững FSC',
+        about_dont_show: 'Không hiện lại khi đăng nhập',
+        about_close: 'Bắt đầu sử dụng',
+        about_s1_title: 'Số hóa toàn diện quy trình quản lý rừng',
+        about_s1_desc: '41 bảng dữ liệu, quản lý phân cấp từ Ban quản lý → Nhóm CCR → Chủ rừng → Lô rừng (60+ trường dữ liệu). Kế hoạch trồng, khai thác, đào tạo, vườn ươm, tài sản, công cụ, khiếu nại. 100% thay thế hồ sơ giấy.',
+        about_s2_title: 'Bản đồ GIS & GPS tích hợp',
+        about_s2_desc: 'Bản đồ Leaflet (Vệ tinh/OpenStreetMap). Vẽ ranh giới lô bằng tay hoặc GPS tự động. Upload/Export GeoJSON. Hiển thị tên lô, chủ rừng, diện tích, năm trồng. Truy xuất tọa độ GPS cho EUDR.',
+        about_s3_title: 'Đánh giá nội bộ FSC',
+        about_s3_desc: 'Bộ 68 câu hỏi theo 9 Nguyên tắc FSC. Đánh giá cấp Nhóm/Chủ rừng/Lô rừng. Chấm điểm tự động, lịch sử đánh giá.',
+        about_s4_title: 'Tuân thủ EUDR',
+        about_s4_desc: 'Bộ 35 câu hỏi rà soát trách nhiệm giải trình, 7 lĩnh vực. Liên kết GPS/polygon. Thư viện tài liệu EUDR. Báo cáo tuân thủ tự động.',
+        about_s5_title: 'Giám sát & Đánh giá (M&E)',
+        about_s5_desc: 'Lịch giám sát hàng tháng. Kiểm tra thực địa với ảnh chụp trực tiếp. Lưu trữ ảnh Supabase Storage. Xuất PDF báo cáo giám sát.',
+        about_s6_title: 'Tham vấn các bên liên quan',
+        about_s6_desc: 'Quản lý danh mục tổ chức/cá nhân. Tạo và quản lý các đợt tham vấn. Theo dõi phản hồi. Xuất PDF tổng hợp.',
+        about_s7_title: 'Hoạt động Offline-Online',
+        about_s7_desc: 'PWA cài đặt trên điện thoại. Dữ liệu cache IndexedDB, xem/nhập offline. Hàng đợi đồng bộ tự động. Bản đồ offline cho vùng sâu vùng xa.',
+        about_s8_title: 'Đa người dùng & Phân quyền',
+        about_s8_desc: 'Đăng nhập Supabase Auth. Phân quyền Xem/Tạo/Sửa/Xóa theo module. Row-Level Security (RLS). Hồ sơ nhân sự tự động (FSC_ST_XXX).',
+        about_s9_title: 'Dashboard & Phân tích',
+        about_s9_desc: 'KPI thời gian thực: Tổng diện tích, Diện tích FSC, Số nhóm/lô, Nhân sự, Giờ đào tạo. Biểu đồ Chart.js. In báo cáo trực tiếp.',
+        about_s10_title: 'Cơ sở tri thức tích hợp',
+        about_s10_desc: 'Sổ tay quản lý nhóm (6 module). Bộ tiêu chuẩn FSC Việt Nam (tra cứu + ghi chú). Thư viện EUDR.',
+        about_s11_title: 'Hỗ trợ đa ngôn ngữ',
+        about_s11_desc: 'Tiếng Việt (mặc định) và Tiếng Anh. 300+ khóa dịch, chuyển đổi tức thì.',
+        about_s12_title: 'Tương thích đa thiết bị',
+        about_s12_desc: 'Desktop, Tablet, Mobile — Bootstrap 5 responsive. Thanh điều hướng dưới cho di động, nút lớn, tích hợp camera.',
+        about_s13_title: 'Bảo mật & Sao lưu dữ liệu',
+        about_s13_desc: 'Export JSON toàn bộ CSDL. Sao chép nhanh clipboard. Supabase PostgreSQL sao lưu tự động.',
+        about_s14_title: 'Tìm kiếm thông minh',
+        about_s14_desc: 'Tìm kiếm đồng thời 6+ bảng dữ liệu. Kết quả phân nhóm theo loại. Điều hướng nhanh tới bản ghi.',
+        about_val_paperless: 'Giảm 90% thủ tục giấy tờ',
+        about_val_offline: 'Làm việc mọi lúc mọi nơi, không cần internet',
+        about_val_multiuser: 'Đa người dùng đồng thời, phân quyền chi tiết',
+        about_val_gps: 'Bản đồ GPS tích hợp, truy xuất EUDR',
+        about_val_eudr: 'Sẵn sàng tuân thủ EUDR',
+        about_val_fsc: 'Đánh giá nội bộ chuẩn 9 Nguyên tắc FSC',
+        about_val_cost: 'Tiết kiệm chi phí — kiến trúc đơn giản',
+        about_val_pwa: 'Trải nghiệm ứng dụng di động — PWA'
       },
       en: {
-        login_title: 'FSC Forest Management System',
+        login_title: 'Sustainable Forest Management - FSC Certification',
         login_subtitle: 'Forest Stewardship Council',
-        login_brand_title: 'FSC Forest Management System',
+        login_brand_title: 'Sustainable Forest Management - FSC Certification',
         login_brand_subtitle: 'Forest Stewardship Council - FSC Certified',
         login_panel_label: 'Please sign in',
         login_panel_title: 'Welcome!',
@@ -2638,7 +2901,47 @@
         fsc_std_criterion: 'Criterion',
         fsc_std_clause: 'Clause',
         fsc_std_part: 'Part',
-        fsc_std_no_results: 'No matching criteria found'
+        fsc_std_no_results: 'No matching criteria found',
+        // About/Welcome modal
+        about_title: 'FSCFM - FSC Sustainable Forest Management Digitalization System',
+        about_dont_show: 'Don\'t show on next login',
+        about_close: 'Get Started',
+        about_s1_title: 'Full Digitalization of Forest Management',
+        about_s1_desc: '41 data tables, hierarchical management from Group Board → CHG → Forest Owner → Plot (60+ fields). Planting, harvesting, training, nursery, assets, tools, grievance. 100% paperless.',
+        about_s2_title: 'Integrated GIS & GPS Mapping',
+        about_s2_desc: 'Leaflet maps (Satellite/OpenStreetMap). Manual or GPS-tracked boundary delineation. Upload/Export GeoJSON. Plot names, owners, area, planting year overlay. EUDR GPS traceability.',
+        about_s3_title: 'FSC Internal Audit',
+        about_s3_desc: '68-question checklist based on 9 FSC Principles. Audit at Group/Owner/Plot levels. Automated scoring, audit history.',
+        about_s4_title: 'EUDR Compliance',
+        about_s4_desc: '35-question due diligence audit across 7 sectors. GPS/polygon linking. EUDR reference library. Automated compliance reports.',
+        about_s5_title: 'Monitoring & Evaluation (M&E)',
+        about_s5_desc: 'Monthly monitoring schedules. Field inspections with photo evidence. Supabase Storage. PDF report export.',
+        about_s6_title: 'Stakeholder Consultation',
+        about_s6_desc: 'Organization/individual directory. Create & manage consultation rounds. Track feedback. Export PDF summaries.',
+        about_s7_title: 'Hybrid Offline-Online',
+        about_s7_desc: 'PWA installable on mobile. IndexedDB caching, view/input offline. Auto-sync queue. Offline map tiles for remote areas.',
+        about_s8_title: 'Multi-User & Permissions',
+        about_s8_desc: 'Supabase Auth login. View/Create/Edit/Delete per module. Row-Level Security (RLS). Auto employee profile (FSC_ST_XXX).',
+        about_s9_title: 'Dashboard & Analytics',
+        about_s9_desc: 'Real-time KPIs: Total Area, FSC Area, Groups/Plots, Personnel, Training Hours. Chart.js visualizations. Direct print reports.',
+        about_s10_title: 'Integrated Knowledge Base',
+        about_s10_desc: 'Group Management Handbook (6 modules). Vietnam FSC Standards (lookup + notes). EUDR Library.',
+        about_s11_title: 'Multi-Language Support',
+        about_s11_desc: 'Vietnamese (default) and English. 300+ translation keys, instant toggle.',
+        about_s12_title: 'Cross-Device Compatibility',
+        about_s12_desc: 'Desktop, Tablet, Mobile — Bootstrap 5 responsive. Bottom nav for mobile, large buttons, camera integration.',
+        about_s13_title: 'Data Security & Backup',
+        about_s13_desc: 'Full JSON database export. Quick clipboard copy. Supabase PostgreSQL automated cloud backups.',
+        about_s14_title: 'Smart Search',
+        about_s14_desc: 'Simultaneous search across 6+ data tables. Categorized results by type. Quick navigation to records.',
+        about_val_paperless: '90% paperwork reduction',
+        about_val_offline: 'Work anytime, anywhere — no internet needed',
+        about_val_multiuser: 'Multi-user with granular permissions',
+        about_val_gps: 'Integrated GPS mapping for EUDR traceability',
+        about_val_eudr: 'EUDR-ready compliance framework',
+        about_val_fsc: 'FSC 9 Principles standardized internal audit',
+        about_val_cost: 'Cost-efficient — simple architecture',
+        about_val_pwa: 'Mobile app experience — PWA'
       }
     };
 
@@ -3150,10 +3453,16 @@
           try {
             const cleanData = { ...this._insertData };
             delete cleanData.created_at; delete cleanData.updated_at;
+            // Remove undefined/null keys that PocketBase might reject
+            Object.keys(cleanData).forEach(k => { if (cleanData[k] === undefined) delete cleanData[k]; });
             const rec = await col.create(cleanData);
             const pojo = this._toPojo(rec);
             return { data: this._doSelect ? [pojo] : pojo, error: null };
-          } catch (e) { return { data: null, error: { message: e.message } }; }
+          } catch (e) {
+            console.error(`[PB] Create ${this._table} failed:`, e, 'Data:', this._insertData);
+            const msg = e.response?.data ? JSON.stringify(e.response.data) : e.message;
+            return { data: null, error: { message: `Failed to create record. ${msg}` } };
+          }
         }
 
         // --- UPDATE ---
@@ -3622,7 +3931,7 @@
       const errors = await fscDB.getAllByIndex('sync_queue', 'status', 'error');
       let html = `<div class="modal fade" id="syncModal" tabindex="-1">
         <div class="modal-dialog"><div class="modal-content">
-          <div class="modal-header bg-success text-white py-2">
+          <div class="modal-header text-white py-2" style="background:linear-gradient(135deg,rgba(43,100,47,0.92),rgba(27,94,32,0.95))">
             <h6 class="modal-title m-0"><i class="fas fa-arrows-rotate me-2"></i>${t('sync_panel_title')}</h6>
             <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
           </div>
@@ -5179,7 +5488,7 @@
             console.error("Profile not found:", error);
             return;
           }
-          if (profile.trang_thai !== 'Act') {
+          if (profile.trang_thai === 'Locked') {
             alert(t('account_locked'));
             await sb.auth.signOut();
             return;
@@ -5269,6 +5578,11 @@
         if (!currentUser) throw new Error("currentUser is missing");
 
         $('#user-display-name').text(currentUser['Họ và tên'] || currentUser['Email'] || 'User');
+        // Show role badge
+        const _role = _getUserRole();
+        const _roleBadgeColors = { 'SuperAdmin':'bg-dark', 'Admin':'bg-danger', 'Manager':'bg-warning text-dark', 'Staff':'bg-info', 'Viewer':'bg-secondary' };
+        const _roleDisplay = _role === 'SuperAdmin' ? 'Admin' : _role;
+        $('#user-role-badge').text(_roleDisplay).removeClass('bg-dark bg-danger bg-warning bg-info bg-secondary text-dark').addClass(_roleBadgeColors[_role] || 'bg-secondary');
 
         if (APP_DATA && APP_DATA['Menu']) {
           computeGroupStats(); // TÍNH TOÁN THỐNG KÊ NHÓM TỪ LÔ RỪNG
@@ -5280,6 +5594,7 @@
 
         showDashboard();
         loadSettings();
+        maybeShowWelcome();
         console.log("Transition to main-app complete.");
       } catch (err) {
         console.error("Error in showAppMain:", err);
@@ -5298,6 +5613,95 @@
         $('#form-register').addClass('d-none');
         $('#form-login').removeClass('d-none').hide().fadeIn(200);
       }
+    }
+
+    // === WELCOME / ABOUT MODAL ===
+    function buildWelcomeHTML() {
+      const sections = [
+        { key: 's1', icon: 'fa-database', bg: '#1B5E20' },
+        { key: 's2', icon: 'fa-map-location-dot', bg: '#2E7D32' },
+        { key: 's3', icon: 'fa-clipboard-check', bg: '#388E3C' },
+        { key: 's4', icon: 'fa-earth-europe', bg: '#0277BD' },
+        { key: 's5', icon: 'fa-binoculars', bg: '#00695C' },
+        { key: 's6', icon: 'fa-people-group', bg: '#5D4037' },
+        { key: 's7', icon: 'fa-wifi', bg: '#E65100' },
+        { key: 's8', icon: 'fa-shield-halved', bg: '#4527A0' },
+        { key: 's9', icon: 'fa-chart-pie', bg: '#AD1457' },
+        { key: 's10', icon: 'fa-book-open', bg: '#1565C0' },
+        { key: 's11', icon: 'fa-language', bg: '#00838F' },
+        { key: 's12', icon: 'fa-mobile-screen-button', bg: '#6A1B9A' },
+        { key: 's13', icon: 'fa-lock', bg: '#37474F' },
+        { key: 's14', icon: 'fa-magnifying-glass', bg: '#D84315' }
+      ];
+      const values = [
+        { key: 'val_paperless', icon: 'fa-file-circle-check' },
+        { key: 'val_offline', icon: 'fa-cloud-arrow-down' },
+        { key: 'val_multiuser', icon: 'fa-users-gear' },
+        { key: 'val_gps', icon: 'fa-location-crosshairs' },
+        { key: 'val_eudr', icon: 'fa-earth-europe' },
+        { key: 'val_fsc', icon: 'fa-award' },
+        { key: 'val_cost', icon: 'fa-coins' },
+        { key: 'val_pwa', icon: 'fa-mobile-screen' }
+      ];
+      let cards = sections.map((s, i) =>
+        `<div class="welcome-card">
+          <div class="wc-icon" style="background:${s.bg}"><i class="fa-solid ${s.icon}"></i></div>
+          <div class="wc-title">${i + 1}. ${t('about_' + s.key + '_title')}</div>
+          <p class="wc-desc">${t('about_' + s.key + '_desc')}</p>
+        </div>`
+      ).join('');
+      let vals = values.map(v =>
+        `<div class="welcome-val"><i class="fa-solid ${v.icon}"></i>${t('about_' + v.key)}</div>`
+      ).join('');
+      return `<div class="welcome-overlay" id="welcome-overlay" onclick="if(event.target===this)closeWelcomeModal()">
+        <div class="welcome-panel">
+          <div class="welcome-header">
+            <h4><i class="fa-solid fa-tree me-2"></i>${t('about_title')}</h4>
+            <p>Forest Stewardship Council — Sustainable Forest Management</p>
+          </div>
+          <div class="welcome-body">
+            <div class="welcome-section">${cards}</div>
+            <div style="margin-bottom:8px;font-weight:700;color:#1B5E20;font-size:0.88rem"><i class="fa-solid fa-star me-1"></i>${currentLang === 'vi' ? 'GIÁ TRỊ CỐT LÕI' : 'CORE VALUES'}</div>
+            <div class="welcome-values">${vals}</div>
+          </div>
+          <div class="welcome-footer">
+            <label><input type="checkbox" id="welcome-dont-show">${t('about_dont_show')}</label>
+            <button type="button" class="btn btn-success btn-sm rounded-pill px-4 fw-bold" onclick="closeWelcomeModal()">
+              <i class="fa-solid fa-rocket me-1"></i>${t('about_close')}
+            </button>
+          </div>
+        </div>
+      </div>`;
+    }
+
+    function showWelcomeModal() {
+      // Remove any existing
+      $('#welcome-overlay').remove();
+      $('body').append(buildWelcomeHTML());
+      // Trigger animation
+      requestAnimationFrame(() => {
+        requestAnimationFrame(() => {
+          $('#welcome-overlay').addClass('show');
+        });
+      });
+    }
+
+    function closeWelcomeModal() {
+      const dontShow = $('#welcome-dont-show').is(':checked');
+      if (dontShow) {
+        localStorage.setItem('fscfm_hide_welcome', '1');
+      }
+      const el = document.getElementById('welcome-overlay');
+      if (el) {
+        el.classList.remove('show');
+        setTimeout(() => el.remove(), 350);
+      }
+    }
+
+    function maybeShowWelcome() {
+      if (localStorage.getItem('fscfm_hide_welcome') === '1') return;
+      // Small delay so the dashboard loads first
+      setTimeout(() => showWelcomeModal(), 600);
     }
 
     function togglePasswordVis(btn) {
@@ -5457,7 +5861,7 @@
     // SETTINGS MODULE
     // ============================================================
     const DEFAULT_SETTINGS = {
-      projectName: 'Hệ thống quản lý rừng chứng chỉ rừng FSC',
+      projectName: 'Hệ thống quản lý rừng bền vững - Chứng chỉ rừng FSC',
       fontFamily: 'Be Vietnam Pro',
       titleAlign: 'center',
       logoUrl: '',
@@ -5468,7 +5872,7 @@
       colorBg: '#F5F7F5',
       // Navbar
       colorNavbarText: '#FFFFFF',
-      fontSizeTitle: 25,
+      fontSizeTitle: 20,
       // Sidebar
       colorSidebarText: '#FFFFFF',
       fontSizeSidebarGroup: 12,
@@ -5502,7 +5906,7 @@
         if (saved) {
           const merged = { ...DEFAULT_SETTINGS, ...JSON.parse(saved) };
           // Migrate old project names to new default
-          const oldNames = ['Sustainable Forest Management System', 'Nhóm hộ CCR Nam Phát - Định Hoá', 'Nhóm hộ CCR Nam Phát - Định Hóa'];
+          const oldNames = ['Sustainable Forest Management System', 'Nhóm hộ CCR Nam Phát - Định Hoá', 'Nhóm hộ CCR Nam Phát - Định Hóa', 'Hệ thống quản lý rừng chứng chỉ rừng FSC'];
           if (oldNames.includes(merged.projectName)) {
             merged.projectName = DEFAULT_SETTINGS.projectName;
           }
@@ -5786,10 +6190,21 @@
             </div>
 
             <!-- Actions (bottom) -->
-            <div class="d-flex gap-2">
+            <div class="d-flex gap-2 mb-3">
               <button class="btn btn-success fw-bold" onclick="saveSettingsFromForm()"><i class="fa-solid fa-check me-1"></i> Lưu cài đặt</button>
               <button class="btn btn-outline-secondary" onclick="resetSettingsToDefault()"><i class="fa-solid fa-rotate-left me-1"></i> Khôi phục mặc định</button>
               <button class="btn btn-outline-primary" onclick="previewSettings()"><i class="fa-solid fa-eye me-1"></i> Xem trước</button>
+            </div>
+
+            <!-- ===== THÔNG TIN TÁC GIẢ ===== -->
+            <div class="card border-0 bg-light">
+              <div class="card-body p-3 text-center">
+                <h6 class="fw-bold mb-2 small text-muted"><i class="fa-solid fa-code me-1"></i> Thông tin phát triển</h6>
+                <p class="mb-1 fw-bold text-success">Lộc Vũ Trung</p>
+                <p class="mb-1 small"><i class="fa-solid fa-envelope me-1 text-muted"></i> <a href="mailto:locvutrung@gmail.com" class="text-decoration-none">locvutrung@gmail.com</a></p>
+                <p class="mb-1 small"><i class="fa-solid fa-phone me-1 text-muted"></i> +84 913 191 178</p>
+                <p class="mb-0 small"><i class="fa-solid fa-globe me-1 text-muted"></i> <a href="https://locvutrung.lvtcenter.it.com" target="_blank" class="text-decoration-none">locvutrung.lvtcenter.it.com</a></p>
+              </div>
             </div>
           </div>
         </div>
@@ -5820,15 +6235,23 @@
     }
 
     function _kpiSkeletonHTML() {
-      const sh = (w, h) => `<div style="height:${h||12}px;width:${w};background:linear-gradient(90deg,#e0e0e0 25%,#f0f0f0 50%,#e0e0e0 75%);background-size:200% 100%;animation:shimmer 1.5s infinite;border-radius:4px"></div>`;
+      const sh = (w, h, r) => `<div style="height:${h||12}px;width:${w};background:linear-gradient(90deg,#d6e4d6 25%,#e8f0e8 50%,#d6e4d6 75%);background-size:200% 100%;animation:shimmer 1.5s infinite;border-radius:${r||4}px"></div>`;
 
-      // Menu icon skeleton
-      const iconColors = ['#1B5E20','#00695C','#0277BD','#33691E','#4E342E','#2E7D32'];
-      const menuSk = iconColors.map(c => `<div class="col"><div class="dashboard-card-3d"><div class="icon-3d-wrapper" style="background:${c};opacity:0.3"></div><div style="margin-top:4px">${sh('70%', 10)}</div></div></div>`).join('');
+      // Menu icon skeleton — clean rounded square placeholders (no colored icons)
+      const menuSk = Array(6).fill(0).map(() => `<div class="col"><div class="dashboard-card-3d" style="pointer-events:none">
+        <div style="width:44px;height:44px;margin:0 auto;border-radius:12px;background:linear-gradient(90deg,#c8dcc8 25%,#dceadc 50%,#c8dcc8 75%);background-size:200% 100%;animation:shimmer 1.5s infinite"></div>
+        <div style="margin-top:8px">${sh('65%', 10)}</div>
+      </div></div>`).join('');
 
-      // KPI card skeleton
-      const kpiSk = (icon) => `<div class="col-4"><div class="kpi-card h-100"><div class="kpi-card-inner"><div class="kpi-icon-circle" style="background:#e8f5e9;color:#a5d6a7"><i class="fa-solid ${icon}"></i></div><div class="kpi-body">${sh('50%', 16)}${sh('75%', 10)}</div></div></div></div>`;
-      const kpiSmSk = (icon) => `<div class="col"><div class="kpi-card h-100 kpi-sm"><div class="kpi-card-inner"><div class="kpi-icon-circle" style="background:#e8f5e9;color:#a5d6a7"><i class="fa-solid ${icon}"></i></div><div class="kpi-body">${sh('45%', 14)}${sh('70%', 9)}</div></div></div></div>`;
+      // KPI card skeleton — clean shimmer bars (no real icons)
+      const kpiSk = () => `<div class="col-4"><div class="kpi-card h-100" style="pointer-events:none"><div class="kpi-card-inner">
+        <div style="width:36px;height:36px;border-radius:50%;background:linear-gradient(90deg,#c8dcc8 25%,#dceadc 50%,#c8dcc8 75%);background-size:200% 100%;animation:shimmer 1.5s infinite;flex-shrink:0"></div>
+        <div class="kpi-body" style="flex:1;padding-left:10px">${sh('55%', 18)}<div style="height:6px"></div>${sh('80%', 10)}</div>
+      </div></div></div>`;
+      const kpiSmSk = () => `<div class="col"><div class="kpi-card h-100 kpi-sm" style="pointer-events:none"><div class="kpi-card-inner">
+        <div style="width:28px;height:28px;border-radius:50%;background:linear-gradient(90deg,#c8dcc8 25%,#dceadc 50%,#c8dcc8 75%);background-size:200% 100%;animation:shimmer 1.5s infinite;flex-shrink:0"></div>
+        <div class="kpi-body" style="flex:1;padding-left:8px">${sh('50%', 14)}<div style="height:4px"></div>${sh('70%', 9)}</div>
+      </div></div></div>`;
 
       return `<style>@keyframes shimmer{0%{background-position:200% 0}100%{background-position:-200% 0}}</style>
         <div class="dash-above-fold">
@@ -5837,17 +6260,17 @@
           </div>
           <div class="position-relative mb-2">
             <div class="input-group input-group-sm shadow-sm">
-              <span class="input-group-text bg-white border-end-0"><i class="fa-solid fa-magnifying-glass text-muted"></i></span>
+              <span class="input-group-text border-end-0"><i class="fa-solid fa-magnifying-glass text-muted"></i></span>
               <input type="text" class="form-control border-start-0" placeholder="${t('search_placeholder')}" disabled>
             </div>
           </div>
           <div class="row row-cols-3 row-cols-md-6 g-2 mb-2">${menuSk}</div>
           <h6 class="fw-bold text-secondary"><i class="fa-solid fa-chart-line me-2"></i>${t('kpi_title')}</h6>
           <div class="row g-2 kpi-grid mb-1">
-            ${kpiSk('fa-house-chimney')}${kpiSk('fa-tree')}${kpiSk('fa-certificate')}
+            ${kpiSk()}${kpiSk()}${kpiSk()}
           </div>
           <div class="row row-cols-3 row-cols-md-6 g-2 kpi-grid">
-            ${kpiSmSk('fa-scale-balanced')}${kpiSmSk('fa-chart-simple')}${kpiSmSk('fa-truck-ramp-box')}${kpiSmSk('fa-seedling')}${kpiSmSk('fa-calendar-check')}${kpiSmSk('fa-water')}
+            ${kpiSmSk()}${kpiSmSk()}${kpiSmSk()}${kpiSmSk()}${kpiSmSk()}${kpiSmSk()}
           </div>
           <div class="text-center text-muted mt-3" style="font-size:13px"><i class="fa-solid fa-spinner fa-spin me-2"></i>Đang tải dữ liệu...</div>
         </div>`;
@@ -5928,11 +6351,11 @@
           <!-- Smart Search -->
           <div class="position-relative mb-2">
             <div class="input-group input-group-sm shadow-sm">
-              <span class="input-group-text bg-white border-end-0"><i class="fa-solid fa-magnifying-glass text-muted"></i></span>
+              <span class="input-group-text border-end-0"><i class="fa-solid fa-magnifying-glass text-muted"></i></span>
               <input type="text" class="form-control border-start-0" id="smart-search-input" placeholder="${t('search_placeholder')}" autocomplete="off" oninput="smartSearch(this.value)">
               <button class="btn btn-outline-secondary border-start-0" type="button" onclick="$('#smart-search-input').val('');$('#smart-search-results').addClass('d-none')"><i class="fa-solid fa-xmark"></i></button>
             </div>
-            <div id="smart-search-results" class="d-none position-absolute w-100 bg-white border rounded shadow mt-1 smart-search-results"></div>
+            <div id="smart-search-results" class="d-none position-absolute w-100 border rounded mt-1 smart-search-results" style="background:var(--glass-bg-strong);backdrop-filter:blur(24px);-webkit-backdrop-filter:blur(24px);box-shadow:var(--glass-shadow);border-color:var(--glass-border)"></div>
           </div>
 
           <!-- 6 Main Menu Cards -->
@@ -6410,7 +6833,7 @@
       'menu': 'fa-bars', 'người dùng': 'fa-user-shield', 'profile': 'fa-id-card',
       'báo cáo': 'fa-chart-column', 'thống kê': 'fa-chart-bar', 'cài đặt': 'fa-sliders',
       'tiêu chuẩn': 'fa-scale-balanced', 'loại': 'fa-tags', 'danh sách': 'fa-clipboard-list',
-      'eudr': 'fa-leaf', 'tuân thủ': 'fa-shield-halved'
+      'eudr': 'fa-leaf', 'tuân thủ': 'fa-shield-halved', 'phân quyền': 'fa-shield-halved'
     };
 
     function getSubMenuIcon(moduleName) {
@@ -6494,9 +6917,12 @@
       // Build main cards
       let cards = mainItems.map(i => buildCard(i['View'] || '', i['Module'] || '', parent.color)).join('');
 
-      // Inject "Cài đặt hệ thống" if group is Hệ thống
+      // Inject "Cài đặt hệ thống" + "Phân quyền" if group is Hệ thống
       if (groupName === 'Hệ thống') {
         cards += buildCard('CaiDat_HeThong', 'Cài đặt hệ thống', parent.color);
+        if (_isAdmin()) {
+          cards += buildCard('PhanQuyen_HeThong', 'Phân quyền hệ thống', parent.color);
+        }
       }
 
       // Build sub-group sections
@@ -6557,19 +6983,253 @@
       renderContent(); // Vẽ lại để cập nhật bảng
     }
 
+    const SUPER_ADMIN_EMAIL = 'locvutrung@gmail.com';
+
+    function _isSuperAdmin() {
+      return currentUser && String(currentUser['Email'] || '').toLowerCase() === SUPER_ADMIN_EMAIL;
+    }
+
     function _isAdmin() {
+      if (_isSuperAdmin()) return true;
       return currentUser && String(currentUser['Chức vụ'] || '').toLowerCase().includes('admin');
     }
 
+    function _getUserRole() {
+      if (!currentUser) return 'Viewer';
+      if (_isSuperAdmin()) return 'SuperAdmin';
+      const cv = String(currentUser['Chức vụ'] || '').trim().toLowerCase();
+      if (cv.includes('admin')) return 'Admin';
+      if (cv.includes('manager') || cv.includes('quản lý')) return 'Manager';
+      if (cv.includes('staff') || cv.includes('thành viên') || cv.includes('nhân viên')) return 'Staff';
+      return 'Viewer';
+    }
+
+    // Role-based permission matrix
+    // '*' = all modules, [] = no modules, [...names] = specific modules only
+    const ROLE_PERMISSIONS = {
+      'SuperAdmin': {
+        'Xem': '*', 'Thêm': '*', 'Sửa': '*', 'Xóa': '*', 'Xuất báo cáo': '*', 'Xuất XLS/CSV': '*'
+      },
+      'Admin': {
+        'Xem': '*', 'Thêm': '*', 'Sửa': '*', 'Xóa': '*', 'Xuất báo cáo': '*', 'Xuất XLS/CSV': '*'
+      },
+      'Manager': {
+        'Xem': '*',
+        'Thêm': '*',
+        'Sửa': '*',
+        'Xóa': ['DG_noibo', 'BangHoi_DGNoiBo', 'GiamSat_lorung', 'KH_hoatdong', 'KH_QL_lorung',
+                'KH_khaithac', 'KH_trongrung', 'KH_Taphuan', 'KH_CayGiong', 'KH_GiamSat',
+                'HD_lorung', 'BienDong_lorung', 'LopTaphuan', 'DSHocVien',
+                'ThucHien_ThamVan', 'BaoCao_ThamVan', 'KhieuNai'],
+        'Xuất báo cáo': '*', 'Xuất XLS/CSV': '*'
+      },
+      'Staff': {
+        'Xem': '*',
+        'Thêm': ['Lo_rung', 'HD_lorung', 'BienDong_lorung', 'GiamSat_lorung',
+                 'DG_noibo', 'BangHoi_DGNoiBo', 'LopTaphuan', 'DSHocVien',
+                 'ThucHien_ThamVan', 'BaoCao_ThamVan', 'KhieuNai',
+                 'KH_hoatdong', 'KH_QL_lorung', 'KH_khaithac', 'KH_trongrung', 'KH_Taphuan', 'KH_CayGiong', 'KH_GiamSat'],
+        'Sửa': ['Lo_rung', 'HD_lorung', 'BienDong_lorung', 'GiamSat_lorung',
+                'DG_noibo', 'BangHoi_DGNoiBo', 'LopTaphuan', 'DSHocVien',
+                'ThucHien_ThamVan', 'BaoCao_ThamVan', 'KhieuNai',
+                'KH_hoatdong', 'KH_QL_lorung', 'KH_khaithac', 'KH_trongrung', 'KH_Taphuan', 'KH_CayGiong', 'KH_GiamSat'],
+        'Xóa': [],
+        'Xuất báo cáo': '*', 'Xuất XLS/CSV': []
+      },
+      'Viewer': {
+        'Xem': '*', 'Thêm': [], 'Sửa': [], 'Xóa': [], 'Xuất báo cáo': '*', 'Xuất XLS/CSV': []
+      }
+    };
+
+    // Permission matrix module list (grouped by category)
+    const PERMISSION_MODULES = [
+      { group: 'Quản lý nhóm', icon: 'fa-users-between-lines', modules: [
+        { key: 'Ban_Quanlynhom', label: 'Ban quản lý nhóm' },
+        { key: 'NhomCCR', label: 'Nhóm CCR' },
+        { key: 'Churung', label: 'Chủ rừng' },
+        { key: 'Lo_rung', label: 'Lô rừng' }
+      ]},
+      { group: 'Quản lý rừng', icon: 'fa-tree', modules: [
+        { key: 'HD_lorung', label: 'Hoạt động lô rừng' },
+        { key: 'BienDong_lorung', label: 'Biến động lô rừng' },
+        { key: 'KH_QL_lorung', label: 'KH quản lý lô rừng' },
+        { key: 'KH_khaithac', label: 'KH khai thác' },
+        { key: 'KH_trongrung', label: 'KH trồng rừng' },
+        { key: 'KH_hoatdong', label: 'KH hoạt động' }
+      ]},
+      { group: 'Đánh giá & Giám sát', icon: 'fa-clipboard-check', modules: [
+        { key: 'DG_noibo', label: 'Đánh giá nội bộ' },
+        { key: 'BangHoi_DGNoiBo', label: 'Bảng hỏi đánh giá' },
+        { key: 'GiamSat_lorung', label: 'Giám sát lô rừng' },
+        { key: 'KH_GiamSat', label: 'KH giám sát' }
+      ]},
+      { group: 'Tham vấn & Đào tạo', icon: 'fa-chalkboard-teacher', modules: [
+        { key: 'LopTaphuan', label: 'Lớp tập huấn' },
+        { key: 'DSHocVien', label: 'DS học viên' },
+        { key: 'ThucHien_ThamVan', label: 'Thực hiện tham vấn' },
+        { key: 'BaoCao_ThamVan', label: 'Báo cáo tham vấn' },
+        { key: 'KhieuNai', label: 'Khiếu nại' }
+      ]},
+      { group: 'Tài sản & Dụng cụ', icon: 'fa-toolbox', modules: [
+        { key: 'TaiSan', label: 'Tài sản' },
+        { key: 'DungCu', label: 'Dụng cụ' },
+        { key: 'MuonTraDC', label: 'Mượn trả dụng cụ' }
+      ]},
+      { group: 'Hệ thống', icon: 'fa-gears', modules: [
+        { key: 'NhanSu', label: 'Nhân sự' },
+        { key: 'Menu', label: 'Menu hệ thống' }
+      ]}
+    ];
+
+    const PERM_ACTIONS = ['Xem', 'Thêm', 'Sửa', 'Xóa', 'Xuất báo cáo', 'Xuất XLS/CSV'];
+    const PERM_ACTION_ICONS = {
+      'Xem': 'fa-eye', 'Thêm': 'fa-plus', 'Sửa': 'fa-pen', 'Xóa': 'fa-trash',
+      'Xuất báo cáo': 'fa-file-pdf', 'Xuất XLS/CSV': 'fa-file-excel'
+    };
+
+    function _checkPerm(role, moduleKey, action) {
+      const perms = ROLE_PERMISSIONS[role];
+      if (!perms) return false;
+      const allowed = perms[action];
+      if (allowed === '*') return true;
+      if (Array.isArray(allowed)) return allowed.includes(moduleKey);
+      return false;
+    }
+
+    function renderPermissionMatrix(role) {
+      const roleColors = { 'Admin': '#D32F2F', 'Manager': '#F57C00', 'Staff': '#1976D2', 'Viewer': '#757575' };
+      const rc = roleColors[role] || '#757575';
+      let html = `<div class="card border-0 shadow-sm rounded-3 mb-2" style="background:var(--glass-bg);backdrop-filter:var(--glass-blur);-webkit-backdrop-filter:var(--glass-blur);border:1px solid var(--glass-border)">
+        <div class="card-header border-0 py-2 px-3" style="background:${rc}10;border-bottom:2px solid ${rc}30">
+          <div class="d-flex align-items-center gap-2">
+            <i class="fa-solid fa-shield-halved" style="color:${rc}"></i>
+            <span class="fw-bold" style="font-size:14px;color:${rc}">Bảng phân quyền — ${role}</span>
+          </div>
+        </div>
+        <div class="card-body p-0">
+          <div class="table-responsive">
+            <table class="table table-sm table-hover mb-0" style="font-size:12px">
+              <thead>
+                <tr style="background:var(--forest-primary);color:#fff">
+                  <th class="py-2 ps-3" style="min-width:160px;border:none">Module</th>
+                  ${PERM_ACTIONS.map(a => `<th class="py-2 text-center" style="min-width:60px;border:none"><i class="fa-solid ${PERM_ACTION_ICONS[a]} me-1"></i>${a === 'Xuất báo cáo' ? 'Báo cáo' : a === 'Xuất XLS/CSV' ? 'XLS/CSV' : a}</th>`).join('')}
+                </tr>
+              </thead>
+              <tbody>`;
+
+      PERMISSION_MODULES.forEach(grp => {
+        html += `<tr style="background:rgba(27,94,32,0.06)">
+          <td colspan="${PERM_ACTIONS.length + 1}" class="fw-bold py-1 ps-3" style="color:var(--forest-primary);font-size:11px;letter-spacing:0.5px;border:none">
+            <i class="fa-solid ${grp.icon} me-1"></i>${grp.group}
+          </td></tr>`;
+        grp.modules.forEach(mod => {
+          html += `<tr>
+            <td class="ps-4 py-1" style="border-color:rgba(0,0,0,0.04)">${mod.label}</td>`;
+          PERM_ACTIONS.forEach(action => {
+            const has = _checkPerm(role, mod.key, action);
+            html += `<td class="text-center py-1" style="border-color:rgba(0,0,0,0.04)">
+              ${has
+                ? '<i class="fa-solid fa-circle-check" style="color:#43A047;font-size:14px"></i>'
+                : '<i class="fa-solid fa-circle-xmark" style="color:#E0E0E0;font-size:14px"></i>'}
+            </td>`;
+          });
+          html += `</tr>`;
+        });
+      });
+
+      html += `</tbody></table></div></div></div>`;
+      return html;
+    }
+
+    function renderPermissionOverview() {
+      const roles = ['Admin', 'Manager', 'Staff', 'Viewer'];
+      let html = `<div class="mb-3">
+        <div class="d-flex align-items-center gap-2 mb-3 p-3" style="background:var(--glass-bg);backdrop-filter:var(--glass-blur);-webkit-backdrop-filter:var(--glass-blur);border-radius:var(--glass-radius);border:1px solid var(--glass-border);border-left:4px solid var(--forest-primary);box-shadow:var(--glass-shadow)">
+          <i class="fa-solid fa-shield-halved" style="color:var(--forest-primary);font-size:20px"></i>
+          <h6 class="fw-bold m-0" style="color:var(--forest-primary)">Phân quyền hệ thống</h6>
+        </div>
+        <ul class="nav nav-tabs mb-3" id="permTabs" role="tablist">`;
+      roles.forEach((r, i) => {
+        const roleColors = { 'Admin': '#D32F2F', 'Manager': '#F57C00', 'Staff': '#1976D2', 'Viewer': '#757575' };
+        const rc = roleColors[r];
+        html += `<li class="nav-item" role="presentation">
+          <button class="nav-link ${i === 0 ? 'active' : ''}" id="perm-tab-${r}" data-bs-toggle="tab" data-bs-target="#perm-pane-${r}" type="button" role="tab" style="${i === 0 ? 'color:' + rc + ';border-bottom:2px solid ' + rc : ''}">
+            <i class="fa-solid ${r === 'Admin' ? 'fa-shield-halved' : r === 'Manager' ? 'fa-user-tie' : r === 'Staff' ? 'fa-user' : 'fa-eye'} me-1"></i>${r}
+          </button>
+        </li>`;
+      });
+      html += `</ul><div class="tab-content" id="permTabContent">`;
+      roles.forEach((r, i) => {
+        html += `<div class="tab-pane fade ${i === 0 ? 'show active' : ''}" id="perm-pane-${r}" role="tabpanel">
+          ${renderPermissionMatrix(r)}
+        </div>`;
+      });
+      html += `</div>`;
+
+      // Summary comparison table
+      html += `<div class="card border-0 shadow-sm rounded-3 mt-3" style="background:var(--glass-bg);backdrop-filter:var(--glass-blur);-webkit-backdrop-filter:var(--glass-blur);border:1px solid var(--glass-border)">
+        <div class="card-header border-0 py-2 px-3" style="background:rgba(27,94,32,0.06)">
+          <span class="fw-bold" style="font-size:13px;color:var(--forest-primary)"><i class="fa-solid fa-table-columns me-1"></i>So sánh quyền giữa các vai trò</span>
+        </div>
+        <div class="card-body p-0"><div class="table-responsive">
+          <table class="table table-sm table-bordered mb-0" style="font-size:11px">
+            <thead><tr style="background:var(--forest-primary);color:#fff">
+              <th class="py-2 ps-3" style="border:none">Quyền</th>
+              ${roles.map(r => `<th class="py-2 text-center" style="border:none">${r}</th>`).join('')}
+            </tr></thead>
+            <tbody>
+              ${PERM_ACTIONS.map(a => `<tr>
+                <td class="ps-3 fw-semibold" style="border-color:rgba(0,0,0,0.06)"><i class="fa-solid ${PERM_ACTION_ICONS[a]} me-1 text-muted"></i>${a}</td>
+                ${roles.map(r => {
+                  const p = ROLE_PERMISSIONS[r][a];
+                  let txt = '', cls = '';
+                  if (p === '*') { txt = 'Tất cả'; cls = 'text-success fw-bold'; }
+                  else if (Array.isArray(p) && p.length > 0) { txt = p.length + ' modules'; cls = 'text-warning fw-bold'; }
+                  else { txt = 'Không'; cls = 'text-muted'; }
+                  return `<td class="text-center ${cls}" style="border-color:rgba(0,0,0,0.06)">${txt}</td>`;
+                }).join('')}
+              </tr>`).join('')}
+            </tbody>
+          </table>
+        </div></div>
+      </div>
+      </div>`;
+
+      $('#page-content-dynamic').html(html);
+
+      // Style active tabs with role colors
+      $('#permTabs button').on('shown.bs.tab', function() {
+        const roleColors = { 'Admin': '#D32F2F', 'Manager': '#F57C00', 'Staff': '#1976D2', 'Viewer': '#757575' };
+        $('#permTabs button').css({ color: '', borderBottom: '' });
+        const role = $(this).text().trim();
+        const rc = roleColors[role] || '#757575';
+        $(this).css({ color: rc, borderBottom: '2px solid ' + rc });
+      });
+    }
+
     function hasPermission(moduleName, action) {
-      // Non-admin: block Edit (Sửa) and Delete (Xóa) globally
-      if (!_isAdmin() && (action === 'Sửa' || action === 'Xóa')) return false;
-      if (!APP_DATA['Menu']) return true;
-      const menu = APP_DATA['Menu'].find(m => m['Module'] === moduleName || m['View'] === moduleName);
-      if (!menu) return true;
-      // action = 'Xem' | 'Thêm' | 'Sửa' | 'Xóa'
-      const p = String(menu[action]).toLowerCase();
-      return p === '1' || p === 'x' || p === 'yes' || p === 'được';
+      const role = _getUserRole();
+      const perms = ROLE_PERMISSIONS[role];
+      if (!perms) return false;
+
+      const allowed = perms[action];
+      // '*' = full access for this action
+      if (allowed === '*') {
+        // For Admin, also check menu-level flags
+        if (role === 'Admin' && APP_DATA['Menu']) {
+          const menu = APP_DATA['Menu'].find(m => m['Module'] === moduleName || m['View'] === moduleName);
+          if (menu) {
+            const p = String(menu[action] || '').toLowerCase();
+            return p === '1' || p === 'x' || p === 'yes' || p === 'được' || p === '';
+          }
+        }
+        return true;
+      }
+      // Array = check if module is in allowed list
+      if (Array.isArray(allowed)) {
+        return allowed.includes(moduleName);
+      }
+      return false;
     }
 
     // Sidebar collapsible sub-menu definitions
@@ -6674,11 +7334,14 @@
         }
         $('#sidebarAccordion').html(accordionHtml);
 
-        // Inject "Cài đặt hệ thống" vào group Hệ thống
+        // Inject "Cài đặt hệ thống" + "Phân quyền" vào group Hệ thống
         $('#sidebarAccordion .accordion-item').each(function() {
           const grpVi = $(this).attr('data-group-vi');
           if (grpVi && grpVi.trim().toLowerCase() === 'hệ thống') {
             $(this).find('.accordion-body').append(`<a href="#" class="menu-sub-link" onclick="loadViewFromGroup('CaiDat_HeThong', '${t('menu_settings')}', 'Hệ thống')"><span class="sidebar-icon-sm me-2"><i class="fa-solid fa-sliders"></i></span>${t('menu_settings')}</a>`);
+            if (_isAdmin()) {
+              $(this).find('.accordion-body').append(`<a href="#" class="menu-sub-link" onclick="loadViewFromGroup('PhanQuyen_HeThong', 'Phân quyền hệ thống', 'Hệ thống')"><span class="sidebar-icon-sm me-2"><i class="fa-solid fa-shield-halved"></i></span>Phân quyền</a>`);
+            }
           }
         });
 
@@ -6816,6 +7479,13 @@
         return;
       }
 
+      // Xử lý View đặc biệt: Phân quyền hệ thống
+      if (current.viewName === 'PhanQuyen_HeThong') {
+        if (!_isAdmin()) { alert(t('no_permission')); goHome(); return; }
+        renderPermissionOverview();
+        return;
+      }
+
       // Xử lý View đặc biệt: Bản đồ
       if (current.viewName === 'Bando_lorung') {
         renderMapView();
@@ -6823,7 +7493,13 @@
       }
 
       const sheetName = VIEW_MAP[current.viewName] || current.viewName;
-      const data = APP_DATA[sheetName] || [];
+      let data = APP_DATA[sheetName] || [];
+      // Hide non-active staff from NhanSu list view
+      if (sheetName === 'NhanSu') {
+        data = data.filter(r => r['Trạng thái'] === 'Act');
+        // Hide superAdmin from non-superAdmin users
+        if (!_isSuperAdmin()) data = data.filter(r => String(r['Email'] || '').toLowerCase() !== SUPER_ADMIN_EMAIL);
+      }
       $('#page-content-dynamic').empty();
       if (current.mode === 'DETAIL') renderDetailMaster(sheetName, current.rowData);
       else renderTable(data, current, sheetName);
@@ -7289,7 +7965,7 @@
       const layer = window._editingPolygonLayer;
       if (!layer) return;
       // Linked polygons (lô rừng) require admin to delete from DB
-      if (layer.loRungId && !_isAdmin()) { alert(t('no_permission')); return; }
+      if (layer.loRungId && !hasPermission('Lo_rung', 'Xóa')) { alert(t('no_permission')); return; }
       if (!confirm(t('confirm_delete_polygon'))) return;
       // Clean up edit state
       _cleanupEditState();
@@ -7552,29 +8228,21 @@
         prefill[lastHist.filter.key] = lastHist.filter.value;
       }
 
-      // Open the form modal for Lo_rung with prefilled data
-      currentAction = 'CREATE';
-      currentSheetTarget = 'Lo_rung';
-      $('#modalTitle').text('Tạo lô rừng mới — ' + plotCode);
-      const form = $('#dynamic-form'); form.empty();
-      const columns = TABLE_CONFIG['Lo_rung'] ? TABLE_CONFIG['Lo_rung'].columns : (APP_DATA['Lo_rung'] && APP_DATA['Lo_rung'][0] ? Object.keys(APP_DATA['Lo_rung'][0]) : []);
-
-      columns.forEach(col => {
-        let val = prefill[col] || '';
-        const isKey = col.toLowerCase().includes('id') || col.toLowerCase().includes('mã');
-        const inputHtml = `<input type="text" class="form-control${isKey && val ? ' bg-light' : ''}" name="${col}" value="${val}" ${isKey && val ? 'readonly' : ''}>`;
-        form.append(`<div class="col-md-6"><label class="form-label small fw-bold text-muted">${col}</label>${inputHtml}</div>`);
-      });
-
       // Store the layer reference for saving geometry after form submit
       window._pendingNewPlotLayer = layer;
       window._pendingNewPlotId = tempId;
 
-      new bootstrap.Modal(document.getElementById('dataModal')).show();
+      // Use inline form via openModal with prefilled data
+      const rowJson = encodeURIComponent(JSON.stringify(prefill));
+      // Switch to data view for inline form
+      $('#map-view').addClass('d-none');
+      $('#data-view').removeClass('d-none');
+      $('#page-content-dynamic').removeClass('d-none');
+      openModal('CREATE', 'Lo_rung', rowJson);
     };
 
     window.unlinkPolygon = async function(loRungId) {
-      if (!_isAdmin()) { alert(t('no_permission')); return; }
+      if (!hasPermission('Lo_rung', 'Sửa')) { alert(t('no_permission')); return; }
       if (!confirm('Xác nhận hủy liên kết polygon này với lô rừng?')) return;
       try {
         const { error } = await sb.from('lo_rung_geojson').delete().eq('id_lo_rung', loRungId);
@@ -8266,8 +8934,8 @@
 
       if (error) { alert('Error: ' + error.message); return; }
 
-      let html = `<div class="card shadow border-0" style="position:absolute;top:10px;right:10px;z-index:1100;width:380px;max-height:80vh;overflow-y:auto">
-        <div class="card-header bg-white border-bottom d-flex justify-content-between align-items-center py-2">
+      let html = `<div class="card border-0" style="position:absolute;top:10px;right:10px;z-index:1100;width:380px;max-height:80vh;overflow-y:auto;background:var(--glass-bg-strong);backdrop-filter:blur(24px);-webkit-backdrop-filter:blur(24px);box-shadow:var(--glass-shadow)">
+        <div class="card-header border-bottom d-flex justify-content-between align-items-center py-2" style="background:transparent">
           <strong class="small"><i class="fa-solid fa-database me-1" style="color:#7B1FA2"></i>${t('geo_repo_title')}</strong>
           <button type="button" class="btn-close btn-close-sm" onclick="closeGeoJSONRepo()"></button>
         </div>
@@ -9284,7 +9952,7 @@
 
       let html = `
         <div class="card shadow-sm mb-4">
-          <div class="card-header bg-success text-white fw-bold">Thông tin đánh giá</div>
+          <div class="card-header text-white fw-bold" style="background:linear-gradient(135deg,rgba(43,100,47,0.92),rgba(27,94,32,0.95))">Thông tin đánh giá</div>
           <div class="card-body">
             <div class="row g-3">
                <div class="col-md-4">
@@ -9678,7 +10346,7 @@
 
       let html = `
         <div class="card shadow-sm border-0 mb-4">
-           <div class="card-header bg-success text-white py-3">
+           <div class="card-header text-white py-3" style="background:linear-gradient(135deg,rgba(43,100,47,0.92),rgba(27,94,32,0.95))">
               <div class="d-flex justify-content-between align-items-center">
                  <h5 class="mb-0 fw-bold"><i class="fas fa-clipboard-list me-2"></i>${t('audit_record_title')}: ${nameVal}</h5>
                  <button class="btn btn-light btn-sm fw-bold text-success" onclick="renderAuditModule()"><i class="fas fa-arrow-left me-1"></i>${t('audit_back_list')}</button>
@@ -9741,7 +10409,7 @@
 
       let html = `
         <div class="card shadow-sm mb-4 border-0">
-          <div class="card-header bg-success text-white fw-bold py-2 audit-sticky-header">
+          <div class="card-header text-white fw-bold py-2 audit-sticky-header" style="background:linear-gradient(135deg,rgba(43,100,47,0.92),rgba(27,94,32,0.95))">
             <div class="d-flex justify-content-between align-items-center">
                <span><i class="fas fa-edit me-2"></i>${t('audit_form_title')}: ${nameVal}</span>
                <button class="btn btn-sm btn-light text-success fw-bold" onclick="showTargetHistory(${safeItem}, '${type}')"><i class="fas fa-arrow-left me-1"></i>${t('audit_cancel_back')}</button>
@@ -9862,7 +10530,7 @@
 
       let html = `
         <div class="card shadow-sm mb-4 border-0">
-          <div class="card-header bg-primary text-white fw-bold py-3">
+          <div class="card-header text-white fw-bold py-3" style="background:linear-gradient(135deg,rgba(43,100,47,0.92),rgba(27,94,32,0.95))">
              <div class="d-flex justify-content-between align-items-center">
                 <span><i class="fas fa-eye me-2"></i>${t('audit_detail_title')}: ${targetName}</span>
                 <button class="btn btn-sm btn-light text-primary fw-bold" onclick="renderAuditModule()"><i class="fas fa-arrow-left me-1"></i>${t('audit_back')}</button>
@@ -10011,7 +10679,7 @@
       const totalQ = cats.reduce((s, [, qs]) => s + qs.length, 0);
       const html = `
         <div class="card shadow-sm border-0 mb-4">
-          <div class="card-header bg-primary text-white py-3">
+          <div class="card-header text-white py-3" style="background:linear-gradient(135deg,rgba(43,100,47,0.92),rgba(27,94,32,0.95))">
             <div class="d-flex justify-content-between align-items-center flex-wrap gap-2">
               <h5 class="mb-0 fw-bold"><i class="fa-solid fa-book-open me-2"></i>${t('eudr_doc_title')}</h5>
               <div>
@@ -10081,7 +10749,7 @@
 
       const html = `
         <div class="card shadow-sm border-0">
-          <div class="card-header bg-primary text-white py-3">
+          <div class="card-header text-white py-3" style="background:linear-gradient(135deg,rgba(43,100,47,0.92),rgba(27,94,32,0.95))">
             <h5 class="mb-0 fw-bold"><i class="fa-solid fa-leaf me-2"></i>${t('eudr_form_title')}</h5>
           </div>
           <div class="card-body">
@@ -10148,7 +10816,7 @@
 
       let html = `
         <div class="card shadow-sm border-0 mb-4">
-          <div class="card-header bg-primary text-white py-3">
+          <div class="card-header text-white py-3" style="background:linear-gradient(135deg,rgba(43,100,47,0.92),rgba(27,94,32,0.95))">
             <div class="d-flex justify-content-between align-items-center">
               <h5 class="mb-0 fw-bold"><i class="fa-solid fa-leaf me-2"></i>EUDR: ${nameVal}</h5>
               <button class="btn btn-light btn-sm fw-bold text-primary" onclick="navigateBack()"><i class="fas fa-arrow-left me-1"></i>${t('audit_back_list')}</button>
@@ -10214,7 +10882,7 @@
 
       let html = `
         <div class="card shadow-sm mb-4 border-0">
-          <div class="card-header bg-primary text-white fw-bold py-2" style="position:sticky;top:0;z-index:10">
+          <div class="card-header text-white fw-bold py-2" style="background:linear-gradient(135deg,rgba(43,100,47,0.92),rgba(27,94,32,0.95));position:sticky;top:0;z-index:10">
             <div class="d-flex justify-content-between align-items-center">
               <span><i class="fas fa-leaf me-2"></i>${t('eudr_form_title')}: ${nameVal}</span>
               <button class="btn btn-sm btn-light text-primary fw-bold" onclick="showEUDRHistory(${safeItem}, '${type}')"><i class="fas fa-arrow-left me-1"></i>${t('audit_cancel_back')}</button>
@@ -10422,7 +11090,7 @@
 
       let html = `
         <div class="card shadow-sm mb-4 border-0">
-          <div class="card-header bg-primary text-white fw-bold py-3">
+          <div class="card-header text-white fw-bold py-3" style="background:linear-gradient(135deg,rgba(43,100,47,0.92),rgba(27,94,32,0.95))">
             <div class="d-flex justify-content-between align-items-center">
               <span><i class="fas fa-eye me-2"></i>EUDR: ${targetName} — ${dgRecord['Ngày đánh giá'] || ''}</span>
               <button class="btn btn-sm btn-light text-primary fw-bold" onclick="renderEUDRModule()"><i class="fas fa-arrow-left me-1"></i>${t('audit_back')}</button>
@@ -10513,7 +11181,7 @@
 
       const html = `
         <div class="card shadow-sm border-0 mb-4">
-          <div class="card-header bg-primary text-white py-3">
+          <div class="card-header text-white py-3" style="background:linear-gradient(135deg,rgba(43,100,47,0.92),rgba(27,94,32,0.95))">
             <h5 class="mb-0 fw-bold"><i class="fa-solid fa-chart-bar me-2"></i>${t('eudr_report_title')}</h5>
           </div>
           <div class="card-body">
@@ -10608,7 +11276,7 @@
               return `<td class="text-center small" style="background:${cellColor}; cursor:pointer" onclick="editPlanCell('${row['ID']}', '${m}')" title="${val || 'Click để nhập'}">${val}</td>`;
             }).join('')}
             <td class="small">${row['Ghi chú'] || ''}</td>
-            ${_isAdmin() ? `<td class="text-center">
+            ${hasPermission('KH_GiamSat', 'Xóa') ? `<td class="text-center">
               <button class="btn btn-sm btn-outline-danger" onclick="deletePlanRow('${row['ID']}')"><i class="fas fa-trash-alt"></i></button>
             </td>` : '<td></td>'}
           </tr>`;
@@ -10629,7 +11297,7 @@
       </div>`;
 
       const modal = $(`<div class="modal fade" tabindex="-1"><div class="modal-dialog"><div class="modal-content">
-        <div class="modal-header bg-success text-white"><h6 class="modal-title fw-bold"><i class="fas fa-plus-circle me-2"></i>${t('mon_plan_add')} - ${year}</h6><button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button></div>
+        <div class="modal-header text-white" style="background:linear-gradient(135deg,rgba(43,100,47,0.92),rgba(27,94,32,0.95))"><h6 class="modal-title fw-bold"><i class="fas fa-plus-circle me-2"></i>${t('mon_plan_add')} - ${year}</h6><button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button></div>
         <div class="modal-body">${formHtml}</div>
         <div class="modal-footer"><button type="button" class="btn btn-secondary btn-sm" data-bs-dismiss="modal">${t('mon_cancel_back')}</button><button type="button" class="btn btn-success btn-sm fw-bold" id="planSaveBtn"><i class="fas fa-save me-1"></i>${t('mon_save_btn')}</button></div>
       </div></div></div>`);
@@ -10674,7 +11342,7 @@
     }
 
     async function editPlanCell(rowId, monthKey) {
-      if (!_isAdmin()) { alert(t('no_permission')); return; }
+      if (!hasPermission('KH_GiamSat', 'Sửa')) { alert(t('no_permission')); return; }
       const planData = APP_DATA['KH_GiamSat_Nhom'] || [];
       const row = planData.find(r => r['ID'] === rowId);
       if (!row) return;
@@ -10704,7 +11372,7 @@
     }
 
     async function deletePlanRow(rowId) {
-      if (!_isAdmin()) { alert(t('no_permission')); return; }
+      if (!hasPermission('KH_GiamSat', 'Xóa')) { alert(t('no_permission')); return; }
       if (!confirm(t('mon_confirm_save'))) return;
       try {
         if (navigator.onLine) {
@@ -11509,6 +12177,129 @@ ${gsRecord['Đề xuất'] ? `<div class="proposal-box"><h4>${t('mon_proposal')}
       printWin.document.close();
     }
 
+    // === PDF EXPORT SYSTEM ===
+    const PDF_PROJECT_NAME = 'Hệ thống quản lý rừng bền vững - Chứng chỉ rừng FSC';
+    const PDF_AUTHOR = 'Phát triển bởi Lộc Vũ Trung | locvutrung@gmail.com';
+
+    function _pdfHeader(reportTitle) {
+      return `<div style="display:flex;align-items:center;margin-bottom:20px;padding-bottom:12px;border-bottom:3px solid #1B5E20">
+        <div style="flex-shrink:0;margin-right:16px">
+          <svg width="60" height="60" viewBox="0 0 192 192"><rect width="192" height="192" rx="24" fill="#1B5E20"/><text x="96" y="130" font-size="80" text-anchor="middle" fill="white" font-family="sans-serif" font-weight="bold">FSC</text></svg>
+        </div>
+        <div style="flex:1;text-align:center">
+          <div style="font-size:14px;color:#1B5E20;font-weight:700;margin-bottom:4px">${PDF_PROJECT_NAME}</div>
+          <div style="font-size:18px;font-weight:800;color:#333;text-transform:uppercase;letter-spacing:0.5px">${reportTitle}</div>
+          <div style="font-size:11px;color:#888;margin-top:4px">Ngày xuất: ${new Date().toLocaleDateString('vi-VN')}</div>
+        </div>
+        <div style="width:60px"></div>
+      </div>`;
+    }
+
+    function _pdfStyles() {
+      return `<style>
+        body { font-family: 'Segoe UI', Arial, sans-serif; padding: 20px 30px; color: #333; font-size: 12pt; line-height: 1.5; }
+        table { width: 100%; border-collapse: collapse; margin: 12px 0; font-size: 10pt; }
+        th { background: #E8F5E9; color: #1B5E20; font-weight: 700; border: 1px solid #A5D6A7; padding: 6px 8px; font-size: 9pt; text-transform: uppercase; }
+        td { border: 1px solid #C8E6C9; padding: 5px 8px; vertical-align: top; }
+        tr:nth-child(even) { background: #F1F8E9; }
+        h2 { color: #1B5E20; font-size: 14pt; margin: 16px 0 8px; border-bottom: 2px solid #A5D6A7; padding-bottom: 4px; }
+        h3 { color: #2E7D32; font-size: 12pt; margin: 12px 0 6px; }
+        .kpi-row { display: flex; gap: 12px; margin: 12px 0; }
+        .kpi-box { flex: 1; background: #E8F5E9; border-radius: 8px; padding: 10px 12px; text-align: center; border: 1px solid #C8E6C9; }
+        .kpi-box .val { font-size: 18pt; font-weight: 800; color: #1B5E20; }
+        .kpi-box .lbl { font-size: 9pt; color: #666; margin-top: 2px; }
+        .footer { margin-top: 24px; text-align: center; font-size: 8pt; color: #aaa; border-top: 1px solid #ddd; padding-top: 8px; }
+        .no-print { text-align: center; margin-bottom: 16px; }
+        @media print { .no-print { display: none !important; } body { padding: 10px; } }
+      </style>`;
+    }
+
+    function _openPdfWindow(title, bodyHtml) {
+      const w = window.open('', '_blank', 'width=900,height=700');
+      w.document.write(`<!DOCTYPE html><html><head><meta charset="utf-8"><title>${title}</title>${_pdfStyles()}</head><body>
+        <div class="no-print"><button onclick="window.print()" style="padding:8px 24px;background:#1B5E20;color:#fff;border:none;border-radius:6px;font-weight:700;cursor:pointer;font-size:14px">In / Xuất PDF</button></div>
+        ${_pdfHeader(title)}${bodyHtml}
+        <div class="footer">${PDF_AUTHOR}</div>
+      </body></html>`);
+      w.document.close();
+    }
+
+    // Export current visible table as PDF
+    function exportTablePDF() {
+      const ctx = navHistory[navHistory.length - 1];
+      if (!ctx) return;
+      const sheetName = VIEW_MAP[ctx.viewName] || ctx.viewName;
+      const data = APP_DATA[sheetName] || [];
+      if (!data.length) return alert('Không có dữ liệu');
+      const cols = getVisibleColumns(sheetName);
+      let tableHtml = `<table><thead><tr>${cols.map(c => `<th>${tc(c)}</th>`).join('')}</tr></thead><tbody>`;
+      data.forEach(row => {
+        tableHtml += `<tr>${cols.map(c => `<td>${row[c] != null ? row[c] : ''}</td>`).join('')}</tr>`;
+      });
+      tableHtml += `</tbody></table><p style="font-size:9pt;color:#888">Tổng: ${data.length} bản ghi</p>`;
+      _openPdfWindow(ctx.title || sheetName, tableHtml);
+    }
+
+    // Export Churung (owner) detail as PDF
+    function exportOwnerPDF(rowJson) {
+      const d = JSON.parse(decodeURIComponent(rowJson));
+      const sf = v => parseFloat(String(v||0).replace(/,/g,''))||0;
+      const plots = (APP_DATA['Lo_rung']||[]).filter(p => String(p['ID chủ rừng']).trim() === String(d['ID chủ rừng']).trim());
+      const totalArea = plots.reduce((s,p)=>s+sf(p['Tổng diện tích']),0);
+      const fscArea = plots.reduce((s,p)=>s+sf(p[' Diện tích FSC']||p['Diện tích FSC']),0);
+
+      let body = `<h2><i>Phiếu thông tin chủ rừng</i></h2>`;
+      body += `<div class="kpi-row">
+        <div class="kpi-box"><div class="val">${plots.length}</div><div class="lbl">Lô rừng</div></div>
+        <div class="kpi-box"><div class="val">${totalArea.toFixed(1)}</div><div class="lbl">Tổng DT (ha)</div></div>
+        <div class="kpi-box"><div class="val">${fscArea.toFixed(1)}</div><div class="lbl">DT FSC (ha)</div></div>
+      </div>`;
+      // Owner info table
+      const vcols = TABLE_CONFIG['Churung'] ? TABLE_CONFIG['Churung'].columns : Object.keys(d);
+      body += `<h3>Thông tin chủ rừng</h3><table>`;
+      vcols.forEach(c => { if (d[c]) body += `<tr><th style="width:35%;text-align:left">${tc(c)}</th><td>${d[c]}</td></tr>`; });
+      body += `</table>`;
+      // Plots table
+      if (plots.length > 0) {
+        const pCols = ['Mã số lô rừng','Tổng diện tích',' Diện tích FSC','Loại rừng','Năm trồng'];
+        body += `<h3>Danh sách lô rừng (${plots.length})</h3><table><thead><tr>${pCols.map(c => `<th>${tc(c)}</th>`).join('')}</tr></thead><tbody>`;
+        plots.forEach(p => { body += `<tr>${pCols.map(c => `<td>${p[c]!=null?p[c]:''}</td>`).join('')}</tr>`; });
+        body += `</tbody></table>`;
+      }
+      _openPdfWindow(`Chủ rừng: ${d['Họ tên chủ rừng']||d['ID chủ rừng']}`, body);
+    }
+
+    // Export NhomCCR (group) detail as PDF
+    function exportGroupPDF(rowJson) {
+      const d = JSON.parse(decodeURIComponent(rowJson));
+      const sf = v => parseFloat(String(v||0).replace(/,/g,''))||0;
+      const owners = (APP_DATA['Churung']||[]).filter(c => String(c['ID nhóm']).trim() === String(d['ID nhóm']).trim());
+      const plots = (APP_DATA['Lo_rung']||[]).filter(p => owners.some(o => String(o['ID chủ rừng']).trim() === String(p['ID chủ rừng']).trim()));
+      const totalArea = plots.reduce((s,p)=>s+sf(p['Tổng diện tích']),0);
+      const fscArea = plots.reduce((s,p)=>s+sf(p[' Diện tích FSC']||p['Diện tích FSC']),0);
+
+      let body = `<h2><i>Báo cáo tổng hợp nhóm</i></h2>`;
+      body += `<div class="kpi-row">
+        <div class="kpi-box"><div class="val">${owners.length}</div><div class="lbl">Hộ dân</div></div>
+        <div class="kpi-box"><div class="val">${plots.length}</div><div class="lbl">Lô rừng</div></div>
+        <div class="kpi-box"><div class="val">${totalArea.toFixed(1)}</div><div class="lbl">Tổng DT (ha)</div></div>
+        <div class="kpi-box"><div class="val">${fscArea.toFixed(1)}</div><div class="lbl">DT FSC (ha)</div></div>
+      </div>`;
+      // Group info
+      const gcols = TABLE_CONFIG['NhomCCR'] ? TABLE_CONFIG['NhomCCR'].columns : Object.keys(d);
+      body += `<h3>Thông tin nhóm</h3><table>`;
+      gcols.forEach(c => { if (d[c]) body += `<tr><th style="width:35%;text-align:left">${tc(c)}</th><td>${d[c]}</td></tr>`; });
+      body += `</table>`;
+      // Owners table
+      if (owners.length > 0) {
+        const oCols = ['Họ tên chủ rừng','Tổng diện tích',' Diện tích FSC','Số lô rừng','Xã','Thôn'];
+        body += `<h3>Danh sách hộ dân (${owners.length})</h3><table><thead><tr>${oCols.map(c => `<th>${tc(c)}</th>`).join('')}</tr></thead><tbody>`;
+        owners.forEach(o => { body += `<tr>${oCols.map(c => `<td>${o[c]!=null?o[c]:''}</td>`).join('')}</tr>`; });
+        body += `</tbody></table>`;
+      }
+      _openPdfWindow(`Nhóm: ${d['Tên nhóm']||d['ID nhóm']}`, body);
+    }
+
     // === PLOT/GROUP MONITORING: Action from detail views ===
     let _monReturnContext = null; // stores {type:'plot'|'group', data: d} for back navigation
     let _monTypeFilter = null; // null = show all types, or array of typeKeys from menu navigation
@@ -11888,7 +12679,7 @@ ${gsRecord['Đề xuất'] ? `<div class="proposal-box"><h4>${t('mon_proposal')}
       const sessions = APP_DATA['DotThamVan'] || [];
       const responses = APP_DATA['PhanHoiThamVan'] || [];
       const container = $('#con-sessions-container');
-      const isAdmin = currentUser && (String(currentUser['Chức vụ']).toLowerCase().includes('admin'));
+      const isAdmin = _isAdmin() || _getUserRole() === 'Manager';
 
       if (sessions.length === 0) {
         container.html(`<div class="text-center text-muted py-5"><i class="fas fa-folder-open fa-3x mb-3 opacity-50"></i><br>${t('con_no_sessions')}</div>`);
@@ -12096,7 +12887,7 @@ ${gsRecord['Đề xuất'] ? `<div class="proposal-box"><h4>${t('mon_proposal')}
     }
 
     async function deleteConsultationSession(idDot, tenDot) {
-      const isAdmin = currentUser && (String(currentUser['Chức vụ']).toLowerCase().includes('admin'));
+      const isAdmin = _isAdmin() || _getUserRole() === 'Manager';
       if (!isAdmin) { alert('Chỉ Admin mới có quyền xóa đợt tham vấn.'); return; }
 
       const responses = (APP_DATA['PhanHoiThamVan'] || []).filter(r => r['ID đợt'] === idDot);
@@ -13271,15 +14062,15 @@ ${gsRecord['Đề xuất'] ? `<div class="proposal-box"><h4>${t('mon_proposal')}
       let html = '';
       // Lo_rung: show owner name large and centered at top
       if (sheetName === 'Lo_rung' && _detailOwnerName) {
-        html += `<div class="text-center mb-2 p-2 bg-white rounded-3 shadow-sm">
-          <div class="fw-bold text-success" style="font-size:1.4rem"><i class="fa-solid fa-user me-2"></i>${_detailOwnerName}</div>
-          <div class="text-muted small">${d['Mã số lô rừng'] || ''} ${d['Địa danh'] ? '&mdash; ' + d['Địa danh'] : ''}</div>
+        html += `<div class="text-center mb-2 p-3" style="background:var(--glass-bg);backdrop-filter:var(--glass-blur);-webkit-backdrop-filter:var(--glass-blur);border-radius:var(--glass-radius);border:1px solid var(--glass-border);box-shadow:var(--glass-shadow)">
+          <div class="fw-bold" style="font-size:1.4rem;color:var(--forest-primary)"><i class="fa-solid fa-user me-2"></i>${_detailOwnerName}</div>
+          <div style="color:var(--text-muted);font-size:var(--fs-sm)">${d['Mã số lô rừng'] || ''} ${d['Địa danh'] ? '&mdash; ' + d['Địa danh'] : ''}</div>
         </div>`;
       }
 
       html += `
-          <div class="d-flex justify-content-between align-items-center mb-2 p-2 bg-white rounded-3 shadow-sm border-start border-4 border-success">
-            <div><h6 class="fw-bold text-success m-0">${d['Tên nhóm'] || d['Họ tên chủ rừng'] || d['Mã số lô rừng'] || d['Họ và tên'] || t('detail_title')}</h6><div class="text-muted small">ID: ${d[Object.keys(d)[0]]}</div></div>
+          <div class="d-flex justify-content-between align-items-center mb-2 p-3" style="background:var(--glass-bg);backdrop-filter:var(--glass-blur);-webkit-backdrop-filter:var(--glass-blur);border-radius:var(--glass-radius);border:1px solid var(--glass-border);border-left:4px solid var(--forest-primary);box-shadow:var(--glass-shadow)">
+            <div><h6 class="fw-bold m-0" style="color:var(--forest-primary)">${d['Tên nhóm'] || d['Họ tên chủ rừng'] || d['Mã số lô rừng'] || d['Họ và tên'] || t('detail_title')}</h6><div style="color:var(--text-muted);font-size:var(--fs-sm)">ID: ${d[Object.keys(d)[0]]}</div></div>
             <div>
               ${canEdit ? `<button class="btn btn-outline-primary btn-sm me-1" onclick="openModal('UPDATE', '${sheetName}', '${rowJson}')"><i class="fa-solid fa-pen"></i></button>` : ''}
               ${canDelete ? `<button class="btn btn-outline-danger btn-sm" onclick="deleteRow('${sheetName}', '${rowJson}')"><i class="fa-solid fa-trash"></i></button>` : ''}
@@ -13304,12 +14095,90 @@ ${gsRecord['Đề xuất'] ? `<div class="proposal-box"><h4>${t('mon_proposal')}
           <button class="btn btn-outline-warning btn-sm fw-bold shadow-sm flex-fill" onclick="loadViewWithFilter('KhieuNai', 'ID nhóm', '${d['ID nhóm']}', 'Khiếu nại ${d['Tên nhóm']}')"><i class="fa-solid fa-exclamation-triangle me-1"></i> Khiếu nại</button>
           <button class="btn btn-outline-info btn-sm fw-bold shadow-sm flex-fill" onclick="loadViewWithFilter('TaiSan', 'ID nhóm', '${d['ID nhóm']}', 'Tài sản ${d['Tên nhóm']}')"><i class="fa-solid fa-warehouse me-1"></i> Tài sản</button>
           <button class="btn btn-outline-secondary btn-sm fw-bold shadow-sm flex-fill" onclick="loadViewWithFilter('DungCu', 'ID nhóm', '${d['ID nhóm']}', 'Dụng cụ ${d['Tên nhóm']}')"><i class="fa-solid fa-tools me-1"></i> Dụng cụ</button>
+          <button class="btn btn-outline-danger btn-sm fw-bold shadow-sm flex-fill" onclick="exportGroupPDF('${rowJson}')"><i class="fa-solid fa-file-pdf me-1"></i> PDF</button>
+        </div>`;
+        // === Mini-dashboard for Nhóm CCR ===
+        const _sfG = v => parseFloat(String(v||0).replace(/,/g,''))||0;
+        const _grpOwners = (APP_DATA['Churung']||[]).filter(c => String(c['ID nhóm']).trim() === String(d['ID nhóm']).trim());
+        const _grpPlots = (APP_DATA['Lo_rung']||[]).filter(p => _grpOwners.some(o => String(o['ID chủ rừng']).trim() === String(p['ID chủ rừng']).trim()));
+        const _gTotal = _grpPlots.reduce((s,p)=>s+_sfG(p['Tổng diện tích']),0);
+        const _gFsc = _grpPlots.reduce((s,p)=>s+_sfG(p[' Diện tích FSC']||p['Diện tích FSC']),0);
+        const _gHarvest = _grpPlots.reduce((s,p)=>s+_sfG(p['Sản lượng khai thác xe']||p['Sản lượng dự kiến']),0);
+        html += `<div class="row g-2 mb-3">
+          <div class="col-6 col-md-3"><div class="kpi-card h-100 kpi-sm"><div class="kpi-card-inner">
+            <div class="kpi-icon-circle" style="background:linear-gradient(150deg,#A5D6A7 0%,#43A047 50%,#1B5E20 100%);color:#fff"><i class="fa-solid fa-users"></i></div>
+            <div class="kpi-body"><div class="kpi-value">${_grpOwners.length}</div><div class="kpi-label">${currentLang==='en'?'Households':'Hộ dân'}</div></div>
+          </div></div></div>
+          <div class="col-6 col-md-3"><div class="kpi-card h-100 kpi-sm blue"><div class="kpi-card-inner">
+            <div class="kpi-icon-circle"><i class="fa-solid fa-expand"></i></div>
+            <div class="kpi-body"><div class="kpi-value">${_gTotal.toFixed(1)}</div><div class="kpi-label">${currentLang==='en'?'Total area (ha)':'Tổng DT (ha)'}</div></div>
+          </div></div></div>
+          <div class="col-6 col-md-3"><div class="kpi-card h-100 kpi-sm orange"><div class="kpi-card-inner">
+            <div class="kpi-icon-circle"><i class="fa-solid fa-certificate"></i></div>
+            <div class="kpi-body"><div class="kpi-value">${_gFsc.toFixed(1)}</div><div class="kpi-label">${currentLang==='en'?'FSC area (ha)':'DT FSC (ha)'}</div></div>
+          </div></div></div>
+          <div class="col-6 col-md-3"><div class="kpi-card h-100 kpi-sm purple"><div class="kpi-card-inner">
+            <div class="kpi-icon-circle"><i class="fa-solid fa-tree"></i></div>
+            <div class="kpi-body"><div class="kpi-value">${_grpPlots.length}</div><div class="kpi-label">${currentLang==='en'?'Forest plots':'Lô rừng'}</div></div>
+          </div></div></div>
         </div>`;
       } else if (sheetName === 'Churung') {
         html += `<div class="d-flex gap-1 mb-2 flex-nowrap detail-action-bar">
           <button class="btn btn-success btn-sm fw-bold shadow-sm flex-fill" onclick="loadViewWithFilter('Lo_rung', 'ID chủ rừng', '${d['ID chủ rừng']}', 'Lô rừng của ${d['Họ tên chủ rừng']}')"><i class="fa-solid fa-map-location-dot me-1"></i> ${t('dd_lorung')}</button>
           <button class="btn btn-outline-success btn-sm fw-bold shadow-sm flex-fill" onclick="loadViewWithFilter('Taphuan', 'ID chủ rừng', '${d['ID chủ rừng']}', 'Tập huấn của ${d['Họ tên chủ rừng']}')"><i class="fa-solid fa-graduation-cap me-1"></i> ${t('dd_taphuan')}</button>
+          <button class="btn btn-outline-danger btn-sm fw-bold shadow-sm flex-fill" onclick="exportOwnerPDF('${rowJson}')"><i class="fa-solid fa-file-pdf me-1"></i> PDF</button>
         </div>`;
+        // === Mini-dashboard for Chủ rừng ===
+        const _sf = v => parseFloat(String(v||0).replace(/,/g,''))||0;
+        const _myPlots = (APP_DATA['Lo_rung']||[]).filter(p => String(p['ID chủ rừng']).trim() === String(d['ID chủ rừng']).trim());
+        const _totalArea = _myPlots.reduce((s,p)=>s+_sf(p['Tổng diện tích']),0);
+        const _fscArea = _myPlots.reduce((s,p)=>s+_sf(p[' Diện tích FSC']||p['Diện tích FSC']),0);
+        const _harvestEst = _myPlots.reduce((s,p)=>s+_sf(p['Sản lượng khai thác xe']||p['Sản lượng dự kiến']),0);
+        const _plantArea = _myPlots.reduce((s,p)=>s+_sf(p['Diện tích trồng rừng']||p['Diện tích trồng']),0);
+        html += `<div class="row g-2 mb-3">
+          <div class="col-6 col-md-3"><div class="kpi-card h-100 kpi-sm"><div class="kpi-card-inner">
+            <div class="kpi-icon-circle" style="background:linear-gradient(150deg,#A5D6A7 0%,#43A047 50%,#1B5E20 100%);color:#fff"><i class="fa-solid fa-tree"></i></div>
+            <div class="kpi-body"><div class="kpi-value">${_myPlots.length}</div><div class="kpi-label">${currentLang==='en'?'Forest plots':'Lô rừng'}</div></div>
+          </div></div></div>
+          <div class="col-6 col-md-3"><div class="kpi-card h-100 kpi-sm blue"><div class="kpi-card-inner">
+            <div class="kpi-icon-circle"><i class="fa-solid fa-expand"></i></div>
+            <div class="kpi-body"><div class="kpi-value">${_totalArea.toFixed(1)}</div><div class="kpi-label">${currentLang==='en'?'Total area (ha)':'Tổng DT (ha)'}</div></div>
+          </div></div></div>
+          <div class="col-6 col-md-3"><div class="kpi-card h-100 kpi-sm orange"><div class="kpi-card-inner">
+            <div class="kpi-icon-circle"><i class="fa-solid fa-certificate"></i></div>
+            <div class="kpi-body"><div class="kpi-value">${_fscArea.toFixed(1)}</div><div class="kpi-label">${currentLang==='en'?'FSC area (ha)':'DT FSC (ha)'}</div></div>
+          </div></div></div>
+          <div class="col-6 col-md-3"><div class="kpi-card h-100 kpi-sm purple"><div class="kpi-card-inner">
+            <div class="kpi-icon-circle"><i class="fa-solid fa-cubes-stacked"></i></div>
+            <div class="kpi-body"><div class="kpi-value">${_harvestEst.toFixed(0)}</div><div class="kpi-label">${currentLang==='en'?'Est. yield (m³)':'SL dự kiến (m³)'}</div></div>
+          </div></div></div>
+        </div>`;
+        // Mini map: show owner's plots if GeoJSON available
+        if (_myPlots.length > 0) {
+          html += `<div class="card mb-3 overflow-hidden"><div class="card-header py-2 d-flex justify-content-between align-items-center" style="background:linear-gradient(135deg,rgba(43,100,47,0.92),rgba(27,94,32,0.95));color:#fff">
+            <span class="fw-bold small"><i class="fa-solid fa-map me-2"></i>${currentLang==='en'?'Forest plot map':'Bản đồ lô rừng'}</span>
+          </div><div id="owner-mini-map" style="height:250px;width:100%"></div></div>`;
+          setTimeout(()=>{
+            const mapEl = document.getElementById('owner-mini-map');
+            if(!mapEl||!window.L) return;
+            const mm = L.map(mapEl,{zoomControl:false,attributionControl:false}).setView([21.3,105.3],12);
+            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{maxZoom:18}).addTo(mm);
+            const fg = L.featureGroup().addTo(mm);
+            const geoData = APP_DATA['LoRung_GeoJSON']||[];
+            _myPlots.forEach(p=>{
+              const geo = geoData.find(g=>String(g['ID lô rừng'])===String(p['ID lô rừng']));
+              if(geo&&geo['GeoJSON']){
+                try{
+                  const gj=typeof geo['GeoJSON']==='string'?JSON.parse(geo['GeoJSON']):geo['GeoJSON'];
+                  const layer=L.geoJSON(gj,{style:{color:'#1B5E20',weight:2,fillColor:'#43A047',fillOpacity:0.3}});
+                  layer.bindTooltip(p['Mã số lô rừng']||'',{permanent:true,direction:'center',className:'plot-label'});
+                  fg.addLayer(layer);
+                }catch(e){}
+              }
+            });
+            if(fg.getLayers().length>0){try{mm.fitBounds(fg.getBounds(),{padding:[20,20]});}catch(e){}}
+          },300);
+        }
       } else if (sheetName === 'Lo_rung') {
         const plotSafe = JSON.stringify(d).replace(/"/g, '&quot;');
         html += `<div class="d-flex gap-1 mb-2 flex-nowrap detail-action-bar">
@@ -13330,13 +14199,44 @@ ${gsRecord['Đề xuất'] ? `<div class="proposal-box"><h4>${t('mon_proposal')}
           <button class="btn btn-outline-success btn-sm fw-bold shadow-sm flex-fill" onclick="loadViewWithFilter('MuonTraDC', 'ID dụng cụ', '${d['ID']}', 'Mượn/trả ${d['Tên dụng cụ']}')"><i class="fa-solid fa-exchange-alt me-1"></i> Mượn/Trả</button>
         </div>`;
       } else if (sheetName === 'NhanSu') {
-        const isAdmin = currentUser && (String(currentUser['Chức vụ']).toLowerCase().includes('admin'));
+        // Block non-superAdmin from viewing superAdmin profile
+        if (!_isSuperAdmin() && String(d['Email'] || '').toLowerCase() === SUPER_ADMIN_EMAIL) {
+          navigateBack(); return;
+        }
+        // Role badge
+        const staffRole = String(d['Chức vụ'] || '').trim().toLowerCase();
+        const roleBadgeMap = {
+          'admin': { label: 'Admin — Toàn quyền', color: '#D32F2F', icon: 'fa-shield-halved' },
+          'manager': { label: 'Manager — Quản lý nhóm', color: '#F57C00', icon: 'fa-user-tie' },
+          'staff': { label: 'Staff — Nhân viên', color: '#1976D2', icon: 'fa-user' },
+          'viewer': { label: 'Viewer — Chỉ xem', color: '#757575', icon: 'fa-eye' }
+        };
+        const rb = roleBadgeMap[staffRole] || roleBadgeMap['viewer'];
+        html += `<div class="card border-0 shadow-sm rounded-3 mb-2 p-3" style="background:var(--glass-bg);backdrop-filter:var(--glass-blur);-webkit-backdrop-filter:var(--glass-blur);border:1px solid var(--glass-border)">
+          <div class="d-flex align-items-center gap-3">
+            <div style="width:48px;height:48px;border-radius:50%;background:${rb.color}15;display:flex;align-items:center;justify-content:center">
+              <i class="fa-solid ${rb.icon}" style="font-size:20px;color:${rb.color}"></i>
+            </div>
+            <div>
+              <div class="fw-bold" style="font-size:15px">${d['Họ và tên'] || ''}</div>
+              <span class="badge" style="background:${rb.color};font-size:11px;padding:4px 10px;border-radius:12px"><i class="fa-solid ${rb.icon} me-1"></i>${rb.label}</span>
+            </div>
+          </div>
+        </div>`;
+
+        const isAdmin = _isAdmin() || _getUserRole() === 'Manager';
         const isPending = d['Trạng thái'] === 'Pending';
         if (isAdmin && isPending) {
           html += `<div class="d-flex gap-1 mb-2 detail-action-bar">
             <button class="btn btn-success btn-sm fw-bold shadow-sm flex-fill" onclick="approveMember('${d['ID_staff']}')"><i class="fa-solid fa-check-circle me-1"></i> ${t('dd_pheduyet')}</button>
           </div>`;
         }
+
+        // Permission matrix for this staff member's role
+        const staffRoleKey = staffRole === 'admin' ? 'Admin' :
+          staffRole === 'manager' ? 'Manager' :
+          staffRole === 'staff' ? 'Staff' : 'Viewer';
+        html += renderPermissionMatrix(staffRoleKey);
       }
 
       const allCols = TABLE_CONFIG[sheetName] ? TABLE_CONFIG[sheetName].columns : Object.keys(d);
@@ -13415,10 +14315,14 @@ ${gsRecord['Đề xuất'] ? `<div class="proposal-box"><h4>${t('mon_proposal')}
 
     // Auto-generate ID prefix map for each sheet
     const AUTO_ID_PREFIX = {
+      'Ban_Quanlynhom': 'BQL', 'NhomCCR': 'NCR', 'Churung': 'CR', 'Lo_rung': 'LR',
       'LopTaphuan': 'TH', 'DSHocVien': 'HV', 'KhieuNai': 'KN',
       'TaiSan': 'TS', 'DungCu': 'DC', 'MuonTraDC': 'MT',
       'DM_ThuocBVTV': 'BVTV', 'DM_CayTrong': 'CT', 'DM_PhanBon': 'PB', 'NguonGocGiong': 'GG',
-      'KH_TrongRung': 'KHTR', 'KH_KhaiThac': 'KHKT', 'KH_TaphuanPlan': 'KHTH', 'KH_CayGiongPlan': 'KHCG'
+      'KH_TrongRung': 'KHTR', 'KH_KhaiThac': 'KHKT', 'KH_TaphuanPlan': 'KHTH', 'KH_CayGiongPlan': 'KHCG',
+      'DG_noibo': 'DG', 'BenLienQuan': 'BLQ', 'HDLoRung': 'HD', 'BienDong': 'BD',
+      'KH_GiamSat': 'KHGS', 'KH_HDChuRung': 'KHCR', 'KH_HDNhom': 'KHN',
+      'GiamSat': 'GS', 'DotDGEUDR': 'EUDR', 'DSHopDong': 'HĐ'
     };
 
     function _generateId(sheetName) {
@@ -13441,34 +14345,27 @@ ${gsRecord['Đề xuất'] ? `<div class="proposal-box"><h4>${t('mon_proposal')}
     const FILE_UPLOAD_COLS = ['Tài liệu (file)', 'Hình ảnh', 'Báo cáo (file)'];
 
     function openModal(action, sheetName, rowJson = null) {
-      if (!_isAdmin() && action === 'UPDATE') { alert(t('no_permission')); return; }
+      if (action === 'UPDATE' && !hasPermission(sheetName, 'Sửa')) { alert(t('no_permission')); return; }
+      if (action === 'CREATE' && !hasPermission(sheetName, 'Thêm')) { alert(t('no_permission')); return; }
       currentAction = action;
       currentSheetTarget = (sheetName === 'PhanQuyen') ? 'NhanSu' : sheetName;
-      $('#modalTitle').text(action === 'CREATE' ? t('modal_add') : t('modal_update'));
-      const form = $('#dynamic-form'); form.empty();
 
       let columns = TABLE_CONFIG[sheetName] ? TABLE_CONFIG[sheetName].columns : (APP_DATA[sheetName] && APP_DATA[sheetName][0] ? Object.keys(APP_DATA[sheetName][0]) : []);
       let rowData = rowJson ? JSON.parse(decodeURIComponent(rowJson)) : {};
 
-      // TỰ ĐỘNG ĐIỀN KHÓA NGOẠI NẾU ĐANG TRONG VIEW LỌC (DRILL-DOWN)
       const lastHist = navHistory[navHistory.length - 1];
       if (action === 'CREATE' && lastHist && lastHist.filter) {
         rowData[lastHist.filter.key] = lastHist.filter.value;
       }
-
-      // Auto-generate ID for CREATE mode
       if (action === 'CREATE' && AUTO_ID_PREFIX[sheetName]) {
         rowData['ID'] = _generateId(sheetName);
       }
 
+      let fieldsHtml = '';
       columns.forEach(col => {
         let val = rowData[col] || '';
-
-        // TỰ ĐỘNG CẬP NHẬT NGÀY THÁNG
         if (col.toLowerCase().includes('ngày') || col.toLowerCase().includes('cập nhật')) {
-          if (action === 'CREATE' || col.toLowerCase().includes('cập nhật')) {
-            val = new Date().toLocaleDateString('vi-VN');
-          }
+          if (action === 'CREATE' || col.toLowerCase().includes('cập nhật')) val = new Date().toLocaleDateString('vi-VN');
         }
         if (col === 'Người cập nhật' || col === 'Người nhập liệu' || col === 'Người nhập') {
           val = currentUser['Họ và tên'] || currentUser['Email'];
@@ -13476,16 +14373,17 @@ ${gsRecord['Đề xuất'] ? `<div class="proposal-box"><h4>${t('mon_proposal')}
 
         let inputHtml = '';
         const isKey = col.toLowerCase().includes('id') || col.toLowerCase().includes('mã');
-        const colLower = col.toLowerCase();
-
-        // HIDE: Primary ID in CREATE mode (auto-generated)
+        const PRIMARY_ID_COL = { 'NhomCCR':'ID nhóm','Churung':'ID chủ rừng','Lo_rung':'ID lô rừng','Ban_Quanlynhom':'ID ban quản lý' };
+        const thisPrimaryId = PRIMARY_ID_COL[sheetName] || 'ID';
+        if (col === thisPrimaryId && action === 'CREATE' && AUTO_ID_PREFIX[sheetName]) {
+          fieldsHtml += `<input type="hidden" name="${col}" value="${val}">`;
+          return;
+        }
         if (col === 'ID' && action === 'CREATE' && AUTO_ID_PREFIX[sheetName]) {
-          inputHtml = `<input type="hidden" name="${col}" value="${val}">`;
-          form.append(inputHtml);
-          return; // skip rendering visible field
+          fieldsHtml += `<input type="hidden" name="${col}" value="${val}">`;
+          return;
         }
 
-        // FK DROPDOWN: ID nhóm, ID chủ rừng, etc.
         if (FK_DROPDOWN_CONFIG[col] && action === 'CREATE') {
           const fk = FK_DROPDOWN_CONFIG[col];
           const sourceData = APP_DATA[fk.source] || [];
@@ -13496,9 +14394,8 @@ ${gsRecord['Đề xuất'] ? `<div class="proposal-box"><h4>${t('mon_proposal')}
             const sel = val === v ? 'selected' : '';
             opts += `<option value="${v}" ${sel}>${lbl} (${v})</option>`;
           });
-          // If value is preset from drill-down, make it readonly
           if (lastHist && lastHist.filter && col === lastHist.filter.key) {
-            inputHtml = `<input type="text" class="form-control bg-light" name="${col}" value="${val}" readonly>`;
+            inputHtml = `<input type="text" class="form-control" name="${col}" value="${val}" readonly style="background:rgba(27,94,32,0.04)">`;
           } else {
             inputHtml = `<select class="form-select" name="${col}">${opts}</select>`;
           }
@@ -13523,13 +14420,17 @@ ${gsRecord['Đề xuất'] ? `<div class="proposal-box"><h4>${t('mon_proposal')}
           const opts = ['Tốt', 'Hư hỏng nhẹ', 'Cần sửa chữa', 'Thanh lý'];
           inputHtml = `<select class="form-select" name="${col}">${opts.map(o => `<option value="${o}" ${val === o ? 'selected' : ''}>${o}</option>`).join('')}</select>`;
         } else if (col === 'Chức vụ') {
-          const roles = ['Admin', 'Thành viên'];
-          inputHtml = `<select class="form-select" name="${col}">${roles.map(r => `<option value="${r}" ${val === r ? 'selected' : ''}>${r}</option>`).join('')}</select>`;
+          const roles = [
+            { value: 'Admin', label: 'Admin — Toàn quyền' },
+            { value: 'Manager', label: 'Manager — Quản lý nhóm' },
+            { value: 'Staff', label: 'Staff — Nhân viên' },
+            { value: 'Viewer', label: 'Viewer — Chỉ xem' }
+          ];
+          inputHtml = `<select class="form-select" name="${col}">${roles.map(r => `<option value="${r.value}" ${val === r.value ? 'selected' : ''}>${r.label}</option>`).join('')}</select>`;
         } else if (col === 'Mật khẩu') {
           if (action === 'CREATE') inputHtml = `<input type="text" class="form-control" name="${col}" placeholder="Mật khẩu khởi tạo">`;
           else if (String(rowData['Email']) === String(currentUser['Email'])) inputHtml = `<input type="text" class="form-control" name="${col}" placeholder="Đổi mật khẩu">`;
         } else if (FILE_UPLOAD_COLS.includes(col)) {
-          // File upload field: show URL input + file picker
           inputHtml = `<div class="input-group">
             <input type="text" class="form-control" name="${col}" value="${val}" placeholder="URL hoặc chọn file...">
             <label class="input-group-text btn btn-outline-success" style="cursor:pointer">
@@ -13538,13 +14439,31 @@ ${gsRecord['Đề xuất'] ? `<div class="proposal-box"><h4>${t('mon_proposal')}
             </label>
           </div>`;
         } else {
-          // KHÔNG CHO SỬA KEY
-          const readonly = (action === 'UPDATE' && isKey) || (action === 'CREATE' && lastHist && lastHist.filter && col === lastHist.filter.key) ? 'readonly class="form-control bg-light"' : '';
+          const readonly = (action === 'UPDATE' && isKey) || (action === 'CREATE' && lastHist && lastHist.filter && col === lastHist.filter.key) ? 'readonly style="background:rgba(27,94,32,0.04)"' : '';
           inputHtml = `<input type="text" class="form-control" name="${col}" value="${val}" ${readonly}>`;
         }
-        if (inputHtml) form.append(`<div class="col-md-6"><label class="form-label small fw-bold text-muted">${col}</label>${inputHtml}</div>`);
+        if (inputHtml) fieldsHtml += `<div class="col-md-6"><label class="form-label small fw-bold text-muted">${tc(col)}</label>${inputHtml}</div>`;
       });
-      new bootstrap.Modal(document.getElementById('dataModal')).show();
+
+      const titleText = action === 'CREATE' ? t('modal_add') : t('modal_update');
+      const titleIcon = action === 'CREATE' ? 'fa-plus' : 'fa-pen';
+      const inlineHtml = `
+        <div class="card mt-2">
+          <div class="card-header py-3 d-flex justify-content-between align-items-center" style="background:linear-gradient(135deg,rgba(43,100,47,0.92),rgba(27,94,32,0.95));color:#fff;border-radius:var(--glass-radius) var(--glass-radius) 0 0">
+            <h5 class="mb-0 fw-bold text-white"><i class="fa-solid ${titleIcon} me-2"></i>${titleText}</h5>
+            <button class="btn btn-sm btn-light fw-bold" onclick="renderContent()"><i class="fa-solid fa-arrow-left me-1"></i>${t('audit_cancel_back')}</button>
+          </div>
+          <div class="card-body p-3 p-md-4">
+            <form id="dynamic-form" class="row g-3">${fieldsHtml}</form>
+          </div>
+          <div class="card-footer d-flex justify-content-end gap-2 py-3" style="background:transparent;border-top:1px solid var(--glass-border)">
+            <button type="button" class="btn btn-light px-4" onclick="renderContent()"><i class="fa-solid fa-xmark me-1"></i>${t('modal_close')}</button>
+            <button type="button" class="btn btn-success px-4 fw-bold" id="btn-save" onclick="saveData()"><i class="fa-solid fa-save me-1"></i>${t('modal_save')}</button>
+          </div>
+        </div>`;
+      $('#page-content-dynamic').html(inlineHtml);
+      // Scroll to top of form
+      $('#page-content-wrapper').scrollTop(0);
     }
 
     // File upload handler — uploads to PocketBase Storage
@@ -13654,11 +14573,12 @@ ${gsRecord['Đề xuất'] ? `<div class="proposal-box"><h4>${t('mon_proposal')}
         const dbData = toDB(currentSheetTarget, dataObj);
 
         if (currentAction === 'CREATE' && (!dbData.sb_id || dbData.sb_id === '')) {
-          const prefix = currentSheetTarget.substring(0, 3).toUpperCase();
-          dbData.sb_id = `${prefix}-${new Date().getFullYear().toString().substr(-2)}-${Math.floor(1000 + Math.random() * 9000)}`;
-          // Write generated ID back to dataObj
-          const idCol = Object.keys(dataObj)[0];
-          if (idCol) dataObj[idCol] = dbData.sb_id;
+          const prefix = AUTO_ID_PREFIX[currentSheetTarget] || currentSheetTarget.substring(0, 3).toUpperCase();
+          dbData.sb_id = `${prefix}_${Date.now().toString(36).toUpperCase()}${Math.random().toString(36).substring(2,5).toUpperCase()}`;
+          // Write generated ID back to dataObj for local cache
+          const PRIMARY_ID_COL = { 'NhomCCR':'ID nhóm','Churung':'ID chủ rừng','Lo_rung':'ID lô rừng','Ban_Quanlynhom':'ID ban quản lý' };
+          const idCol = PRIMARY_ID_COL[currentSheetTarget] || 'ID';
+          if (dataObj[idCol] !== undefined) dataObj[idCol] = dbData.sb_id;
         }
 
         if (navigator.onLine) {
@@ -13667,11 +14587,21 @@ ${gsRecord['Đề xuất'] ? `<div class="proposal-box"><h4>${t('mon_proposal')}
           if (currentAction === 'CREATE') {
             result = await sb.from(dbTable).insert(dbData).select();
           } else {
-            const idVal = dbData.sb_id;
-            delete dbData.sb_id; delete dbData.created_at;
-            result = await sb.from(dbTable).update(dbData).eq('sb_id', idVal).select();
+            // Determine the correct ID field for UPDATE filter
+            let idField = 'sb_id';
+            let idVal = dbData.sb_id;
+            if (!idVal && dbData.id_staff) {
+              idField = 'id_staff'; idVal = dbData.id_staff;
+            }
+            delete dbData.sb_id; delete dbData.id_staff; delete dbData.created_at;
+            result = await sb.from(dbTable).update(dbData).eq(idField, idVal).select();
           }
-          if (result.error) { alert("Lỗi: " + result.error.message); return; }
+          if (result.error) {
+            console.error('[SaveData] Error:', result.error, 'Table:', dbTable, 'Data:', dbData);
+            alert("Lỗi: " + result.error.message);
+            btn.prop('disabled', false).html(`<i class="fas fa-save me-2"></i>${t('btn_save')}`);
+            return;
+          }
           // Update local data from server response
           if (currentAction === 'CREATE') {
             if (!APP_DATA[currentSheetTarget]) APP_DATA[currentSheetTarget] = [];
@@ -13688,11 +14618,16 @@ ${gsRecord['Đề xuất'] ? `<div class="proposal-box"><h4>${t('mon_proposal')}
         } else {
           // === OFFLINE: queue + optimistic local update ===
           const action = currentAction === 'CREATE' ? 'INSERT' : 'UPDATE';
-          const idVal = dbData.sb_id || toDB(currentSheetTarget, dataObj).sb_id;
-          const queueData = currentAction === 'CREATE' ? dbData : { ...toDB(currentSheetTarget, dataObj) };
+          const offlineDbData = toDB(currentSheetTarget, dataObj);
+          let offlineIdField = 'sb_id';
+          let offlineIdVal = dbData.sb_id || offlineDbData.sb_id;
+          if (!offlineIdVal && (dbData.id_staff || offlineDbData.id_staff)) {
+            offlineIdField = 'id_staff'; offlineIdVal = dbData.id_staff || offlineDbData.id_staff;
+          }
+          const queueData = currentAction === 'CREATE' ? dbData : { ...offlineDbData };
           await syncManager.enqueue({
             table: dbTable, sheetName: currentSheetTarget,
-            action, data: queueData, idField: 'sb_id', idValue: idVal
+            action, data: queueData, idField: offlineIdField, idValue: offlineIdVal
           });
           // Optimistic update
           if (currentAction === 'CREATE') {
@@ -13706,7 +14641,7 @@ ${gsRecord['Đề xuất'] ? `<div class="proposal-box"><h4>${t('mon_proposal')}
           showSyncNotification(t('sync_saved_offline'), 'info');
         }
 
-        bootstrap.Modal.getInstance(document.getElementById('dataModal')).hide();
+        // Form is inline — no modal to hide
 
         // If this was a new plot created from polygon drawing, save the geometry
         if (window._pendingNewPlotLayer && currentSheetTarget === 'Lo_rung' && currentAction === 'CREATE') {
@@ -13733,7 +14668,7 @@ ${gsRecord['Đề xuất'] ? `<div class="proposal-box"><h4>${t('mon_proposal')}
     }
 
     async function deleteRow(sheetName, rowJson) {
-      if (!_isAdmin()) { alert(t('no_permission')); return; }
+      if (!hasPermission(sheetName, 'Xóa')) { alert(t('no_permission')); return; }
       if (!confirm(t('confirm_delete'))) return;
       const rowData = JSON.parse(decodeURIComponent(rowJson));
       const idCol = Object.keys(rowData)[0];
@@ -13742,15 +14677,18 @@ ${gsRecord['Đề xuất'] ? `<div class="proposal-box"><h4>${t('mon_proposal')}
       try {
         const dbTable = getDBTable(sheetName);
         const dbData = toDB(sheetName, rowData);
-        const dbId = dbData.sb_id;
+        // Determine correct ID field (profiles uses id_staff, others use sb_id)
+        let deleteIdField = 'sb_id';
+        let dbId = dbData.sb_id;
+        if (!dbId && dbData.id_staff) { deleteIdField = 'id_staff'; dbId = dbData.id_staff; }
 
         if (navigator.onLine) {
-          const { error } = await sb.from(dbTable).delete().eq('sb_id', dbId);
+          const { error } = await sb.from(dbTable).delete().eq(deleteIdField, dbId);
           if (error) { alert("Lỗi khi xóa: " + error.message); return; }
         } else {
           await syncManager.enqueue({
             table: dbTable, sheetName, action: 'DELETE',
-            data: dbData, idField: 'sb_id', idValue: dbId
+            data: dbData, idField: deleteIdField, idValue: dbId
           });
           showSyncNotification(t('sync_saved_offline'), 'info');
         }
@@ -13791,7 +14729,7 @@ ${gsRecord['Đề xuất'] ? `<div class="proposal-box"><h4>${t('mon_proposal')}
     }
 
     function renderTable(data, context, sheetName) {
-      const isAdmin = currentUser && (String(currentUser['Chức vụ']).toLowerCase().includes('admin'));
+      const isAdmin = _isAdmin() || _getUserRole() === 'Manager';
       let displayData = data;
 
       // LỌC DỮ LIỆU THEO PHÂN QUYỀN (Nếu không phải Admin)
@@ -13822,15 +14760,16 @@ ${gsRecord['Đề xuất'] ? `<div class="proposal-box"><h4>${t('mon_proposal')}
       if (context.filter) displayData = displayData.filter(row => String(row[context.filter.key]) === String(context.filter.value));
 
       const canAdd = hasPermission(sheetName, 'Thêm');
-      const addBtn = canAdd ? `<button class="btn btn-light btn-sm text-success fw-bold rounded-pill px-3 shadow-sm" onclick="openModal('CREATE', '${sheetName}')"><i class="fa-solid fa-plus"></i> ${t('btn_add')}</button>` : '';
+      const pdfBtn = `<button class="btn btn-outline-danger btn-sm fw-bold rounded-pill px-3 me-1" onclick="exportTablePDF()"><i class="fa-solid fa-file-pdf me-1"></i>PDF</button>`;
+      const addBtn = canAdd ? `${pdfBtn}<button class="btn btn-success btn-sm fw-bold rounded-pill px-3" onclick="openModal('CREATE', '${sheetName}')" style="box-shadow:0 2px 8px rgba(27,94,32,0.3)"><i class="fa-solid fa-plus me-1"></i> ${t('btn_add')}</button>` : pdfBtn;
 
       if (!displayData || !displayData.length) {
         $('#page-content-dynamic').html(`
-            <div class="card shadow border-0 rounded-4 mt-3">
-              <div class="card-header bg-success text-white py-3 d-flex justify-content-between align-items-center">
+            <div class="card mt-3">
+              <div class="card-header py-3 d-flex justify-content-between align-items-center" style="background:linear-gradient(135deg,rgba(43,100,47,0.92),rgba(27,94,32,0.95));color:#fff;border-radius:var(--glass-radius) var(--glass-radius) 0 0">
                 <h5 class="mb-0 fw-bold">${context.title}</h5>${addBtn}
               </div>
-              <div class="card-body p-5 text-center text-muted">${currentLang==='en'?'No data available for this table.':'Chưa có dữ liệu cho bảng này.'}</div>
+              <div class="card-body p-5 text-center" style="color:var(--text-muted)">${currentLang==='en'?'No data available for this table.':'Chưa có dữ liệu cho bảng này.'}</div>
             </div>`);
         return;
       }
@@ -13843,8 +14782,8 @@ ${gsRecord['Đề xuất'] ? `<div class="proposal-box"><h4>${t('mon_proposal')}
             <span class="badge bg-success bg-opacity-10 text-success ms-2" style="font-size:12px">${displayData.length}</span>
           </h5>${addBtn}
         </div>
-        <div class="input-group input-group-sm mb-2 shadow-sm" style="max-width:400px">
-          <span class="input-group-text bg-white border-end-0"><i class="fa-solid fa-magnifying-glass text-muted"></i></span>
+        <div class="input-group input-group-sm mb-2" style="max-width:400px">
+          <span class="input-group-text border-end-0" style="background:var(--glass-bg)"><i class="fa-solid fa-magnifying-glass text-muted"></i></span>
           <input type="text" class="form-control border-start-0" id="nhomccr-search" placeholder="${currentLang==='en'?'Search groups...':'Tìm kiếm nhóm...'}" oninput="_filterNhomCCR(this.value)">
         </div>
         <div class="row g-2" id="nhomccr-list">`;
@@ -13857,7 +14796,7 @@ ${gsRecord['Đề xuất'] ? `<div class="proposal-box"><h4>${t('mon_proposal')}
           const groupCode = row['Mã nhóm'] || '';
           cardHtml += `
           <div class="col-md-4 col-12 nhomccr-item" data-search="${groupName} ${groupCode} ${row['Người đại diện']||''} ${row['Địa chỉ']||''}">
-            <div class="card border-0 shadow-sm rounded-3 h-100 overflow-hidden">
+            <div class="card h-100 overflow-hidden" style="transition:all var(--transition-bounce)">
               <div class="d-flex align-items-center px-3 py-2" style="cursor:pointer" onclick="$('#nhomccr-detail-${idx}').slideToggle(200);$(this).find('.fa-chevron-down,.fa-chevron-up').toggleClass('fa-chevron-down fa-chevron-up')">
                 <div class="rounded-3 p-2 me-2 flex-shrink-0" style="background:rgba(27,94,32,0.08)">
                   <i class="fa-solid fa-users text-success"></i>
@@ -13943,9 +14882,9 @@ ${gsRecord['Đề xuất'] ? `<div class="proposal-box"><h4>${t('mon_proposal')}
 
       const recordCount = displayData.length;
       const html = `
-          <div class="card shadow border-0 rounded-4 overflow-hidden mt-3">
-            <div class="card-header bg-success text-white py-2 d-flex justify-content-between align-items-center">
-              <h5 class="mb-0 fw-bold" style="font-size:0.95rem"><i class="fa-solid fa-table me-2"></i>${context.title}
+          <div class="card mt-3 overflow-hidden">
+            <div class="card-header py-2 d-flex justify-content-between align-items-center" style="background:linear-gradient(135deg,rgba(43,100,47,0.92),rgba(27,94,32,0.95));color:#fff;border-radius:var(--glass-radius) var(--glass-radius) 0 0">
+              <h5 class="mb-0 fw-bold text-white" style="font-size:0.95rem"><i class="fa-solid fa-table me-2"></i>${context.title}
                 <span class="badge bg-white bg-opacity-25 ms-2" style="font-size:0.7rem">${recordCount}</span>
               </h5>${addBtn}
             </div>
